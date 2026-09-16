@@ -68,7 +68,7 @@ export default function HomePage() {
         {/* Impressive 12 Zodiac Wheel Hero Graphic Emblem */}
         <div className="mx-auto flex flex-col items-center justify-center pt-2 pb-2 w-full">
           <div className="group relative flex h-72 w-72 sm:h-96 sm:w-96 md:h-[460px] md:w-[460px] lg:h-[520px] lg:w-[520px] items-center justify-center rounded-full border-2 border-amber-400/50 bg-gradient-to-br from-purple-950/90 via-[#0a0422]/95 to-amber-950/80 shadow-[0_0_60px_rgba(245,158,11,0.45)] backdrop-blur-3xl transition-all hover:scale-[1.02] hover:shadow-[0_0_80px_rgba(245,158,11,0.65)] duration-500">
-            <svg viewBox="0 0 340 340" className="h-full w-full p-2">
+            <svg viewBox="0 0 380 380" className="h-full w-full p-2">
               <defs>
                 <radialGradient id="zodiac-center-glow" cx="50%" cy="50%" r="50%">
                   <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.35" />
@@ -82,14 +82,14 @@ export default function HomePage() {
               </defs>
 
               {/* Background Glow Circle */}
-              <circle cx="170" cy="170" r="150" fill="url(#zodiac-center-glow)" />
+              <circle cx="190" cy="190" r="170" fill="url(#zodiac-center-glow)" />
 
               {/* Concentric Ecliptic Rings */}
-              <circle cx="170" cy="170" r="148" fill="none" stroke="#F59E0B" strokeWidth="1" opacity="0.3" strokeDasharray="3 3" />
-              <circle cx="170" cy="170" r="120" fill="none" stroke="#F59E0B" strokeWidth="2" opacity="0.7" filter="url(#zodiac-gold-glow)" />
-              <circle cx="170" cy="170" r="118" fill="none" stroke="#A855F7" strokeWidth="1" opacity="0.5" />
-              <circle cx="170" cy="170" r="80" fill="none" stroke="#38BDF8" strokeWidth="1" opacity="0.4" strokeDasharray="4 2" />
-              <circle cx="170" cy="170" r="45" fill="none" stroke="#F59E0B" strokeWidth="1" opacity="0.5" />
+              <circle cx="190" cy="190" r="168" fill="none" stroke="#F59E0B" strokeWidth="1" opacity="0.3" strokeDasharray="3 3" />
+              <circle cx="190" cy="190" r="135" fill="none" stroke="#F59E0B" strokeWidth="2" opacity="0.8" filter="url(#zodiac-gold-glow)" />
+              <circle cx="190" cy="190" r="133" fill="none" stroke="#A855F7" strokeWidth="1" opacity="0.5" />
+              <circle cx="190" cy="190" r="95" fill="none" stroke="#38BDF8" strokeWidth="1" opacity="0.4" strokeDasharray="4 2" />
+              <circle cx="190" cy="190" r="50" fill="none" stroke="#F59E0B" strokeWidth="1" opacity="0.5" />
 
               {/* 12 House Spokes */}
               {Array.from({ length: 12 }).map((_, i) => {
@@ -97,10 +97,10 @@ export default function HomePage() {
                 return (
                   <line
                     key={i}
-                    x1={170 + 45 * Math.cos(rad)}
-                    y1={170 + 45 * Math.sin(rad)}
-                    x2={170 + 120 * Math.cos(rad)}
-                    y2={170 + 120 * Math.sin(rad)}
+                    x1={190 + 50 * Math.cos(rad)}
+                    y1={190 + 50 * Math.sin(rad)}
+                    x2={190 + 135 * Math.cos(rad)}
+                    y2={190 + 135 * Math.sin(rad)}
                     stroke="#F59E0B"
                     strokeWidth={i % 3 === 0 ? "1.5" : "0.75"}
                     opacity={i % 3 === 0 ? "0.6" : "0.3"}
@@ -110,55 +110,75 @@ export default function HomePage() {
 
               {/* 12 Zodiac Signs OUTSIDE the ring & Ruling Planets INSIDE the ring */}
               {[
-                { glyph: "♈", ruler: "♂", name: "ვერძი", element: "fire", color: "#FF4500", rulerColor: "#EF4444", deg: 15 },
-                { glyph: "♉", ruler: "♀", name: "კურო", element: "earth", color: "#10B981", rulerColor: "#EC4899", deg: 45 },
-                { glyph: "♊", ruler: "☿", name: "ტყუპები", element: "air", color: "#F59E0B", rulerColor: "#FBBF24", deg: 75 },
-                { glyph: "♋", ruler: "☽", name: "კირჩხიბი", element: "water", color: "#06B6D4", rulerColor: "#E2E8F0", deg: 105 },
-                { glyph: "♌", ruler: "☉", name: "ლომი", element: "fire", color: "#EF4444", rulerColor: "#F59E0B", deg: 135 },
-                { glyph: "♍", ruler: "☿", name: "ქალწული", element: "earth", color: "#10B981", rulerColor: "#34D399", deg: 165 },
-                { glyph: "♎", ruler: "♀", name: "სასწორი", element: "air", color: "#F59E0B", rulerColor: "#EC4899", deg: 195 },
-                { glyph: "♏", ruler: "♇", name: "მორიელი", element: "water", color: "#06B6D4", rulerColor: "#8B5CF6", deg: 225 },
-                { glyph: "♐", ruler: "♃", name: "მშვილდოსანი", element: "fire", color: "#FF4500", rulerColor: "#38BDF8", deg: 255 },
-                { glyph: "♑", ruler: "♄", name: "თხის რქა", element: "earth", color: "#059669", rulerColor: "#C084FC", deg: 285 },
-                { glyph: "♒", ruler: "♅", name: "მერწყული", element: "air", color: "#FDE047", rulerColor: "#06B6D4", deg: 315 },
-                { glyph: "♓", ruler: "♆", name: "თევზები", element: "water", color: "#38BDF8", rulerColor: "#60A5FA", deg: 345 },
+                { glyph: "♈", ruler: "♂", name: "ვერძი", element: "fire", color: "#FF5722", bgFill: "rgba(255,87,34,0.35)", rulerColor: "#EF4444", deg: 15 },
+                { glyph: "♉", ruler: "♀", name: "კურო", element: "earth", color: "#10B981", bgFill: "rgba(16,185,129,0.35)", rulerColor: "#EC4899", deg: 45 },
+                { glyph: "♊", ruler: "☿", name: "ტყუპები", element: "air", color: "#FBBF24", bgFill: "rgba(251,191,36,0.35)", rulerColor: "#F59E0B", deg: 75 },
+                { glyph: "♋", ruler: "☽", name: "კირჩხიბი", element: "water", color: "#00E5FF", bgFill: "rgba(0,229,255,0.35)", rulerColor: "#E2E8F0", deg: 105 },
+                { glyph: "♌", ruler: "☉", name: "ლომი", element: "fire", color: "#FF5722", bgFill: "rgba(255,87,34,0.35)", rulerColor: "#F59E0B", deg: 135 },
+                { glyph: "♍", ruler: "☿", name: "ქალწული", element: "earth", color: "#10B981", bgFill: "rgba(16,185,129,0.35)", rulerColor: "#34D399", deg: 165 },
+                { glyph: "♎", ruler: "♀", name: "სასწორი", element: "air", color: "#FBBF24", bgFill: "rgba(251,191,36,0.35)", rulerColor: "#EC4899", deg: 195 },
+                { glyph: "♏", ruler: "♇", name: "მორიელი", element: "water", color: "#00E5FF", bgFill: "rgba(0,229,255,0.35)", rulerColor: "#A855F7", deg: 225 },
+                { glyph: "♐", ruler: "♃", name: "მშვილდოსანი", element: "fire", color: "#FF5722", bgFill: "rgba(255,87,34,0.35)", rulerColor: "#38BDF8", deg: 255 },
+                { glyph: "♑", ruler: "♄", name: "თხის რქა", element: "earth", color: "#10B981", bgFill: "rgba(16,185,129,0.35)", rulerColor: "#C084FC", deg: 285 },
+                { glyph: "♒", ruler: "♅", name: "მერწყული", element: "air", color: "#FBBF24", bgFill: "rgba(251,191,36,0.35)", rulerColor: "#06B6D4", deg: 315 },
+                { glyph: "♓", ruler: "♆", name: "თევზები", element: "water", color: "#00E5FF", bgFill: "rgba(0,229,255,0.35)", rulerColor: "#60A5FA", deg: 345 },
               ].map((z, idx) => {
                 const rad = (z.deg * Math.PI) / 180;
                 
-                // Position of Zodiac Sign OUTSIDE the ring (r = 138)
-                const signX = 170 + 138 * Math.cos(rad);
-                const signY = 170 + 138 * Math.sin(rad);
+                // Position of Zodiac Sign OUTSIDE the ring (r = 158)
+                const signX = 190 + 158 * Math.cos(rad);
+                const signY = 190 + 158 * Math.sin(rad);
 
-                // Position of Ruling Planet INSIDE the ring (r = 98)
-                const rulerX = 170 + 98 * Math.cos(rad);
-                const rulerY = 170 + 98 * Math.sin(rad);
+                // Position of Ruling Planet INSIDE the ring (r = 112)
+                const rulerX = 190 + 112 * Math.cos(rad);
+                const rulerY = 190 + 112 * Math.sin(rad);
 
                 return (
                   <g key={idx}>
+                    {/* Glowing Element Orb Background Circle */}
+                    <circle
+                      cx={signX}
+                      cy={signY}
+                      r="15"
+                      fill={z.bgFill}
+                      stroke={z.color}
+                      strokeWidth="2"
+                      style={{ filter: `drop-shadow(0 0 8px ${z.color})` }}
+                    />
+
                     {/* Zodiac Symbol (Outside Ring, Colored by Element) */}
                     <text
                       x={signX}
-                      y={signY + 6}
+                      y={signY + 5}
                       textAnchor="middle"
                       fill={z.color}
-                      fontSize="20"
+                      fontSize="17"
                       fontWeight="900"
                       className="font-extrabold select-none"
-                      style={{ textShadow: `0 0 14px ${z.color}aa` }}
+                      style={{ textShadow: `0 0 10px ${z.color}` }}
                     >
                       {z.glyph}
                     </text>
 
-                    {/* Ruling Planet (Inside Ring, Directly Under Zodiac Sign) */}
+                    {/* Ruling Planet Orb & Glyph Inside Ring */}
+                    <circle
+                      cx={rulerX}
+                      cy={rulerY}
+                      r="10"
+                      fill="#0a041f"
+                      stroke={z.rulerColor}
+                      strokeWidth="1.2"
+                      opacity="0.9"
+                      style={{ filter: `drop-shadow(0 0 6px ${z.rulerColor}99)` }}
+                    />
                     <text
                       x={rulerX}
                       y={rulerY + 4}
                       textAnchor="middle"
                       fill={z.rulerColor}
-                      fontSize="14"
+                      fontSize="12"
                       fontWeight="bold"
                       className="select-none"
-                      style={{ textShadow: `0 0 10px ${z.rulerColor}bb` }}
                     >
                       {z.ruler}
                     </text>
@@ -167,10 +187,10 @@ export default function HomePage() {
               })}
 
               {/* Central Cosmic Sun Ember */}
-              <circle cx="170" cy="170" r="22" fill="#F59E0B" filter="url(#zodiac-gold-glow)" />
-              <polygon points="170,132 178,160 208,170 178,180 170,208 162,180 132,170 162,160" fill="#FDE68A" />
-              <polygon points="170,142 175,163 198,170 175,177 170,198 165,177 142,170 165,163" fill="#FFF" />
-              <circle cx="170" cy="170" r="7" fill="#FFF" />
+              <circle cx="190" cy="190" r="24" fill="#F59E0B" filter="url(#zodiac-gold-glow)" />
+              <polygon points="190,148 199,179 232,190 199,201 190,232 181,201 148,190 181,179" fill="#FDE68A" />
+              <polygon points="190,158 196,182 220,190 196,198 190,220 184,198 160,190 184,182" fill="#FFF" />
+              <circle cx="190" cy="190" r="8" fill="#FFF" />
             </svg>
 
             {/* Glowing Aqua Cyan Accent Ring */}
@@ -178,22 +198,41 @@ export default function HomePage() {
           </div>
 
           {/* Element Colors Infographic Legend */}
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs font-bold px-2">
-            <div className="flex items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-950/40 px-3.5 py-1 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.2)]">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#FF4500]" />
-              <span>ცეცხლი: ♈ ♌ ♐</span>
+          <div className="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-4 max-w-3xl sm:max-w-4xl mx-auto gap-3 sm:gap-4 w-full px-2">
+            {/* Fire Card */}
+            <div className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-orange-500/50 bg-gradient-to-br from-rose-950/80 via-red-950/50 to-orange-950/80 p-3 sm:p-4 text-orange-200 shadow-[0_0_20px_rgba(249,115,22,0.25)] backdrop-blur-xl">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-[#FF5722] shadow-[0_0_10px_#FF5722]" />
+                <span className="text-sm sm:text-base font-black tracking-wide text-orange-300">🔥 ცეცხლი</span>
+              </div>
+              <span className="text-lg sm:text-xl font-black text-orange-100 tracking-widest drop-shadow">♈  ♌  ♐</span>
             </div>
-            <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-3.5 py-1 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#10B981]" />
-              <span>მიწა: ♉ ♍ ♑</span>
+
+            {/* Earth Card */}
+            <div className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-emerald-500/50 bg-gradient-to-br from-emerald-950/80 via-teal-950/50 to-green-950/80 p-3 sm:p-4 text-emerald-200 shadow-[0_0_20px_rgba(16,185,129,0.25)] backdrop-blur-xl">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-[#10B981] shadow-[0_0_10px_#10B981]" />
+                <span className="text-sm sm:text-base font-black tracking-wide text-emerald-300">🏔️ მიწა</span>
+              </div>
+              <span className="text-lg sm:text-xl font-black text-emerald-100 tracking-widest drop-shadow">♉  ♍  ♑</span>
             </div>
-            <div className="flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-950/40 px-3.5 py-1 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.2)]">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]" />
-              <span>ჰაერი: ♊ ♎ ♒</span>
+
+            {/* Air Card */}
+            <div className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-amber-500/50 bg-gradient-to-br from-amber-950/80 via-yellow-950/50 to-amber-900/80 p-3 sm:p-4 text-amber-200 shadow-[0_0_20px_rgba(245,158,11,0.25)] backdrop-blur-xl">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-[#FBBF24] shadow-[0_0_10px_#FBBF24]" />
+                <span className="text-sm sm:text-base font-black tracking-wide text-amber-300">💨 ჰაერი</span>
+              </div>
+              <span className="text-lg sm:text-xl font-black text-amber-100 tracking-widest drop-shadow">♊  ♎  ♒</span>
             </div>
-            <div className="flex items-center gap-1.5 rounded-full border border-sky-500/30 bg-sky-950/40 px-3.5 py-1 text-sky-300 shadow-[0_0_12px_rgba(56,189,248,0.2)]">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#06B6D4]" />
-              <span>წყალი: ♋ ♏ ♓</span>
+
+            {/* Water Card */}
+            <div className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-cyan-500/50 bg-gradient-to-br from-cyan-950/80 via-sky-950/50 to-blue-950/80 p-3 sm:p-4 text-cyan-200 shadow-[0_0_20px_rgba(6,182,212,0.25)] backdrop-blur-xl">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-[#00E5FF] shadow-[0_0_10px_#00E5FF]" />
+                <span className="text-sm sm:text-base font-black tracking-wide text-cyan-300">💧 წყალი</span>
+              </div>
+              <span className="text-lg sm:text-xl font-black text-cyan-100 tracking-widest drop-shadow">♋  ♏  ♓</span>
             </div>
           </div>
         </div>
