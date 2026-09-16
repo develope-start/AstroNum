@@ -90,93 +90,95 @@ export default function TransitCalculator() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl lg:max-w-4xl xl:max-w-5xl space-y-4 sm:space-y-6 text-center w-full overflow-x-hidden">
-      <div className="relative z-30 text-center w-full">
-        <BirthFields value={birth} onChange={setBirth} legend="01. ნატალური მონაცემები" />
-      </div>
-
-      <div className="glass-panel relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl sm:rounded-[28px] p-4 sm:p-6 border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 backdrop-blur-2xl shadow-xl text-center w-full">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto">
-          <div className="flex items-center justify-center gap-2">
-            <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg sm:rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
-              <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-400" />
-            </div>
-            <label className="text-[0.7rem] sm:text-xs font-bold uppercase tracking-wider text-slate-200">თარიღი:</label>
-          </div>
-
-          <input
-            type="date"
-            value={transitDate}
-            onChange={(e) => setTransitDate(e.target.value)}
-            className="w-full sm:w-auto rounded-xl sm:rounded-2xl border border-amber-500/25 bg-[#080418] px-3 py-2 text-xs font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:border-amber-500/40 text-center"
-          />
-
-          <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold w-full sm:w-auto">
-            <button
-              type="button"
-              onClick={() => setTransitDate(today())}
-              className={`rounded-full px-2.5 py-1 text-[0.7rem] sm:text-xs transition-all ${
-                transitDate === today()
-                  ? "bg-amber-500/30 text-amber-300 border border-amber-400/40"
-                  : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
-              }`}
-            >
-              დღეს
-            </button>
-            <button
-              type="button"
-              onClick={() => setTransitDate(offsetDays(1))}
-              className={`rounded-full px-2.5 py-1 text-[0.7rem] sm:text-xs transition-all ${
-                transitDate === offsetDays(1)
-                  ? "bg-amber-500/30 text-amber-300 border border-amber-400/40"
-                  : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
-              }`}
-            >
-              ხვალ
-            </button>
-            <button
-              type="button"
-              onClick={() => setTransitDate(offsetDays(7))}
-              className={`rounded-full px-2.5 py-1 text-[0.7rem] sm:text-xs transition-all ${
-                transitDate === offsetDays(7)
-                  ? "bg-amber-500/30 text-amber-300 border border-amber-400/40"
-                  : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
-              }`}
-            >
-              +1 კვირა
-            </button>
-          </div>
+    <div className="mx-auto w-full max-w-full space-y-4 sm:space-y-6 text-center overflow-x-hidden">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-12 lg:items-start text-center w-full">
+        <div className="relative z-30 text-center w-full lg:col-span-7">
+          <BirthFields value={birth} onChange={setBirth} legend="01. ნატალური მონაცემები" />
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full sm:w-auto pt-1 sm:pt-0">
-          <button
-            onClick={() => calculate(false)}
-            disabled={loading}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-6 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm font-extrabold text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.45)] transition-all hover:scale-105 hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin text-slate-950" />
-                <span>ითვლის…</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4 text-slate-950" />
-                <span>✦ ტრანზიტების გამოთვლა</span>
-              </>
-            )}
-          </button>
+        <div className="glass-panel relative z-10 space-y-5 rounded-2xl sm:rounded-[28px] p-4 sm:p-7 border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 backdrop-blur-2xl shadow-xl text-center w-full lg:col-span-5 lg:h-full flex flex-col justify-center">
+          <div className="flex flex-col items-center justify-center gap-2.5 w-full">
+            <div className="flex items-center justify-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
+                <Calendar className="h-4 w-4 text-amber-400" />
+              </div>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის თარიღი:</label>
+            </div>
 
-          {me && (
+            <input
+              type="date"
+              value={transitDate}
+              onChange={(e) => setTransitDate(e.target.value)}
+              className="w-full rounded-xl sm:rounded-2xl border border-amber-500/25 bg-[#080418] px-3 py-2.5 text-xs font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:border-amber-500/40 text-center cursor-pointer"
+            />
+
+            <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold w-full pt-1">
+              <button
+                type="button"
+                onClick={() => setTransitDate(today())}
+                className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
+                  transitDate === today()
+                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
+                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
+                }`}
+              >
+                დღეს
+              </button>
+              <button
+                type="button"
+                onClick={() => setTransitDate(offsetDays(1))}
+                className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
+                  transitDate === offsetDays(1)
+                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
+                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
+                }`}
+              >
+                ხვალ
+              </button>
+              <button
+                type="button"
+                onClick={() => setTransitDate(offsetDays(7))}
+                className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
+                  transitDate === offsetDays(7)
+                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
+                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
+                }`}
+              >
+                +1 კვირა
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 pt-2">
             <button
-              onClick={() => calculate(true)}
+              onClick={() => calculate(false)}
               disabled={loading}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-amber-300 shadow-[0_0_18px_rgba(245,158,11,0.2)] transition-all hover:scale-105 hover:border-amber-400"
+              className="w-full flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 py-3.5 px-6 text-xs sm:text-sm font-extrabold text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03] hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] disabled:opacity-50 cursor-pointer"
             >
-              <Bookmark className="h-4 w-4 text-amber-400" />
-              <span>შენახვა</span>
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin text-slate-950" />
+                  <span>ითვლის…</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 text-slate-950" />
+                  <span>✦ ტრანზიტების გამოთვლა</span>
+                </>
+              )}
             </button>
-          )}
+
+            {me && (
+              <button
+                onClick={() => calculate(true)}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 py-3 px-6 text-xs sm:text-sm font-bold text-amber-300 shadow-[0_0_18px_rgba(245,158,11,0.2)] transition-all hover:scale-[1.03] hover:border-amber-400 cursor-pointer"
+              >
+                <Bookmark className="h-4 w-4 text-amber-400" />
+                <span>შენახვა</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

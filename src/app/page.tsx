@@ -66,13 +66,78 @@ export default function HomePage() {
       {/* Main Tabbed Calculator Section */}
       <section id="calculator" className="scroll-mt-20 sm:scroll-mt-28 space-y-4">
         {/* Prominent Calculator Section Header */}
-        <div className="text-center space-y-2 px-2">
-          <div className="inline-flex items-center justify-center gap-2.5 rounded-2xl sm:rounded-3xl border-2 border-cyan-300/80 bg-gradient-to-r from-blue-700 via-cyan-600 to-teal-400 px-6 py-2.5 shadow-[0_0_35px_rgba(6,182,212,0.7)] text-center max-w-full">
-            <Compass className="h-5 w-5 text-cyan-100 shrink-0 animate-spin-slow" />
-            <span className="text-sm sm:text-base font-black uppercase tracking-wider text-white drop-shadow-[0_0_12px_rgba(6,182,212,0.9)] break-words text-center">
-              ✦ ასტროლოგიური რუკის შექმნა
-            </span>
+        {/* Impressive 12 Zodiac Wheel Hero Graphic Emblem */}
+        <div className="mx-auto flex flex-col items-center justify-center pt-2 pb-1">
+          <div className="group relative flex h-32 w-32 sm:h-44 sm:w-44 items-center justify-center rounded-full border-2 border-amber-400/50 bg-gradient-to-br from-purple-950/90 via-[#0c0524]/95 to-amber-950/80 shadow-[0_0_50px_rgba(245,158,11,0.4)] backdrop-blur-2xl transition-all hover:scale-105 hover:shadow-[0_0_65px_rgba(245,158,11,0.6)] duration-500">
+            <svg viewBox="0 0 200 200" className="h-28 w-28 sm:h-38 sm:w-38 text-amber-300">
+              {/* Outer Ecliptic Ring */}
+              <circle cx="100" cy="100" r="92" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.6" />
+              <circle cx="100" cy="100" r="76" fill="none" stroke="#A855F7" strokeWidth="1.2" opacity="0.8" />
+              <circle cx="100" cy="100" r="52" fill="none" stroke="#38BDF8" strokeWidth="1" opacity="0.5" />
+              
+              {/* 12 House Divider Lines */}
+              {Array.from({ length: 12 }).map((_, i) => {
+                const rad = (i * 30 * Math.PI) / 180;
+                return (
+                  <line
+                    key={i}
+                    x1={100 + 52 * Math.cos(rad)}
+                    y1={100 + 52 * Math.sin(rad)}
+                    x2={100 + 92 * Math.cos(rad)}
+                    y2={100 + 92 * Math.sin(rad)}
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    opacity="0.4"
+                  />
+                );
+              })}
+
+              {/* 12 Zodiac Glyphs */}
+              {[
+                { glyph: "♈", deg: 15 },
+                { glyph: "♉", deg: 45 },
+                { glyph: "♊", deg: 75 },
+                { glyph: "♋", deg: 105 },
+                { glyph: "♌", deg: 135 },
+                { glyph: "♍", deg: 165 },
+                { glyph: "♎", deg: 195 },
+                { glyph: "♏", deg: 225 },
+                { glyph: "♐", deg: 255 },
+                { glyph: "♑", deg: 285 },
+                { glyph: "♒", deg: 315 },
+                { glyph: "♓", deg: 345 },
+              ].map((z, idx) => {
+                const rad = (z.deg * Math.PI) / 180;
+                const x = 100 + 66 * Math.cos(rad);
+                const y = 100 + 66 * Math.sin(rad);
+                return (
+                  <text
+                    key={idx}
+                    x={x}
+                    y={y + 3.5}
+                    textAnchor="middle"
+                    fill="#FDE68A"
+                    fontSize="11"
+                    fontWeight="bold"
+                    opacity="0.9"
+                  >
+                    {z.glyph}
+                  </text>
+                );
+              })}
+
+              {/* Central Cosmic Sun Star */}
+              <circle cx="100" cy="100" r="16" fill="#F59E0B" opacity="0.95" />
+              <polygon points="100,74 106,94 126,100 106,106 100,126 94,106 74,100 94,94" fill="#FDE68A" />
+              <circle cx="100" cy="100" r="5" fill="#FFF" />
+            </svg>
+
+            {/* Glowing Aqua Cyan Accent Ring */}
+            <div className="absolute inset-0 rounded-full border-2 border-cyan-400/40 shadow-[0_0_30px_rgba(6,182,212,0.35)] pointer-events-none" />
           </div>
+        </div>
+
+        <div className="text-center space-y-2 px-2">
           <h2 className="font-display text-2xl sm:text-4xl font-black text-white drop-shadow-[0_0_25px_rgba(245,158,11,0.35)]">
             აირჩიეთ გამოთვლის ტიპი
           </h2>

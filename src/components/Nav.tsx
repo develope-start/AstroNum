@@ -22,8 +22,8 @@ export default function Nav() {
   }, []);
 
   return (
-    <header className="w-full px-2 py-2 sm:px-6 sm:py-3.5">
-      <div className="mx-auto max-w-6xl xl:max-w-7xl rounded-2xl sm:rounded-full border border-amber-400/40 bg-[#08041a]/95 p-2.5 sm:px-6 sm:py-2.5 backdrop-blur-3xl shadow-[0_16px_50px_rgba(0,0,0,0.85)] ring-1 ring-amber-500/20">
+    <header className="w-full px-2 py-2 sm:px-6 lg:px-12 xl:px-16 sm:py-3.5">
+      <div className="mx-auto w-full max-w-full rounded-2xl sm:rounded-full border border-amber-400/40 bg-[#08041a]/95 p-2.5 sm:px-8 sm:py-2.5 backdrop-blur-3xl shadow-[0_16px_50px_rgba(0,0,0,0.85)] ring-1 ring-amber-500/20">
         
         {/* Main Header Row */}
         <div className="flex items-center justify-between gap-2 sm:gap-4 w-full">
@@ -54,20 +54,20 @@ export default function Nav() {
             </div>
           </Link>
 
-          {/* 2. Center Focus: Prominent Central Calculator Button (Desktop & Tablet) */}
+          {/* 2. Center Focus: Astrological Chart Creation CTA (Dominant Warm Amber fill + Aqua cyan stroke) */}
           <div className="hidden md:flex items-center justify-center flex-1 max-w-md px-2">
             <Link
               href="/#calculator"
-              className="group flex w-full items-center justify-center gap-2.5 rounded-2xl sm:rounded-3xl border-2 border-cyan-300/80 bg-gradient-to-r from-blue-700 via-cyan-600 to-teal-400 px-5 py-2.5 text-xs sm:text-sm font-black text-white shadow-[0_0_35px_rgba(6,182,212,0.7)] transition-all hover:scale-105 hover:shadow-[0_0_50px_rgba(6,182,212,0.95)] hover:border-white active:scale-95"
+              className="group flex w-full items-center justify-center gap-2.5 rounded-2xl sm:rounded-3xl border-2 border-cyan-300 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 px-5 py-2.5 text-xs sm:text-sm font-black text-slate-950 shadow-[0_0_35px_rgba(245,158,11,0.7)] ring-2 ring-cyan-400/50 transition-all hover:scale-105 hover:shadow-[0_0_50px_rgba(245,158,11,0.9)] hover:border-white active:scale-95"
             >
-              <Compass className="h-4.5 w-4.5 text-cyan-100 shrink-0 group-hover:rotate-180 transition-transform duration-700" />
-              <span className="tracking-wide whitespace-nowrap text-white font-black text-xs sm:text-sm drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]">
+              <Compass className="h-4.5 w-4.5 text-slate-950 shrink-0 stroke-[2.5] group-hover:rotate-180 transition-transform duration-700" />
+              <span className="tracking-wide whitespace-nowrap text-slate-950 font-black text-xs sm:text-sm">
                 ✦ ასტროლოგიური რუკის შექმნა
               </span>
             </Link>
           </div>
 
-          {/* 3. Right: Cabinet Button with VIBRANT STRIKING COLOR (მკვეთრი ფერი!) */}
+          {/* 3. Right: Cabinet Button with VIBRANT STRIKING COLOR */}
           <nav className="flex items-center gap-2 sm:gap-3 text-xs font-bold shrink-0">
             {me === null && (
               <Link
@@ -123,10 +123,10 @@ export default function Nav() {
         <div className="mt-2.5 pt-2 border-t border-cyan-500/20 md:hidden flex items-center justify-center w-full">
           <Link
             href="/#calculator"
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-cyan-300/80 bg-gradient-to-r from-blue-700 via-cyan-600 to-teal-400 px-4 py-2.5 text-xs sm:text-sm font-black text-white shadow-[0_0_30px_rgba(6,182,212,0.65)] transition-all hover:scale-[1.02] active:scale-98"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-cyan-300 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 px-4 py-2.5 text-xs sm:text-sm font-black text-slate-950 shadow-[0_0_30px_rgba(245,158,11,0.7)] ring-2 ring-cyan-400/50 transition-all hover:scale-[1.02] active:scale-98"
           >
-            <Compass className="h-4 w-4 text-cyan-100 shrink-0" />
-            <span className="tracking-wide text-white font-black">✦ ასტროლოგიური რუკის შექმნა</span>
+            <Compass className="h-4 w-4 text-slate-950 shrink-0 stroke-[2.5]" />
+            <span className="tracking-wide text-slate-950 font-black">✦ ასტროლოგიური რუკის შექმნა</span>
           </Link>
         </div>
 
