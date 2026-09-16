@@ -127,27 +127,33 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     : null;
 
   try {
-    await prisma.$transaction([
-      prisma.deletedCalculation.create({
-        data: {
-          originalId: calculation.id,
-          type: calculation.type,
-          summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
-          dataJson: JSON.stringify(calculation),
-        },
-      }),
-      prisma.calculation.delete({ where: { id: calculation.id } }),
-    ]);
+    await prisma.deletedCalculation.upsert({
+      where: { originalId: calculation.id },
+      create: {
+        originalId: calculation.id,
+        type: calculation.type,
+        summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
+        dataJson: JSON.stringify(calculation),
+      },
+      update: {
+        type: calculation.type,
+        summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
+        dataJson: JSON.stringify(calculation),
+      },
+    });
+  } catch (err) {
+    console.error("Could not write to deletedCalculation table", err);
+  }
+
+  try {
+    await prisma.calculation.delete({ where: { id: calculation.id } });
   } catch (error) {
-    const code = error && typeof error === "object" && "code" in error ? error.code : null;
-    if (code === "P2002") {
-      return NextResponse.json({ message: "Calculation is already in trash" });
-    }
+    const code = error && typeof error === "object" && "code" in error ? (error as any).code : null;
     if (code === "P2025") {
-      return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
+      return NextResponse.json({ message: "Calculation is already deleted" });
     }
-    console.error("Calculation could not be moved to trash", error);
-    return NextResponse.json({ error: "Calculation could not be moved to trash" }, { status: 500 });
+    console.error("Calculation deletion failed", error);
+    return NextResponse.json({ error: "Calculation deletion failed" }, { status: 500 });
   }
   if (owner) {
     try {

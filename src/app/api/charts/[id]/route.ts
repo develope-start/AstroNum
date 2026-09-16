@@ -36,7 +36,15 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   }
 
   const owner = await prisma.user.findUnique({ where: { id: chart.userId }, select: { email: true } });
-  await prisma.chart.delete({ where: { id: params.id } });
+  try {
+    await prisma.chart.delete({ where: { id: params.id } });
+  } catch (err) {
+    const code = err && typeof err === "object" && "code" in err ? (err as any).code : null;
+    if (code === "P2025") {
+      return NextResponse.json({ ok: true, message: "რუკა უკვე წაშლილია" });
+    }
+    return NextResponse.json({ error: "რუკის წაშლა ვერ მოხერხდა" }, { status: 500 });
+  }
   try {
     await prisma.accountEvent.create({
       data: {
