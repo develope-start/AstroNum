@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
 import { allocateAdminId, ensureAdminIds } from "@/lib/publicIds";
+import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect";
 
 const emailSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -51,7 +52,20 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
   const user = await prisma.user.findUnique({
     where: { id: params.id },
-    include: { charts: true, calculations: true, accountEvents: true },
+    select: {
+      id: true,
+      publicId: true,
+      adminId: true,
+      name: true,
+      username: true,
+      email: true,
+      passwordHash: true,
+      role: true,
+      createdAt: true,
+      charts: true,
+      calculations: { select: calculationWithoutInterpretationSelect },
+      accountEvents: true,
+    },
   });
   if (user?.role === "ADMIN" && actor?.adminId !== "ADMIN") return NextResponse.json({ error: "Only the primary administrator can delete an administrator" }, { status: 403 });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });

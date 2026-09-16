@@ -319,7 +319,7 @@ export default function AdminUsersPage() {
     setLoading(true);
     try {
       const res = await fetch("/api/admin/management", { cache: "no-store" });
-      const body = await res.json();
+      const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error || `სერვერის შეცდომა (${res.status})`);
       setData(body);
     } catch (requestError) {

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
 import { generateNatalInterpretation, generateSynastryInterpretation, generateTransitInterpretation } from "@/lib/interpretations/natal";
 import { houseOfLongitude } from "@/lib/astro/positions";
+import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect";
 
 const nullableString = z.string().nullable().optional();
 const schema = z.object({
@@ -111,7 +112,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   if (!(await authorized(req))) return NextResponse.json({ error: "Access denied" }, { status: 403 });
-  const calculation = await prisma.calculation.findUnique({ where: { id: params.id } });
+  const calculation = await prisma.calculation.findUnique({
+    where: { id: params.id },
+    select: calculationWithoutInterpretationSelect,
+  });
   if (!calculation) return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
 
   await prisma.$transaction([

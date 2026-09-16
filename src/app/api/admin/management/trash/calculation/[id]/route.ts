@@ -15,6 +15,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
 
   const calculation = JSON.parse(deleted.dataJson) as Record<string, unknown>;
+  const { interpretation: _interpretation, ...calculationData } = calculation;
   const userId = typeof calculation.userId === "string" ? calculation.userId : null;
   const user = userId
     ? await prisma.user.findUnique({ where: { id: userId }, select: { id: true, publicId: true } })
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   await prisma.$transaction(async (tx) => {
     await tx.calculation.create({
       data: {
-        ...(calculation as any),
+        ...(calculationData as any),
         id: deleted.originalId,
         userId: calculation.userId as string | null,
         createdAt: new Date(calculation.createdAt as string),

@@ -24,7 +24,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       await tx.chart.create({ data: { ...chart, userId: deleted.id, createdAt: new Date(chart.createdAt as string) } as any });
     }
     for (const calculation of calculations) {
-      await tx.calculation.create({ data: { ...calculation, userId: deleted.id, publicId: restoredPublicId, createdAt: new Date(calculation.createdAt as string) } as any });
+      const { interpretation: _interpretation, ...calculationData } = calculation;
+      await tx.calculation.create({ data: { ...calculationData, userId: deleted.id, publicId: restoredPublicId, createdAt: new Date(calculation.createdAt as string) } as any });
     }
     for (const event of events) {
       await tx.accountEvent.create({ data: { ...event, userId: deleted.id, createdAt: new Date(event.createdAt as string) } as any });

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest, hashPassword } from "@/lib/auth";
 import { ensureAdminIds } from "@/lib/publicIds";
+import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect";
 
 const updateSchema = z.object({
   name: z.string().trim().min(1).max(120).optional(),
@@ -55,7 +56,23 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   if (!session) return NextResponse.json({ error: "Only the primary administrator can manage administrators" }, { status: 403 });
   if (session.userId === params.id) return NextResponse.json({ error: "The primary administrator cannot be deleted here" }, { status: 400 });
 
-  const admin = await prisma.user.findUnique({ where: { id: params.id }, include: { charts: true, calculations: true, accountEvents: true } });
+  const admin = await prisma.user.findUnique({
+    where: { id: params.id },
+    select: {
+      id: true,
+      publicId: true,
+      adminId: true,
+      name: true,
+      username: true,
+      email: true,
+      passwordHash: true,
+      role: true,
+      createdAt: true,
+      charts: true,
+      calculations: { select: calculationWithoutInterpretationSelect },
+      accountEvents: true,
+    },
+  });
   if (!admin || admin.role !== "ADMIN") return NextResponse.json({ error: "Administrator not found" }, { status: 404 });
   await prisma.$transaction([
     prisma.deletedUser.create({
