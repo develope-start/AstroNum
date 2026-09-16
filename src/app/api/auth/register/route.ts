@@ -30,18 +30,18 @@ export async function POST(req: NextRequest) {
   if (await prisma.user.findUnique({ where: { username }, select: { id: true } })) {
     return NextResponse.json({ error: "ეს username უკვე დაკავებულია" }, { status: 409 });
   }
+  const isPrimaryAdminEmail = isConfiguredPrimaryAdminEmail(email);
+  const isPrimaryAdmin = isConfiguredPrimaryAdminCredentials(email, password);
+  if (isPrimaryAdminEmail && !isPrimaryAdmin) {
+    return NextResponse.json({ error: "მთავარმა ადმინისტრატორმა უნდა გამოიყენოს .env-ში მითითებული ADMIN_EMAIL და ADMIN_PASSWORD" }, { status: 403 });
+  }
   const deleted = await prisma.deletedUser.findUnique({ where: { email } });
-  if (deleted) {
+  if (deleted && !isPrimaryAdmin) {
     return NextResponse.json({ error: "ეს ანგარიში წაშლილია და აღდგენამდე იგივე ელფოსტით რეგისტრაცია შეუძლებელია" }, { status: 409 });
   }
   const deletedUsername = await prisma.deletedUser.findFirst({ where: { username }, select: { id: true } });
-  if (deletedUsername) {
+  if (deletedUsername && !isPrimaryAdmin) {
     return NextResponse.json({ error: "ეს username წაშლილ ანგარიშს ეკუთვნის და აღდგენამდე ვერ გამოიყენება" }, { status: 409 });
-  }
-
-  const isPrimaryAdminEmail = isConfiguredPrimaryAdminEmail(email);
-  if (isPrimaryAdminEmail && !isConfiguredPrimaryAdminCredentials(email, password)) {
-    return NextResponse.json({ error: "The primary administrator must use the configured ADMIN_EMAIL and ADMIN_PASSWORD" }, { status: 403 });
   }
 
   const requestInfo = getRequestInfo(req);
@@ -55,7 +55,6 @@ export async function POST(req: NextRequest) {
   const publicId = await allocatePublicId("REGISTERED", numberFromPublicId(recentGuestCalculation?.publicId));
   const passwordHash = await hashPassword(password);
 
-  const isPrimaryAdmin = isConfiguredPrimaryAdminCredentials(email, password);
   const role = isPrimaryAdmin ? "ADMIN" : "USER";
   const adminId = isPrimaryAdmin ? "ADMIN" : null;
 

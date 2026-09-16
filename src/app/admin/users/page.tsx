@@ -739,7 +739,11 @@ export default function AdminUsersPage() {
                 <p>წაშლილია: {formatDate(user.deletedAt)} · რუკები: {user.calculationCount}</p>
                 </div>
               </div>
-              <button className={button} onClick={() => action(`/api/admin/management/trash/user/${user.id}`, { method: "POST" })}>აღდგენა</button>
+              {user.role === "ADMIN" && user.adminId === "ADMIN" ? (
+                <span className="rounded-full border border-amber-400/40 px-4 py-2 text-xs font-semibold text-amber-300">მთავარი კაბინეტი ვერ აღდგება</span>
+              ) : (
+                <button className={button} onClick={() => action(`/api/admin/management/trash/user/${user.id}`, { method: "POST" })}>აღდგენა</button>
+              )}
             </div>
           ))}
         </div>

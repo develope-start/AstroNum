@@ -29,11 +29,20 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   if (!calculation) {
     return NextResponse.json({ error: "This deleted calculation contains invalid archive data and cannot be restored automatically" }, { status: 422 });
   }
-  const { interpretation: _interpretation, ...calculationData } = calculation;
+  const { interpretation: _interpretation, ownerEmail: _ownerEmail, ...calculationData } = calculation;
   const userId = typeof calculation.userId === "string" ? calculation.userId : null;
-  const user = userId
+  let user = userId
     ? await prisma.user.findUnique({ where: { id: userId }, select: { id: true, publicId: true, email: true } })
     : null;
+  if (!user && userId) {
+    const deletedOwner = await prisma.deletedUser.findUnique({ where: { id: userId }, select: { email: true } });
+    user = deletedOwner
+      ? await prisma.user.findUnique({ where: { email: deletedOwner.email }, select: { id: true, publicId: true, email: true } })
+      : null;
+  }
+  if (!user && typeof calculation.ownerEmail === "string") {
+    user = await prisma.user.findUnique({ where: { email: calculation.ownerEmail }, select: { id: true, publicId: true, email: true } });
+  }
   if (userId && !user) {
     calculation.userId = null;
   }
@@ -41,6 +50,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     ? user.publicId || await ensureUserPublicId(user.id)
     : await allocatePublicId("GUEST", numberFromPublicId(typeof calculation.publicId === "string" ? calculation.publicId : null));
   calculation.publicId = publicId;
+  calculationData.userId = calculation.userId;
+  calculationData.publicId = publicId;
 
   await prisma.$transaction(async (tx) => {
     await tx.calculation.create({

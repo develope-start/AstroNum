@@ -20,6 +20,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   if (!(await allowed(req))) return NextResponse.json({ error: "წვდომა აკრძალულია" }, { status: 403 });
   const deleted = await prisma.deletedUser.findUnique({ where: { id: params.id } });
   if (!deleted) return NextResponse.json({ error: "ურნაში ჩანაწერი ვერ მოიძებნა" }, { status: 404 });
+  if (deleted.role === "ADMIN" && deleted.adminId === "ADMIN") {
+    return NextResponse.json({ error: "მთავარი ადმინისტრატორის წაშლილი კაბინეტის აღდგენა შეუძლებელია; რუკები ცალკე აღადგინეთ." }, { status: 409 });
+  }
   if (await prisma.user.findUnique({ where: { email: deleted.email } })) return NextResponse.json({ error: "ამ ელფოსტით მოქმედი ანგარიში უკვე არსებობს" }, { status: 409 });
 
   const charts = parseJsonArray(deleted.chartsJson);

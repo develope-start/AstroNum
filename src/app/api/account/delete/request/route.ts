@@ -6,6 +6,15 @@ import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect"
 
 const schema = z.object({ currentPassword: z.string().min(1) });
 
+function archiveArray(value: string | null | undefined) {
+  try {
+    const parsed: unknown = value ? JSON.parse(value) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 export async function POST(req: NextRequest) {
   const session = await getActiveSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: "საჭიროა შესვლა" }, { status: 401 });
@@ -38,14 +47,79 @@ export async function POST(req: NextRequest) {
   const isPrimaryAdmin = user.role === "ADMIN" && user.adminId === "ADMIN";
 
   if (isPrimaryAdmin) {
-    // მთავარი ადმინის შემთხვევაში არსად არ გადადის (ურნაში არ გადადის), იშლება მთლიანად
-    await prisma.$transaction([
-      prisma.chart.deleteMany({ where: { userId: user.id } }),
-      prisma.calculation.deleteMany({ where: { userId: user.id } }),
-      prisma.actionToken.deleteMany({ where: { userId: user.id } }),
-      prisma.accountEvent.deleteMany({ where: { userId: user.id } }),
-      prisma.user.delete({ where: { id: user.id } }),
-    ]);
+    const deletionType = user.charts.length > 0 || user.accountEvents.some((event) => event.type.startsWith("CHART_DELETED"))
+      ? "ACCOUNT_AND_CHARTS_DELETED"
+      : "ACCOUNT_DELETED";
+
+    await prisma.$transaction(async (tx) => {
+      await tx.accountEvent.create({ data: { userId: user.id, type: deletionType, emailSnapshot: user.email } });
+      const accountEvents = await tx.accountEvent.findMany({ where: { userId: user.id } });
+      const previous = await tx.deletedUser.findUnique({ where: { email: user.email } });
+      const charts = [...archiveArray(previous?.chartsJson), ...user.charts];
+      const calculations = [...archiveArray(previous?.calculationsJson), ...user.calculations];
+      const previousEvents = archiveArray(previous?.accountEventsJson);
+      const mergedEvents = [...previousEvents, ...accountEvents];
+
+      for (const calculation of user.calculations) {
+        await tx.deletedCalculation.upsert({
+          where: { originalId: calculation.id },
+          create: {
+            originalId: calculation.id,
+            type: calculation.type,
+            summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
+            dataJson: JSON.stringify({ ...calculation, ownerEmail: user.email }),
+          },
+          update: {
+            type: calculation.type,
+            summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
+            dataJson: JSON.stringify({ ...calculation, ownerEmail: user.email }),
+            deletedAt: new Date(),
+          },
+        });
+      }
+
+      if (previous) {
+        await tx.deletedUser.update({
+          where: { id: previous.id },
+          data: {
+            publicId: user.publicId,
+            adminId: user.adminId,
+            name: user.name,
+            username: user.username,
+            passwordHash: user.passwordHash,
+            role: user.role,
+            originalCreatedAt: previous.originalCreatedAt < user.createdAt ? previous.originalCreatedAt : user.createdAt,
+            deletedAt: new Date(),
+            chartsJson: JSON.stringify(charts),
+            calculationsJson: JSON.stringify(calculations),
+            accountEventsJson: JSON.stringify(mergedEvents),
+          },
+        });
+      } else {
+        await tx.deletedUser.create({
+          data: {
+            id: user.id,
+            publicId: user.publicId,
+            adminId: user.adminId,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+            passwordHash: user.passwordHash,
+            role: user.role,
+            originalCreatedAt: user.createdAt,
+            chartsJson: JSON.stringify(charts),
+            calculationsJson: JSON.stringify(calculations),
+            accountEventsJson: JSON.stringify(mergedEvents),
+          },
+        });
+      }
+
+      await tx.chart.deleteMany({ where: { userId: user.id } });
+      await tx.calculation.deleteMany({ where: { userId: user.id } });
+      await tx.actionToken.deleteMany({ where: { userId: user.id } });
+      await tx.accountEvent.deleteMany({ where: { userId: user.id } });
+      await tx.user.delete({ where: { id: user.id } });
+    });
   } else {
     // ჩვეულებრივი იუზერის შემთხვევაში გადადის წაშლილი ანგარიშების ურნაში (DeletedUser)
     const chartCount = await prisma.chart.count({ where: { userId: user.id } });

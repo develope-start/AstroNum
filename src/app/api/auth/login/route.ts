@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { verifyPassword, signSession, SESSION_COOKIE, asRole, isConfiguredPrimaryAdminCredentials, syncConfiguredPrimaryAdmin } from "@/lib/auth";
+import { hashPassword, verifyPassword, signSession, SESSION_COOKIE, asRole, isConfiguredPrimaryAdminCredentials, syncConfiguredPrimaryAdmin } from "@/lib/auth";
 import { getRequestInfo } from "@/lib/requestInfo";
 import { twelveHoursAgo } from "@/lib/calculationHistory";
-import { ensureAdminIds, ensureUserPublicId } from "@/lib/publicIds";
+import { allocatePublicId, ensureAdminIds, ensureUserPublicId } from "@/lib/publicIds";
 
 const schema = z.object({
   identifier: z.string().min(1).optional(),
@@ -22,14 +22,42 @@ export async function POST(req: NextRequest) {
   const identifier = (parsed.data.identifier ?? parsed.data.email ?? "").trim();
   const normalizedIdentifier = identifier.toLowerCase();
 
-  const user = identifier.includes("@")
+  const isPrimaryRecovery = identifier.includes("@") && isConfiguredPrimaryAdminCredentials(normalizedIdentifier, password);
+  let user = identifier.includes("@")
     ? await prisma.user.findUnique({ where: { email: normalizedIdentifier } })
     : await prisma.user.findUnique({ where: { username: normalizedIdentifier } });
-  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+
+  if (!user && isPrimaryRecovery) {
+    const deleted = await prisma.deletedUser.findUnique({ where: { email: normalizedIdentifier } });
+    const deletedUsername = deleted?.username
+      ? await prisma.user.findUnique({ where: { username: deleted.username }, select: { id: true } })
+      : null;
+    const publicId = await allocatePublicId("REGISTERED");
+    user = await prisma.user.create({
+      data: {
+        name: deleted?.name ?? "მთავარი ადმინისტრატორი",
+        username: deletedUsername ? null : deleted?.username ?? null,
+        email: normalizedIdentifier,
+        passwordHash: await hashPassword(password),
+        role: "ADMIN",
+        adminId: "ADMIN",
+        publicId,
+      },
+    });
+    await prisma.accountEvent.create({ data: { userId: user.id, type: "PRIMARY_ADMIN_RECOVERED", emailSnapshot: user.email } });
+  }
+
+  if (!user || (!isPrimaryRecovery && !(await verifyPassword(password, user.passwordHash)))) {
     return NextResponse.json({ error: "ელფოსტა ან პაროლი არასწორია" }, { status: 401 });
   }
 
-  if (isConfiguredPrimaryAdminCredentials(user.email, password)) {
+  if (isPrimaryRecovery) {
+    const recoveredPasswordHash = await hashPassword(password);
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash: recoveredPasswordHash, role: "ADMIN", adminId: "ADMIN" },
+    });
+  } else if (isConfiguredPrimaryAdminCredentials(user.email, password)) {
     const syncedUser = await syncConfiguredPrimaryAdmin(user);
     user.role = syncedUser.role;
     user.adminId = syncedUser.adminId ?? null;
