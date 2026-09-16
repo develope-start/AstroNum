@@ -35,7 +35,7 @@ export default function BirthFields({
   legend: string;
 }) {
   return (
-    <fieldset className="glass-panel relative z-40 space-y-4 sm:space-y-5 rounded-2xl sm:rounded-[28px] p-4 sm:p-7 border-amber-500/25 bg-gradient-to-b from-[#130a35]/90 via-[#0e0728]/95 to-[#080417]/95 backdrop-blur-2xl shadow-[0_16px_50px_rgba(0,0,0,0.6)] w-full max-w-full overflow-hidden">
+    <fieldset className="glass-panel relative z-40 space-y-4 sm:space-y-5 rounded-2xl sm:rounded-[28px] p-4 sm:p-7 border-amber-500/25 bg-gradient-to-b from-[#130a35]/90 via-[#0e0728]/95 to-[#080417]/95 backdrop-blur-2xl shadow-[0_16px_50px_rgba(0,0,0,0.6)] w-full max-w-full">
       <legend className="mx-auto flex items-center justify-center gap-1.5 sm:gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-purple-950 via-violet-900 to-amber-950/80 px-4 py-1 sm:px-5 sm:py-1.5 font-display text-[0.7rem] sm:text-xs font-bold tracking-wide text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.3)] max-w-[90%] truncate">
         <Sparkle className="h-3.5 w-3.5 text-amber-400 animate-pulse shrink-0" />
         <span className="truncate">{legend}</span>

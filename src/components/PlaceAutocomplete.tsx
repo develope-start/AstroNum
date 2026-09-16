@@ -188,10 +188,10 @@ export default function PlaceAutocomplete({
       )}
 
       {open && dropdownHits.length > 0 && (
-        <div className="absolute left-0 right-0 z-[9999] mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border-2 border-amber-400/60 bg-[#0A041E] p-2 shadow-[0_25px_80px_rgba(0,0,0,0.98)] backdrop-blur-3xl">
+        <div className="absolute left-0 right-0 z-[99999] mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border-2 border-amber-400/80 bg-[#0c0626] p-2 shadow-[0_25px_80px_rgba(0,0,0,0.99)] backdrop-blur-3xl ring-2 ring-purple-500/30">
           {localHits.length > 0 && (
-            <div className="flex items-center justify-center gap-1.5 px-3 py-2 text-[0.65rem] font-bold uppercase tracking-wider text-amber-400 border-b border-amber-500/20">
-              <MapPin className="h-3.5 w-3.5 shrink-0" />
+            <div className="flex items-center justify-center gap-1.5 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 border-b border-amber-500/30 bg-purple-950/40 rounded-xl mb-1">
+              <MapPin className="h-3.5 w-3.5 text-amber-400 shrink-0" />
               <span>საქართველოს ქალაქები</span>
             </div>
           )}
@@ -200,15 +200,15 @@ export default function PlaceAutocomplete({
               key={`ge-${i}`}
               type="button"
               onClick={() => selectHit(h)}
-              className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs sm:text-sm font-medium text-slate-100 transition-colors hover:bg-amber-500/20 hover:text-amber-300 gap-2"
+              className="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/25 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
             >
               <span className="truncate max-w-[170px] sm:max-w-[260px]">{h.label}</span>
-              <span className="text-[0.62rem] sm:text-[0.65rem] font-semibold text-violet-300/80 shrink-0">Asia/Tbilisi</span>
+              <span className="text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/50 px-2 py-0.5 rounded-md shrink-0">Asia/Tbilisi</span>
             </button>
           ))}
           {remoteHits.length > 0 && (
-            <div className="mt-1 border-t border-purple-900/50 px-3 py-2 text-[0.65rem] font-bold uppercase tracking-wider text-amber-400">
-              <Globe className="h-3.5 w-3.5 inline mr-1 shrink-0" />
+            <div className="mt-2 border-t border-amber-500/30 pt-2 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 flex items-center justify-center gap-1.5 bg-purple-950/40 rounded-xl mb-1">
+              <Globe className="h-3.5 w-3.5 text-amber-400 shrink-0" />
               <span>სხვა შედეგები</span>
             </div>
           )}
@@ -217,10 +217,10 @@ export default function PlaceAutocomplete({
               key={`r-${i}`}
               type="button"
               onClick={() => selectHit(h)}
-              className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs sm:text-sm font-medium text-slate-100 transition-colors hover:bg-amber-500/20 hover:text-amber-300 gap-2"
+              className="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/25 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
             >
               <span className="truncate max-w-[160px] sm:max-w-[240px]">{h.label}</span>
-              <span className="text-[0.62rem] sm:text-[0.65rem] font-semibold text-violet-300/80 shrink-0">{h.timezone || "მსოფლიო"}</span>
+              <span className="text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/50 px-2 py-0.5 rounded-md shrink-0">{h.timezone || "მსოფლიო"}</span>
             </button>
           ))}
         </div>

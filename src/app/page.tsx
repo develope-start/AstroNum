@@ -64,8 +64,21 @@ export default function HomePage() {
       </section>
 
       {/* Main Tabbed Calculator Section */}
-      <section id="calculator" className="scroll-mt-20 sm:scroll-mt-24">
-        <div className="glass-panel mx-auto mb-4 sm:mb-6 grid grid-cols-3 max-w-xl gap-1 sm:gap-2 rounded-2xl sm:rounded-full p-1.5 sm:p-2 shadow-2xl border-amber-500/30 bg-[#120833]/90">
+      <section id="calculator" className="scroll-mt-20 sm:scroll-mt-28 space-y-4">
+        {/* Prominent Calculator Section Header */}
+        <div className="text-center space-y-2">
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-purple-600/30 to-amber-500/20 px-4 py-1.5 shadow-[0_0_20px_rgba(245,158,11,0.25)]">
+            <Compass className="h-4 w-4 text-amber-300 animate-spin-slow shrink-0" />
+            <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-amber-300">
+              ასტროლოგიური გამოთვლელი
+            </span>
+          </div>
+          <h2 className="font-display text-2xl sm:text-4xl font-black text-white drop-shadow-[0_0_25px_rgba(245,158,11,0.35)]">
+            აირჩიეთ გამოთვლის ტიპი
+          </h2>
+        </div>
+
+        <div className="glass-panel mx-auto mb-4 sm:mb-6 grid grid-cols-3 max-w-xl gap-1.5 sm:gap-2.5 rounded-2xl sm:rounded-full p-2 sm:p-2.5 shadow-[0_20px_60px_rgba(0,0,0,0.8)] border-amber-500/40 bg-[#120833]/95 backdrop-blur-3xl ring-1 ring-amber-400/30">
           {TABS.map((t) => {
             const Icon = t.icon;
             const active = tab === t.id;
@@ -73,13 +86,13 @@ export default function HomePage() {
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
-                className={`flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-full px-2 py-2.5 sm:px-5 sm:py-3 text-[0.72rem] sm:text-sm font-bold transition-all duration-300 ${
+                className={`flex items-center justify-center gap-1.5 sm:gap-2.5 rounded-xl sm:rounded-full px-2 py-2.5 sm:px-5 sm:py-3.5 text-xs sm:text-sm font-black transition-all duration-300 cursor-pointer ${
                   active
-                    ? "bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.45)] scale-[1.02] sm:scale-105"
-                    : "text-slate-300 hover:text-amber-300 hover:bg-amber-400/10"
+                    ? "bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 shadow-[0_0_30px_rgba(245,158,11,0.6)] scale-[1.03] ring-1 ring-white/40"
+                    : "text-slate-200 hover:text-amber-300 hover:bg-amber-400/15"
                 }`}
               >
-                <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 ${active ? "text-slate-950" : "text-amber-400"}`} />
+                <Icon className={`h-4 w-4 shrink-0 ${active ? "text-slate-950 stroke-[2.5]" : "text-amber-400"}`} />
                 <span className="truncate">{t.label}</span>
               </button>
             );
@@ -87,8 +100,8 @@ export default function HomePage() {
         </div>
 
         <div className="mb-6 sm:mb-8 text-center px-2">
-          <span className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-500/10 px-3.5 py-1.5 text-[0.7rem] sm:text-xs font-semibold text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.15)] max-w-full">
-            <Compass className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+          <span className="inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-purple-950/60 px-4 py-2 text-xs font-bold text-amber-200 shadow-[0_0_20px_rgba(168,85,247,0.2)] max-w-full backdrop-blur-xl">
+            <Sparkles className="h-3.5 w-3.5 text-amber-400 shrink-0 animate-pulse" />
             <span className="truncate">{TABS.find((t) => t.id === tab)?.hint}</span>
           </span>
         </div>
