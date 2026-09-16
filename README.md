@@ -144,3 +144,10 @@ git commit -m "first commit"
 git branch -M main
 git remote add origin https://github.com/develope-start/AstroNum.git
 git push -u origin main
+
+
+git add . && git commit -m "update" && git push
+
+git add .; git commit -m "update"; git push
+
+npm run dev
