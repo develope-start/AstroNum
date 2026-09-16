@@ -9,6 +9,7 @@ import { readApiResponse } from "@/lib/apiResponse";
 
 interface AccountSummary {
   name: string | null;
+  username: string | null;
   email: string;
   createdAt: string;
   expiresAt: string | null;
@@ -226,7 +227,7 @@ export default function DashboardPage() {
       </div>
 
       {account && (
-        <div className="glass-panel grid gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-950/20 p-4 text-xs sm:grid-cols-2 lg:grid-cols-4">
+        <div className="glass-panel grid gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-950/20 p-4 text-xs sm:grid-cols-2 lg:grid-cols-5">
           <div>
             <p className="text-slate-400">სახელი</p>
             <p className="mt-1 font-bold text-emerald-200">{account.name || "—"}</p>
@@ -234,6 +235,10 @@ export default function DashboardPage() {
           <div>
             <p className="text-slate-400">მეილი</p>
             <p className="mt-1 break-all font-bold text-emerald-200">{account.email}</p>
+          </div>
+          <div>
+            <p className="text-slate-400">Username</p>
+            <p className="mt-1 break-all font-bold text-emerald-200">{account.username ? `@${account.username}` : "—"}</p>
           </div>
           <div>
             <p className="text-slate-400">კაბინეტის შექმნის დრო</p>

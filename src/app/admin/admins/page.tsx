@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { readApiResponse } from "@/lib/apiResponse";
+import PasswordField from "@/components/PasswordField";
 
 interface AdminRow {
   id: string;
@@ -117,7 +118,7 @@ export default function AdminsPage() {
           <input className={input} required placeholder="სახელი" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
           <input className={input} required placeholder="Username" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
           <input className={input} required type="email" placeholder="ელფოსტა" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-          <input className={input} required minLength={8} type="password" placeholder="პაროლი (მინ. 8)" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+          <PasswordField className={input} required minLength={8} autoComplete="new-password" placeholder="პაროლი (მინ. 8)" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
           <button className={`${button} sm:col-span-3 sm:justify-self-end`} type="submit">ადმინისტრატორის დამატება</button>
         </form>
       </section>
@@ -157,7 +158,7 @@ export default function AdminsPage() {
             <input className={input} required placeholder="სახელი" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
             <input className={input} required placeholder="Username" value={editForm.username} onChange={(e) => setEditForm({ ...editForm, username: e.target.value })} />
             <input className={input} required type="email" placeholder="ელფოსტა" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} />
-            <input className={input} minLength={8} type="password" placeholder="ახალი პაროლი (არასავალდებულო)" value={editForm.password} onChange={(e) => setEditForm({ ...editForm, password: e.target.value })} />
+            <PasswordField className={input} minLength={8} autoComplete="new-password" placeholder="ახალი პაროლი (არასავალდებულო)" value={editForm.password} onChange={(e) => setEditForm({ ...editForm, password: e.target.value })} />
             <div className="flex justify-end gap-2"><button type="button" className={button} onClick={() => setEditing(null)}>გაუქმება</button><button className={button} type="submit">შენახვა</button></div>
           </form>
         </div>

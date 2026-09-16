@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { readApiResponse } from "@/lib/apiResponse";
+import PasswordField from "@/components/PasswordField";
 import { User, Mail, Lock, LogIn, UserPlus, Loader2, Sparkles, AtSign } from "lucide-react";
 
 export default function CabinetPage() {
@@ -128,12 +129,12 @@ export default function CabinetPage() {
               <Lock className="h-3.5 w-3.5 text-amber-400" />
               <span>პაროლი</span>
             </label>
-            <input
-              type="password"
+            <PasswordField
               required
               minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
               className="w-full rounded-2xl border border-amber-500/25 bg-[#080418] px-4 py-3 text-sm font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)]"
             />
           </div>

@@ -14,6 +14,7 @@ export interface SessionPayload {
 
 export interface ActiveSession extends SessionPayload {
   name: string | null;
+  username: string | null;
   createdAt: string;
   expiresAt: string | null;
 }
@@ -24,6 +25,27 @@ export async function hashPassword(password: string): Promise<string> {
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
   return bcrypt.compare(password, hash);
+}
+
+export function getConfiguredPrimaryAdminEmail() {
+  return process.env.ADMIN_EMAIL?.trim().toLowerCase() || null;
+}
+
+export function isConfiguredPrimaryAdminEmail(email: string) {
+  const configuredEmail = getConfiguredPrimaryAdminEmail();
+  return Boolean(configuredEmail && email.trim().toLowerCase() === configuredEmail);
+}
+
+export function isConfiguredPrimaryAdminCredentials(email: string, password: string) {
+  return isConfiguredPrimaryAdminEmail(email) && Boolean(process.env.ADMIN_PASSWORD) && password === process.env.ADMIN_PASSWORD;
+}
+
+export async function syncConfiguredPrimaryAdmin<T extends { id: string; email: string; role: string; adminId?: string | null }>(user: T): Promise<T> {
+  if (!isConfiguredPrimaryAdminEmail(user.email)) return user;
+  if (user.role === "ADMIN" && user.adminId === "ADMIN") return user;
+
+  await prisma.user.update({ where: { id: user.id }, data: { role: "ADMIN", adminId: "ADMIN" } });
+  return { ...user, role: "ADMIN", adminId: "ADMIN" } as T;
 }
 
 export function signSession(payload: SessionPayload): string {
@@ -57,14 +79,16 @@ export async function getActiveSessionFromRequest(req: NextRequest): Promise<Act
   const session = getSessionFromRequest(req);
   if (!session) return null;
   try {
-    const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { name: true, email: true, role: true, createdAt: true } });
+    const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { id: true, name: true, username: true, email: true, role: true, adminId: true, createdAt: true } });
     if (!user) return null;
+    const syncedUser = await syncConfiguredPrimaryAdmin(user);
     return {
       userId: session.userId,
-      email: user.email,
-      role: asRole(user.role),
-      name: user.name,
-      createdAt: user.createdAt.toISOString(),
+      email: syncedUser.email,
+      role: asRole(syncedUser.role),
+      name: syncedUser.name,
+      username: syncedUser.username,
+      createdAt: syncedUser.createdAt.toISOString(),
       expiresAt: session.exp ? new Date(session.exp * 1000).toISOString() : null,
     };
   } catch {

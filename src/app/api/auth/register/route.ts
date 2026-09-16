@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { hashPassword, signSession, SESSION_COOKIE, asRole } from "@/lib/auth";
+import { hashPassword, signSession, SESSION_COOKIE, asRole, isConfiguredPrimaryAdminCredentials, isConfiguredPrimaryAdminEmail } from "@/lib/auth";
 import { getRequestInfo } from "@/lib/requestInfo";
 import { twelveHoursAgo } from "@/lib/calculationHistory";
 import { allocatePublicId, ensureAdminIds, numberFromPublicId } from "@/lib/publicIds";
@@ -39,6 +39,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "ეს username წაშლილ ანგარიშს ეკუთვნის და აღდგენამდე ვერ გამოიყენება" }, { status: 409 });
   }
 
+  const isPrimaryAdminEmail = isConfiguredPrimaryAdminEmail(email);
+  if (isPrimaryAdminEmail && !isConfiguredPrimaryAdminCredentials(email, password)) {
+    return NextResponse.json({ error: "The primary administrator must use the configured ADMIN_EMAIL and ADMIN_PASSWORD" }, { status: 403 });
+  }
+
   const requestInfo = getRequestInfo(req);
   const recentGuestCalculation = requestInfo.ipAddress && requestInfo.userAgent
     ? await prisma.calculation.findFirst({
@@ -50,8 +55,7 @@ export async function POST(req: NextRequest) {
   const publicId = await allocatePublicId("REGISTERED", numberFromPublicId(recentGuestCalculation?.publicId));
   const passwordHash = await hashPassword(password);
 
-  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  const isPrimaryAdmin = Boolean(adminEmail && email === adminEmail);
+  const isPrimaryAdmin = isConfiguredPrimaryAdminCredentials(email, password);
   const role = isPrimaryAdmin ? "ADMIN" : "USER";
   const adminId = isPrimaryAdmin ? "ADMIN" : null;
 

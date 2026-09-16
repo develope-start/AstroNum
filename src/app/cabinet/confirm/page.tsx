@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { readApiResponse } from "@/lib/apiResponse";
+import PasswordField from "@/components/PasswordField";
 
 export default function ConfirmActionPage() {
   return (
@@ -60,8 +61,7 @@ function ConfirmActionContent() {
           <form onSubmit={submit} className="space-y-4 text-left">
             {isReset && (
               <>
-                <input
-                  type="password"
+                <PasswordField
                   required
                   minLength={8}
                   placeholder="ახალი პაროლი (მინ. 8 სიმბოლო)"
@@ -69,8 +69,7 @@ function ConfirmActionContent() {
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full rounded-2xl border border-amber-500/25 bg-[#080418] px-4 py-3 text-sm font-semibold text-slate-100 outline-none transition-all placeholder:text-slate-500 focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)]"
                 />
-                <input
-                  type="password"
+                <PasswordField
                   required
                   minLength={8}
                   placeholder="გაიმეორეთ ახალი პაროლი"

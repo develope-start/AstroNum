@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { readApiResponse } from "@/lib/apiResponse";
+import PasswordField from "@/components/PasswordField";
 
 export default function CabinetSettingsPage() {
   const router = useRouter();
@@ -143,7 +144,7 @@ export default function CabinetSettingsPage() {
         </div>
         <form onSubmit={changeEmail} className="space-y-3.5">
           <input className={inputClass} type="email" required placeholder="ახალი ელფოსტა" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <input className={inputClass} type="password" required placeholder="მიმდინარე პაროლი" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+          <PasswordField className={inputClass} required autoComplete="current-password" placeholder="მიმდინარე პაროლი" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
           <button
             disabled={loading}
             className="w-full sm:w-auto rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-6 py-3 text-xs font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all hover:scale-105 disabled:opacity-50 cursor-pointer"
@@ -159,9 +160,9 @@ export default function CabinetSettingsPage() {
           <p className="mt-0.5 text-xs text-slate-300">ცვლილება ძალაში შევა ელფოსტაზე მიღებული დადასტურების შემდეგ.</p>
         </div>
         <form onSubmit={changePassword} className="space-y-3.5">
-          <input className={inputClass} type="password" required placeholder="მიმდინარე პაროლი" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
-          <input className={inputClass} type="password" required minLength={8} placeholder="ახალი პაროლი (მინ. 8 სიმბოლო)" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-          <input className={inputClass} type="password" required minLength={8} placeholder="გაიმეორეთ ახალი პაროლი" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+          <PasswordField className={inputClass} required autoComplete="current-password" placeholder="მიმდინარე პაროლი" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+          <PasswordField className={inputClass} required minLength={8} autoComplete="new-password" placeholder="ახალი პაროლი (მინ. 8 სიმბოლო)" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+          <PasswordField className={inputClass} required minLength={8} autoComplete="new-password" placeholder="გაიმეორეთ ახალი პაროლი" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
           <button
             disabled={loading}
             className="w-full sm:w-auto rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-6 py-3 text-xs font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all hover:scale-105 disabled:opacity-50 cursor-pointer"
@@ -179,10 +180,10 @@ export default function CabinetSettingsPage() {
           </p>
         </div>
         <form onSubmit={openDeleteModal} className="space-y-3.5">
-          <input
+          <PasswordField
             className={inputClass}
-            type="password"
             required
+            autoComplete="current-password"
             placeholder="მიმდინარე პაროლი"
             value={deletePassword}
             onChange={(e) => setDeletePassword(e.target.value)}
