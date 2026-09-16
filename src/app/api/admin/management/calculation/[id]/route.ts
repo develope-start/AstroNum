@@ -116,27 +116,35 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     where: { id: params.id },
     select: calculationWithoutInterpretationSelect,
   });
-  if (!calculation) return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
+  if (!calculation) {
+    const alreadyInTrash = await prisma.deletedCalculation.findUnique({ where: { originalId: params.id }, select: { id: true } });
+    if (alreadyInTrash) return NextResponse.json({ message: "Calculation is already in trash" });
+    return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
+  }
 
   const owner = calculation.userId
     ? await prisma.user.findUnique({ where: { id: calculation.userId }, select: { email: true } })
     : null;
 
-  await prisma.$transaction(async (tx) => {
-    await tx.deletedCalculation.create({
+  await prisma.$transaction([
+    prisma.deletedCalculation.create({
       data: {
         originalId: calculation.id,
         type: calculation.type,
         summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
         dataJson: JSON.stringify(calculation),
       },
-    });
-    if (owner) {
-      await tx.accountEvent.create({
+    }),
+    prisma.calculation.delete({ where: { id: calculation.id } }),
+  ]);
+  if (owner) {
+    try {
+      await prisma.accountEvent.create({
         data: { userId: calculation.userId, type: `CALCULATION_DELETED:${calculation.id}`, emailSnapshot: owner.email },
       });
+    } catch {
+      console.error("Calculation deletion status could not be stored");
     }
-    await tx.calculation.delete({ where: { id: calculation.id } });
-  });
+  }
   return NextResponse.json({ message: "Calculation moved to trash" });
 }

@@ -429,6 +429,8 @@ export default function AdminPage() {
     PASSWORD_RESET: "პაროლი აღდგა",
     ACCOUNT_DELETED: "კაბინეტი წაიშალა",
     ADMIN_EMAIL_CHANGED: "ელფოსტა შეიცვალა (ადმინის მიერ)",
+    NAME_CHANGED: "სახელი შეიცვალა (ადმინის მიერ)",
+    PROFILE_CHANGED: "პროფილი შეიცვალა (ადმინის მიერ)",
   };
 
   const show = (value: string | number | null | undefined) => value ?? "—";

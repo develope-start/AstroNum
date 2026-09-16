@@ -5,7 +5,8 @@ import { getActiveSessionFromRequest } from "@/lib/auth";
 import { allocateAdminId, ensureAdminIds } from "@/lib/publicIds";
 import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect";
 
-const emailSchema = z.object({
+const userEditSchema = z.object({
+  name: z.string().trim().max(120).nullable().optional(),
   email: z.string().email("Invalid email format"),
   role: z.enum(["USER", "ADMIN"]).optional(),
 });
@@ -20,7 +21,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!session) return NextResponse.json({ error: "Access denied" }, { status: 403 });
   await ensureAdminIds();
 
-  const parsed = emailSchema.safeParse(await req.json().catch(() => null));
+  const parsed = userEditSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
 
   const user = await prisma.user.findUnique({ where: { id: params.id } });
@@ -29,18 +30,21 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (session.userId === params.id && nextRole !== "ADMIN") return NextResponse.json({ error: "The primary administrator role cannot be changed here" }, { status: 400 });
   const actor = await prisma.user.findUnique({ where: { id: session.userId }, select: { adminId: true } });
   if (nextRole !== user.role && actor?.adminId !== "ADMIN") return NextResponse.json({ error: "Only the primary administrator can change administrator roles" }, { status: 403 });
+  const name = parsed.data.name === undefined ? user.name : parsed.data.name?.trim() || null;
   const email = parsed.data.email.trim().toLowerCase();
   const duplicate = await prisma.user.findUnique({ where: { email } });
   if (duplicate && duplicate.id !== user.id) return NextResponse.json({ error: "This email is already registered" }, { status: 409 });
+  const nameChanged = name !== user.name;
+  const emailChanged = email !== user.email;
 
   const adminId = nextRole === "ADMIN"
     ? user.role === "ADMIN" ? user.adminId : await allocateAdminId()
     : null;
   await prisma.$transaction([
-    prisma.user.update({ where: { id: user.id }, data: { email, role: nextRole, adminId } }),
-    prisma.accountEvent.create({ data: { userId: user.id, type: nextRole !== user.role ? "ADMIN_ROLE_CHANGED" : "ADMIN_EMAIL_CHANGED", emailSnapshot: email, oldEmail: user.email, newEmail: email } }),
+    prisma.user.update({ where: { id: user.id }, data: { name, email, role: nextRole, adminId } }),
+    prisma.accountEvent.create({ data: { userId: user.id, type: nextRole !== user.role ? "ADMIN_ROLE_CHANGED" : nameChanged && emailChanged ? "PROFILE_CHANGED" : nameChanged ? "NAME_CHANGED" : "ADMIN_EMAIL_CHANGED", emailSnapshot: email, oldEmail: user.email, newEmail: email } }),
   ]);
-  return NextResponse.json({ message: "User email updated" });
+  return NextResponse.json({ message: "User profile updated" });
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {

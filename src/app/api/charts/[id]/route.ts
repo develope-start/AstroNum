@@ -31,15 +31,17 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   }
 
   const owner = await prisma.user.findUnique({ where: { id: chart.userId }, select: { email: true } });
-  await prisma.$transaction([
-    prisma.accountEvent.create({
+  await prisma.chart.delete({ where: { id: params.id } });
+  try {
+    await prisma.accountEvent.create({
       data: {
         userId: chart.userId,
         type: `CHART_DELETED:${chart.id}`,
         emailSnapshot: owner?.email ?? session.email,
       },
-    }),
-    prisma.chart.delete({ where: { id: params.id } }),
-  ]);
+    });
+  } catch {
+    console.error("Chart deletion status could not be stored");
+  }
   return NextResponse.json({ ok: true });
 }

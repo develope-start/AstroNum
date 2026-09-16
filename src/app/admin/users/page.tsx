@@ -303,6 +303,7 @@ export default function AdminUsersPage() {
   const [data, setData] = useState<ManagementData | null>(null);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [draft, setDraft] = useState<CalculationDraft>(EMPTY_DRAFT);
+  const [nameDraft, setNameDraft] = useState("");
   const [emailDraft, setEmailDraft] = useState("");
   const [roleDraft, setRoleDraft] = useState("USER");
   const [message, setMessage] = useState<string | null>(null);
@@ -340,7 +341,7 @@ export default function AdminUsersPage() {
     }
     try {
       const res = await fetch(url, options);
-      const body = await res.json();
+      const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error || `სერვერის შეცდომა (${res.status})`);
       if (body.selfDeleted) {
         window.location.href = "/cabinet";
@@ -357,6 +358,7 @@ export default function AdminUsersPage() {
   }
 
   function openEditUser(user: ManagedUser) {
+    setNameDraft(user.name ?? "");
     setEmailDraft(user.email);
     setRoleDraft(user.role);
     setModal({ kind: "edit-user", user });
@@ -803,7 +805,7 @@ export default function AdminUsersPage() {
         <Modal>
           <h2 className="font-display text-xl text-brass-2">რედაქტირების დაწყება</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ ამ მომხმარებლის მონაცემების რედაქტირება?</p>
-          <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim">{modal.user.email}</p>
+          <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><span>{modal.user.name || "—"}</span><br /><span>{modal.user.email}</span></p>
           <div className="flex justify-end gap-3"><button className={button} onClick={() => setModal(null)}>უარყოფა</button><button className={button} onClick={() => setModal({ kind: "edit-user-form", user: modal.user })}>თანხმობა, გაგრძელება</button></div>
         </Modal>
       )}
@@ -817,6 +819,7 @@ export default function AdminUsersPage() {
             </select>
           </label>
           <h2 className="font-display text-xl text-brass-2">მომხმარებლის რედაქტირება</h2>
+          <label className="mt-4 block text-xs text-parchment-dim">სახელი<input className={`${input} mt-1`} type="text" value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} /></label>
           <label className="mt-4 block text-xs text-parchment-dim">ელფოსტა<input className={`${input} mt-1`} type="email" value={emailDraft} onChange={(e) => setEmailDraft(e.target.value)} /></label>
           <div className="mt-5 flex justify-end gap-3"><button className={button} onClick={() => setModal({ kind: "cancel-edit", user: modal.user })}>შეწყვეტა</button><button className={button} onClick={() => setModal({ kind: "save-user", user: modal.user })}>შენახვა</button></div>
         </Modal>
@@ -826,8 +829,8 @@ export default function AdminUsersPage() {
         <Modal>
           <h2 className="font-display text-xl text-brass-2">ცვლილების შენახვა</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ მომხმარებლის ცვლილებების შენახვა?</p>
-          <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim">{modal.user.email} → {emailDraft}</p>
-          <div className="flex justify-end gap-3"><button className={button} onClick={() => setModal({ kind: "edit-user-form", user: modal.user })}>უარყოფა</button><button className={button} onClick={() => action(`/api/admin/management/user/${modal.user!.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: emailDraft }) })}>თანხმობა, შენახვა</button></div>
+          <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><span>სახელი: {modal.user.name || "—"} → {nameDraft || "—"}</span><br /><span>მეილი: {modal.user.email} → {emailDraft}</span></p>
+          <div className="flex justify-end gap-3"><button className={button} onClick={() => setModal({ kind: "edit-user-form", user: modal.user })}>უარყოფა</button><button className={button} onClick={() => action(`/api/admin/management/user/${modal.user!.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: nameDraft, email: emailDraft }) })}>თანხმობა, შენახვა</button></div>
         </Modal>
       )}
 
