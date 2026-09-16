@@ -141,19 +141,19 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         dataJson: JSON.stringify(calculation),
       },
     });
-  } catch (err) {
-    console.error("Could not write to deletedCalculation table", err);
+  } catch (error) {
+    console.error("Could not write to deletedCalculation table", error);
+    return NextResponse.json({ error: "რუკის ურნაში გადატანა ვერ მოხერხდა" }, { status: 500 });
   }
 
   try {
-    await prisma.calculation.delete({ where: { id: calculation.id } });
-  } catch (error) {
-    const code = error && typeof error === "object" && "code" in error ? (error as any).code : null;
-    if (code === "P2025") {
+    const deleted = await prisma.calculation.deleteMany({ where: { id: calculation.id } });
+    if (deleted.count === 0) {
       return NextResponse.json({ message: "Calculation is already deleted" });
     }
+  } catch (error) {
     console.error("Calculation deletion failed", error);
-    return NextResponse.json({ error: "Calculation deletion failed" }, { status: 500 });
+    return NextResponse.json({ error: "რუკის ძირითადი ჩანაწერის წაშლა ვერ მოხერხდა" }, { status: 500 });
   }
   if (owner) {
     try {

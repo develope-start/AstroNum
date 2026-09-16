@@ -604,17 +604,19 @@ export default function AdminUsersPage() {
           </label>
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line/60 pt-3 text-xs">
-          <span className="text-parchment-dim">
-            რეგისტრირებული: {registeredCount} · დაურეგისტრირებელი: {unregisteredCount} · წაშლილი ანგარიშები: {deletedUsersCount} · წაშლილი რუკები: {deletedCalculationsCount}
-          </span>
+            <span className="font-medium">
+              <span className="text-emerald-400 font-bold">რეგისტრირებული: {registeredCount}</span> · <span className="text-rose-400 font-bold">დაურეგისტრირებელი: {unregisteredCount}</span> · წაშლილი ანგარიშები: {deletedUsersCount} · წაშლილი რუკები: {deletedCalculationsCount}
+            </span>
           <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} disabled={JSON.stringify(filters) === JSON.stringify(EMPTY_FILTERS)} className="rounded-full border border-brass/60 px-3 py-1.5 text-brass-2 disabled:cursor-not-allowed disabled:opacity-40">
             ფილტრების გასუფთავება
           </button>
         </div>
       </section>
 
-      {showRegistered && <section>
-        <h2 className="font-display mb-3 text-xl text-brass-2">რეგისტრირებული მომხმარებლები</h2>
+      {showRegistered && <section className="mb-8">
+        <h2 className="font-display mb-4 text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-300 to-green-400 drop-shadow-[0_0_18px_rgba(52,211,153,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(52,211,153,0.95)] hover:scale-[1.01] cursor-default">
+          ✅ რეგისტრირებული მომხმარებლები
+        </h2>
         <div className="space-y-4">
           {filteredData?.users.length === 0 && <p className="text-xs text-parchment-dim">ამ ფილტრებით რეგისტრირებული მომხმარებელი ვერ მოიძებნა.</p>}
           {filteredData?.users.map((user) => (
@@ -652,8 +654,10 @@ export default function AdminUsersPage() {
         </div>
       </section>}
 
-      {showUnregistered && <section>
-        <h2 className="font-display mb-3 text-xl text-brass-2">დაურეგისტრირებელი მომხმარებლები</h2>
+      {showUnregistered && <section className="mb-8">
+        <h2 className="font-display mb-4 text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-rose-500 drop-shadow-[0_0_18px_rgba(244,63,94,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(244,63,94,0.95)] hover:scale-[1.01] cursor-default">
+          ⚠️ დაურეგისტრირებელი მომხმარებლები
+        </h2>
         <div className="space-y-3">
           {filteredData?.guestCalculations.length === 0 && <p className="text-xs text-parchment-dim">ამ ფილტრებით დაურეგისტრირებელი ჩანაწერი ვერ მოიძებნა.</p>}
           {filteredData?.guestCalculationGroups.map((group) => {
