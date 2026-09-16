@@ -18,6 +18,50 @@ async function authorized(req: NextRequest) {
   return session?.role === "ADMIN";
 }
 
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  if (!(await authorized(req))) return NextResponse.json({ error: "Access denied" }, { status: 403 });
+  const calculation = await prisma.calculation.findUnique({ where: { id: params.id } });
+  if (!calculation) return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
+
+  let result: unknown = null;
+  try {
+    result = JSON.parse(calculation.resultJson);
+  } catch {
+    return NextResponse.json({ error: "Calculation result is invalid" }, { status: 500 });
+  }
+
+  let interpretation = calculation.interpretation;
+  if (!interpretation && calculation.userId) {
+    const savedChart = await prisma.chart.findFirst({
+      where: {
+        userId: calculation.userId,
+        type: calculation.type,
+        name1: calculation.name1,
+        date1: calculation.date1,
+        time1: calculation.time1,
+        place1: calculation.place1,
+        lat1: calculation.lat1,
+        lon1: calculation.lon1,
+        tz1: calculation.tz1,
+        name2: calculation.name2,
+        date2: calculation.date2,
+        time2: calculation.time2,
+        place2: calculation.place2,
+        lat2: calculation.lat2,
+        lon2: calculation.lon2,
+        tz2: calculation.tz2,
+        transitDate: calculation.transitDate,
+        houseSystem: calculation.houseSystem,
+      },
+      select: { interpretation: true },
+    });
+    interpretation = savedChart?.interpretation ?? null;
+  }
+
+  const { resultJson, ...metadata } = calculation;
+  return NextResponse.json({ ...metadata, result, interpretation });
+}
+
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   if (!(await authorized(req))) return NextResponse.json({ error: "Access denied" }, { status: 403 });
   const parsed = schema.safeParse(await req.json().catch(() => null));

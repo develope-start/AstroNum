@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import AdminCalculationViewer, { CalculationViewData } from "@/components/AdminCalculationViewer";
 
 type NullableString = string | null;
 
@@ -156,13 +157,14 @@ function draftFromCalculation(calculation: CalculationData): CalculationDraft {
   return draft;
 }
 
-function CalculationDetails({ calculation }: { calculation: CalculationData }) {
+function CalculationDetails({ calculation, onView }: { calculation: CalculationData; onView?: (calculation: CalculationData) => void }) {
   return (
     <div>
       <p className={`mb-3 inline-flex rounded-full border px-3 py-1 text-xs font-bold ${calculation.saved ? "border-fuchsia-400/70 bg-fuchsia-500/15 text-fuchsia-300" : "border-amber-400/50 bg-amber-500/10 text-amber-300"}`}>
         {calculation.saved ? "მონაცემები შენახულია" : "შენახვის გარეშე"}
       </p>
       {calculation.updatedAt && <p className="mb-3 text-xs text-parchment-dim/70">განახლებული: {formatDate(calculation.updatedAt)}</p>}
+      {onView && <button type="button" onClick={() => onView(calculation)} className="mb-3 rounded-full border border-slate-400/70 bg-slate-500/10 px-4 py-1.5 text-xs font-bold text-slate-200 shadow-[0_0_14px_rgba(148,163,184,0.18)] transition hover:border-slate-200 hover:bg-slate-400/20">რუკის ნახვა</button>}
       <div className="grid gap-x-6 gap-y-1 text-xs sm:grid-cols-2">
       <p><span className="text-parchment-dim">ტიპი:</span> {TYPE_LABEL[calculation.type] ?? calculation.type}</p>
       <p><span className="text-parchment-dim">შედგენის დრო:</span> {formatDate(calculation.createdAt)}</p>
@@ -189,6 +191,7 @@ function GuestCalculationHistory({
   onSelect,
   onEdit,
   onDelete,
+  onView,
   button,
   dangerButton,
 }: {
@@ -197,6 +200,7 @@ function GuestCalculationHistory({
   onSelect: (id: string) => void;
   onEdit: (calculation: CalculationData) => void;
   onDelete: (calculation: CalculationData) => void;
+  onView: (calculation: CalculationData) => void;
   button: string;
   dangerButton: string;
 }) {
@@ -214,7 +218,7 @@ function GuestCalculationHistory({
           <button className={dangerButton} onClick={() => onDelete(active)}>წაშლა</button>
         </div>
       </div>
-      <CalculationDetails calculation={active} />
+      <CalculationDetails calculation={active} onView={onView} />
       {group.calculations.length > 1 && (
         <details className="mt-4 rounded-lg border border-line/70 bg-ink-2/40 p-3">
           <summary className="cursor-pointer select-none text-sm font-semibold text-parchment hover:text-blue-300">
@@ -299,6 +303,8 @@ export default function AdminUsersPage() {
   const [selectedDeletedUsers, setSelectedDeletedUsers] = useState<string[]>([]);
   const [selectedDeletedCalculations, setSelectedDeletedCalculations] = useState<string[]>([]);
   const [selectedGuestCalculations, setSelectedGuestCalculations] = useState<Record<string, string>>({});
+  const [viewingCalculation, setViewingCalculation] = useState<CalculationViewData | null>(null);
+  const [viewLoading, setViewLoading] = useState(false);
 
   async function loadData() {
     setLoading(true);
@@ -350,6 +356,21 @@ export default function AdminUsersPage() {
   function openEditCalculation(calculation: CalculationData) {
     setDraft(draftFromCalculation(calculation));
     setModal({ kind: "edit-calculation", calculation });
+  }
+
+  async function openCalculationView(calculation: CalculationData) {
+    setViewLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/admin/management/calculation/${calculation.id}`, { cache: "no-store" });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || "რუკის გახსნა ვერ მოხერხდა");
+      setViewingCalculation({ ...calculation, result: body.result, interpretation: body.interpretation });
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "რუკის გახსნა ვერ მოხერხდა");
+    } finally {
+      setViewLoading(false);
+    }
   }
 
   function updateDraft<K extends keyof CalculationDraft>(key: K, nextValue: CalculationDraft[K]) {
@@ -555,7 +576,7 @@ export default function AdminUsersPage() {
                 {user.calculations.length === 0 && <p className="text-xs text-parchment-dim">ამ ანგარიშს გამოთვლილი რუკა არ აქვს.</p>}
                 {user.calculations.map((calculation) => (
                   <div key={calculation.id} className="rounded-lg border border-line/60 p-3">
-                    <CalculationDetails calculation={calculation} />
+                    <CalculationDetails calculation={calculation} onView={openCalculationView} />
                     <div className="mt-3 flex gap-2">
                       <button className={button} onClick={() => openEditCalculation(calculation)}>რუკის რედაქტირება</button>
                       <button className={dangerButton} onClick={() => setModal({ kind: "delete-calculation", calculation })}>რუკის წაშლა</button>
@@ -584,7 +605,7 @@ export default function AdminUsersPage() {
                   <button className={dangerButton} onClick={() => setModal({ kind: "delete-calculation", calculation })}>წაშლა</button>
                 </div>
               </div>
-              <CalculationDetails calculation={calculation} />
+              <CalculationDetails calculation={calculation} onView={openCalculationView} />
               <GuestCalculationPicker
                 group={group}
                 activeId={calculation.id}
@@ -798,6 +819,9 @@ export default function AdminUsersPage() {
           <div className="mt-5 flex justify-end gap-3"><button className={button} onClick={() => setModal(modal.calculation ? { kind: "edit-calculation-form", calculation: modal.calculation } : { kind: "edit-user-form", user: modal.user })}>გაგრძელება</button><button className={dangerButton} onClick={() => setModal(null)}>დიახ, შეწყვეტა</button></div>
         </Modal>
       )}
+
+      {viewLoading && <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 text-sm text-slate-200">იტვირთება...</div>}
+      {viewingCalculation && <AdminCalculationViewer calculation={viewingCalculation} onClose={() => setViewingCalculation(null)} />}
     </div>
   );
 }

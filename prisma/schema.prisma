@@ -101,6 +101,7 @@ model Calculation {
   ipAddress   String?
   userAgent   String?
   resultJson  String
+  interpretation String?
   updatedAt   DateTime?
   createdAt   DateTime @default(now())
 

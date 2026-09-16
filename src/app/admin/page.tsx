@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import AdminCalculationViewer, { CalculationViewData } from "@/components/AdminCalculationViewer";
 
 interface ChartRow {
   id: string;
@@ -128,11 +129,13 @@ function GuestCalculationCard({
   selectedId,
   onSelect,
   typeLabel,
+  onView,
 }: {
   group: GuestCalculationGroup;
   selectedId?: string;
   onSelect: (id: string) => void;
   typeLabel: Record<string, string>;
+  onView: (calculation: CalculationRow) => void;
 }) {
   const calculation = group.calculations.find((item) => item.id === selectedId) ?? group.calculations[0];
   if (!calculation) return null;
@@ -148,6 +151,7 @@ function GuestCalculationCard({
           </p>
           <p className="mt-1 text-xs text-parchment-dim">IP: {displayValue(group.ipAddress)} · რუკები: {group.calculations.length}</p>
           <p className="max-w-3xl break-words text-xs text-parchment-dim">მოწყობილობა: {displayValue(group.userAgent)}</p>
+          <button type="button" onClick={() => onView(calculation)} className="mt-2 rounded-full border border-slate-400/70 bg-slate-500/10 px-4 py-1.5 text-xs font-bold text-slate-200 shadow-[0_0_14px_rgba(148,163,184,0.18)] transition hover:border-slate-200 hover:bg-slate-400/20">რუკის ნახვა</button>
         </div>
         <p className="text-xs text-parchment-dim">გამოთვლილია: {formatDateTime(calculation.createdAt)}</p>
       </div>
@@ -225,6 +229,8 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<CalculationFilters>(EMPTY_FILTERS);
   const [selectedGuestCalculations, setSelectedGuestCalculations] = useState<Record<string, string>>({});
+  const [viewingCalculation, setViewingCalculation] = useState<CalculationViewData | null>(null);
+  const [viewLoading, setViewLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -270,6 +276,21 @@ export default function AdminPage() {
       window.removeEventListener("focus", loadAdminData);
     };
   }, [router]);
+
+  async function openCalculationView(calculation: CalculationRow) {
+    setViewLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/admin/management/calculation/${calculation.id}`, { cache: "no-store" });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || "რუკის გახსნა ვერ მოხერხდა");
+      setViewingCalculation({ ...calculation, result: body.result, interpretation: body.interpretation });
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "რუკის გახსნა ვერ მოხერხდა");
+    } finally {
+      setViewLoading(false);
+    }
+  }
 
   const filteredCalculations = useMemo(() => {
     if (!calculations) return null;
@@ -453,6 +474,7 @@ export default function AdminPage() {
                   <p className={`mt-1 inline-flex rounded-full border px-3 py-1 text-xs font-bold ${c.saved ? "border-fuchsia-400/70 bg-fuchsia-500/15 text-fuchsia-300" : "border-amber-400/50 bg-amber-500/10 text-amber-300"}`}>
                     {c.saved ? "მონაცემები შენახულია" : "შენახვის გარეშე"}
                   </p>
+                  <button type="button" onClick={() => openCalculationView(c)} className="ml-2 rounded-full border border-slate-400/70 bg-slate-500/10 px-4 py-1.5 text-xs font-bold text-slate-200 shadow-[0_0_14px_rgba(148,163,184,0.18)] transition hover:border-slate-200 hover:bg-slate-400/20">რუკის ნახვა</button>
                   {c.user ? (
                     <p className="text-xs">
                       <span className="font-semibold text-orange-400">ADMIN ID: {show(c.user.adminId)}</span>
@@ -522,6 +544,7 @@ export default function AdminPage() {
                 selectedId={selectedGuestCalculations[group.id]}
                 onSelect={(id) => setSelectedGuestCalculations((current) => ({ ...current, [group.id]: id }))}
                 typeLabel={typeLabel}
+                onView={openCalculationView}
               />
             ))}
           </div>
@@ -553,6 +576,9 @@ export default function AdminPage() {
           ))}
         </div>
       </section>
+
+      {viewLoading && <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 text-sm text-slate-200">იტვირთება...</div>}
+      {viewingCalculation && <AdminCalculationViewer calculation={viewingCalculation} onClose={() => setViewingCalculation(null)} />}
 
     </div>
   );

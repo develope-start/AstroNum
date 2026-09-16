@@ -25,6 +25,7 @@ export interface CalculationHistoryInput {
   ipAddress: string | null;
   userAgent: string | null;
   resultJson: string;
+  interpretation: string;
 }
 
 export async function recordCalculation(input: CalculationHistoryInput) {

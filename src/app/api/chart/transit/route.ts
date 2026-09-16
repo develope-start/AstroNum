@@ -68,6 +68,7 @@ export async function POST(req: NextRequest) {
     ipAddress: requestInfo.ipAddress,
     userAgent: requestInfo.userAgent,
     resultJson: JSON.stringify({ natalChart, transitPlanets, aspects }),
+    interpretation,
   });
 
   if (save) {
