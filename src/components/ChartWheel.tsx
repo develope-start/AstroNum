@@ -222,7 +222,7 @@ export default function ChartWheel({
           );
         })}
 
-        {/* პლანეტები - პროფესიონალური ასტროლოგიური სტანდარტით */}
+        {/* პლანეტები - პროფესიონალური ასტროლოგიური სტანდარტით (სტატიკური, უანიმაციო, მკვეთრი) */}
         {sorted.map((p, idx) => {
           const pos = toXY(p.longitude, radii[idx]);
           const deg = Math.floor(norm360(p.longitude) % 30);
@@ -230,7 +230,7 @@ export default function ChartWheel({
           const glyph = PLANET_GLYPHS[p.name] ?? "•";
 
           return (
-            <g key={p.name} className="group cursor-pointer">
+            <g key={p.name} className="select-none">
               {/* ნაზი, ელეგანტური ფონის ჰალო (Halo) პლანეტის გარშემო */}
               <circle
                 cx={pos.x}
@@ -242,16 +242,16 @@ export default function ChartWheel({
                 opacity="0.9"
                 style={{ filter: `drop-shadow(0 0 6px ${color}bb)` }}
               />
-              {/* პლანეტის ოფიციალური სიმბოლო */}
+              {/* პლანეტის ოფიციალური სიმბოლო - მკვეთრი, მყარი და მკაფიო (უანიმაციო) */}
               <text
                 x={pos.x}
                 y={pos.y + 0.5}
                 fill={color}
-                className="font-extrabold select-none transition-transform duration-300 group-hover:scale-125"
-                fontSize={size * 0.034}
+                className="font-black select-none"
+                fontSize={size * 0.036}
                 textAnchor="middle"
                 dominantBaseline="central"
-                style={{ textShadow: `0 0 8px ${color}` }}
+                style={{ textShadow: `0 0 10px ${color}, 0 0 4px ${color}` }}
               >
                 {glyph}
               </text>
@@ -260,7 +260,7 @@ export default function ChartWheel({
                 x={pos.x}
                 y={pos.y + size * 0.034}
                 fill="#CBD5E1"
-                className="font-bold select-none opacity-80 group-hover:opacity-100"
+                className="font-bold select-none opacity-90"
                 fontSize={size * 0.018}
                 textAnchor="middle"
                 dominantBaseline="central"

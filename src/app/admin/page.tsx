@@ -151,9 +151,19 @@ function GuestCalculationCard({
           </p>
           <p className="mt-1 text-xs text-parchment-dim">IP: {displayValue(group.ipAddress)} · რუკები: {group.calculations.length}</p>
           <p className="max-w-3xl break-words text-xs text-parchment-dim">მოწყობილობა: {displayValue(group.userAgent)}</p>
-          <button type="button" onClick={() => onView(calculation)} className="mt-2 rounded-full border border-slate-400/70 bg-slate-500/10 px-4 py-1.5 text-xs font-bold text-slate-200 shadow-[0_0_14px_rgba(148,163,184,0.18)] transition hover:border-slate-200 hover:bg-slate-400/20">რუკის ნახვა</button>
         </div>
         <p className="text-xs text-parchment-dim">გამოთვლილია: {formatDateTime(calculation.createdAt)}</p>
+      </div>
+
+      {/* Centered Glowing Slate '✦ რუკის ნახვა' Action Button */}
+      <div className="my-3 flex justify-center border-y border-line/50 py-2.5">
+        <button
+          type="button"
+          onClick={() => onView(calculation)}
+          className="group flex items-center justify-center gap-2 rounded-full border-2 border-slate-300/80 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-2.5 text-xs sm:text-sm font-black text-slate-100 shadow-[0_0_22px_rgba(148,163,184,0.45)] ring-2 ring-slate-400/30 transition-all hover:scale-105 hover:border-white hover:text-white hover:shadow-[0_0_32px_rgba(148,163,184,0.7)] active:scale-95 cursor-pointer"
+        >
+          <span className="tracking-wide text-slate-100 font-extrabold">✦ რუკის ნახვა</span>
+        </button>
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
         <div>
@@ -478,22 +488,18 @@ export default function AdminPage() {
                 <div>
                   <h3 className="font-medium text-brass-2">{typeLabel[c.type] ?? c.type}</h3>
                   {c.updatedAt && <p className="text-xs text-parchment-dim/70">განახლებული: {showDateTime(c.updatedAt)}</p>}
-                  <p className={`mt-1 inline-flex rounded-full border px-3 py-1 text-xs font-bold ${c.saved ? "border-fuchsia-400/70 bg-fuchsia-500/15 text-fuchsia-300" : "border-amber-400/50 bg-amber-500/10 text-amber-300"}`}>
-                    {c.saved ? "მონაცემები შენახულია" : "შენახვის გარეშე"}
-                  </p>
-                  <button type="button" onClick={() => openCalculationView(c)} className="ml-2 rounded-full border border-slate-400/70 bg-slate-500/10 px-4 py-1.5 text-xs font-bold text-slate-200 shadow-[0_0_14px_rgba(148,163,184,0.18)] transition hover:border-slate-200 hover:bg-slate-400/20">რუკის ნახვა</button>
                   {c.user ? (
-                    <p className="text-xs">
-                      <span className="font-semibold text-orange-400">ADMIN ID: {show(c.user.adminId)}</span>
+                    <p className="mt-1 text-xs">
+                      <span className="font-semibold text-orange-400 mr-2">ADMIN ID: {show(c.user.adminId)}</span>
                       <span className="font-medium text-emerald-400">რეგისტრირებული</span>
                       <span className="mt-1 block text-parchment-dim">აიდი: {show(c.user.publicId ?? c.publicId)}</span>
-                      <span className="mt-1 block text-parchment-dim">იუზერი: {c.user.email}</span>
+                      <span className="block text-parchment-dim">იუზერი: {c.user.email}</span>
                     </p>
                   ) : (
-                    <p className="text-xs">
+                    <p className="mt-1 text-xs">
                       <span className="font-medium text-red-400">დაურეგისტრირებელი</span>
                       <span className="mt-1 block text-parchment-dim">აიდი: {show(c.publicId)}</span>
-                      <span className="mt-1 block text-parchment-dim">IP: {show(c.ipAddress)}</span>
+                      <span className="block text-parchment-dim">IP: {show(c.ipAddress)}</span>
                       <span className="block max-w-3xl break-words text-parchment-dim">
                         მოწყობილობა: {show(c.userAgent)}
                       </span>
@@ -501,6 +507,17 @@ export default function AdminPage() {
                   )}
                 </div>
                 <p className="text-xs text-parchment-dim">გამოთვლილია: {showDateTime(c.createdAt)}</p>
+              </div>
+
+              {/* Centered Glowing Slate '✦ რუკის ნახვა' Action Button */}
+              <div className="my-3 flex justify-center border-y border-line/50 py-2.5">
+                <button
+                  type="button"
+                  onClick={() => openCalculationView(c)}
+                  className="group flex items-center justify-center gap-2 rounded-full border-2 border-slate-300/80 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-2.5 text-xs sm:text-sm font-black text-slate-100 shadow-[0_0_22px_rgba(148,163,184,0.45)] ring-2 ring-slate-400/30 transition-all hover:scale-105 hover:border-white hover:text-white hover:shadow-[0_0_32px_rgba(148,163,184,0.7)] active:scale-95 cursor-pointer"
+                >
+                  <span className="tracking-wide text-slate-100 font-extrabold">✦ რუკის ნახვა</span>
+                </button>
               </div>
 
               <div className="grid gap-4 lg:grid-cols-2">
