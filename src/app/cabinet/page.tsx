@@ -26,12 +26,12 @@ export default function CabinetPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(mode === "signup" ? { name, username, email, password } : { identifier: email, password }),
       });
-      const data = await readApiResponse<{ error?: string }>(res);
+      const data = await readApiResponse<{ error?: string; role?: "USER" | "ADMIN" }>(res);
       if (!res.ok) {
         setError(data.error || "შეცდომა");
         return;
       }
-      router.replace("/cabinet/dashboard");
+      router.replace(data.role === "ADMIN" ? "/admin" : "/cabinet/dashboard");
       router.refresh();
     } catch {
       setError("ქსელის შეცდომა");
