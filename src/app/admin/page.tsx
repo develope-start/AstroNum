@@ -367,6 +367,43 @@ export default function AdminPage() {
       .filter((group) => group.calculations.length > 0);
   }, [guestCalculationGroups, filters]);
 
+  const stats = useMemo(() => {
+    const now = Date.now();
+    const h24 = 24 * 60 * 60 * 1000;
+    const d7 = 7 * 24 * 60 * 60 * 1000;
+    const d30 = 30 * 24 * 60 * 60 * 1000;
+
+    let charts24h = 0;
+    let charts7d = 0;
+    let charts30d = 0;
+
+    if (calculations) {
+      for (const c of calculations) {
+        const time = new Date(c.createdAt).getTime();
+        const diff = now - time;
+        if (diff <= h24) charts24h++;
+        if (diff <= d7) charts7d++;
+        if (diff <= d30) charts30d++;
+      }
+    }
+
+    let users24h = 0;
+    let users7d = 0;
+    let users30d = 0;
+
+    if (users) {
+      for (const u of users) {
+        const time = new Date(u.createdAt).getTime();
+        const diff = now - time;
+        if (diff <= h24) users24h++;
+        if (diff <= d7) users7d++;
+        if (diff <= d30) users30d++;
+      }
+    }
+
+    return { charts24h, users24h, charts7d, users7d, charts30d, users30d };
+  }, [calculations, users]);
+
   if (error) {
     return <p className="mt-10 text-center text-ember">{error}</p>;
   }
@@ -444,6 +481,50 @@ export default function AdminPage() {
               🔑 კაბინეტების ცვლილების ისტორია ↓
             </span>
           </a>
+        </div>
+
+        {/* Subtle Live Stats Indicator Banner */}
+        <div className="mb-4 rounded-xl border border-line/50 bg-ink-2/40 px-4 py-2.5 backdrop-blur-sm">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs italic text-parchment-dim/85">
+            {/* Live Beep / Pulse Indicator Dot */}
+            <div className="flex items-center gap-2 not-italic">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+              </span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-400/90">სტატისტიკა:</span>
+            </div>
+
+            {/* 24 Hours */}
+            <div className="flex items-center gap-1.5">
+              <span>⚡ ბოლო 24 საათში:</span>
+              <span className="font-semibold text-amber-300 not-italic">{stats.charts24h}</span>
+              <span>რუკა</span>
+              <span className="text-line/60">|</span>
+              <span className="font-semibold text-cyan-300 not-italic">{stats.users24h}</span>
+              <span>მომხმარებელი</span>
+            </div>
+
+            {/* 1 Week */}
+            <div className="flex items-center gap-1.5">
+              <span>📅 ბოლო 1 კვირაში:</span>
+              <span className="font-semibold text-amber-300 not-italic">{stats.charts7d}</span>
+              <span>რუკა</span>
+              <span className="text-line/60">|</span>
+              <span className="font-semibold text-cyan-300 not-italic">{stats.users7d}</span>
+              <span>მომხმარებელი</span>
+            </div>
+
+            {/* 1 Month */}
+            <div className="flex items-center gap-1.5">
+              <span>🗓️ ბოლო 1 თვეში:</span>
+              <span className="font-semibold text-amber-300 not-italic">{stats.charts30d}</span>
+              <span>რუკა</span>
+              <span className="text-line/60">|</span>
+              <span className="font-semibold text-cyan-300 not-italic">{stats.users30d}</span>
+              <span>მომხმარებელი</span>
+            </div>
+          </div>
         </div>
         <div className="mb-4 rounded-xl border border-line bg-ink-2/60 p-4">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
