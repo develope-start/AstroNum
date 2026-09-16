@@ -6,7 +6,7 @@ import InterpretationText from "./InterpretationText";
 import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
-import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Calendar, Clock } from "lucide-react";
+import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Calendar, Clock, Info } from "lucide-react";
 
 interface CacheShape {
   birth: BirthValue;
@@ -193,6 +193,16 @@ export default function TransitCalculator() {
         <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3.5 text-xs font-semibold text-emerald-300 shadow-lg justify-center">
           <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
           <span>✓ წარმატებით შენახულია კაბინეტში!</span>
+        </div>
+      )}
+
+      {!me && interpretation && (
+        <div className="flex items-start justify-center gap-2.5 rounded-2xl border border-amber-500/30 bg-purple-950/40 p-3.5 sm:p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center">
+          <Info className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+          <p>
+            დაურეგისტრირებელი მომხმარებელი — ეს შედეგი შენახული იქნება ამ მოწყობილობაზე 12 საათის განმავლობაში. მუდმივი
+            შენახვისთვის გახსენით <a href="/cabinet" className="font-bold text-amber-300 underline decoration-amber-400/50">კაბინეტი</a>.
+          </p>
         </div>
       )}
 

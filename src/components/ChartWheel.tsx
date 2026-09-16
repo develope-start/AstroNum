@@ -210,37 +210,34 @@ export default function ChartWheel({
           );
         })}
 
-        {/* პლანეტები + გრადუსის ინდიკატორი */}
+        {/* პლანეტები წრეების გარეშე, სტიქიური ფერებითა და გლოუ ნათებით */}
         {sorted.map((p, idx) => {
           const pos = toXY(p.longitude, radii[idx]);
-          const deg = Math.floor(p.longitude % 30);
+          const deg = Math.floor(norm360(p.longitude) % 30);
+          const signIdx = Math.floor(norm360(p.longitude) / 30);
+          const color = SIGN_COLORS[signIdx % 4];
+
           return (
             <g key={p.name} className="group cursor-pointer">
-              <circle
-                cx={pos.x}
-                cy={pos.y}
-                r={size * 0.032}
-                fill="#0b0522"
-                stroke="#F59E0B"
-                strokeWidth={1.5}
-                style={{ filter: "drop-shadow(0 0 8px rgba(245,158,11,0.6))" }}
-              />
+              {/* პლანეტის სიმბოლო - წრის გარეშე, სტიქიური ფერის გლოუ ნათებით */}
               <text
                 x={pos.x}
                 y={pos.y}
-                fill="#FDE68A"
-                className="font-bold select-none"
-                fontSize={size * 0.035}
+                fill={color}
+                className="font-black select-none transition-transform duration-300 group-hover:scale-125"
+                fontSize={size * 0.038}
                 textAnchor="middle"
                 dominantBaseline="central"
+                style={{ textShadow: `0 0 10px ${color}, 0 0 20px ${color}aa` }}
               >
                 {PLANET_GLYPHS[p.name] ?? "•"}
               </text>
+              {/* გრადუსის მაჩვენებელი ქვემოთ */}
               <text
                 x={pos.x}
-                y={pos.y + size * 0.045}
-                fill="#94A3B8"
-                className="font-semibold select-none opacity-80 group-hover:opacity-100"
+                y={pos.y + size * 0.032}
+                fill={color}
+                className="font-bold select-none opacity-85 group-hover:opacity-100"
                 fontSize={size * 0.02}
                 textAnchor="middle"
                 dominantBaseline="central"
