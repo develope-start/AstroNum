@@ -144,7 +144,16 @@ function GuestCalculationCard({
     <article className="rounded-xl border border-red-500/50 bg-red-500/5 p-4 text-sm">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3">
         <div>
-          <h3 className="font-medium text-red-400">დაურეგისტრირებელი · აიდი: {displayValue(group.publicId)}</h3>
+          <h3 className="font-medium flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-2.5 py-0.5 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
+              </span>
+              <span>დაურეგისტრირებელი</span>
+            </span>
+            <span className="text-red-400">· აიდი: {displayValue(group.publicId)}</span>
+          </h3>
           {calculation.updatedAt && <p className="text-xs text-parchment-dim/70">განახლებული: {formatDateTime(calculation.updatedAt)}</p>}
           <p className={`mt-1 inline-flex rounded-full border px-3 py-1 text-xs font-bold ${calculation.saved ? "border-fuchsia-400/70 bg-fuchsia-500/15 text-fuchsia-300" : "border-amber-400/50 bg-amber-500/10 text-amber-300"}`}>
             {calculation.saved ? "მონაცემები შენახულია" : "შენახვის გარეშე"}
@@ -601,21 +610,35 @@ export default function AdminPage() {
                   <h3 className="font-medium text-brass-2">{typeLabel[c.type] ?? c.type}</h3>
                   {c.updatedAt && <p className="text-xs text-parchment-dim/70">განახლებული: {showDateTime(c.updatedAt)}</p>}
                   {c.user ? (
-                    <p className="mt-1 text-xs">
-                      <span className="font-semibold text-orange-400 mr-2">ADMIN ID: {show(c.user.adminId)}</span>
-                      <span className="font-medium text-emerald-400">რეგისტრირებული</span>
+                    <div className="mt-1 text-xs">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold text-orange-400">ADMIN ID: {show(c.user.adminId)}</span>
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">
+                          <span className="relative flex h-2 w-2">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                          </span>
+                          <span>რეგისტრირებული</span>
+                        </span>
+                      </div>
                       <span className="mt-1 block text-parchment-dim">აიდი: {show(c.user.publicId ?? c.publicId)}</span>
                       <span className="block text-parchment-dim">იუზერი: {c.user.email}</span>
-                    </p>
+                    </div>
                   ) : (
-                    <p className="mt-1 text-xs">
-                      <span className="font-medium text-red-400">დაურეგისტრირებელი</span>
+                    <div className="mt-1 text-xs">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-2.5 py-0.5 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
+                        <span className="relative flex h-2 w-2">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
+                          <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
+                        </span>
+                        <span>დაურეგისტრირებელი</span>
+                      </span>
                       <span className="mt-1 block text-parchment-dim">აიდი: {show(c.publicId)}</span>
                       <span className="block text-parchment-dim">IP: {show(c.ipAddress)}</span>
                       <span className="block max-w-3xl break-words text-parchment-dim">
                         მოწყობილობა: {show(c.userAgent)}
                       </span>
-                    </p>
+                    </div>
                   )}
                 </div>
                 <p className="text-xs text-parchment-dim">გამოთვლილია: {showDateTime(c.createdAt)}</p>

@@ -210,9 +210,18 @@ function GuestCalculationHistory({
   return (
     <article className="rounded-xl border border-red-500/50 bg-red-500/5 p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <span className="font-medium text-red-400">
-          დაურეგისტრირებელი · აიდი: {group.publicId ?? "—"} · რუკები: {group.calculations.length}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-2.5 py-0.5 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
+            </span>
+            <span>დაურეგისტრირებელი</span>
+          </span>
+          <span className="font-medium text-red-400">
+            · აიდი: {group.publicId ?? "—"} · რუკები: {group.calculations.length}
+          </span>
+        </div>
         <div className="flex gap-2">
           <button className={button} onClick={() => onEdit(active)}>რედაქტირება</button>
           <button className={dangerButton} onClick={() => onDelete(active)}>წაშლა</button>
@@ -647,7 +656,16 @@ export default function AdminUsersPage() {
             return (
             <article key={calculation.id} className="rounded-xl border border-red-500/50 bg-red-500/5 p-4">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <span className="font-medium text-red-400">დაურეგისტრირებელი · აიდი: {calculation.publicId ?? "—"}</span>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-2.5 py-0.5 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
+                    </span>
+                    <span>დაურეგისტრირებელი</span>
+                  </span>
+                  <span className="font-medium text-red-400">· აიდი: {calculation.publicId ?? "—"}</span>
+                </div>
                 <div className="flex gap-2">
                   <button className={button} onClick={() => openEditCalculation(calculation)}>რედაქტირება</button>
                   <button className={dangerButton} onClick={() => setModal({ kind: "delete-calculation", calculation })}>წაშლა</button>
@@ -694,10 +712,16 @@ export default function AdminUsersPage() {
                 <div>
                 <p className="mb-1 text-xs font-semibold text-orange-400">ADMIN ID: {user.adminId ?? "—"}</p>
                 <p className="text-xs text-[#55e6e1]">@{user.username ?? "—"}</p>
-                <p className="text-parchment">
-                  {user.email} <span className="text-xs">({user.role})</span>{" "}
-                  <span className="ml-2 text-xs text-brass-2">აიდი: {user.publicId ?? "—"}</span>{" "}
-                  <span className="ml-2 font-medium text-emerald-400">რეგისტრირებული</span>
+                <p className="text-parchment flex flex-wrap items-center gap-2">
+                  <span>{user.email} <span className="text-xs">({user.role})</span></span>
+                  <span className="text-xs text-brass-2">აიდი: {user.publicId ?? "—"}</span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                    </span>
+                    <span>რეგისტრირებული</span>
+                  </span>
                 </p>
                 <p>წაშლილია: {formatDate(user.deletedAt)} · რუკები: {user.calculationCount}</p>
                 </div>
@@ -735,12 +759,24 @@ export default function AdminUsersPage() {
               <div className="flex items-start gap-3 text-sm text-parchment-dim">
                 <input type="checkbox" aria-label={`${calculation.summary} მონიშვნა`} className="mt-1 h-4 w-4 cursor-pointer accent-brass" checked={selectedDeletedCalculations.includes(calculation.id)} onChange={() => toggleSelected(selectedDeletedCalculations, calculation.id, setSelectedDeletedCalculations)} />
                 <div>
-                <p className="text-parchment">
-                  {TYPE_LABEL[calculation.type] ?? calculation.type} · აიდი: {calculation.data.publicId ?? "—"}{" "}
+                <p className="text-parchment flex flex-wrap items-center gap-2">
+                  <span>{TYPE_LABEL[calculation.type] ?? calculation.type} · აიდი: {calculation.data.publicId ?? "—"}</span>
                   {calculation.data.userId ? (
-                    <span className="ml-2 font-medium text-emerald-400">რეგისტრირებული</span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                      </span>
+                      <span>რეგისტრირებული</span>
+                    </span>
                   ) : (
-                    <span className="ml-2 font-medium text-red-400">დაურეგისტრირებელი</span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-2.5 py-0.5 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
+                      </span>
+                      <span>დაურეგისტრირებელი</span>
+                    </span>
                   )}
                 </p>
                 <p>{calculation.summary} · წაშლილია: {formatDate(calculation.deletedAt)}</p>
