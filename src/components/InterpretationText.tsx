@@ -44,7 +44,7 @@ export default function InterpretationText({ text }: { text: string }) {
         <div className="flex flex-wrap items-center gap-2 sm:gap-4 max-w-full">
           <div className="flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/15 via-purple-500/20 to-amber-500/15 px-3 py-1 sm:px-4 sm:py-1.5 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] max-w-full">
             <BookOpen className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-            <span className="text-[0.7rem] sm:text-xs truncate">ასტროლოგიური ინტერპრეტაცია</span>
+            <span className="text-[0.7rem] sm:text-xs">ასტროლოგიური ინტერპრეტაცია</span>
           </div>
           <div className="flex items-center gap-1.5 text-slate-300 text-[0.7rem] sm:text-xs">
             <Clock className="h-3.5 w-3.5 text-amber-400 shrink-0" />
