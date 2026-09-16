@@ -137,6 +137,8 @@ DATABASE_URL="postgresql://username:password@host/dbname?sslmode=require"
 Next.js 14 (App Router) · TypeScript · Tailwind CSS · Prisma · SQLite/PostgreSQL ·
 astronomy-engine · luxon · tz-lookup · bcryptjs · jsonwebtoken · zod
 
+(https://console.neon.tech/ ;   https://vercel.com/ds6-2f69 ;   https://github.com/develope-start/AstroNum 
+  ვერსალზე დალოგინებულია გითჰაბის ანგარიშითვე დეველოუპ სტარტის, ხოლო კონსოლზე და გითჰაბზე დალოგინებულია გულგის ანგარიში დეველოუპით)
 
 git init
 git add README.md
