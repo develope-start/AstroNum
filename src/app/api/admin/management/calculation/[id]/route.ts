@@ -125,29 +125,57 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const owner = calculation.userId
     ? await prisma.user.findUnique({ where: { id: calculation.userId }, select: { email: true } })
     : null;
+  const duplicateWhere = {
+    userId: calculation.userId,
+    type: calculation.type,
+    name1: calculation.name1,
+    date1: calculation.date1,
+    time1: calculation.time1,
+    place1: calculation.place1,
+    lat1: calculation.lat1,
+    lon1: calculation.lon1,
+    tz1: calculation.tz1,
+    name2: calculation.name2,
+    date2: calculation.date2,
+    time2: calculation.time2,
+    place2: calculation.place2,
+    lat2: calculation.lat2,
+    lon2: calculation.lon2,
+    tz2: calculation.tz2,
+    transitDate: calculation.transitDate,
+    houseSystem: calculation.houseSystem,
+    ...(calculation.userId ? {} : { ipAddress: calculation.ipAddress, userAgent: calculation.userAgent }),
+  };
+  const duplicateCalculations = await prisma.calculation.findMany({
+    where: duplicateWhere,
+    select: calculationWithoutInterpretationSelect,
+  });
+  const calculationsToDelete = duplicateCalculations.length > 0 ? duplicateCalculations : [calculation];
 
   try {
-    await prisma.deletedCalculation.upsert({
-      where: { originalId: calculation.id },
-      create: {
-        originalId: calculation.id,
-        type: calculation.type,
-        summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
-        dataJson: JSON.stringify(calculation),
-      },
-      update: {
-        type: calculation.type,
-        summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
-        dataJson: JSON.stringify(calculation),
-      },
-    });
+    for (const item of calculationsToDelete) {
+      await prisma.deletedCalculation.upsert({
+        where: { originalId: item.id },
+        create: {
+          originalId: item.id,
+          type: item.type,
+          summary: `${item.name1} · ${item.date1} · ${item.place1}`,
+          dataJson: JSON.stringify(item),
+        },
+        update: {
+          type: item.type,
+          summary: `${item.name1} · ${item.date1} · ${item.place1}`,
+          dataJson: JSON.stringify(item),
+        },
+      });
+    }
   } catch (error) {
     console.error("Could not write to deletedCalculation table", error);
     return NextResponse.json({ error: "რუკის ურნაში გადატანა ვერ მოხერხდა" }, { status: 500 });
   }
 
   try {
-    const deleted = await prisma.calculation.deleteMany({ where: { id: calculation.id } });
+    const deleted = await prisma.calculation.deleteMany({ where: { id: { in: calculationsToDelete.map((item) => item.id) } } });
     if (deleted.count === 0) {
       return NextResponse.json({ message: "Calculation is already deleted" });
     }
