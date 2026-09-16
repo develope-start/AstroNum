@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { verifyPassword, signSession, SESSION_COOKIE, asRole } from "@/lib/auth";
 import { getRequestInfo } from "@/lib/requestInfo";
 import { twelveHoursAgo } from "@/lib/calculationHistory";
-import { ensureUserPublicId } from "@/lib/publicIds";
+import { ensureAdminIds, ensureUserPublicId } from "@/lib/publicIds";
 
 const schema = z.object({
   identifier: z.string().min(1).optional(),
@@ -28,6 +28,17 @@ export async function POST(req: NextRequest) {
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
     return NextResponse.json({ error: "ელფოსტა ან პაროლი არასწორია" }, { status: 401 });
   }
+
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  if (adminEmail && user.email.toLowerCase() === adminEmail && (user.role !== "ADMIN" || user.adminId !== "ADMIN")) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { role: "ADMIN", adminId: "ADMIN" },
+    });
+    user.role = "ADMIN";
+    user.adminId = "ADMIN";
+  }
+  await ensureAdminIds();
 
   const publicId = await ensureUserPublicId(user.id);
   const requestInfo = getRequestInfo(req);

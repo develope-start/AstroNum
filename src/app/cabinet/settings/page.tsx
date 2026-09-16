@@ -10,6 +10,8 @@ export default function CabinetSettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -66,10 +68,43 @@ export default function CabinetSettingsPage() {
     await submitRequest("/api/account/password/request", { currentPassword, newPassword, confirmPassword });
   }
 
-  async function deleteAccount(e: React.FormEvent) {
+  function openDeleteModal(e: React.FormEvent) {
     e.preventDefault();
-    if (!window.confirm("ნამდვილად გსურთ კაბინეტის წაშლა? ეს მოქმედება შეუქცევადია.")) return;
-    await submitRequest("/api/account/delete/request", { currentPassword });
+    setError(null);
+    setMessage(null);
+    if (!deletePassword.trim()) {
+      setError("კაბინეტის წასაშლელად ჩაწერეთ მიმდინარე პაროლი");
+      return;
+    }
+    setShowDeleteModal(true);
+  }
+
+  async function confirmDeleteAccount() {
+    setShowDeleteModal(false);
+    setLoading(true);
+    setMessage(null);
+    setError(null);
+    try {
+      const res = await fetch("/api/account/delete/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword: deletePassword }),
+      });
+      const data = await readApiResponse<{ message?: string; error?: string; ok?: boolean }>(res);
+      if (!res.ok) {
+        setError(data.error || `სერვერის შეცდომა (${res.status})`);
+        return;
+      }
+      setMessage(data.message || "კაბინეტი წაიშალა");
+      setDeletePassword("");
+      setTimeout(() => {
+        window.location.href = "/cabinet";
+      }, 800);
+    } catch {
+      setError("სერვერთან დაკავშირება ვერ მოხერხდა. სცადეთ თავიდან.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const inputClass =
@@ -111,7 +146,7 @@ export default function CabinetSettingsPage() {
           <input className={inputClass} type="password" required placeholder="მიმდინარე პაროლი" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
           <button
             disabled={loading}
-            className="w-full sm:w-auto rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-6 py-3 text-xs font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all hover:scale-105 disabled:opacity-50"
+            className="w-full sm:w-auto rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-6 py-3 text-xs font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all hover:scale-105 disabled:opacity-50 cursor-pointer"
           >
             დადასტურების წერილის გაგზავნა
           </button>
@@ -129,7 +164,7 @@ export default function CabinetSettingsPage() {
           <input className={inputClass} type="password" required minLength={8} placeholder="გაიმეორეთ ახალი პაროლი" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
           <button
             disabled={loading}
-            className="w-full sm:w-auto rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-6 py-3 text-xs font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all hover:scale-105 disabled:opacity-50"
+            className="w-full sm:w-auto rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-6 py-3 text-xs font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all hover:scale-105 disabled:opacity-50 cursor-pointer"
           >
             პაროლის შეცვლის მოთხოვნა
           </button>
@@ -139,18 +174,59 @@ export default function CabinetSettingsPage() {
       <section className="glass-panel rounded-2xl sm:rounded-[28px] p-5 sm:p-7 border-rose-500/30 bg-rose-950/20 shadow-xl space-y-4">
         <div>
           <h2 className="font-display text-lg font-bold text-rose-400">კაბინეტის წაშლა</h2>
-          <p className="mt-0.5 text-xs text-slate-300">ყველა შენახული რუკა წაიშლება. საბოლოო დადასტურების ბმული ელფოსტაზე გამოგეგზავნებათ.</p>
+          <p className="mt-0.5 text-xs text-slate-300">
+            ჩაწერეთ მიმდინარე პაროლი. ღილაკზე დაჭერისას ამოხტება დადასტურების ფანჯარა.
+          </p>
         </div>
-        <form onSubmit={deleteAccount} className="space-y-3.5">
-          <input className={inputClass} type="password" required placeholder="მიმდინარე პაროლი" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+        <form onSubmit={openDeleteModal} className="space-y-3.5">
+          <input
+            className={inputClass}
+            type="password"
+            required
+            placeholder="მიმდინარე პაროლი"
+            value={deletePassword}
+            onChange={(e) => setDeletePassword(e.target.value)}
+          />
           <button
+            type="submit"
             disabled={loading}
-            className="w-full sm:w-auto rounded-full border border-rose-500/50 bg-rose-950/50 px-6 py-3 text-xs font-bold text-rose-300 transition-all hover:bg-rose-900/60 disabled:opacity-50"
+            className="w-full sm:w-auto rounded-full border border-rose-500/80 bg-rose-950/70 px-6 py-3 text-xs font-bold text-rose-200 shadow-[0_0_20px_rgba(244,63,94,0.35)] transition-all hover:scale-105 hover:bg-rose-900 hover:text-white disabled:opacity-50 cursor-pointer"
           >
-            წაშლის დადასტურების გაგზავნა
+            კაბინეტის წაშლა
           </button>
         </form>
       </section>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
+          <div className="max-w-md w-full rounded-2xl border border-rose-500/50 bg-[#120826] p-6 shadow-[0_0_50px_rgba(244,63,94,0.4)] space-y-4">
+            <div className="flex items-center gap-3 text-rose-400 border-b border-rose-500/30 pb-3">
+              <span className="text-2xl">⚠️</span>
+              <h3 className="font-display text-lg font-bold text-rose-300">კაბინეტის წაშლის დადასტურება</h3>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+              ნამდვილად თანახმა ხართ თუ არა წაშალოთ თქვენი ანგარიში?
+            </p>
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                className="rounded-full border border-slate-500/50 bg-slate-800/60 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700/60 cursor-pointer"
+              >
+                გაუქმება
+              </button>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={confirmDeleteAccount}
+                className="rounded-full border border-rose-500 bg-gradient-to-r from-rose-600 to-red-600 px-5 py-2 text-xs font-black text-white shadow-[0_0_20px_rgba(244,63,94,0.6)] transition-all hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
+              >
+                {loading ? "იშლება..." : "თანხმობა, წაშლა"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

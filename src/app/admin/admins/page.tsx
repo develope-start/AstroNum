@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { readApiResponse } from "@/lib/apiResponse";
 
 interface AdminRow {
   id: string;
@@ -32,9 +33,9 @@ export default function AdminsPage() {
     setLoading(true);
     try {
       const response = await fetch("/api/admin/admins", { cache: "no-store" });
-      const data = await response.json();
+      const data = await readApiResponse<{ admins?: AdminRow[]; error?: string }>(response);
       if (!response.ok) throw new Error(data.error || "ადმინისტრატორების ჩატვირთვა ვერ მოხერხდა");
-      setAdmins(data.admins);
+      setAdmins(data.admins ?? []);
       setError(null);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "სერვერის შეცდომა");

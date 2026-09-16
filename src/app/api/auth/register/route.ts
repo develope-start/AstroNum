@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { hashPassword, signSession, SESSION_COOKIE, asRole } from "@/lib/auth";
 import { getRequestInfo } from "@/lib/requestInfo";
 import { twelveHoursAgo } from "@/lib/calculationHistory";
-import { allocatePublicId, numberFromPublicId } from "@/lib/publicIds";
+import { allocatePublicId, ensureAdminIds, numberFromPublicId } from "@/lib/publicIds";
 
 const schema = z.object({
   name: z.string().trim().min(1, "სახელი სავალდებულოა").max(120),
@@ -49,9 +49,16 @@ export async function POST(req: NextRequest) {
     : null;
   const publicId = await allocatePublicId("REGISTERED", numberFromPublicId(recentGuestCalculation?.publicId));
   const passwordHash = await hashPassword(password);
+
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const isPrimaryAdmin = Boolean(adminEmail && email === adminEmail);
+  const role = isPrimaryAdmin ? "ADMIN" : "USER";
+  const adminId = isPrimaryAdmin ? "ADMIN" : null;
+
   const user = await prisma.user.create({
-    data: { name, username, email, passwordHash, role: "USER", publicId },
+    data: { name, username, email, passwordHash, role, adminId, publicId },
   });
+  await ensureAdminIds();
   await prisma.accountEvent.create({
     data: { type: "ACCOUNT_CREATED", emailSnapshot: user.email, userId: user.id },
   });

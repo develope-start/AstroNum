@@ -33,6 +33,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (email) {
     const duplicate = await prisma.user.findUnique({ where: { email }, select: { id: true } });
     if (duplicate && duplicate.id !== admin.id) return NextResponse.json({ error: "This email is already registered" }, { status: 409 });
+    if (email !== admin.email && await prisma.deletedUser.findUnique({ where: { email }, select: { id: true } })) return NextResponse.json({ error: "This email belongs to a deleted account and must be restored first" }, { status: 409 });
   }
   if (username) {
     const duplicate = await prisma.user.findUnique({ where: { username }, select: { id: true } });

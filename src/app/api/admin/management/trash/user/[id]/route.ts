@@ -7,15 +7,27 @@ async function allowed(req: NextRequest) {
   return (await getActiveSessionFromRequest(req))?.role === "ADMIN";
 }
 
+function parseJsonArray(value: string): Array<Record<string, any>> | null {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed as Array<Record<string, any>> : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   if (!(await allowed(req))) return NextResponse.json({ error: "წვდომა აკრძალულია" }, { status: 403 });
   const deleted = await prisma.deletedUser.findUnique({ where: { id: params.id } });
   if (!deleted) return NextResponse.json({ error: "ურნაში ჩანაწერი ვერ მოიძებნა" }, { status: 404 });
   if (await prisma.user.findUnique({ where: { email: deleted.email } })) return NextResponse.json({ error: "ამ ელფოსტით მოქმედი ანგარიში უკვე არსებობს" }, { status: 409 });
 
-  const charts = JSON.parse(deleted.chartsJson) as Array<Record<string, any>>;
-  const calculations = JSON.parse(deleted.calculationsJson) as Array<Record<string, any>>;
-  const events = JSON.parse(deleted.accountEventsJson) as Array<Record<string, any>>;
+  const charts = parseJsonArray(deleted.chartsJson);
+  const calculations = parseJsonArray(deleted.calculationsJson);
+  const events = parseJsonArray(deleted.accountEventsJson);
+  if (!charts || !calculations || !events) {
+    return NextResponse.json({ error: "This deleted account contains invalid archive data and cannot be restored automatically" }, { status: 422 });
+  }
   const restoredPublicId = await allocatePublicId("REGISTERED", numberFromPublicId(deleted.publicId));
   const restoredAdminId = deleted.role === "ADMIN" ? await allocateAdminId(deleted.adminId) : null;
   await prisma.$transaction(async (tx) => {

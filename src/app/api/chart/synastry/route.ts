@@ -46,6 +46,10 @@ export async function POST(req: NextRequest) {
 
   const responseBody = { chartA, chartB, aspects, interpretation };
   const session = await getActiveSessionFromRequest(req);
+  if (save && !session) {
+    return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
+  }
+  const sessionUserId = session?.userId ?? null;
   const requestInfo = getRequestInfo(req);
 
   const calculation = await tryRecordCalculation({
@@ -74,12 +78,10 @@ export async function POST(req: NextRequest) {
   });
 
   if (save) {
-    if (!session) {
-      return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
-    }
+    if (!sessionUserId) return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
     const chart = await prisma.chart.create({
       data: {
-        userId: session.userId,
+        userId: sessionUserId,
         type: "SYNASTRY",
         label: label || `სინასტრია — ${personA.name} & ${personB.name}`,
         name1: personA.name,

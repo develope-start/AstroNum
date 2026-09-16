@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminCalculationViewer, { CalculationViewData } from "@/components/AdminCalculationViewer";
+import { readApiResponse } from "@/lib/apiResponse";
 
 interface ChartRow {
   id: string;
@@ -268,11 +269,18 @@ export default function AdminPage() {
           if (!cancelled) setError(`ადმინის API-ის შეცდომა (${res.status})`);
           return;
         }
-        const data = await res.json();
+        const data = await readApiResponse<{
+          admin?: { email?: string; adminId?: string | null };
+          users?: UserRow[];
+          calculations?: CalculationRow[];
+          guestCalculationGroups?: GuestCalculationGroup[];
+          accountEvents?: AccountEventRow[];
+          error?: string;
+        }>(res);
         if (!cancelled) {
           setAdminEmail(data.admin?.email ?? null);
           setAdminId(data.admin?.adminId ?? null);
-          setUsers(data.users);
+          setUsers(data.users ?? []);
           setCalculations(data.calculations ?? []);
           setGuestCalculationGroups(data.guestCalculationGroups ?? []);
           setAccountEvents(data.accountEvents ?? []);

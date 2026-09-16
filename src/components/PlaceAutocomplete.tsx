@@ -76,15 +76,17 @@ export default function PlaceAutocomplete({
   ).map((c) => ({ label: c.name, lat: c.lat, lon: c.lon, timezone: "Asia/Tbilisi", source: "ge" as const }));
 
   useEffect(() => {
+    const controller = new AbortController();
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (query.trim().length < 2) {
       setRemoteHits([]);
-      return;
+      setSearching(false);
+      return () => controller.abort();
     }
     setSearching(true);
     debounceRef.current = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/geocode?q=${encodeURIComponent(query.trim())}&limit=6`);
+        const res = await fetch(`/api/geocode?q=${encodeURIComponent(query.trim())}&limit=6`, { signal: controller.signal });
         const data = await res.json();
         if (res.ok && Array.isArray(data.results)) {
           setRemoteHits(
@@ -100,11 +102,15 @@ export default function PlaceAutocomplete({
           setRemoteHits([]);
         }
       } catch {
-        setRemoteHits([]);
+        if (!controller.signal.aborted) setRemoteHits([]);
       } finally {
-        setSearching(false);
+        if (!controller.signal.aborted) setSearching(false);
       }
     }, 500);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      controller.abort();
+    };
   }, [query]);
 
   useEffect(() => {

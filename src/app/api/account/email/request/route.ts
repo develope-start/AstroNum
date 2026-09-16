@@ -28,6 +28,9 @@ export async function POST(req: NextRequest) {
   }
   const existing = await prisma.user.findUnique({ where: { email: newEmail } });
   if (existing) return NextResponse.json({ error: "ამ ელფოსტით ანგარიში უკვე არსებობს" }, { status: 409 });
+  if (await prisma.deletedUser.findUnique({ where: { email: newEmail }, select: { id: true } })) {
+    return NextResponse.json({ error: "ეს მეილი წაშლილ ანგარიშს ეკუთვნის და აღდგენამდე ვერ გამოიყენება" }, { status: 409 });
+  }
 
   const token = await createActionToken({
     userId: user.id,

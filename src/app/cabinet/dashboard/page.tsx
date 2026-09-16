@@ -108,14 +108,22 @@ export default function DashboardPage() {
   }, [router]);
 
   useEffect(() => {
-    fetch("/api/charts").then(async (res) => {
+    let active = true;
+    fetch("/api/charts", { cache: "no-store" }).then(async (res) => {
+      const data = await readApiResponse<{ charts?: ChartSummary[]; error?: string }>(res);
       if (res.status === 401) {
         router.push("/cabinet");
         return;
       }
-      const data = await res.json();
-      setCharts(data.charts);
+      if (!res.ok) {
+        if (active) setError(data.error || "რუკების ჩატვირთვა ვერ მოხერხდა");
+        return;
+      }
+      if (active) setCharts(data.charts ?? []);
+    }).catch(() => {
+      if (active) setError("რუკების ჩატვირთვა ვერ მოხერხდა");
     });
+    return () => { active = false; };
   }, [router]);
 
   async function openChart(id: string) {
@@ -123,7 +131,14 @@ export default function DashboardPage() {
     setError(null);
     try {
       const res = await fetch(`/api/charts/${id}`);
-      const data = await res.json();
+      const data = await readApiResponse<{
+        id?: string;
+        label?: string;
+        type?: string;
+        interpretation?: string | null;
+        result?: { ascendant?: unknown; mc?: number; houseCusps?: number[]; planets?: Array<{ name: string; longitude: number }> };
+        error?: string;
+      }>(res);
       if (!res.ok) {
         setError(data.error || "რუკის ჩატვირთვა ვერ მოხერხდა");
         return;
@@ -141,10 +156,10 @@ export default function DashboardPage() {
       }
 
       setSelected({
-        id: data.id,
-        label: data.label,
-        type: data.type,
-        interpretation: data.interpretation,
+        id: data.id ?? id,
+        label: data.label ?? "რუკა",
+        type: data.type ?? "NATAL",
+        interpretation: data.interpretation ?? "",
         result: wheelData,
       });
       setShowWheel(true);

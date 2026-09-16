@@ -109,18 +109,35 @@ export async function allocateAdminId(preferredId?: string | null) {
 }
 
 export async function ensureAdminIds() {
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+
+  if (adminEmail) {
+    const primaryUser = await prisma.user.findUnique({ where: { email: adminEmail } });
+    if (primaryUser) {
+      if (primaryUser.role !== "ADMIN" || primaryUser.adminId !== "ADMIN") {
+        await prisma.user.update({
+          where: { id: primaryUser.id },
+          data: { role: "ADMIN", adminId: "ADMIN" },
+        });
+      }
+    }
+  }
+
   return prisma.$transaction(async (tx) => {
     const admins = await tx.user.findMany({
       where: { role: "ADMIN" },
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
-      select: { id: true, adminId: true },
+      select: { id: true, email: true, adminId: true },
     });
     if (!admins.length) return;
+
+    const hasPrimary = admins.some((a) => a.adminId === "ADMIN");
 
     for (let index = 0; index < admins.length; index += 1) {
       const admin = admins[index];
       if (admin.adminId) continue;
-      const adminId = index === 0
+      const isPrimaryEmail = adminEmail && admin.email.toLowerCase() === adminEmail;
+      const adminId = (isPrimaryEmail || (!hasPrimary && index === 0))
         ? await allocateAdminIdWithClient(tx as unknown as DbClient, "ADMIN")
         : await allocateAdminIdWithClient(tx as unknown as DbClient);
       await tx.user.update({ where: { id: admin.id }, data: { adminId } });

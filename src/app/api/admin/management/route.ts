@@ -30,6 +30,26 @@ const calculationSelect = {
   updatedAt: true,
 } as const;
 
+function parseJsonArray(value: string): Array<Record<string, unknown>> {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed as Array<Record<string, unknown>> : [];
+  } catch {
+    return [];
+  }
+}
+
+function parseJsonObject(value: string): Record<string, unknown> {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed as Record<string, unknown>
+      : {};
+  } catch {
+    return {};
+  }
+}
+
 export async function GET(req: NextRequest) {
   const session = await getActiveSessionFromRequest(req);
   if (!session || session.role !== "ADMIN") {
@@ -80,7 +100,8 @@ export async function GET(req: NextRequest) {
     guestCalculations,
     guestCalculationGroups,
     deletedUsers: deletedUsers.map((user) => {
-      const calculations = JSON.parse(user.calculationsJson) as Array<Record<string, unknown>>;
+      const calculations = parseJsonArray(user.calculationsJson);
+      const charts = parseJsonArray(user.chartsJson);
       return {
         id: user.id,
         publicId: user.publicId,
@@ -91,13 +112,13 @@ export async function GET(req: NextRequest) {
         role: user.role,
         originalCreatedAt: user.originalCreatedAt,
         deletedAt: user.deletedAt,
-        chartCount: JSON.parse(user.chartsJson).length,
+        chartCount: charts.length,
         calculationCount: calculations.length,
         calculations: calculations.map(({ resultJson, interpretation, ipAddress, userAgent, ...calculation }) => calculation),
       };
     }),
     deletedCalculations: deletedCalculations.map(({ dataJson, ...item }) => {
-      const data = JSON.parse(dataJson) as { userId?: string | null };
+      const data = parseJsonObject(dataJson) as { userId?: string | null };
       const userEmail = data.userId
         ? users.find((user) => user.id === data.userId)?.email ?? deletedUsers.find((user) => user.id === data.userId)?.email ?? null
         : null;

@@ -50,6 +50,10 @@ export async function POST(req: NextRequest) {
 
   const responseBody = { result, interpretation };
   const session = await getActiveSessionFromRequest(req);
+  if (data.save && !session) {
+    return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
+  }
+  const sessionUserId = session?.userId ?? null;
   const requestInfo = getRequestInfo(req);
 
   const calculation = await tryRecordCalculation({
@@ -78,12 +82,10 @@ export async function POST(req: NextRequest) {
   });
 
   if (data.save) {
-    if (!session) {
-      return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
-    }
+    if (!sessionUserId) return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
     const chart = await prisma.chart.create({
       data: {
-        userId: session.userId,
+        userId: sessionUserId,
         type: "NATAL",
         label: data.label || `ნატალური — ${data.name}`,
         name1: data.name,

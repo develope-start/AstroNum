@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const lat = latStr ? parseFloat(latStr) : NaN;
   const lon = lonStr ? parseFloat(lonStr) : NaN;
 
-  if (Number.isNaN(lat) || Number.isNaN(lon)) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
     return NextResponse.json({ error: "lat/lon პარამეტრები საჭიროა" }, { status: 400 });
   }
 

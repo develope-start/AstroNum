@@ -44,6 +44,10 @@ export async function POST(req: NextRequest) {
 
   const responseBody = { natalChart, transitPlanets, aspects, interpretation };
   const session = await getActiveSessionFromRequest(req);
+  if (save && !session) {
+    return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
+  }
+  const sessionUserId = session?.userId ?? null;
   const requestInfo = getRequestInfo(req);
 
   const calculation = await tryRecordCalculation({
@@ -72,12 +76,10 @@ export async function POST(req: NextRequest) {
   });
 
   if (save) {
-    if (!session) {
-      return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
-    }
+    if (!sessionUserId) return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
     const chart = await prisma.chart.create({
       data: {
-        userId: session.userId,
+        userId: sessionUserId,
         type: "TRANSIT",
         label: label || `ტრანზიტი — ${natal.name} (${transitDate})`,
         name1: natal.name,

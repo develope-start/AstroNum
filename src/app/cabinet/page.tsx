@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { readApiResponse } from "@/lib/apiResponse";
 import { User, Mail, Lock, LogIn, UserPlus, Loader2, Sparkles, AtSign } from "lucide-react";
 
 export default function CabinetPage() {
@@ -24,7 +25,7 @@ export default function CabinetPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(mode === "signup" ? { name, username, email, password } : { identifier: email, password }),
       });
-      const data = await res.json();
+      const data = await readApiResponse<{ error?: string }>(res);
       if (!res.ok) {
         setError(data.error || "შეცდომა");
         return;
@@ -160,4 +161,3 @@ export default function CabinetPage() {
     </div>
   );
 }
-

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { ACTION_TYPES, getValidActionToken, parseTokenPayload } from "@/lib/actionTokens";
 import { asRole, SESSION_COOKIE, signSession } from "@/lib/auth";
+import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect";
 
 const schema = z.object({ token: z.string().min(1) });
 
@@ -14,7 +15,23 @@ export async function POST(req: NextRequest) {
   if (!actionToken || !actionToken.userId) {
     return NextResponse.json({ error: "ბმული ვადაგასულია ან უკვე გამოყენებულია" }, { status: 400 });
   }
-  const user = await prisma.user.findUnique({ where: { id: actionToken.userId } });
+  const user = await prisma.user.findUnique({
+    where: { id: actionToken.userId },
+    select: {
+      id: true,
+      publicId: true,
+      adminId: true,
+      name: true,
+      username: true,
+      email: true,
+      passwordHash: true,
+      role: true,
+      createdAt: true,
+      charts: true,
+      calculations: { select: calculationWithoutInterpretationSelect },
+      accountEvents: true,
+    },
+  });
   if (!user) return NextResponse.json({ error: "მომხმარებელი ვერ მოიძებნა" }, { status: 404 });
   const payload = parseTokenPayload(actionToken.payload);
 
@@ -23,6 +40,9 @@ export async function POST(req: NextRequest) {
     if (!newEmail) return NextResponse.json({ error: "ცვლილების მონაცემები ვერ მოიძებნა" }, { status: 400 });
     const existing = await prisma.user.findUnique({ where: { email: newEmail } });
     if (existing && existing.id !== user.id) return NextResponse.json({ error: "ამ ელფოსტით ანგარიში უკვე არსებობს" }, { status: 409 });
+    if (newEmail !== user.email && await prisma.deletedUser.findUnique({ where: { email: newEmail }, select: { id: true } })) {
+      return NextResponse.json({ error: "ეს მეილი წაშლილ ანგარიშს ეკუთვნის და აღდგენამდე ვერ გამოიყენება" }, { status: 409 });
+    }
 
     await prisma.$transaction([
       prisma.user.update({ where: { id: user.id }, data: { email: newEmail } }),
@@ -60,6 +80,24 @@ export async function POST(req: NextRequest) {
       await tx.actionToken.update({ where: { id: actionToken.id }, data: { usedAt: new Date() } });
       await tx.accountEvent.deleteMany({ where: { userId: user.id, type: { startsWith: "CHART_DELETED" } } });
       await tx.accountEvent.create({ data: { userId: user.id, type: deletionType, emailSnapshot: user.email } });
+      const accountEvents = await tx.accountEvent.findMany({ where: { userId: user.id } });
+      await tx.deletedUser.create({
+        data: {
+          id: user.id,
+          publicId: user.publicId,
+          adminId: user.adminId,
+          name: user.name,
+          username: user.username,
+          email: user.email,
+          passwordHash: user.passwordHash,
+          role: user.role,
+          originalCreatedAt: user.createdAt,
+          chartsJson: JSON.stringify(user.charts),
+          calculationsJson: JSON.stringify(user.calculations),
+          accountEventsJson: JSON.stringify(accountEvents),
+        },
+      });
+      await tx.calculation.deleteMany({ where: { userId: user.id } });
       await tx.user.delete({ where: { id: user.id } });
     });
     const response = NextResponse.json({ message: "კაბინეტი წაიშალა" });

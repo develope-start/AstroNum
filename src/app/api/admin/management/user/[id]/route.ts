@@ -36,6 +36,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const email = parsed.data.email.trim().toLowerCase();
   const duplicate = await prisma.user.findUnique({ where: { email } });
   if (duplicate && duplicate.id !== user.id) return NextResponse.json({ error: "This email is already registered" }, { status: 409 });
+  if (email !== user.email && await prisma.deletedUser.findUnique({ where: { email }, select: { id: true } })) {
+    return NextResponse.json({ error: "ეს მეილი წაშლილ ანგარიშს ეკუთვნის და აღდგენამდე ვერ გამოიყენება" }, { status: 409 });
+  }
   if (username) {
     const duplicateUsername = await prisma.user.findUnique({ where: { username }, select: { id: true } });
     if (duplicateUsername && duplicateUsername.id !== user.id) return NextResponse.json({ error: "ეს username უკვე დაკავებულია" }, { status: 409 });

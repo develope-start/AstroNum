@@ -3,6 +3,17 @@ import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
 import { allocatePublicId, ensureUserPublicId, numberFromPublicId } from "@/lib/publicIds";
 
+function parseJsonObject(value: string): Record<string, unknown> | null {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed as Record<string, unknown>
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getActiveSessionFromRequest(req);
   if (!session || session.role !== "ADMIN") {
@@ -14,7 +25,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: "ურნაში ეს რუკა ვეღარ მოიძებნა" }, { status: 404 });
   }
 
-  const calculation = JSON.parse(deleted.dataJson) as Record<string, unknown>;
+  const calculation = parseJsonObject(deleted.dataJson);
+  if (!calculation) {
+    return NextResponse.json({ error: "This deleted calculation contains invalid archive data and cannot be restored automatically" }, { status: 422 });
+  }
   const { interpretation: _interpretation, ...calculationData } = calculation;
   const userId = typeof calculation.userId === "string" ? calculation.userId : null;
   const user = userId

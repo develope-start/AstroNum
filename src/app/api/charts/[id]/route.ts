@@ -14,10 +14,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: "წვდომა აკრძალულია" }, { status: 403 });
   }
 
-  return NextResponse.json({
-    ...chart,
-    result: JSON.parse(chart.resultJson),
-  });
+  let result: unknown;
+  try {
+    result = JSON.parse(chart.resultJson);
+  } catch {
+    return NextResponse.json({ error: "რუკის შედეგის მონაცემები დაზიანებულია" }, { status: 422 });
+  }
+
+  return NextResponse.json({ ...chart, result });
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
