@@ -25,7 +25,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   if (!(await authorized(req))) return NextResponse.json({ error: "Access denied" }, { status: 403 });
   // Keep this select explicit so an older database missing the optional
   // interpretation column can still open a calculation.
-  const calculation = await prisma.calculation.findUnique({
+  let calculation = await prisma.calculation.findUnique({
     where: { id: params.id },
     select: {
       id: true, userId: true, publicId: true, saved: true, type: true,
@@ -35,7 +35,26 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       resultJson: true, updatedAt: true, createdAt: true,
     },
   });
-  if (!calculation) return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
+  if (!calculation) {
+    const savedChart = await prisma.chart.findUnique({
+      where: { id: params.id },
+      select: {
+        id: true, userId: true, type: true,
+        name1: true, date1: true, time1: true, place1: true, lat1: true, lon1: true, tz1: true,
+        name2: true, date2: true, time2: true, place2: true, lat2: true, lon2: true, tz2: true,
+        transitDate: true, houseSystem: true, resultJson: true, createdAt: true,
+      },
+    });
+    if (!savedChart) return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
+    calculation = {
+      ...savedChart,
+      publicId: null,
+      saved: true,
+      ipAddress: null,
+      userAgent: null,
+      updatedAt: null,
+    };
+  }
 
   let result: unknown = null;
   try {

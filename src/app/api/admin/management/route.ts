@@ -70,6 +70,30 @@ export async function GET(req: NextRequest) {
         role: true,
         createdAt: true,
         calculations: { orderBy: { createdAt: "desc" }, select: calculationSelect },
+        charts: {
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            type: true,
+            name1: true,
+            date1: true,
+            time1: true,
+            place1: true,
+            lat1: true,
+            lon1: true,
+            tz1: true,
+            name2: true,
+            date2: true,
+            time2: true,
+            place2: true,
+            lat2: true,
+            lon2: true,
+            tz2: true,
+            transitDate: true,
+            houseSystem: true,
+            createdAt: true,
+          },
+        },
       },
     }),
     prisma.calculation.findMany({
@@ -87,10 +111,59 @@ export async function GET(req: NextRequest) {
     }),
   ]);
 
-  const dedupedUsers = users.map((user) => ({
-    ...user,
-    calculations: dedupeRecentCalculations(user.calculations),
-  }));
+  const dedupedUsers = users.map((user) => {
+    const chartFallbacks = user.charts
+      .filter((chart) => !user.calculations.some((calculation) =>
+        calculation.type === chart.type &&
+        calculation.name1 === chart.name1 &&
+        calculation.date1 === chart.date1 &&
+        calculation.time1 === chart.time1 &&
+        calculation.place1 === chart.place1 &&
+        calculation.lat1 === chart.lat1 &&
+        calculation.lon1 === chart.lon1 &&
+        calculation.tz1 === chart.tz1 &&
+        calculation.name2 === chart.name2 &&
+        calculation.date2 === chart.date2 &&
+        calculation.time2 === chart.time2 &&
+        calculation.place2 === chart.place2 &&
+        calculation.lat2 === chart.lat2 &&
+        calculation.lon2 === chart.lon2 &&
+        calculation.tz2 === chart.tz2 &&
+        calculation.transitDate === chart.transitDate &&
+        calculation.houseSystem === chart.houseSystem
+      ))
+      .map((chart) => ({
+        id: chart.id,
+        userId: user.id,
+        publicId: user.publicId,
+        saved: true,
+        type: chart.type,
+        name1: chart.name1,
+        date1: chart.date1,
+        time1: chart.time1,
+        place1: chart.place1,
+        lat1: chart.lat1,
+        lon1: chart.lon1,
+        tz1: chart.tz1,
+        name2: chart.name2,
+        date2: chart.date2,
+        time2: chart.time2,
+        place2: chart.place2,
+        lat2: chart.lat2,
+        lon2: chart.lon2,
+        tz2: chart.tz2,
+        transitDate: chart.transitDate,
+        houseSystem: chart.houseSystem,
+        createdAt: chart.createdAt,
+        updatedAt: null,
+      }));
+
+    return {
+      ...user,
+      calculations: dedupeRecentCalculations([...user.calculations, ...chartFallbacks]),
+      charts: undefined,
+    };
+  });
   const guestCalculationGroups = groupGuestCalculations(guestCalculations);
 
   return NextResponse.json({
