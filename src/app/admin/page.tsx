@@ -249,6 +249,9 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<CalculationFilters>(EMPTY_FILTERS);
   const [selectedGuestCalculations, setSelectedGuestCalculations] = useState<Record<string, string>>({});
+  const [selectedAccountEvents, setSelectedAccountEvents] = useState<string[]>([]);
+  const [showDeleteEventsModal, setShowDeleteEventsModal] = useState(false);
+  const [eventsDeleteLoading, setEventsDeleteLoading] = useState(false);
   const [viewingCalculation, setViewingCalculation] = useState<CalculationViewData | null>(null);
   const [viewLoading, setViewLoading] = useState(false);
 
@@ -323,6 +326,28 @@ export default function AdminPage() {
       setError(requestError instanceof Error ? requestError.message : "რუკის გახსნა ვერ მოხერხდა");
     } finally {
       setViewLoading(false);
+    }
+  }
+
+  async function permanentlyDeleteAccountEvents() {
+    if (selectedAccountEvents.length === 0) return;
+    setEventsDeleteLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/admin/management/account-events/permanent", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: selectedAccountEvents }),
+      });
+      const data = await readApiResponse<{ error?: string }>(response);
+      if (!response.ok) throw new Error(data.error || `ისტორიის წაშლა ვერ შესრულდა (${response.status})`);
+      setAccountEvents((current) => current?.filter((event) => !selectedAccountEvents.includes(event.id)) ?? []);
+      setSelectedAccountEvents([]);
+      setShowDeleteEventsModal(false);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "ისტორიის წაშლა ვერ შესრულდა");
+    } finally {
+      setEventsDeleteLoading(false);
     }
   }
 
@@ -736,6 +761,27 @@ export default function AdminPage() {
       )}
 
       <section id="account-events-section" className="mb-8 scroll-mt-6">
+        {accountEvents && accountEvents.length > 0 && (
+          <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-950/30 px-3 py-2 text-xs font-bold text-cyan-200">
+              <input
+                type="checkbox"
+                className="h-4 w-4 cursor-pointer accent-cyan-400"
+                checked={selectedAccountEvents.length === accountEvents.length}
+                onChange={(event) => setSelectedAccountEvents(event.target.checked ? accountEvents.map((item) => item.id) : [])}
+              />
+              ყველას მონიშვნა
+            </label>
+            <button
+              type="button"
+              disabled={selectedAccountEvents.length === 0 || eventsDeleteLoading}
+              onClick={() => setShowDeleteEventsModal(true)}
+              className="rounded-full border border-rose-500/70 bg-rose-950/50 px-4 py-2 text-xs font-black text-rose-300 transition hover:bg-rose-900/70 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              სამუდამოდ წაშლა ({selectedAccountEvents.length})
+            </button>
+          </div>
+        )}
         <h2 className="font-display mb-4 text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-indigo-400 drop-shadow-[0_0_18px_rgba(34,211,238,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.95)] hover:scale-[1.01] cursor-default">
           🔑 კაბინეტების ცვლილებების ისტორია
         </h2>
@@ -743,7 +789,15 @@ export default function AdminPage() {
         <div className="space-y-2">
           {accountEvents?.map((event) => (
             <div key={event.id} className={`flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-ink-2/60 p-3 text-xs ${event.user?.role === "ADMIN" ? "border-2 border-[#35c759] bg-[#35c759]/10" : "border-line"}`}>
-              <div>
+              <div className="flex min-w-0 flex-1 items-start gap-3">
+                <input
+                  type="checkbox"
+                  aria-label="ისტორიის ჩანაწერის მონიშვნა"
+                  className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-cyan-400"
+                  checked={selectedAccountEvents.includes(event.id)}
+                  onChange={() => setSelectedAccountEvents((current) => current.includes(event.id) ? current.filter((id) => id !== event.id) : [...current, event.id])}
+                />
+                <div>
                 <span className={`inline-flex rounded-full border px-2.5 py-1 font-bold ${eventIsDeleted(event.type) ? "border-rose-400/70 bg-rose-950/50 text-rose-300" : eventIsRestored(event.type) ? "border-emerald-400/70 bg-emerald-950/50 text-emerald-300" : "border-amber-400/50 bg-amber-500/10 text-brass-2"}`}>
                   {eventStatusLabel[eventBaseType(event.type)] ?? eventLabel[eventBaseType(event.type)] ?? event.type}
                 </span>
@@ -767,11 +821,29 @@ export default function AdminPage() {
                 )}
                 {event.oldEmail && event.newEmail && <span className="ml-3 text-parchment-dim">{event.oldEmail} → {event.newEmail}</span>}
               </div>
-              <span className="text-parchment-dim">{showDateTime(event.createdAt)}</span>
+               <span className="text-parchment-dim">{showDateTime(event.createdAt)}</span>
+             </div>
             </div>
-          ))}
+           ))}
         </div>
       </section>
+
+      {showDeleteEventsModal && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
+          <div className="w-full max-w-md space-y-4 rounded-2xl border border-rose-500/50 bg-[#120826] p-6 shadow-[0_0_50px_rgba(244,63,94,0.4)]">
+            <h3 className="font-display text-xl font-bold text-rose-300">ისტორიის სამუდამოდ წაშლა</h3>
+            <p className="text-sm leading-relaxed text-slate-200">
+              ნამდვილად გსურთ მონიშნული {selectedAccountEvents.length} ისტორიის ჩანაწერის სამუდამოდ წაშლა? ეს მოქმედება საბოლოოა და ჩანაწერების აღდგენა ვეღარ მოხდება.
+            </p>
+            <div className="flex justify-end gap-3 pt-2">
+              <button type="button" onClick={() => setShowDeleteEventsModal(false)} className="rounded-full border border-slate-500/50 bg-slate-800/60 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700/60">უარყოფა</button>
+              <button type="button" disabled={eventsDeleteLoading} onClick={permanentlyDeleteAccountEvents} className="rounded-full border border-rose-500 bg-gradient-to-r from-rose-600 to-red-600 px-5 py-2 text-xs font-black text-white shadow-[0_0_20px_rgba(244,63,94,0.6)] disabled:opacity-50">
+                {eventsDeleteLoading ? "იშლება..." : "თანხმობა, სამუდამოდ წაშლა"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {viewLoading && <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 text-sm text-slate-200">იტვირთება...</div>}
       {viewingCalculation && <AdminCalculationViewer calculation={viewingCalculation} onClose={() => setViewingCalculation(null)} />}

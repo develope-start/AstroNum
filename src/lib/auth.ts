@@ -15,6 +15,7 @@ export interface SessionPayload {
 export interface ActiveSession extends SessionPayload {
   name: string | null;
   username: string | null;
+  adminId: string | null;
   createdAt: string;
   expiresAt: string | null;
 }
@@ -88,6 +89,7 @@ export async function getActiveSessionFromRequest(req: NextRequest): Promise<Act
       role: asRole(syncedUser.role),
       name: syncedUser.name,
       username: syncedUser.username,
+      adminId: syncedUser.adminId || null,
       createdAt: syncedUser.createdAt.toISOString(),
       expiresAt: session.exp ? new Date(session.exp * 1000).toISOString() : null,
     };

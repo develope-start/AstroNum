@@ -13,6 +13,7 @@ export default function CabinetSettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [deletePassword, setDeletePassword] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [canDeleteAccount, setCanDeleteAccount] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,13 @@ export default function CabinetSettingsPage() {
     fetch("/api/auth/me", { cache: "no-store" })
       .then(async (res) => {
         const data = await res.json().catch(() => ({ user: null }));
-        if (active && (!res.ok || !data.user)) router.replace("/cabinet");
+        if (active && (!res.ok || !data.user)) {
+          router.replace("/cabinet");
+          return;
+        }
+        if (active && data.user) {
+          setCanDeleteAccount(!(data.user.role === "ADMIN" && data.user.adminId === "ADMIN"));
+        }
       })
       .catch(() => {
         if (active) router.replace("/cabinet");
@@ -172,7 +179,7 @@ export default function CabinetSettingsPage() {
         </form>
       </section>
 
-      <section className="glass-panel rounded-2xl sm:rounded-[28px] p-5 sm:p-7 border-rose-500/30 bg-rose-950/20 shadow-xl space-y-4">
+      {canDeleteAccount && <section className="glass-panel rounded-2xl sm:rounded-[28px] p-5 sm:p-7 border-rose-500/30 bg-rose-950/20 shadow-xl space-y-4">
         <div>
           <h2 className="font-display text-lg font-bold text-rose-400">კაბინეტის წაშლა</h2>
           <p className="mt-0.5 text-xs text-slate-300">
@@ -196,7 +203,7 @@ export default function CabinetSettingsPage() {
             კაბინეტის წაშლა
           </button>
         </form>
-      </section>
+      </section>}
 
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">

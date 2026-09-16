@@ -67,6 +67,9 @@ export async function POST(req: NextRequest) {
   }
 
   if (actionToken.type === ACTION_TYPES.ACCOUNT_DELETE) {
+    if (user.role === "ADMIN" && user.adminId === "ADMIN") {
+      return NextResponse.json({ error: "მთავარი ადმინისტრატორის კაბინეტის წაშლა შეუძლებელია" }, { status: 403 });
+    }
     const chartCount = await prisma.chart.count({ where: { userId: user.id } });
     const deletedChartEvent = await prisma.accountEvent.findFirst({
       where: { userId: user.id, type: { startsWith: "CHART_DELETED" } },

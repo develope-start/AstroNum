@@ -47,6 +47,10 @@ export async function POST(req: NextRequest) {
   const isPrimaryAdmin = user.role === "ADMIN" && user.adminId === "ADMIN";
 
   if (isPrimaryAdmin) {
+    return NextResponse.json({ error: "მთავარი ადმინისტრატორის კაბინეტის წაშლა შეუძლებელია" }, { status: 403 });
+  }
+
+  if (isPrimaryAdmin) {
     const deletionType = user.charts.length > 0 || user.accountEvents.some((event) => event.type.startsWith("CHART_DELETED"))
       ? "ACCOUNT_AND_CHARTS_DELETED"
       : "ACCOUNT_DELETED";
