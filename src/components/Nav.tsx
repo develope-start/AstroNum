@@ -22,7 +22,7 @@ export default function Nav() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full px-2 py-2 sm:px-6 sm:py-3.5">
+    <header className="w-full px-2 py-2 sm:px-6 sm:py-3.5">
       <div className="mx-auto max-w-6xl rounded-2xl sm:rounded-full border border-amber-400/40 bg-[#08041a]/95 p-2.5 sm:px-6 sm:py-2.5 backdrop-blur-3xl shadow-[0_16px_50px_rgba(0,0,0,0.85)] ring-1 ring-amber-500/20">
         
         {/* Main Header Row */}
