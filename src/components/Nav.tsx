@@ -55,13 +55,15 @@ export default function Nav() {
           </Link>
 
           {/* 2. Center Focus: Prominent Central Calculator Button (Desktop & Tablet) */}
-          <div className="hidden md:flex items-center justify-center flex-1 max-w-xs px-2">
+          <div className="hidden md:flex items-center justify-center flex-1 max-w-md px-2">
             <Link
               href="/#calculator"
-              className="group flex w-full items-center justify-center gap-2 rounded-full border-2 border-amber-400/70 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-black text-slate-950 shadow-[0_0_30px_rgba(245,158,11,0.55)] transition-all hover:scale-105 hover:shadow-[0_0_45px_rgba(245,158,11,0.85)] active:scale-95"
+              className="group flex w-full items-center justify-center gap-2.5 rounded-2xl sm:rounded-3xl border-2 border-cyan-300/80 bg-gradient-to-r from-blue-700 via-cyan-600 to-teal-400 px-5 py-2.5 text-xs sm:text-sm font-black text-white shadow-[0_0_35px_rgba(6,182,212,0.7)] transition-all hover:scale-105 hover:shadow-[0_0_50px_rgba(6,182,212,0.95)] hover:border-white active:scale-95"
             >
-              <Compass className="h-4 w-4 text-slate-950 shrink-0 group-hover:rotate-180 transition-transform duration-700" />
-              <span className="tracking-wide whitespace-nowrap">✦ ასტროლოგიური გამოთვლელი</span>
+              <Compass className="h-4.5 w-4.5 text-cyan-100 shrink-0 group-hover:rotate-180 transition-transform duration-700" />
+              <span className="tracking-wide whitespace-nowrap text-white font-black text-xs sm:text-sm drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]">
+                ✦ ასტროლოგიური რუკის შექმნა
+              </span>
             </Link>
           </div>
 
@@ -118,13 +120,13 @@ export default function Nav() {
         </div>
 
         {/* Mobile Central Calculator CTA Bar (Visible on mobile screens) */}
-        <div className="mt-2.5 pt-2 border-t border-amber-500/20 md:hidden flex items-center justify-center w-full">
+        <div className="mt-2.5 pt-2 border-t border-cyan-500/20 md:hidden flex items-center justify-center w-full">
           <Link
             href="/#calculator"
-            className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-amber-400/70 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-4 py-2 text-xs font-black text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.55)] transition-all hover:scale-[1.02] active:scale-98"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-cyan-300/80 bg-gradient-to-r from-blue-700 via-cyan-600 to-teal-400 px-4 py-2.5 text-xs sm:text-sm font-black text-white shadow-[0_0_30px_rgba(6,182,212,0.65)] transition-all hover:scale-[1.02] active:scale-98"
           >
-            <Compass className="h-4 w-4 text-slate-950 shrink-0" />
-            <span className="tracking-wide">✦ ასტროლოგიური გამოთვლელი</span>
+            <Compass className="h-4 w-4 text-cyan-100 shrink-0" />
+            <span className="tracking-wide text-white font-black">✦ ასტროლოგიური რუკის შექმნა</span>
           </Link>
         </div>
 

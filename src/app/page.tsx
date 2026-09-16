@@ -67,10 +67,10 @@ export default function HomePage() {
       <section id="calculator" className="scroll-mt-20 sm:scroll-mt-28 space-y-4">
         {/* Prominent Calculator Section Header */}
         <div className="text-center space-y-2 px-2">
-          <div className="inline-flex items-center justify-center gap-2 rounded-2xl sm:rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-purple-600/30 to-amber-500/20 px-4 py-1.5 shadow-[0_0_20px_rgba(245,158,11,0.25)] text-center max-w-full">
-            <Compass className="h-4 w-4 text-amber-300 shrink-0" />
-            <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-amber-300 break-words text-center">
-              ასტროლოგიური გამოთვლელი
+          <div className="inline-flex items-center justify-center gap-2.5 rounded-2xl sm:rounded-3xl border-2 border-cyan-300/80 bg-gradient-to-r from-blue-700 via-cyan-600 to-teal-400 px-6 py-2.5 shadow-[0_0_35px_rgba(6,182,212,0.7)] text-center max-w-full">
+            <Compass className="h-5 w-5 text-cyan-100 shrink-0 animate-spin-slow" />
+            <span className="text-sm sm:text-base font-black uppercase tracking-wider text-white drop-shadow-[0_0_12px_rgba(6,182,212,0.9)] break-words text-center">
+              ✦ ასტროლოგიური რუკის შექმნა
             </span>
           </div>
           <h2 className="font-display text-2xl sm:text-4xl font-black text-white drop-shadow-[0_0_25px_rgba(245,158,11,0.35)]">
