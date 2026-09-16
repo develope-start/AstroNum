@@ -29,7 +29,7 @@ export default function CabinetPage() {
         setError(data.error || "შეცდომა");
         return;
       }
-      router.push("/cabinet/dashboard");
+      router.replace("/cabinet/dashboard");
       router.refresh();
     } catch {
       setError("ქსელის შეცდომა");
@@ -160,5 +160,4 @@ export default function CabinetPage() {
     </div>
   );
 }
-
 

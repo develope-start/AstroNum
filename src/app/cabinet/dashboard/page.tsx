@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import InterpretationText from "@/components/InterpretationText";
 import ChartWheel, { WheelPlanet } from "@/components/ChartWheel";
 import { Compass, Copy, Check, X, Sparkles, Trash2, Eye } from "lucide-react";
+import { readApiResponse } from "@/lib/apiResponse";
+
+interface AccountSummary {
+  name: string | null;
+  email: string;
+  createdAt: string;
+  expiresAt: string | null;
+}
 
 interface ChartSummary {
   id: string;
@@ -38,14 +46,66 @@ const TYPE_LABEL_KA: Record<string, string> = {
   TRANSIT: "ტრანზიტი",
 };
 
+function formatRemaining(seconds: number) {
+  if (seconds <= 0) return "სესია დასრულდა";
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${days} დღე ${String(hours).padStart(2, "0")} სთ ${String(minutes).padStart(2, "0")} წთ ${String(secs).padStart(2, "0")} წმ`;
+}
+
+function SessionCountdown({ expiresAt, onExpired }: { expiresAt: string | null; onExpired: () => void }) {
+  const calculate = () => expiresAt ? Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000)) : 0;
+  const [remaining, setRemaining] = useState(calculate);
+
+  useEffect(() => {
+    if (!expiresAt) return;
+    const update = () => {
+      const next = calculate();
+      setRemaining(next);
+      if (next === 0) onExpired();
+    };
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, [expiresAt, onExpired]);
+
+  return <span>{expiresAt ? formatRemaining(remaining) : "—"}</span>;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
+  const [account, setAccount] = useState<AccountSummary | null>(null);
   const [charts, setCharts] = useState<ChartSummary[] | null>(null);
   const [selected, setSelected] = useState<SelectedChart | null>(null);
   const [showWheel, setShowWheel] = useState(true);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingChart, setLoadingChart] = useState<string | null>(null);
+
+  const handleSessionExpired = useCallback(() => {
+    router.replace("/cabinet");
+  }, [router]);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/auth/me", { cache: "no-store" })
+      .then(async (res) => {
+        const data = await readApiResponse<{ user?: AccountSummary }>(res);
+        if (!res.ok || !data.user) {
+          router.replace("/cabinet");
+          return;
+        }
+        if (active) setAccount(data.user);
+      })
+      .catch(() => {
+        if (active) router.replace("/cabinet");
+      });
+    return () => {
+      active = false;
+    };
+  }, [router]);
 
   useEffect(() => {
     fetch("/api/charts").then(async (res) => {
@@ -142,6 +202,29 @@ export default function DashboardPage() {
           </button>
         </div>
       </div>
+
+      {account && (
+        <div className="glass-panel grid gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-950/20 p-4 text-xs sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <p className="text-slate-400">სახელი</p>
+            <p className="mt-1 font-bold text-emerald-200">{account.name || "—"}</p>
+          </div>
+          <div>
+            <p className="text-slate-400">მეილი</p>
+            <p className="mt-1 break-all font-bold text-emerald-200">{account.email}</p>
+          </div>
+          <div>
+            <p className="text-slate-400">კაბინეტის შექმნის დრო</p>
+            <p className="mt-1 font-bold text-emerald-200">{new Date(account.createdAt).toLocaleString("ka-GE")}</p>
+          </div>
+          <div>
+            <p className="text-slate-400">ბოლო შესვლის სესიის დარჩენილი დრო</p>
+            <p className="mt-1 font-bold tabular-nums text-amber-300">
+              <SessionCountdown expiresAt={account.expiresAt} onExpired={handleSessionExpired} />
+            </p>
+          </div>
+        </div>
+      )}
 
       {error && (
         <p className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-4 text-xs font-semibold text-rose-300 text-center">
