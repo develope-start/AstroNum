@@ -134,26 +134,26 @@ export default function NatalCalculator() {
   const moonPlanet = wheel?.planets.find(p => p.name === "Moon");
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 text-center">
+    <div className="mx-auto max-w-2xl space-y-4 sm:space-y-6 text-center w-full max-w-full overflow-x-hidden">
       {/* Birth Fields Card with Z-30 Stacking Layer */}
-      <div className="relative z-30 text-center">
+      <div className="relative z-30 text-center w-full">
         <BirthFields value={birth} onChange={setBirth} legend="01. დაბადების მონაცემები" />
       </div>
 
       {/* House System Filter & Action Card with Z-10 Layer */}
-      <div className="glass-panel relative z-10 space-y-4 rounded-[28px] p-6 border-amber-500/25 bg-gradient-to-b from-[#130938]/90 to-[#09041a]/95 backdrop-blur-2xl shadow-xl text-center">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <div className="glass-panel relative z-10 space-y-4 rounded-2xl sm:rounded-[28px] p-4 sm:p-6 border-amber-500/25 bg-gradient-to-b from-[#130938]/90 to-[#09041a]/95 backdrop-blur-2xl shadow-xl text-center w-full">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
           <div className="flex items-center justify-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
-              <Sliders className="h-4 w-4" />
+            <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg sm:rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
+              <Sliders className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </div>
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-200">სახლთა სისტემა:</label>
+            <label className="text-[0.7rem] sm:text-xs font-bold uppercase tracking-wider text-slate-200">სახლთა სისტემა:</label>
           </div>
 
           <select
             value={houseSystem}
             onChange={(e) => setHouseSystem(e.target.value)}
-            className="rounded-xl border border-amber-500/25 bg-[#080418] px-4 py-2.5 text-xs font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 hover:border-amber-500/40 text-center"
+            className="w-full sm:w-auto rounded-xl border border-amber-500/25 bg-[#080418] px-3 py-2 text-xs font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 hover:border-amber-500/40 text-center"
           >
             <option value="placidus" className="bg-[#0A051D] text-slate-100">პლაციდუსი (Placidus)</option>
             <option value="whole_sign" className="bg-[#0A051D] text-slate-100">მთელი ნიშანი (Whole Sign)</option>
@@ -162,11 +162,11 @@ export default function NatalCalculator() {
           </select>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 pt-1 sm:pt-2">
           <button
             onClick={() => calculate(false)}
             disabled={loading}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 py-3.5 px-8 text-sm font-extrabold text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03] hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] disabled:opacity-50"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 py-3 sm:py-3.5 px-6 sm:px-8 text-xs sm:text-sm font-extrabold text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03] hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] disabled:opacity-50"
           >
             {loading ? (
               <>
@@ -185,7 +185,7 @@ export default function NatalCalculator() {
             <button
               onClick={() => calculate(true)}
               disabled={loading}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 py-3.5 px-6 text-sm font-bold text-amber-300 shadow-[0_0_18px_rgba(245,158,11,0.2)] transition-all hover:scale-[1.03] hover:border-amber-400"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 py-3 sm:py-3.5 px-6 text-xs sm:text-sm font-bold text-amber-300 shadow-[0_0_18px_rgba(245,158,11,0.2)] transition-all hover:scale-[1.03] hover:border-amber-400"
             >
               <Bookmark className="h-4 w-4 text-amber-400" />
               <span>შენახვა</span>
@@ -195,14 +195,14 @@ export default function NatalCalculator() {
       </div>
 
       {error && (
-        <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 px-5 py-4 text-xs font-semibold text-rose-300 shadow-lg">
+        <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 px-4 py-3.5 sm:px-5 sm:py-4 text-xs font-semibold text-rose-300 shadow-lg">
           <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {saved && (
-        <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-5 py-4 text-xs font-semibold text-emerald-300 shadow-lg">
+        <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3.5 sm:px-5 sm:py-4 text-xs font-semibold text-emerald-300 shadow-lg">
           <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
           <span>✓ წარმატებით შენახულია კაბინეტში!</span>
         </div>
@@ -210,20 +210,20 @@ export default function NatalCalculator() {
 
       {/* Element Infographic Breakdown */}
       {wheel && elements && (
-        <div className="glass-panel rounded-[28px] p-6 border-amber-500/25 bg-gradient-to-b from-[#130938]/90 to-[#09041a]/95 backdrop-blur-2xl shadow-xl space-y-4 text-center">
-          <div className="flex flex-wrap items-center justify-center gap-3 border-b border-amber-500/20 pb-3">
-            <span className="font-display text-sm font-bold text-amber-300 flex items-center justify-center gap-2">
-              <Compass className="h-4 w-4 text-amber-400" />
+        <div className="glass-panel rounded-2xl sm:rounded-[28px] p-4 sm:p-6 border-amber-500/25 bg-gradient-to-b from-[#130938]/90 to-[#09041a]/95 backdrop-blur-2xl shadow-xl space-y-3 sm:space-y-4 text-center">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 border-b border-amber-500/20 pb-3">
+            <span className="font-display text-xs sm:text-sm font-bold text-amber-300 flex items-center justify-center gap-1.5">
+              <Compass className="h-4 w-4 text-amber-400 shrink-0" />
               <span>სტიქიების ბალანსი & ცის ღერძები</span>
             </span>
-            <span className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-xs font-bold text-purple-300">
+            <span className="rounded-full border border-purple-400/30 bg-purple-500/10 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[0.7rem] sm:text-xs font-bold text-purple-300">
               ASC: {getSignName(wheel.ascendant)} ({Math.floor(wheel.ascendant % 30)}°)
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 text-xs">
-            <div className="rounded-xl border border-rose-500/20 bg-rose-950/20 p-3 space-y-1.5 text-center">
-              <div className="flex justify-between font-bold text-rose-300">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4 text-xs">
+            <div className="rounded-xl border border-rose-500/20 bg-rose-950/20 p-2.5 sm:p-3 space-y-1.5 text-center">
+              <div className="flex justify-between font-bold text-rose-300 text-[0.7rem] sm:text-xs">
                 <span className="flex items-center gap-1"><Flame className="h-3 w-3 text-rose-400" /> ცეცხლი</span>
                 <span>{elements.fire}%</span>
               </div>
@@ -232,8 +232,8 @@ export default function NatalCalculator() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-3 space-y-1.5 text-center">
-              <div className="flex justify-between font-bold text-emerald-300">
+            <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-2.5 sm:p-3 space-y-1.5 text-center">
+              <div className="flex justify-between font-bold text-emerald-300 text-[0.7rem] sm:text-xs">
                 <span className="flex items-center gap-1"><Mountain className="h-3 w-3 text-emerald-400" /> მიწა</span>
                 <span>{elements.earth}%</span>
               </div>
@@ -242,8 +242,8 @@ export default function NatalCalculator() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-amber-500/20 bg-amber-950/20 p-3 space-y-1.5 text-center">
-              <div className="flex justify-between font-bold text-amber-300">
+            <div className="rounded-xl border border-amber-500/20 bg-amber-950/20 p-2.5 sm:p-3 space-y-1.5 text-center">
+              <div className="flex justify-between font-bold text-amber-300 text-[0.7rem] sm:text-xs">
                 <span className="flex items-center gap-1"><Wind className="h-3 w-3 text-amber-400" /> ჰაერი</span>
                 <span>{elements.air}%</span>
               </div>
@@ -252,8 +252,8 @@ export default function NatalCalculator() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-sky-500/20 bg-sky-950/20 p-3 space-y-1.5 text-center">
-              <div className="flex justify-between font-bold text-sky-300">
+            <div className="rounded-xl border border-sky-500/20 bg-sky-950/20 p-2.5 sm:p-3 space-y-1.5 text-center">
+              <div className="flex justify-between font-bold text-sky-300 text-[0.7rem] sm:text-xs">
                 <span className="flex items-center gap-1"><Droplets className="h-3 w-3 text-sky-400" /> წყალი</span>
                 <span>{elements.water}%</span>
               </div>
@@ -267,17 +267,17 @@ export default function NatalCalculator() {
 
       {/* Chart Wheel Display */}
       {wheel && (
-        <div className="glass-panel relative overflow-hidden rounded-[28px] p-6 sm:p-8 border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl shadow-2xl text-center">
-          <div className="mb-4 text-center">
-            <h3 className="font-display text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">ნატალური ცის რუკა</h3>
-            <p className="mt-1 text-xs font-semibold text-slate-300">პლანეტების ეკლიპტიკური პოზიციები</p>
+        <div className="glass-panel relative overflow-hidden rounded-2xl sm:rounded-[28px] p-3 sm:p-8 border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl shadow-2xl text-center w-full">
+          <div className="mb-3 sm:mb-4 text-center">
+            <h3 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">ნატალური ცის რუკა</h3>
+            <p className="mt-0.5 text-[0.7rem] sm:text-xs font-semibold text-slate-300">პლანეტების ეკლიპტიკური პოზიციები</p>
           </div>
           <ChartWheel ascendant={wheel.ascendant} mc={wheel.mc} cusps={wheel.houseCusps} planets={wheel.planets} />
         </div>
       )}
 
       {!me && interpretation && (
-        <div className="flex items-start justify-center gap-3 rounded-2xl border border-amber-500/30 bg-purple-950/40 p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center">
+        <div className="flex items-start justify-center gap-2.5 rounded-2xl border border-amber-500/30 bg-purple-950/40 p-3.5 sm:p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center">
           <Info className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
           <p>
             სტუმარი რეჟიმია — ეს შედეგი შენახული იქნება ამ მოწყობილობაზე 12 საათის განმავლობაში. მუდმივი
@@ -288,7 +288,7 @@ export default function NatalCalculator() {
 
       {/* Full Width Interpretation Block */}
       {interpretation && (
-        <div className="glass-panel rounded-[28px] p-6 sm:p-8 shadow-2xl border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl text-left">
+        <div className="glass-panel rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl text-left w-full">
           <InterpretationText text={interpretation} />
         </div>
       )}

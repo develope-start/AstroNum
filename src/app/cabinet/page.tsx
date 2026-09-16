@@ -39,14 +39,14 @@ export default function CabinetPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md pt-6 sm:pt-10">
-      <div className="glass-panel rounded-[32px] p-7 sm:p-9 border-amber-500/25 bg-gradient-to-b from-[#130a35]/90 via-[#0e0728]/95 to-[#080417]/95 backdrop-blur-2xl shadow-2xl">
-        <div className="mb-7 text-center">
-          <div className="mx-auto mb-3 flex h-13 w-13 items-center justify-center rounded-2xl border border-amber-400/40 bg-gradient-to-br from-amber-500/20 to-purple-600/20 text-amber-300 shadow-[0_0_24px_rgba(245,158,11,0.3)]">
-            <Sparkles className="h-6 w-6 text-amber-300 animate-pulse" />
+    <div className="mx-auto max-w-md pt-3 sm:pt-8 w-full max-w-full sm:max-w-md">
+      <div className="glass-panel rounded-2xl sm:rounded-[32px] p-5 sm:p-9 border-amber-500/25 bg-gradient-to-b from-[#130a35]/90 via-[#0e0728]/95 to-[#080417]/95 backdrop-blur-2xl shadow-2xl w-full">
+        <div className="mb-6 sm:mb-7 text-center">
+          <div className="mx-auto mb-3 flex h-11 w-11 sm:h-13 sm:w-13 items-center justify-center rounded-2xl border border-amber-400/40 bg-gradient-to-br from-amber-500/20 to-purple-600/20 text-amber-300 shadow-[0_0_24px_rgba(245,158,11,0.3)]">
+            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-amber-300 animate-pulse" />
           </div>
-          <h1 className="font-display text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">პირადი კაბინეტი</h1>
-          <p className="mt-1 text-xs font-medium text-slate-300">შენახული რუკების მართვა და ასტროლოგიური არქივი</p>
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">პირადი კაბინეტი</h1>
+          <p className="mt-1 text-[0.72rem] sm:text-xs font-medium text-slate-300">შენახული რუკების მართვა და ასტროლოგიური არქივი</p>
         </div>
 
         <div className="mb-7 flex rounded-full border border-amber-500/25 bg-[#080418] p-1.5 backdrop-blur-xl">

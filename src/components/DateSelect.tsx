@@ -60,12 +60,12 @@ export default function DateSelect({
   }
 
   const selectClass =
-    "w-full rounded-2xl border border-amber-500/25 bg-[#080418] px-3 py-2.5 text-xs sm:text-sm font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:border-amber-500/40";
+    "w-full rounded-xl sm:rounded-2xl border border-amber-500/25 bg-[#080418] px-1.5 py-2 sm:px-3 sm:py-2.5 text-[0.7rem] sm:text-xs font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:border-amber-500/40 text-center truncate";
 
   return (
-    <div className="grid grid-cols-3 gap-2.5">
+    <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
       <div>
-        <label className="mb-1 block text-[0.65rem] uppercase tracking-wider font-bold text-slate-300">დღე</label>
+        <label className="mb-1 block text-[0.6rem] sm:text-[0.65rem] uppercase tracking-wider font-bold text-slate-300">დღე</label>
         <select
           className={selectClass}
           value={day}
@@ -80,7 +80,7 @@ export default function DateSelect({
         </select>
       </div>
       <div>
-        <label className="mb-1 block text-[0.65rem] uppercase tracking-wider font-bold text-slate-300">თვე</label>
+        <label className="mb-1 block text-[0.6rem] sm:text-[0.65rem] uppercase tracking-wider font-bold text-slate-300">თვე</label>
         <select
           className={selectClass}
           value={month}
@@ -95,7 +95,7 @@ export default function DateSelect({
         </select>
       </div>
       <div>
-        <label className="mb-1 block text-[0.65rem] uppercase tracking-wider font-bold text-slate-300">წელი</label>
+        <label className="mb-1 block text-[0.6rem] sm:text-[0.65rem] uppercase tracking-wider font-bold text-slate-300">წელი</label>
         <select
           className={selectClass}
           value={year}

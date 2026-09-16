@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="pointer-events-none fixed top-2/3 -left-40 -z-10 h-[550px] w-[550px] rounded-full bg-amber-500/15 blur-[140px]" />
 
         <Nav />
-        <main className="relative mx-auto max-w-5xl px-4 pb-24 pt-6 sm:px-6">{children}</main>
+        <main className="relative mx-auto w-full max-w-5xl px-3 pb-20 pt-4 sm:px-6 sm:pb-24 sm:pt-6 overflow-x-hidden">{children}</main>
       </body>
     </html>
   );

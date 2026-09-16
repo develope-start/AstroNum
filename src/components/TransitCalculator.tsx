@@ -90,32 +90,32 @@ export default function TransitCalculator() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 text-center">
-      <div className="relative z-30 text-center">
+    <div className="mx-auto max-w-2xl space-y-4 sm:space-y-6 text-center w-full max-w-full overflow-x-hidden">
+      <div className="relative z-30 text-center w-full">
         <BirthFields value={birth} onChange={setBirth} legend="01. ნატალური მონაცემები" />
       </div>
 
-      <div className="glass-panel relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-[28px] p-6 border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 backdrop-blur-2xl shadow-xl text-center">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
+      <div className="glass-panel relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl sm:rounded-[28px] p-4 sm:p-6 border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 backdrop-blur-2xl shadow-xl text-center w-full">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto">
           <div className="flex items-center justify-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
-              <Calendar className="h-4 w-4 text-amber-400" />
+            <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg sm:rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
+              <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-400" />
             </div>
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-200">თარიღი:</label>
+            <label className="text-[0.7rem] sm:text-xs font-bold uppercase tracking-wider text-slate-200">თარიღი:</label>
           </div>
 
           <input
             type="date"
             value={transitDate}
             onChange={(e) => setTransitDate(e.target.value)}
-            className="rounded-2xl border border-amber-500/25 bg-[#080418] px-4 py-2.5 text-xs font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:border-amber-500/40 text-center"
+            className="w-full sm:w-auto rounded-xl sm:rounded-2xl border border-amber-500/25 bg-[#080418] px-3 py-2 text-xs font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:border-amber-500/40 text-center"
           />
 
-          <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold">
+          <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold w-full sm:w-auto">
             <button
               type="button"
               onClick={() => setTransitDate(today())}
-              className={`rounded-full px-3 py-1.5 transition-all ${
+              className={`rounded-full px-2.5 py-1 text-[0.7rem] sm:text-xs transition-all ${
                 transitDate === today()
                   ? "bg-amber-500/30 text-amber-300 border border-amber-400/40"
                   : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
@@ -126,7 +126,7 @@ export default function TransitCalculator() {
             <button
               type="button"
               onClick={() => setTransitDate(offsetDays(1))}
-              className={`rounded-full px-3 py-1.5 transition-all ${
+              className={`rounded-full px-2.5 py-1 text-[0.7rem] sm:text-xs transition-all ${
                 transitDate === offsetDays(1)
                   ? "bg-amber-500/30 text-amber-300 border border-amber-400/40"
                   : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
@@ -137,7 +137,7 @@ export default function TransitCalculator() {
             <button
               type="button"
               onClick={() => setTransitDate(offsetDays(7))}
-              className={`rounded-full px-3 py-1.5 transition-all ${
+              className={`rounded-full px-2.5 py-1 text-[0.7rem] sm:text-xs transition-all ${
                 transitDate === offsetDays(7)
                   ? "bg-amber-500/30 text-amber-300 border border-amber-400/40"
                   : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
@@ -148,11 +148,11 @@ export default function TransitCalculator() {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto pt-2 sm:pt-0">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full sm:w-auto pt-1 sm:pt-0">
           <button
             onClick={() => calculate(false)}
             disabled={loading}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-7 py-3.5 text-sm font-extrabold text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.45)] transition-all hover:scale-105 hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] disabled:opacity-50"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-6 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm font-extrabold text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.45)] transition-all hover:scale-105 hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] disabled:opacity-50"
           >
             {loading ? (
               <>
@@ -171,7 +171,7 @@ export default function TransitCalculator() {
             <button
               onClick={() => calculate(true)}
               disabled={loading}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 px-6 py-3.5 text-sm font-bold text-amber-300 shadow-[0_0_18px_rgba(245,158,11,0.2)] transition-all hover:scale-105 hover:border-amber-400"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-amber-300 shadow-[0_0_18px_rgba(245,158,11,0.2)] transition-all hover:scale-105 hover:border-amber-400"
             >
               <Bookmark className="h-4 w-4 text-amber-400" />
               <span>შენახვა</span>
@@ -181,21 +181,21 @@ export default function TransitCalculator() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 px-5 py-4 text-xs font-semibold text-rose-300 shadow-lg">
+        <div className="flex items-center gap-2.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 px-4 py-3.5 text-xs font-semibold text-rose-300 shadow-lg justify-center">
           <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {saved && (
-        <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-5 py-4 text-xs font-semibold text-emerald-300 shadow-lg">
+        <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3.5 text-xs font-semibold text-emerald-300 shadow-lg justify-center">
           <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
           <span>✓ წარმატებით შენახულია კაბინეტში!</span>
         </div>
       )}
 
       {interpretation && (
-        <div className="glass-panel rounded-[28px] p-6 sm:p-8 shadow-2xl border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl">
+        <div className="glass-panel rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl text-left w-full">
           <InterpretationText text={interpretation} />
         </div>
       )}

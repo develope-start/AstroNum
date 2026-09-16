@@ -61,39 +61,83 @@ export default function DashboardPage() {
   }
 
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl text-brass-2">ჩემი რუკები</h1>
-        <div className="flex items-center gap-4 text-sm">
-          <a href="/cabinet/settings" className="text-brass-2 underline decoration-brass/50">კაბინეტის მართვა</a>
-          <button onClick={logout} className="text-parchment-dim underline decoration-line hover:text-parchment">გასვლა</button>
+    <div className="mx-auto max-w-4xl space-y-6 w-full max-w-full overflow-x-hidden">
+      <div className="glass-panel flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl sm:rounded-[28px] p-5 sm:p-7 border-amber-500/25 bg-gradient-to-r from-[#130a35]/90 via-[#0e0728]/95 to-[#130a35]/90 backdrop-blur-2xl shadow-xl">
+        <div>
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">ჩემი შენახული რუკები</h1>
+          <p className="mt-1 text-xs text-slate-300">თქვენი პირადი ასტროლოგიური არქივი და გამოთვლები</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3 text-xs font-bold w-full sm:w-auto justify-end">
+          <a
+            href="/cabinet/settings"
+            className="flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-500/10 px-4 py-2 text-amber-300 transition-all hover:bg-amber-400/20"
+          >
+            კაბინეტის მართვა
+          </a>
+          <button
+            onClick={logout}
+            className="flex items-center gap-1.5 rounded-full border border-purple-400/30 bg-purple-950/50 px-4 py-2 text-purple-300 transition-all hover:bg-purple-900/50"
+          >
+            გასვლა
+          </button>
         </div>
       </div>
 
-      {error && <p className="mb-4 text-sm text-ember">{error}</p>}
-
-      {charts === null && <p className="text-parchment-dim">იტვირთება…</p>}
-      {charts?.length === 0 && (
-        <p className="text-parchment-dim">
-          ჯერ არაფერი შენახულა. გადადით <a href="/#calculator" className="underline decoration-brass/50">გამომთვლელზე</a>{" "}
-          და დააჭირეთ „შენახვა კაბინეტში".
+      {error && (
+        <p className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-4 text-xs font-semibold text-rose-300 text-center">
+          {error}
         </p>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      {charts === null && (
+        <div className="glass-panel rounded-2xl p-8 text-center text-xs font-semibold text-amber-300">
+          იტვირთება შენახული რუკები…
+        </div>
+      )}
+
+      {charts?.length === 0 && (
+        <div className="glass-panel rounded-2xl sm:rounded-[28px] p-8 text-center space-y-3 border-amber-500/25 bg-[#120833]/90">
+          <p className="text-sm text-slate-300">
+            ჯერ არაფერი შენახულა. გადადით <a href="/#calculator" className="font-bold text-amber-300 underline decoration-amber-400/50">გამომთვლელზე</a>{" "}
+            და დააჭირეთ „შენახვა კაბინეტში".
+          </p>
+        </div>
+      )}
+
+      <div className="grid gap-4 sm:grid-cols-2">
         {charts?.map((c) => (
-          <div key={c.id} className="rounded-xl border border-line bg-ink-2/60 p-4">
-            <p className="text-xs uppercase tracking-wide text-brass/80">{TYPE_LABEL_KA[c.type]}</p>
-            <p className="font-display mt-1 text-parchment">{c.label}</p>
-            <p className="mt-1 text-xs text-parchment-dim">
-              {c.name1}
-              {c.name2 ? ` & ${c.name2}` : ""} · {new Date(c.createdAt).toLocaleDateString("ka-GE")}
-            </p>
-            <div className="mt-3 flex gap-3 text-sm">
-              <button onClick={() => openChart(c.id)} className="text-brass-2 hover:underline">
+          <div
+            key={c.id}
+            className="glass-panel group rounded-2xl p-5 border-amber-500/25 bg-gradient-to-b from-[#130a35]/85 to-[#080417]/95 transition-all hover:border-amber-400/50 hover:shadow-[0_0_25px_rgba(245,158,11,0.2)] flex flex-col justify-between space-y-3"
+          >
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-amber-300">
+                  {TYPE_LABEL_KA[c.type]}
+                </span>
+                <span className="text-[0.68rem] font-medium text-slate-400">
+                  {new Date(c.createdAt).toLocaleDateString("ka-GE")}
+                </span>
+              </div>
+              <h3 className="font-display mt-2.5 text-lg font-bold text-slate-100 group-hover:text-amber-300 transition-colors">
+                {c.label}
+              </h3>
+              <p className="mt-1 text-xs text-slate-300">
+                {c.name1}
+                {c.name2 ? ` & ${c.name2}` : ""}
+              </p>
+            </div>
+            <div className="flex items-center gap-3 pt-2 border-t border-amber-500/15 text-xs font-bold">
+              <button
+                onClick={() => openChart(c.id)}
+                className="flex items-center gap-1 rounded-full bg-amber-500/20 px-4 py-1.5 text-amber-300 transition-all hover:bg-amber-400 hover:text-slate-950"
+              >
                 ნახვა
               </button>
-              <button onClick={() => removeChart(c.id)} className="text-ember hover:underline">
+              <button
+                onClick={() => removeChart(c.id)}
+                className="flex items-center gap-1 rounded-full bg-rose-950/40 border border-rose-500/30 px-4 py-1.5 text-rose-300 transition-all hover:bg-rose-900/60"
+              >
                 წაშლა
               </button>
             </div>
@@ -102,10 +146,13 @@ export default function DashboardPage() {
       </div>
 
       {selected && (
-        <div className="mt-8 rounded-xl border border-line bg-ink-2/60 p-5">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-display text-lg text-brass-2">{selected.label}</h2>
-            <button onClick={() => setSelected(null)} className="text-sm text-parchment-dim hover:text-parchment">
+        <div className="glass-panel mt-8 rounded-2xl sm:rounded-[28px] p-6 sm:p-8 border-amber-500/25 bg-[#120833]/95 backdrop-blur-2xl shadow-2xl space-y-4">
+          <div className="flex items-center justify-between border-b border-amber-500/20 pb-4">
+            <h2 className="font-display text-xl font-bold text-amber-300">{selected.label}</h2>
+            <button
+              onClick={() => setSelected(null)}
+              className="rounded-full border border-amber-400/30 px-3.5 py-1 text-xs font-bold text-slate-300 hover:text-amber-300 hover:bg-amber-400/10"
+            >
               დახურვა
             </button>
           </div>
