@@ -50,7 +50,13 @@ export function getSessionFromRequest(req: NextRequest): SessionPayload | null {
 export async function getActiveSessionFromRequest(req: NextRequest): Promise<SessionPayload | null> {
   const session = getSessionFromRequest(req);
   if (!session) return null;
-  const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { email: true, role: true } });
-  if (!user) return null;
-  return { ...session, email: user.email, role: asRole(user.role) };
+  try {
+    const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { email: true, role: true } });
+    if (!user) return null;
+    return { ...session, email: user.email, role: asRole(user.role) };
+  } catch {
+    // A database outage must not turn an ordinary chart calculation into a 500.
+    // Returning null also prevents stale JWTs from authorizing protected actions.
+    return null;
+  }
 }

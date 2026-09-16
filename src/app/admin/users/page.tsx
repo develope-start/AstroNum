@@ -363,9 +363,16 @@ export default function AdminUsersPage() {
     setError(null);
     try {
       const response = await fetch(`/api/admin/management/calculation/${calculation.id}`, { cache: "no-store" });
-      const body = await response.json();
-      if (!response.ok) throw new Error(body.error || "რუკის გახსნა ვერ მოხერხდა");
-      setViewingCalculation({ ...calculation, result: body.result, interpretation: body.interpretation });
+      const rawBody = await response.text();
+      let body: { error?: string; result?: unknown; interpretation?: string | null } = {};
+      try {
+        body = rawBody ? JSON.parse(rawBody) : {};
+      } catch {
+        body = {};
+      }
+      if (!response.ok) throw new Error(body.error || `რუკის გახსნა ვერ მოხერხდა (${response.status})`);
+      if (!body.result) throw new Error(body.error || "რუკის მონაცემი ვერ მოიძებნა");
+      setViewingCalculation({ ...calculation, result: body.result, interpretation: body.interpretation ?? null });
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "რუკის გახსნა ვერ მოხერხდა");
     } finally {

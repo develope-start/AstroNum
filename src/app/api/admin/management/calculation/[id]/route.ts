@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
+import { generateNatalInterpretation, generateSynastryInterpretation, generateTransitInterpretation } from "@/lib/interpretations/natal";
+import { houseOfLongitude } from "@/lib/astro/positions";
 
 const nullableString = z.string().nullable().optional();
 const schema = z.object({
@@ -20,7 +22,18 @@ async function authorized(req: NextRequest) {
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   if (!(await authorized(req))) return NextResponse.json({ error: "Access denied" }, { status: 403 });
-  const calculation = await prisma.calculation.findUnique({ where: { id: params.id } });
+  // Keep this select explicit so an older database missing the optional
+  // interpretation column can still open a calculation.
+  const calculation = await prisma.calculation.findUnique({
+    where: { id: params.id },
+    select: {
+      id: true, userId: true, publicId: true, saved: true, type: true,
+      name1: true, date1: true, time1: true, place1: true, lat1: true, lon1: true, tz1: true,
+      name2: true, date2: true, time2: true, place2: true, lat2: true, lon2: true, tz2: true,
+      transitDate: true, houseSystem: true, ipAddress: true, userAgent: true,
+      resultJson: true, updatedAt: true, createdAt: true,
+    },
+  });
   if (!calculation) return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
 
   let result: unknown = null;
@@ -30,8 +43,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: "Calculation result is invalid" }, { status: 500 });
   }
 
-  let interpretation = calculation.interpretation;
-  if (!interpretation && calculation.userId) {
+  let interpretation: string | null = null;
+  if (calculation.userId) {
     const savedChart = await prisma.chart.findFirst({
       where: {
         userId: calculation.userId,
@@ -56,6 +69,28 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       select: { interpretation: true },
     });
     interpretation = savedChart?.interpretation ?? null;
+  }
+
+  if (!interpretation && result && typeof result === "object") {
+    const value = result as Record<string, any>;
+    try {
+      if (calculation.type === "NATAL" && Array.isArray(value.planets) && Array.isArray(value.houseCusps)) {
+        interpretation = generateNatalInterpretation({
+          planets: value.planets,
+          houseCusps: value.houseCusps,
+          ascendant: value.ascendant,
+          mc: value.mc,
+          aspects: value.aspects ?? [],
+          houseOfFn: (lon: number) => houseOfLongitude(lon, value.houseCusps),
+        });
+      } else if (calculation.type === "SYNASTRY") {
+        interpretation = generateSynastryInterpretation(calculation.name1, calculation.name2 ?? "", value.aspects ?? []);
+      } else if (calculation.type === "TRANSIT") {
+        interpretation = generateTransitInterpretation(value.aspects ?? [], calculation.transitDate ?? "");
+      }
+    } catch {
+      interpretation = null;
+    }
   }
 
   const { resultJson, ...metadata } = calculation;

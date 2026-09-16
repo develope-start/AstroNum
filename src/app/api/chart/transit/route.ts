@@ -5,7 +5,7 @@ import { getActiveSessionFromRequest } from "@/lib/auth";
 import { computeNatalChart, computeTransitAspects } from "@/lib/astro/chart";
 import { generateTransitInterpretation } from "@/lib/interpretations/natal";
 import { getRequestInfo } from "@/lib/requestInfo";
-import { recordCalculation } from "@/lib/calculationHistory";
+import { tryRecordCalculation } from "@/lib/calculationHistory";
 
 const schema = z.object({
   natal: z.object({
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   const session = await getActiveSessionFromRequest(req);
   const requestInfo = getRequestInfo(req);
 
-  const calculation = await recordCalculation({
+  const calculation = await tryRecordCalculation({
     userId: session?.userId ?? null,
     type: "TRANSIT",
     name1: natal.name,
@@ -93,7 +93,9 @@ export async function POST(req: NextRequest) {
         interpretation,
       },
     });
-    await prisma.calculation.update({ where: { id: calculation.id }, data: { saved: true } });
+    if (calculation) {
+      await prisma.calculation.update({ where: { id: calculation.id }, data: { saved: true } });
+    }
     return NextResponse.json({ ...responseBody, savedId: chart.id });
   }
 

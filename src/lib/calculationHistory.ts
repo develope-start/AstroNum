@@ -54,6 +54,7 @@ export async function recordCalculation(input: CalculationHistoryInput) {
     ? await prisma.calculation.findFirst({
         where: { userId: input.userId, type: input.type, createdAt: { gte: since } },
         orderBy: { createdAt: "desc" },
+        select: { id: true, publicId: true },
       })
     : null;
   const existingGuest = !input.userId && input.ipAddress && input.userAgent
@@ -75,7 +76,10 @@ export async function recordCalculation(input: CalculationHistoryInput) {
     ? await ensureUserPublicId(input.userId)
     : recentGuestCalculation?.publicId ?? await allocatePublicId("GUEST");
   const existingRecord = existing ?? existingGuest;
-  const data = { ...input, saved: false, updatedAt: existingRecord ? now : null, publicId, createdAt: now };
+  // `interpretation` is intentionally not written here. Older deployed databases
+  // may not have that optional column yet; the calculation itself must still work.
+  const { interpretation: _interpretation, ...calculationInput } = input;
+  const data = { ...calculationInput, saved: false, updatedAt: existingRecord ? now : null, publicId, createdAt: now };
   if (existing) {
     return prisma.calculation.update({ where: { id: existing.id }, data });
   }
@@ -83,6 +87,17 @@ export async function recordCalculation(input: CalculationHistoryInput) {
     return prisma.calculation.update({ where: { id: existingGuest.id }, data });
   }
   return prisma.calculation.create({ data });
+}
+
+export async function tryRecordCalculation(input: CalculationHistoryInput) {
+  try {
+    return await recordCalculation(input);
+  } catch {
+    // Chart calculation is still useful when history storage is temporarily
+    // unavailable. The error is deliberately not exposed as a blank response.
+    console.error("Calculation history could not be stored");
+    return null;
+  }
 }
 
 export function twelveHoursAgo() {

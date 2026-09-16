@@ -5,7 +5,7 @@ import { getActiveSessionFromRequest } from "@/lib/auth";
 import { computeNatalChart, computeSynastryAspects } from "@/lib/astro/chart";
 import { generateSynastryInterpretation } from "@/lib/interpretations/natal";
 import { getRequestInfo } from "@/lib/requestInfo";
-import { recordCalculation } from "@/lib/calculationHistory";
+import { tryRecordCalculation } from "@/lib/calculationHistory";
 
 const person = z.object({
   name: z.string().min(1),
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
   const session = await getActiveSessionFromRequest(req);
   const requestInfo = getRequestInfo(req);
 
-  const calculation = await recordCalculation({
+  const calculation = await tryRecordCalculation({
     userId: session?.userId ?? null,
     type: "SYNASTRY",
     name1: personA.name,
@@ -101,7 +101,9 @@ export async function POST(req: NextRequest) {
         interpretation,
       },
     });
-    await prisma.calculation.update({ where: { id: calculation.id }, data: { saved: true } });
+    if (calculation) {
+      await prisma.calculation.update({ where: { id: calculation.id }, data: { saved: true } });
+    }
     return NextResponse.json({ ...responseBody, savedId: chart.id });
   }
 
