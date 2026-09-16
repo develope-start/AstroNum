@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Compass, User, LayoutDashboard, Settings, Shield, Menu, X } from "lucide-react";
+import { Compass, User, LayoutDashboard, Shield, Menu, X } from "lucide-react";
 
 interface Me {
   userId: string;
@@ -95,14 +95,6 @@ export default function Nav() {
                   <span className="tracking-wide">კაბინეტი</span>
                 </Link>
 
-                <Link
-                  href="/cabinet/settings"
-                  className="hidden sm:flex items-center gap-1.5 rounded-full border border-purple-400/40 bg-purple-950/70 px-3 py-1.5 text-xs font-bold text-purple-200 transition-all hover:bg-purple-900/80 hover:text-white"
-                >
-                  <Settings className="h-3.5 w-3.5 text-purple-300 shrink-0" />
-                  <span>მართვა</span>
-                </Link>
-
                 {me.role === "ADMIN" && (
                   <Link
                     href="/admin"
@@ -139,14 +131,6 @@ export default function Nav() {
         {/* Mobile Dropdown Menu for Logged In User Options */}
         {mobileMenuOpen && me && (
           <div className="mt-2 sm:hidden flex flex-col gap-2 pt-2 border-t border-amber-500/20 text-xs font-bold">
-            <Link
-              href="/cabinet/settings"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2 rounded-xl bg-purple-950/80 p-2.5 text-purple-200 hover:bg-purple-900"
-            >
-              <Settings className="h-4 w-4 text-purple-300" />
-              <span>პარამეტრები & მართვა</span>
-            </Link>
             {me.role === "ADMIN" && (
               <Link
                 href="/admin"
