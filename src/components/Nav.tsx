@@ -67,8 +67,9 @@ export default function Nav() {
             </Link>
           </div>
 
-          {/* 3. Right: Cabinet Button with VIBRANT STRIKING COLOR */}
+          {/* 3. Right: Cabinet Button with VIBRANT STRIKING COLOR & LOGGED-IN DISTINCTION */}
           <nav className="flex items-center gap-2 sm:gap-3 text-xs font-bold shrink-0">
+            {/* Guest / Not Logged In State -> Yellow/Amber Pulsing Cabinet Button */}
             {me === null && (
               <Link
                 href="/cabinet"
@@ -79,14 +80,19 @@ export default function Nav() {
               </Link>
             )}
 
+            {/* Registered & Logged In User State -> Emerald Green Gradient Glow Cabinet Button */}
             {me && (
               <>
                 <Link
                   href="/cabinet/dashboard"
-                  className="flex items-center gap-1.5 sm:gap-2 rounded-full border-2 border-amber-300 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 px-3.5 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-black text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.65)] transition-all hover:scale-105 hover:shadow-[0_0_35px_rgba(245,158,11,0.85)]"
+                  className="flex items-center gap-2 rounded-full border-2 border-emerald-300 bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500 px-4 py-2 sm:px-6 sm:py-2.5 text-xs sm:text-sm font-black text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.85)] ring-2 ring-emerald-400/40 transition-all hover:scale-105 hover:shadow-[0_0_45px_rgba(16,185,129,0.95)] hover:border-white active:scale-95"
                 >
+                  <span className="relative flex h-2.5 w-2.5 items-center justify-center shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-900 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-950"></span>
+                  </span>
                   <LayoutDashboard className="h-4 w-4 text-slate-950 shrink-0 stroke-[2.5]" />
-                  <span>ჩემი რუკები</span>
+                  <span className="tracking-wide">კაბინეტი</span>
                 </Link>
 
                 <Link
@@ -110,7 +116,7 @@ export default function Nav() {
                 <button
                   type="button"
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="flex sm:hidden items-center justify-center p-2 rounded-xl border border-amber-500/30 bg-purple-950/70 text-amber-300"
+                  className="flex sm:hidden items-center justify-center p-2 rounded-xl border border-emerald-500/40 bg-emerald-950/70 text-emerald-300"
                 >
                   {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </button>
