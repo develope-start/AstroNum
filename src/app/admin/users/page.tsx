@@ -471,12 +471,53 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line/40 pb-4">
         <div>
-          <h1 className="font-display text-2xl text-brass-2">მომხმარებლების მართვა</h1>
-          <p className="mt-1 text-xs text-parchment-dim">რედაქტირება, წაშლა და ურნიდან აღდგენა</p>
+          <h1 className="font-display text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 drop-shadow-[0_0_18px_rgba(245,158,11,0.65)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(251,191,36,0.9)] hover:scale-[1.01] cursor-default">
+            👥 მომხმარებლების მართვა
+          </h1>
+          <p className="mt-1 text-xs text-parchment-dim">რედაქტირება, წაშლა და ურნებიდან აღდგენა</p>
         </div>
-        <a href="/admin" className={button}>ადმინის პანელზე დაბრუნება</a>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <a
+            href="#deleted-users-section"
+            onClick={(e) => {
+              e.preventDefault();
+              if (!showDeletedUsers) {
+                setFilters((current) => ({ ...current, status: "ALL", deletedUsers: "ONLY" }));
+              }
+              setTimeout(() => {
+                document.getElementById("deleted-users-section")?.scrollIntoView({ behavior: "smooth" });
+              }, 50);
+            }}
+            className="group flex items-center gap-2 rounded-2xl border-2 border-rose-500/80 bg-gradient-to-r from-slate-950 via-rose-950/60 to-slate-950 px-4 py-2 text-xs sm:text-sm font-black text-rose-200 shadow-[0_0_20px_rgba(244,63,94,0.45)] ring-1 ring-rose-500/30 transition-all duration-300 hover:scale-105 hover:border-rose-300 hover:bg-gradient-to-r hover:from-rose-900 hover:via-pink-900 hover:to-red-900 hover:text-white hover:shadow-[0_0_32px_rgba(244,63,94,0.85)] active:scale-95 cursor-pointer"
+          >
+            <span className="tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-pink-200 to-red-300 group-hover:text-white">
+              🗑️ ურნა - წაშლილი ანგარიშები ↓
+            </span>
+          </a>
+
+          <a
+            href="#deleted-calculations-section"
+            onClick={(e) => {
+              e.preventDefault();
+              if (!showDeletedCalculations) {
+                setFilters((current) => ({ ...current, status: "ALL", deletedCalculations: "ONLY" }));
+              }
+              setTimeout(() => {
+                document.getElementById("deleted-calculations-section")?.scrollIntoView({ behavior: "smooth" });
+              }, 50);
+            }}
+            className="group flex items-center gap-2 rounded-2xl border-2 border-purple-400/80 bg-gradient-to-r from-slate-950 via-purple-950/60 to-slate-950 px-4 py-2 text-xs sm:text-sm font-black text-purple-200 shadow-[0_0_20px_rgba(168,85,247,0.45)] ring-1 ring-purple-400/30 transition-all duration-300 hover:scale-105 hover:border-purple-300 hover:bg-gradient-to-r hover:from-purple-900 hover:via-indigo-900 hover:to-violet-900 hover:text-white hover:shadow-[0_0_32px_rgba(168,85,247,0.85)] active:scale-95 cursor-pointer"
+          >
+            <span className="tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-violet-200 to-indigo-300 group-hover:text-white">
+              🗑️ ურნა - წაშლილი რუკები ↓
+            </span>
+          </a>
+
+          <a href="/admin" className={button}>ადმინის პანელზე დაბრუნება</a>
+        </div>
       </div>
 
       {message && <p className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm text-emerald-400">{message}</p>}
@@ -624,9 +665,11 @@ export default function AdminUsersPage() {
         </div>
       </section>}
 
-      {showDeletedUsers && <section>
+      {showDeletedUsers && <section id="deleted-users-section" className="scroll-mt-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-xl text-brass-2">ურნა — წაშლილი ანგარიშები</h2>
+          <h2 className="font-display text-xl sm:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-pink-300 to-red-400 drop-shadow-[0_0_18px_rgba(244,63,94,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(244,63,94,0.95)] hover:scale-[1.01] cursor-default">
+            🗑️ ურნა — წაშლილი ანგარიშები
+          </h2>
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <label className="flex cursor-pointer items-center gap-2 text-parchment-dim">
               <input
@@ -665,9 +708,11 @@ export default function AdminUsersPage() {
         </div>
       </section>}
 
-      {showDeletedCalculations && <section>
+      {showDeletedCalculations && <section id="deleted-calculations-section" className="scroll-mt-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-xl text-brass-2">ურნა — წაშლილი რუკები</h2>
+          <h2 className="font-display text-xl sm:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-violet-300 to-indigo-400 drop-shadow-[0_0_18px_rgba(168,85,247,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(168,85,247,0.95)] hover:scale-[1.01] cursor-default">
+            🗑️ ურნა — წაშლილი რუკები
+          </h2>
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <label className="flex cursor-pointer items-center gap-2 text-parchment-dim">
               <input

@@ -428,7 +428,23 @@ export default function AdminPage() {
       {users === null && <p className="text-parchment-dim">იტვირთება…</p>}
 
       <section className="mb-8">
-        <h2 className="font-display mb-3 text-xl text-brass-2">რუკების გამოთვლის ისტორია</h2>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-4 border-b border-line/40 pb-3">
+          <h2 className="font-display text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 drop-shadow-[0_0_18px_rgba(245,158,11,0.65)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(251,191,36,0.9)] hover:scale-[1.01] cursor-default">
+            📜 რუკების გამოთვლის ისტორია
+          </h2>
+          <a
+            href="#account-events-section"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("account-events-section")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="group flex items-center gap-2 rounded-2xl border-2 border-cyan-400/80 bg-gradient-to-r from-slate-950 via-cyan-950/60 to-slate-950 px-5 py-2.5 text-xs sm:text-sm font-black text-cyan-200 shadow-[0_0_22px_rgba(34,211,238,0.5)] ring-1 ring-cyan-400/30 transition-all duration-300 hover:scale-105 hover:border-cyan-300 hover:bg-gradient-to-r hover:from-cyan-900 hover:via-indigo-900 hover:to-purple-900 hover:text-white hover:shadow-[0_0_35px_rgba(34,211,238,0.85)] active:scale-95 cursor-pointer"
+          >
+            <span className="tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-200 to-indigo-300 group-hover:text-white">
+              🔑 კაბინეტების ცვლილების ისტორია ↓
+            </span>
+          </a>
+        </div>
         <div className="mb-4 rounded-xl border border-line bg-ink-2/60 p-4">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="text-xs text-parchment-dim">
@@ -590,8 +606,10 @@ export default function AdminPage() {
         </section>
       )}
 
-      <section className="mb-8">
-        <h2 className="font-display mb-3 text-xl text-brass-2">კაბინეტების ცვლილებების ისტორია</h2>
+      <section id="account-events-section" className="mb-8 scroll-mt-6">
+        <h2 className="font-display mb-4 text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-indigo-400 drop-shadow-[0_0_18px_rgba(34,211,238,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.95)] hover:scale-[1.01] cursor-default">
+          🔑 კაბინეტების ცვლილებების ისტორია
+        </h2>
         {accountEvents?.length === 0 && <p className="text-xs text-parchment-dim">ცვლილებების ისტორია ჯერ ცარიელია.</p>}
         <div className="space-y-2">
           {accountEvents?.map((event) => (
