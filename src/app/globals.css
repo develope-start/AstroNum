@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-main: #06040e;
+    --bg-card: rgba(16, 10, 36, 0.85);
+    --bg-card-hover: rgba(26, 15, 56, 0.92);
+    --border-color: rgba(245, 158, 11, 0.22);
+    --border-glow: rgba(245, 158, 11, 0.55);
+    --border-purple: rgba(168, 85, 247, 0.35);
+    --text-primary: #F8FAFC;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
+    --text-accent: #FDE68A;
+    --accent-gold: #F59E0B;
+    --accent-gold-hover: #FBBF24;
+    --accent-purple: #A855F7;
+    --accent-blue: #38BDF8;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-body), sans-serif;
+}
+
+::selection {
+  background: var(--accent-gold);
+  color: #06040e;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
+}
+
+/* Deep Space Twinkling Star Field */
+.star-field {
+  background-image: 
+    radial-gradient(1.5px 1.5px at 12% 18%, rgba(254, 240, 138, 0.85) 50%, transparent 51%),
+    radial-gradient(1px 1px at 68% 28%, rgba(250, 250, 249, 0.75) 50%, transparent 51%),
+    radial-gradient(2px 2px at 38% 72%, rgba(245, 158, 11, 0.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 12%, rgba(196, 181, 253, 0.85) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 48% 38%, rgba(245, 158, 11, 0.65) 50%, transparent 51%),
+    radial-gradient(1px 1px at 22% 82%, rgba(250, 250, 249, 0.75) 50%, transparent 51%),
+    radial-gradient(2px 2px at 78% 78%, rgba(168, 85, 247, 0.7) 50%, transparent 51%);
+  background-repeat: repeat;
+  background-size: 550px 550px;
+}
+
+/* Rounded Expressive Glassmorphism Cards */
+.glass-panel {
+  background: linear-gradient(135deg, rgba(20, 12, 44, 0.88) 0%, rgba(12, 7, 28, 0.92) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.75), 0 0 30px 0 rgba(139, 92, 246, 0.12);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  border-color: var(--border-glow);
+  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.85), 0 0 40px 0 rgba(245, 158, 11, 0.25);
+  transform: translateY(-2px);
+}
+
+.glass-input {
+  background: rgba(8, 4, 22, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: var(--text-primary);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-input:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 24px 0 rgba(245, 158, 11, 0.3);
+}
+
+/* Vibrant Text Glow Effects */
+.text-glow {
+  text-shadow: 0 0 25px rgba(245, 158, 11, 0.5), 0 0 50px rgba(168, 85, 247, 0.3);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+/* Cosmic Animation Keyframes */
+@keyframes cosmic-pulse {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes glow-rotate {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+.animate-cosmic-pulse {
+  animation: cosmic-pulse 4s infinite ease-in-out;
+}
+
+.animate-float-slow {
+  animation: float-slow 5s infinite ease-in-out;
+}
+
+/* Infographic Progress Bars */
+.infographic-bar-bg {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.infographic-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+
+

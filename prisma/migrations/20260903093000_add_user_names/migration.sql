@@ -1,0 +1,2 @@
+ALTER TABLE "User" ADD COLUMN "name" TEXT;
+ALTER TABLE "DeletedUser" ADD COLUMN "name" TEXT;

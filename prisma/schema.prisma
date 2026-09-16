@@ -1,0 +1,171 @@
+// Prisma schema — მომხმარებლები და შენახული რუკები.
+//
+// შენიშვნა: აქ განზრახ არ გამოიყენება Prisma-ს "enum" ტიპი (Role/ChartType),
+// რადგან SQLite (დეველოპმენტის ბაზა) enum-ებს არ უჭერს მხარს — ვიყენებთ
+// ჩვეულებრივ String ველებს, რაც ერთნაირად მუშაობს SQLite-ზეც და PostgreSQL-ზეც.
+//
+// დეველოპმენტისთვის provider "sqlite" საკმარისია.
+// საბოლოო დეპლოიზე გადართე "postgresql"-ზე — იხილეთ README.md-ის ინსტრუქცია.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  publicId     String?  @unique
+  adminId      String?  @unique
+  name         String?
+  username     String?  @unique
+  email        String   @unique
+  passwordHash String
+  role         String   @default("USER") // "USER" ან "ADMIN"
+  createdAt    DateTime @default(now())
+  charts       Chart[]
+  calculations Calculation[]
+  accountEvents AccountEvent[]
+  actionTokens  ActionToken[]
+}
+
+// ერთი "Chart" ინახავს ერთი ან ორი დაბადების პროფილს (სინასტრიისთვის ორივე)
+// და მათგან გამოთვლილ შედეგსა და ინტერპრეტაციას JSON სახით.
+model Chart {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type   String // "NATAL" | "SYNASTRY" | "TRANSIT"
+  label  String // მომხმარებლის მიერ მინიჭებული სახელი, მაგ. "ჩემი ნატალური"
+
+  // პირველი პროფილი — ყოველთვის ივსება
+  name1  String
+  date1  String // YYYY-MM-DD
+  time1  String // HH:mm
+  place1 String
+  lat1   Float
+  lon1   Float
+  tz1    String // IANA დროის ზონა, მაგ. Asia/Tbilisi
+
+  // მეორე პროფილი — მხოლოდ სინასტრიისთვის
+  name2  String?
+  date2  String?
+  time2  String?
+  place2 String?
+  lat2   Float?
+  lon2   Float?
+  tz2    String?
+
+  // ტრანზიტისთვის — რომელი თარიღის ცის ვითარებაა შედარებული ნატალურთან
+  transitDate String?
+
+  houseSystem    String @default("placidus")
+  resultJson     String // გამოთვლის სრული შედეგი (პლანეტები/სახლები/ასპექტები), JSON
+  interpretation String // ქართული ინტერპრეტაციის ტექსტი
+
+  createdAt DateTime @default(now())
+}
+
+// ყველა წარმატებული გამოთვლის აუდიტის ჩანაწერი. userId შეიძლება იყოს null,
+// რადგან სტუმარ მომხმარებელს ანგარიში არ აქვს, მაგრამ მისი შეყვანილი მონაცემებიც
+// უნდა გამოჩნდეს ადმინისტრატორის ისტორიაში.
+model Calculation {
+  id     String @id @default(cuid())
+  userId String?
+  publicId String?
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  saved  Boolean @default(false)
+
+  type  String // "NATAL" | "SYNASTRY" | "TRANSIT"
+  name1 String
+  date1 String
+  time1 String
+  place1 String
+  lat1 Float
+  lon1 Float
+  tz1  String
+
+  name2 String?
+  date2 String?
+  time2 String?
+  place2 String?
+  lat2 Float?
+  lon2 Float?
+  tz2  String?
+
+  transitDate String?
+  houseSystem String @default("placidus")
+  ipAddress   String?
+  userAgent   String?
+  resultJson  String
+  updatedAt   DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model AccountEvent {
+  id       String  @id @default(cuid())
+  userId   String?
+  user     User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  type     String
+  emailSnapshot String
+  oldEmail String?
+  newEmail String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model ActionToken {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  tokenHash String   @unique
+  payload   String?
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model IdSequence {
+  key        String @id
+  nextNumber Int    @default(1)
+}
+
+// ადმინისტრატორის ურნა — წაშლილი რეგისტრირებული ანგარიშის სრული სნეპშოტი.
+// ელფოსტა უნიკალურია, ამიტომ წაშლილი ანგარიშის იგივე ელფოსტით ხელახლა
+// რეგისტრაცია აღდგენამდე შეუძლებელია.
+model DeletedUser {
+  id                String   @id
+  publicId          String?
+  adminId           String?
+  name              String?
+  username          String?
+  email             String   @unique
+  passwordHash      String
+  role              String
+  originalCreatedAt DateTime
+  deletedAt         DateTime @default(now())
+  chartsJson        String
+  calculationsJson  String
+  accountEventsJson String
+}
+
+// ადმინისტრატორის ურნა — ცალკე წაშლილი სტუმრის ან ცალკეული რუკის ჩანაწერი.
+model DeletedCalculation {
+  id         String   @id @default(cuid())
+  originalId String   @unique
+  type       String
+  summary    String
+  dataJson   String
+  deletedAt  DateTime @default(now())
+}

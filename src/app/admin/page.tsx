@@ -1,0 +1,559 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+
+interface ChartRow {
+  id: string;
+  type: string;
+  label: string;
+  name1: string;
+  date1: string;
+  time1: string;
+  place1: string;
+  name2: string | null;
+  date2: string | null;
+  time2: string | null;
+  place2: string | null;
+  transitDate: string | null;
+  createdAt: string;
+}
+
+interface CalculationRow {
+  id: string;
+  publicId: string | null;
+  saved: boolean;
+  guestGroupId?: string;
+  type: string;
+  name1: string;
+  date1: string;
+  time1: string;
+  place1: string;
+  lat1: number;
+  lon1: number;
+  tz1: string;
+  name2: string | null;
+  date2: string | null;
+  time2: string | null;
+  place2: string | null;
+  lat2: number | null;
+  lon2: number | null;
+  tz2: string | null;
+  transitDate: string | null;
+  houseSystem: string;
+  ipAddress: string | null;
+  userAgent: string | null;
+  createdAt: string;
+  updatedAt: string | null;
+  user: { email: string; publicId: string | null; adminId: string | null } | null;
+}
+
+interface GuestCalculationGroup {
+  id: string;
+  publicId: string | null;
+  ipAddress: string | null;
+  userAgent: string | null;
+  calculations: CalculationRow[];
+}
+
+interface AccountEventRow {
+  id: string;
+  type: string;
+  emailSnapshot: string;
+  oldEmail: string | null;
+  newEmail: string | null;
+  createdAt: string;
+  user: { email: string; role: string; adminId: string | null } | null;
+}
+
+interface UserRow {
+  id: string;
+  email: string;
+  publicId: string | null;
+  adminId: string | null;
+  name: string | null;
+  role: string;
+  createdAt: string;
+  charts: ChartRow[];
+}
+
+function GuestCalculationPicker({
+  group,
+  activeId,
+  onSelect,
+  typeLabel,
+}: {
+  group: GuestCalculationGroup;
+  activeId: string;
+  onSelect: (id: string) => void;
+  typeLabel: Record<string, string>;
+}) {
+  if (group.calculations.length <= 1) return null;
+
+  return (
+    <details className="mt-4 rounded-lg border border-line/70 bg-ink-2/40 p-3">
+      <summary className="cursor-pointer select-none text-sm font-semibold text-parchment hover:text-blue-300">
+        სხვა შედგენილი რუკები ({group.calculations.length - 1})
+      </summary>
+      <div className="mt-3 space-y-2">
+        {group.calculations.map((calculation, index) => {
+          const isActive = calculation.id === activeId;
+          return (
+            <button
+              key={calculation.id}
+              type="button"
+              onClick={() => onSelect(calculation.id)}
+              className={`block w-full rounded-lg border px-3 py-2 text-left text-xs transition ${isActive ? "border-line bg-ink-2 text-parchment-dim" : "border-transparent text-parchment-dim hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-200"}`}
+            >
+              რუკა #{group.calculations.length - index} · {typeLabel[calculation.type] ?? calculation.type} · {formatDateTime(calculation.createdAt)}
+              {isActive && <span className="ml-2 text-[10px] uppercase tracking-wide">მიმდინარე</span>}
+            </button>
+          );
+        })}
+      </div>
+    </details>
+  );
+}
+
+function formatDateTime(value: string) {
+  return new Date(value).toLocaleString("ka-GE", { dateStyle: "medium", timeStyle: "short" });
+}
+
+function displayValue(value: string | number | null | undefined) {
+  return value ?? "—";
+}
+
+function GuestCalculationCard({
+  group,
+  selectedId,
+  onSelect,
+  typeLabel,
+}: {
+  group: GuestCalculationGroup;
+  selectedId?: string;
+  onSelect: (id: string) => void;
+  typeLabel: Record<string, string>;
+}) {
+  const calculation = group.calculations.find((item) => item.id === selectedId) ?? group.calculations[0];
+  if (!calculation) return null;
+
+  return (
+    <article className="rounded-xl border border-red-500/50 bg-red-500/5 p-4 text-sm">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3">
+        <div>
+          <h3 className="font-medium text-red-400">დაურეგისტრირებელი · აიდი: {displayValue(group.publicId)}</h3>
+          {calculation.updatedAt && <p className="text-xs text-parchment-dim/70">განახლებული: {formatDateTime(calculation.updatedAt)}</p>}
+          <p className={`mt-1 inline-flex rounded-full border px-3 py-1 text-xs font-bold ${calculation.saved ? "border-fuchsia-400/70 bg-fuchsia-500/15 text-fuchsia-300" : "border-amber-400/50 bg-amber-500/10 text-amber-300"}`}>
+            {calculation.saved ? "მონაცემები შენახულია" : "შენახვის გარეშე"}
+          </p>
+          <p className="mt-1 text-xs text-parchment-dim">IP: {displayValue(group.ipAddress)} · რუკები: {group.calculations.length}</p>
+          <p className="max-w-3xl break-words text-xs text-parchment-dim">მოწყობილობა: {displayValue(group.userAgent)}</p>
+        </div>
+        <p className="text-xs text-parchment-dim">გამოთვლილია: {formatDateTime(calculation.createdAt)}</p>
+      </div>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div>
+          <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">პირველი პროფილი</h4>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+            <dt className="text-parchment-dim">სახელი</dt><dd>{calculation.name1}</dd>
+            <dt className="text-parchment-dim">თარიღი</dt><dd>{calculation.date1}</dd>
+            <dt className="text-parchment-dim">დრო</dt><dd>{calculation.time1}</dd>
+            <dt className="text-parchment-dim">ადგილი</dt><dd>{calculation.place1}</dd>
+            <dt className="text-parchment-dim">კოორდინატები</dt><dd>{calculation.lat1}, {calculation.lon1}</dd>
+            <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{calculation.tz1}</dd>
+          </dl>
+        </div>
+        {(calculation.type === "SYNASTRY" || calculation.name2) && (
+          <div>
+            <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">მეორე პროფილი</h4>
+            <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+              <dt className="text-parchment-dim">სახელი</dt><dd>{displayValue(calculation.name2)}</dd>
+              <dt className="text-parchment-dim">თარიღი</dt><dd>{displayValue(calculation.date2)}</dd>
+              <dt className="text-parchment-dim">დრო</dt><dd>{displayValue(calculation.time2)}</dd>
+              <dt className="text-parchment-dim">ადგილი</dt><dd>{displayValue(calculation.place2)}</dd>
+              <dt className="text-parchment-dim">კოორდინატები</dt><dd>{displayValue(calculation.lat2)}, {displayValue(calculation.lon2)}</dd>
+              <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{displayValue(calculation.tz2)}</dd>
+            </dl>
+          </div>
+        )}
+      </div>
+      <dl className="mt-4 grid gap-x-3 gap-y-1 border-t border-line/60 pt-3 text-xs sm:grid-cols-[auto_1fr_auto_1fr]">
+        <dt className="text-parchment-dim">სახლთა სისტემა</dt><dd>{calculation.houseSystem}</dd>
+        <dt className="text-parchment-dim">ტრანზიტის თარიღი</dt><dd>{displayValue(calculation.transitDate)}</dd>
+      </dl>
+      <GuestCalculationPicker group={group} activeId={calculation.id} onSelect={onSelect} typeLabel={typeLabel} />
+    </article>
+  );
+}
+
+type FilterStatus = "ALL" | "REGISTERED" | "UNREGISTERED";
+
+interface CalculationFilters {
+  createdFrom: string;
+  createdTo: string;
+  type: string;
+  status: FilterStatus;
+  email: string;
+  publicId: string;
+  name: string;
+  birthDate: string;
+  time: string;
+  place: string;
+}
+
+const EMPTY_FILTERS: CalculationFilters = {
+  createdFrom: "",
+  createdTo: "",
+  type: "ALL",
+  status: "ALL",
+  email: "",
+  publicId: "",
+  name: "",
+  birthDate: "",
+  time: "",
+  place: "",
+};
+
+export default function AdminPage() {
+  const router = useRouter();
+  const [users, setUsers] = useState<UserRow[] | null>(null);
+  const [calculations, setCalculations] = useState<CalculationRow[] | null>(null);
+  const [guestCalculationGroups, setGuestCalculationGroups] = useState<GuestCalculationGroup[]>([]);
+  const [accountEvents, setAccountEvents] = useState<AccountEventRow[] | null>(null);
+  const [adminEmail, setAdminEmail] = useState<string | null>(null);
+  const [adminId, setAdminId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<CalculationFilters>(EMPTY_FILTERS);
+  const [selectedGuestCalculations, setSelectedGuestCalculations] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    let requestInFlight = false;
+
+    async function loadAdminData() {
+      if (requestInFlight) return;
+      requestInFlight = true;
+      try {
+        const res = await fetch("/api/admin/users", { cache: "no-store" });
+        if (res.status === 403 || res.status === 401) {
+          if (!cancelled) setError("წვდომა აკრძალულია — ეს გვერდი მხოლოდ ადმინისტრატორისთვისაა.");
+          return;
+        }
+        if (!res.ok) {
+          if (!cancelled) setError(`ადმინის API-ის შეცდომა (${res.status})`);
+          return;
+        }
+        const data = await res.json();
+        if (!cancelled) {
+          setAdminEmail(data.admin?.email ?? null);
+          setAdminId(data.admin?.adminId ?? null);
+          setUsers(data.users);
+          setCalculations(data.calculations ?? []);
+          setGuestCalculationGroups(data.guestCalculationGroups ?? []);
+          setAccountEvents(data.accountEvents ?? []);
+        }
+      } catch {
+        if (!cancelled) setError("ადმინის მონაცემების ჩატვირთვა ვერ მოხერხდა.");
+      } finally {
+        requestInFlight = false;
+      }
+    }
+
+    loadAdminData();
+    const refreshTimer = window.setInterval(() => {
+      if (document.visibilityState === "visible") loadAdminData();
+    }, 30000);
+    window.addEventListener("focus", loadAdminData);
+    return () => {
+      cancelled = true;
+      window.clearInterval(refreshTimer);
+      window.removeEventListener("focus", loadAdminData);
+    };
+  }, [router]);
+
+  const filteredCalculations = useMemo(() => {
+    if (!calculations) return null;
+
+    const includes = (values: Array<string | null | undefined>, query: string) => {
+      if (!query.trim()) return true;
+      const normalizedQuery = query.trim().toLocaleLowerCase("ka-GE");
+      return values.some((value) => value?.toLocaleLowerCase("ka-GE").includes(normalizedQuery));
+    };
+
+    return calculations
+      .filter((calculation) => {
+        const createdDate = calculation.createdAt.slice(0, 10);
+        const registered = Boolean(calculation.user);
+        return (
+          (!filters.createdFrom || createdDate >= filters.createdFrom) &&
+          (!filters.createdTo || createdDate <= filters.createdTo) &&
+          (filters.type === "ALL" || calculation.type === filters.type) &&
+          (filters.status === "ALL" || (filters.status === "REGISTERED" ? registered : !registered)) &&
+          includes([calculation.user?.email], filters.email) &&
+          includes([calculation.publicId, calculation.user?.publicId, calculation.user?.adminId], filters.publicId) &&
+          includes([calculation.name1, calculation.name2], filters.name) &&
+          includes([calculation.date1, calculation.date2], filters.birthDate) &&
+          includes([calculation.time1, calculation.time2], filters.time) &&
+          includes([calculation.place1, calculation.place2], filters.place)
+        );
+      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [calculations, filters]);
+
+  const filteredGuestCalculationGroups = useMemo(() => {
+    const includes = (values: Array<string | null | undefined>, query: string) => {
+      if (!query.trim()) return true;
+      const normalizedQuery = query.trim().toLocaleLowerCase("ka-GE");
+      return values.some((value) => value?.toLocaleLowerCase("ka-GE").includes(normalizedQuery));
+    };
+
+    return guestCalculationGroups
+      .map((group) => ({
+        ...group,
+        calculations: group.calculations.filter((calculation) => {
+          const createdDate = calculation.createdAt.slice(0, 10);
+          return (
+            (!filters.createdFrom || createdDate >= filters.createdFrom) &&
+            (!filters.createdTo || createdDate <= filters.createdTo) &&
+            (filters.type === "ALL" || calculation.type === filters.type) &&
+            (filters.status === "ALL" || filters.status === "UNREGISTERED") &&
+            includes([], filters.email) &&
+            includes([calculation.publicId, group.publicId], filters.publicId) &&
+            includes([calculation.name1, calculation.name2], filters.name) &&
+            includes([calculation.date1, calculation.date2], filters.birthDate) &&
+            includes([calculation.time1, calculation.time2], filters.time) &&
+            includes([calculation.place1, calculation.place2], filters.place)
+          );
+        }),
+      }))
+      .filter((group) => group.calculations.length > 0);
+  }, [guestCalculationGroups, filters]);
+
+  if (error) {
+    return <p className="mt-10 text-center text-ember">{error}</p>;
+  }
+
+  const typeLabel: Record<string, string> = {
+    NATAL: "ნატალური რუკა",
+    SYNASTRY: "სინასტრია",
+    TRANSIT: "ტრანზიტი",
+  };
+  const eventLabel: Record<string, string> = {
+    ACCOUNT_CREATED: "კაბინეტი შეიქმნა",
+    EMAIL_CHANGED: "ელფოსტა შეიცვალა",
+    PASSWORD_CHANGED: "პაროლი შეიცვალა",
+    PASSWORD_RESET: "პაროლი აღდგა",
+    ACCOUNT_DELETED: "კაბინეტი წაიშალა",
+    ADMIN_EMAIL_CHANGED: "ელფოსტა შეიცვალა (ადმინის მიერ)",
+  };
+
+  const show = (value: string | number | null | undefined) => value ?? "—";
+  const showDateTime = (value: string) =>
+    new Date(value).toLocaleString("ka-GE", { dateStyle: "medium", timeStyle: "short" });
+  const hasFilters =
+    Boolean(filters.createdFrom || filters.createdTo || filters.email || filters.publicId || filters.name || filters.birthDate || filters.time || filters.place) ||
+    filters.type !== "ALL" ||
+    filters.status !== "ALL";
+
+  return (
+    <div>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-2xl text-brass-2">ადმინის პანელი — ყველა მომხმარებელი</h1>
+        {adminId === "ADMIN" && <a href="/admin/admins" className="rounded-full border border-orange-400/70 px-4 py-2 text-sm text-orange-300 hover:bg-orange-400/10">ადმინისტრატორების მართვა</a>}
+        <a href="/admin/users" className="rounded-full border border-brass/60 px-4 py-2 text-sm text-brass-2 hover:bg-brass/10">
+          მომხმარებლების მართვა
+        </a>
+      </div>
+      <div className="mb-8 rounded-2xl border-2 border-[#35c759] bg-[#35c759]/10 p-5 shadow-lg shadow-[#35c759]/20">
+        <p className="mb-2 text-sm font-medium uppercase tracking-widest text-[#d98a9b]">ადმინის ანგარიში</p>
+        <div className="flex flex-wrap items-center gap-6">
+          <span className="text-2xl font-bold tracking-wide text-[#55e6e1]">{adminEmail ?? "იტვირთება…"}</span>
+          <span className="text-lg font-bold text-orange-400">{adminId ?? "ADMIN"}</span>
+          <span className="text-4xl font-black tracking-wide text-[#ff7a18]">ადმინი</span>
+        </div>
+      </div>
+      {users === null && <p className="text-parchment-dim">იტვირთება…</p>}
+
+      <section className="mb-8">
+        <h2 className="font-display mb-3 text-xl text-brass-2">რუკების გამოთვლის ისტორია</h2>
+        <div className="mb-4 rounded-xl border border-line bg-ink-2/60 p-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <label className="text-xs text-parchment-dim">
+              აიდი
+              <input value={filters.publicId} onChange={(e) => setFilters((current) => ({ ...current, publicId: e.target.value }))} placeholder="მაგ. R00001 ან 00001" className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+            </label>
+            <label className="text-xs text-parchment-dim">
+              შედგენის თარიღიდან
+              <input type="date" value={filters.createdFrom} onChange={(e) => setFilters((current) => ({ ...current, createdFrom: e.target.value }))} className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+            </label>
+            <label className="text-xs text-parchment-dim">
+              შედგენის თარიღამდე
+              <input type="date" value={filters.createdTo} onChange={(e) => setFilters((current) => ({ ...current, createdTo: e.target.value }))} className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+            </label>
+            <label className="text-xs text-parchment-dim">
+              რუკის ტიპი
+              <select value={filters.type} onChange={(e) => setFilters((current) => ({ ...current, type: e.target.value }))} className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass">
+                <option value="ALL">ყველა ტიპი</option>
+                <option value="NATAL">ნატალური</option>
+                <option value="SYNASTRY">სინასტრიული</option>
+                <option value="TRANSIT">ტრანზიტული</option>
+              </select>
+            </label>
+            <label className="text-xs text-parchment-dim">
+              რეგისტრაცია
+              <select value={filters.status} onChange={(e) => setFilters((current) => ({ ...current, status: e.target.value as FilterStatus }))} className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass">
+                <option value="ALL">ყველა</option>
+                <option value="REGISTERED">რეგისტრირებული</option>
+                <option value="UNREGISTERED">დაურეგისტრირებელი</option>
+              </select>
+            </label>
+            <label className="text-xs text-parchment-dim">
+              მეილი
+              <input value={filters.email} onChange={(e) => setFilters((current) => ({ ...current, email: e.target.value }))} placeholder="მომხმარებლის მეილი" className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+            </label>
+            <label className="text-xs text-parchment-dim">
+              სახელი
+              <input value={filters.name} onChange={(e) => setFilters((current) => ({ ...current, name: e.target.value }))} placeholder="ნებისმიერი პროფილი" className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+            </label>
+            <label className="text-xs text-parchment-dim">
+              დაბადების თარიღი
+              <input type="date" value={filters.birthDate} onChange={(e) => setFilters((current) => ({ ...current, birthDate: e.target.value }))} className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+            </label>
+            <label className="text-xs text-parchment-dim">
+              დრო
+              <input type="time" value={filters.time} onChange={(e) => setFilters((current) => ({ ...current, time: e.target.value }))} className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+            </label>
+            <label className="text-xs text-parchment-dim sm:col-span-2 lg:col-span-4">
+              ადგილი
+              <input value={filters.place} onChange={(e) => setFilters((current) => ({ ...current, place: e.target.value }))} placeholder="ქალაქი ან ქვეყანა" className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+            </label>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line/60 pt-3 text-xs">
+            <span className="text-parchment-dim">
+              ნაჩვენებია {filteredCalculations?.length ?? 0} ჩანაწერი / სულ {calculations?.length ?? 0}
+            </span>
+            <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} disabled={!hasFilters} className="rounded-full border border-brass/60 px-3 py-1.5 text-brass-2 disabled:cursor-not-allowed disabled:opacity-40">
+              ფილტრების გასუფთავება
+            </button>
+          </div>
+        </div>
+        {calculations?.length === 0 && (
+          <p className="text-xs text-parchment-dim">ჯერ არცერთი რუკა არ გამოთვლილა.</p>
+        )}
+        {calculations && calculations.length > 0 && filteredCalculations?.length === 0 && (
+          <p className="text-xs text-parchment-dim">ამ ფილტრებით ჩანაწერი ვერ მოიძებნა.</p>
+        )}
+        <div className="space-y-4">
+          {filteredCalculations?.map((c) => (
+            <article key={c.id} className="rounded-xl border border-line bg-ink-2/60 p-4 text-sm">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3">
+                <div>
+                  <h3 className="font-medium text-brass-2">{typeLabel[c.type] ?? c.type}</h3>
+                  {c.updatedAt && <p className="text-xs text-parchment-dim/70">განახლებული: {showDateTime(c.updatedAt)}</p>}
+                  <p className={`mt-1 inline-flex rounded-full border px-3 py-1 text-xs font-bold ${c.saved ? "border-fuchsia-400/70 bg-fuchsia-500/15 text-fuchsia-300" : "border-amber-400/50 bg-amber-500/10 text-amber-300"}`}>
+                    {c.saved ? "მონაცემები შენახულია" : "შენახვის გარეშე"}
+                  </p>
+                  {c.user ? (
+                    <p className="text-xs">
+                      <span className="font-semibold text-orange-400">ADMIN ID: {show(c.user.adminId)}</span>
+                      <span className="font-medium text-emerald-400">რეგისტრირებული</span>
+                      <span className="mt-1 block text-parchment-dim">აიდი: {show(c.user.publicId ?? c.publicId)}</span>
+                      <span className="mt-1 block text-parchment-dim">იუზერი: {c.user.email}</span>
+                    </p>
+                  ) : (
+                    <p className="text-xs">
+                      <span className="font-medium text-red-400">დაურეგისტრირებელი</span>
+                      <span className="mt-1 block text-parchment-dim">აიდი: {show(c.publicId)}</span>
+                      <span className="mt-1 block text-parchment-dim">IP: {show(c.ipAddress)}</span>
+                      <span className="block max-w-3xl break-words text-parchment-dim">
+                        მოწყობილობა: {show(c.userAgent)}
+                      </span>
+                    </p>
+                  )}
+                </div>
+                <p className="text-xs text-parchment-dim">გამოთვლილია: {showDateTime(c.createdAt)}</p>
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div>
+                  <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">პირველი პროფილი</h4>
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+                    <dt className="text-parchment-dim">სახელი</dt><dd>{c.name1}</dd>
+                    <dt className="text-parchment-dim">თარიღი</dt><dd>{c.date1}</dd>
+                    <dt className="text-parchment-dim">დრო</dt><dd>{c.time1}</dd>
+                    <dt className="text-parchment-dim">ადგილი</dt><dd>{c.place1}</dd>
+                    <dt className="text-parchment-dim">კოორდინატები</dt><dd>{c.lat1}, {c.lon1}</dd>
+                    <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{c.tz1}</dd>
+                  </dl>
+                </div>
+
+                {(c.type === "SYNASTRY" || c.name2) && (
+                  <div>
+                    <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">მეორე პროფილი</h4>
+                    <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+                      <dt className="text-parchment-dim">სახელი</dt><dd>{show(c.name2)}</dd>
+                      <dt className="text-parchment-dim">თარიღი</dt><dd>{show(c.date2)}</dd>
+                      <dt className="text-parchment-dim">დრო</dt><dd>{show(c.time2)}</dd>
+                      <dt className="text-parchment-dim">ადგილი</dt><dd>{show(c.place2)}</dd>
+                      <dt className="text-parchment-dim">კოორდინატები</dt><dd>{show(c.lat2)}, {show(c.lon2)}</dd>
+                      <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{show(c.tz2)}</dd>
+                    </dl>
+                  </div>
+                )}
+              </div>
+
+              <dl className="mt-4 grid gap-x-3 gap-y-1 border-t border-line/60 pt-3 text-xs sm:grid-cols-[auto_1fr_auto_1fr]">
+                <dt className="text-parchment-dim">სახლთა სისტემა</dt><dd>{c.houseSystem}</dd>
+                <dt className="text-parchment-dim">ტრანზიტის თარიღი</dt><dd>{show(c.transitDate)}</dd>
+              </dl>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {filteredGuestCalculationGroups.length > 0 && (
+        <section className="mb-8">
+          <h2 className="font-display mb-3 text-xl text-brass-2">დაურეგისტრირებელი მომხმარებლების რუკების ისტორია</h2>
+          <div className="space-y-4">
+            {filteredGuestCalculationGroups.map((group) => (
+              <GuestCalculationCard
+                key={group.id}
+                group={group}
+                selectedId={selectedGuestCalculations[group.id]}
+                onSelect={(id) => setSelectedGuestCalculations((current) => ({ ...current, [group.id]: id }))}
+                typeLabel={typeLabel}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="mb-8">
+        <h2 className="font-display mb-3 text-xl text-brass-2">კაბინეტების ცვლილებების ისტორია</h2>
+        {accountEvents?.length === 0 && <p className="text-xs text-parchment-dim">ცვლილებების ისტორია ჯერ ცარიელია.</p>}
+        <div className="space-y-2">
+          {accountEvents?.map((event) => (
+            <div key={event.id} className={`flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-ink-2/60 p-3 text-xs ${event.user?.role === "ADMIN" ? "border-2 border-[#35c759] bg-[#35c759]/10" : "border-line"}`}>
+              <div>
+                <span className="font-medium text-brass-2">{eventLabel[event.type] ?? event.type}</span>
+                <span className="ml-3 text-parchment-dim">იუზერი:</span>
+                {event.user?.role === "ADMIN" ? (
+                  <span className="ml-2 inline-flex items-center gap-5">
+                    <span className="text-xl font-bold tracking-wide text-[#55e6e1]">{event.user.email}</span>
+                    <span className="text-lg font-bold text-orange-400">{event.user.adminId ?? "ADMIN"}</span>
+                    <span className="text-3xl font-black tracking-wide text-[#ff7a18]">ადმინი</span>
+                  </span>
+                ) : (
+                  <span className="ml-2 text-parchment-dim">{event.user?.email ?? event.emailSnapshot}</span>
+                )}
+                {event.oldEmail && event.newEmail && <span className="ml-3 text-parchment-dim">{event.oldEmail} → {event.newEmail}</span>}
+              </div>
+              <span className="text-parchment-dim">{showDateTime(event.createdAt)}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+    </div>
+  );
+}
