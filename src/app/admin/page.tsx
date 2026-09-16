@@ -395,12 +395,27 @@ export default function AdminPage() {
 
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-2xl text-brass-2">ადმინის პანელი — ყველა მომხმარებელი</h1>
-        {adminId === "ADMIN" && <a href="/admin/admins" className="rounded-full border border-orange-400/70 px-4 py-2 text-sm text-orange-300 hover:bg-orange-400/10">ადმინისტრატორების მართვა</a>}
-        <a href="/admin/users" className="rounded-full border border-brass/60 px-4 py-2 text-sm text-brass-2 hover:bg-brass/10">
-          მომხმარებლების მართვა
-        </a>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-line/60 pb-5">
+        <h1 className="font-display text-2xl font-black text-brass-2 drop-shadow">ადმინის პანელი — ყველა მომხმარებელი</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Left: მომხმარებლების მართვა (Users Management) */}
+          <a
+            href="/admin/users"
+            className="group flex items-center gap-2 rounded-2xl border-2 border-dashed border-amber-400/70 bg-purple-950/50 px-5 py-2.5 text-xs sm:text-sm font-black text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.35)] ring-1 ring-amber-400/30 transition-all duration-300 hover:scale-105 hover:border-solid hover:border-white hover:bg-gradient-to-r hover:from-amber-400 hover:via-amber-500 hover:to-purple-600 hover:text-slate-950 hover:shadow-[0_0_35px_rgba(245,158,11,0.7)] active:scale-95 cursor-pointer"
+          >
+            <span className="tracking-wide">✦ მომხმარებლების მართვა</span>
+          </a>
+
+          {/* Right: ადმინისტრატორების მართვა (Admins Management) */}
+          {adminId === "ADMIN" && (
+            <a
+              href="/admin/admins"
+              className="group flex items-center gap-2 rounded-2xl border-2 border-rose-600/70 bg-rose-950/50 px-5 py-2.5 text-xs sm:text-sm font-black text-rose-300 shadow-[0_0_20px_rgba(225,29,72,0.4)] ring-1 ring-rose-500/30 transition-all duration-300 hover:scale-105 hover:border-indigo-400 hover:bg-gradient-to-r hover:from-rose-900 hover:via-purple-950 hover:to-indigo-900 hover:text-white hover:shadow-[0_0_35px_rgba(225,29,72,0.7)] active:scale-95 cursor-pointer"
+            >
+              <span className="tracking-wide">🛡️ ადმინისტრატორების მართვა</span>
+            </a>
+          )}
+        </div>
       </div>
       <div className="mb-8 rounded-2xl border-2 border-[#35c759] bg-[#35c759]/10 p-5 shadow-lg shadow-[#35c759]/20">
         <p className="mb-2 text-sm font-medium uppercase tracking-widest text-[#d98a9b]">ადმინის ანგარიში</p>
