@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import "leaflet/dist/leaflet.css";
 import { GEORGIAN_CITIES } from "@/lib/georgianCities";
 import { MapPin, Map as MapIcon, Check, Loader2, Globe } from "lucide-react";
@@ -33,11 +34,42 @@ export default function PlaceAutocomplete({
   const [searching, setSearching] = useState(false);
   const [status, setStatus] = useState<"idle" | "ok" | "error">("idle");
   const [mapOpen, setMapOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [coords, setCoords] = useState<{ top: number; left: number; width: number } | null>(null);
+
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
   const mapDivRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<import("leaflet").Map | null>(null);
   const markerRef = useRef<import("leaflet").CircleMarker | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const updateCoords = () => {
+    if (inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      setCoords({
+        top: rect.bottom + 6,
+        left: rect.left,
+        width: rect.width,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    updateCoords();
+    window.addEventListener("scroll", updateCoords, true);
+    window.addEventListener("resize", updateCoords);
+    return () => {
+      window.removeEventListener("scroll", updateCoords, true);
+      window.removeEventListener("resize", updateCoords);
+    };
+  }, [open]);
 
   const localHits: SearchHit[] = GEORGIAN_CITIES.filter((c) =>
     query.trim() ? c.name.toLowerCase().includes(query.trim().toLowerCase()) : true
@@ -77,7 +109,15 @@ export default function PlaceAutocomplete({
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
-      if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (
+        boxRef.current &&
+        !boxRef.current.contains(target) &&
+        portalRef.current &&
+        !portalRef.current.contains(target)
+      ) {
+        setOpen(false);
+      }
     }
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
@@ -150,17 +190,22 @@ export default function PlaceAutocomplete({
   const dropdownHits = query.trim() ? [...localHits, ...remoteHits] : localHits;
 
   return (
-    <div ref={boxRef} className="relative z-50">
+    <div ref={boxRef} className="relative">
       <div className="flex gap-2 w-full">
         <div className="relative flex-1 min-w-0">
           <input
+            ref={inputRef}
             className="w-full rounded-xl sm:rounded-2xl border border-amber-500/25 bg-[#080418] px-3 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm font-semibold text-slate-100 outline-none transition-all placeholder:text-slate-500 focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)] hover:border-amber-500/40"
             value={query}
-            onFocus={() => setOpen(true)}
+            onFocus={() => {
+              setOpen(true);
+              updateCoords();
+            }}
             onChange={(e) => {
               setQuery(e.target.value);
               setOpen(true);
               setStatus("idle");
+              updateCoords();
               onChange({ place: e.target.value, lat: null, lon: null, timezone: null });
             }}
             placeholder="დაიწყეთ აკრეფა ან აირჩიეთ სიიდან…"
@@ -172,7 +217,7 @@ export default function PlaceAutocomplete({
         <button
           type="button"
           onClick={() => setMapOpen((v) => !v)}
-          className="flex shrink-0 items-center gap-1 sm:gap-1.5 rounded-xl sm:rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 px-3 py-2.5 sm:px-4 sm:py-3 text-[0.72rem] sm:text-xs font-bold text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all hover:scale-105 hover:border-amber-400"
+          className="flex shrink-0 items-center gap-1 sm:gap-1.5 rounded-xl sm:rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 px-3 py-2.5 sm:px-4 sm:py-3 text-[0.72rem] sm:text-xs font-bold text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all hover:scale-105 hover:border-amber-400 cursor-pointer"
         >
           <MapIcon className="h-4 w-4 text-amber-400 shrink-0" />
           <span>{mapOpen ? "დახურვა" : "რუკაზე"}</span>
@@ -187,10 +232,22 @@ export default function PlaceAutocomplete({
         </div>
       )}
 
-      {open && dropdownHits.length > 0 && (
-        <div className="absolute left-0 right-0 z-[99999] mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border-2 border-amber-400/80 bg-[#0c0626] p-2 shadow-[0_25px_80px_rgba(0,0,0,0.99)] backdrop-blur-3xl ring-2 ring-purple-500/30">
+      {/* Render Dropdown via React Portal directly into document.body */}
+      {open && dropdownHits.length > 0 && mounted && coords && createPortal(
+        <div
+          ref={portalRef}
+          style={{
+            position: "fixed",
+            top: coords.top,
+            left: coords.left,
+            width: coords.width,
+            maxHeight: "260px",
+            zIndex: 999999,
+          }}
+          className="overflow-y-auto rounded-2xl border-2 border-amber-400 bg-[#0a0422] p-2 shadow-[0_25px_90px_rgba(0,0,0,1)] ring-4 ring-amber-500/30 backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150"
+        >
           {localHits.length > 0 && (
-            <div className="flex items-center justify-center gap-1.5 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 border-b border-amber-500/30 bg-purple-950/40 rounded-xl mb-1">
+            <div className="flex items-center justify-center gap-1.5 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 border-b border-amber-500/30 bg-purple-950/60 rounded-xl mb-1">
               <MapPin className="h-3.5 w-3.5 text-amber-400 shrink-0" />
               <span>საქართველოს ქალაქები</span>
             </div>
@@ -199,15 +256,18 @@ export default function PlaceAutocomplete({
             <button
               key={`ge-${i}`}
               type="button"
-              onClick={() => selectHit(h)}
-              className="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/25 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                selectHit(h);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/30 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
             >
               <span className="truncate max-w-[170px] sm:max-w-[260px]">{h.label}</span>
-              <span className="text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/50 px-2 py-0.5 rounded-md shrink-0">Asia/Tbilisi</span>
+              <span className="text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/70 px-2 py-0.5 rounded-md shrink-0">Asia/Tbilisi</span>
             </button>
           ))}
           {remoteHits.length > 0 && (
-            <div className="mt-2 border-t border-amber-500/30 pt-2 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 flex items-center justify-center gap-1.5 bg-purple-950/40 rounded-xl mb-1">
+            <div className="mt-2 border-t border-amber-500/30 pt-2 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 flex items-center justify-center gap-1.5 bg-purple-950/60 rounded-xl mb-1">
               <Globe className="h-3.5 w-3.5 text-amber-400 shrink-0" />
               <span>სხვა შედეგები</span>
             </div>
@@ -216,21 +276,24 @@ export default function PlaceAutocomplete({
             <button
               key={`r-${i}`}
               type="button"
-              onClick={() => selectHit(h)}
-              className="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/25 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                selectHit(h);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/30 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
             >
               <span className="truncate max-w-[160px] sm:max-w-[240px]">{h.label}</span>
-              <span className="text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/50 px-2 py-0.5 rounded-md shrink-0">{h.timezone || "მსოფლიო"}</span>
+              <span className="text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/70 px-2 py-0.5 rounded-md shrink-0">{h.timezone || "მსოფლიო"}</span>
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
 
       {mapOpen && (
         <div className="mt-3 overflow-hidden rounded-2xl border border-amber-500/40 shadow-2xl">
-
           <div ref={mapDivRef} style={{ height: 260, width: "100%" }} />
-          <div className="bg-slate-900/90 px-3 py-2 text-[0.7rem] text-slate-300 light:bg-slate-100 light:text-slate-700">
+          <div className="bg-slate-900/90 px-3 py-2 text-[0.7rem] text-slate-300">
             💡 დააწკაპუნეთ რუკაზე ზუსტ წერტილზე — კოორდინატები ავტომატურად ჩაიწერება.
           </div>
         </div>
@@ -238,4 +301,3 @@ export default function PlaceAutocomplete({
     </div>
   );
 }
-

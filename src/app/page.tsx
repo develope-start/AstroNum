@@ -9,7 +9,7 @@ import { Sparkles, Sun, Heart, Activity, Zap, Globe2, ShieldCheck, Stars, Compas
 type Tab = "natal" | "synastry" | "transit";
 
 const TABS: { id: Tab; label: string; hint: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: "natal", label: "ნატალური რუკა", hint: "დაბადების ცის სურათი — თქვენი ფსიქოლოგიური & სულიერი პორტრეტი", icon: Sun },
+  { id: "natal", label: "ნატალური რუკა", hint: "დაბადების დღის სურათი — თქვენი ფსიქოლოგიური & სულიერი პორტრეტი", icon: Sun },
   { id: "synastry", label: "სინასტრია", hint: "ორი ნატალური რუკის შედარება — ურთიერთობების თავსებადობა", icon: Heart },
   { id: "transit", label: "ტრანზიტები", hint: "დღევანდელი პლანეტების მოძრაობა თქვენს ნატალურ ცასთან", icon: Activity },
 ];
