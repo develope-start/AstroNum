@@ -46,7 +46,7 @@ interface CalculationRow {
   userAgent: string | null;
   createdAt: string;
   updatedAt: string | null;
-  user: { email: string; publicId: string | null; adminId: string | null } | null;
+  user: { email: string; username?: string | null; publicId: string | null; adminId: string | null } | null;
 }
 
 interface GuestCalculationGroup {
@@ -64,7 +64,7 @@ interface AccountEventRow {
   oldEmail: string | null;
   newEmail: string | null;
   createdAt: string;
-  user: { email: string; role: string; adminId: string | null } | null;
+  user: { email: string; username?: string | null; role: string; adminId: string | null } | null;
 }
 
 interface UserRow {
@@ -430,6 +430,7 @@ export default function AdminPage() {
     ACCOUNT_DELETED: "კაბინეტი წაიშალა",
     ADMIN_EMAIL_CHANGED: "ელფოსტა შეიცვალა (ადმინის მიერ)",
     NAME_CHANGED: "სახელი შეიცვალა (ადმინის მიერ)",
+    USERNAME_CHANGED: "Username შეიცვალა (ადმინის მიერ)",
     PROFILE_CHANGED: "პროფილი შეიცვალა (ადმინის მიერ)",
   };
 
@@ -636,6 +637,9 @@ export default function AdminPage() {
                       </div>
                       <span className="mt-1 block text-parchment-dim">აიდი: {show(c.user.publicId ?? c.publicId)}</span>
                       <span className="block text-parchment-dim">იუზერი: {c.user.email}</span>
+                      <span className="mt-0.5 block text-xs font-semibold text-[#55e6e1]">
+                        Username: {c.user.username ? `@${c.user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
+                      </span>
                     </div>
                   ) : (
                     <div className="mt-1 text-xs">
@@ -737,13 +741,21 @@ export default function AdminPage() {
                 </span>
                 <span className="ml-3 text-parchment-dim">იუზერი:</span>
                 {event.user?.role === "ADMIN" ? (
-                  <span className="ml-2 inline-flex items-center gap-5">
+                  <span className="ml-2 inline-flex flex-wrap items-center gap-4">
                     <span className="text-xl font-bold tracking-wide text-[#55e6e1]">{event.user.email}</span>
+                    <span className="text-xs font-bold text-[#55e6e1]">
+                      Username: {event.user.username ? `@${event.user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
+                    </span>
                     <span className="text-lg font-bold text-orange-400">{event.user.adminId ?? "ADMIN"}</span>
                     <span className="text-3xl font-black tracking-wide text-[#ff7a18]">ადმინი</span>
                   </span>
                 ) : (
-                  <span className="ml-2 text-parchment-dim">{event.user?.email ?? event.emailSnapshot}</span>
+                  <span className="ml-2 inline-flex flex-wrap items-center gap-3 text-parchment-dim">
+                    <span>{event.user?.email ?? event.emailSnapshot}</span>
+                    <span className="text-xs font-semibold text-[#55e6e1]">
+                      (Username: {event.user?.username ? `@${event.user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>})
+                    </span>
+                  </span>
                 )}
                 {event.oldEmail && event.newEmail && <span className="ml-3 text-parchment-dim">{event.oldEmail} → {event.newEmail}</span>}
               </div>

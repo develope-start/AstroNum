@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     prisma.calculation.findMany({
       where: { userId: null },
       orderBy: { createdAt: "desc" },
-      select: { ...calculationSelect, ipAddress: true, userAgent: true, user: { select: { email: true, publicId: true, adminId: true, role: true } } },
+      select: { ...calculationSelect, ipAddress: true, userAgent: true, user: { select: { email: true, username: true, publicId: true, adminId: true, role: true } } },
     }),
     prisma.deletedUser.findMany({
       orderBy: { deletedAt: "desc" },

@@ -7,6 +7,7 @@ import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect"
 
 const userEditSchema = z.object({
   name: z.string().trim().max(120).nullable().optional(),
+  username: z.string().trim().max(32).regex(/^[a-zA-Z0-9_.-]*$/, "Username-ში გამოიყენეთ მხოლოდ ლათინური ასოები, ციფრები, წერტილი, ტირე ან ქვედა ტირე").refine((value) => !value || value.length >= 3, "Username მინიმუმ 3 სიმბოლო უნდა იყოს").nullable().optional(),
   email: z.string().email("Invalid email format"),
   role: z.enum(["USER", "ADMIN"]).optional(),
 });
@@ -31,18 +32,26 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const actor = await prisma.user.findUnique({ where: { id: session.userId }, select: { adminId: true } });
   if (nextRole !== user.role && actor?.adminId !== "ADMIN") return NextResponse.json({ error: "Only the primary administrator can change administrator roles" }, { status: 403 });
   const name = parsed.data.name === undefined ? user.name : parsed.data.name?.trim() || null;
+  const username = parsed.data.username === undefined ? user.username : parsed.data.username?.trim().toLowerCase() || null;
   const email = parsed.data.email.trim().toLowerCase();
   const duplicate = await prisma.user.findUnique({ where: { email } });
   if (duplicate && duplicate.id !== user.id) return NextResponse.json({ error: "This email is already registered" }, { status: 409 });
+  if (username) {
+    const duplicateUsername = await prisma.user.findUnique({ where: { username }, select: { id: true } });
+    if (duplicateUsername && duplicateUsername.id !== user.id) return NextResponse.json({ error: "ეს username უკვე დაკავებულია" }, { status: 409 });
+    const deletedUsername = await prisma.deletedUser.findFirst({ where: { username }, select: { id: true } });
+    if (deletedUsername) return NextResponse.json({ error: "ეს username წაშლილ ანგარიშს ეკუთვნის და აღდგენამდე ვერ გამოიყენება" }, { status: 409 });
+  }
   const nameChanged = name !== user.name;
+  const usernameChanged = username !== user.username;
   const emailChanged = email !== user.email;
 
   const adminId = nextRole === "ADMIN"
     ? user.role === "ADMIN" ? user.adminId : await allocateAdminId()
     : null;
   await prisma.$transaction([
-    prisma.user.update({ where: { id: user.id }, data: { name, email, role: nextRole, adminId } }),
-    prisma.accountEvent.create({ data: { userId: user.id, type: nextRole !== user.role ? "ADMIN_ROLE_CHANGED" : nameChanged && emailChanged ? "PROFILE_CHANGED" : nameChanged ? "NAME_CHANGED" : "ADMIN_EMAIL_CHANGED", emailSnapshot: email, oldEmail: user.email, newEmail: email } }),
+    prisma.user.update({ where: { id: user.id }, data: { name, username, email, role: nextRole, adminId } }),
+    prisma.accountEvent.create({ data: { userId: user.id, type: nextRole !== user.role ? "ADMIN_ROLE_CHANGED" : [nameChanged, usernameChanged, emailChanged].filter(Boolean).length > 1 ? "PROFILE_CHANGED" : nameChanged ? "NAME_CHANGED" : usernameChanged ? "USERNAME_CHANGED" : "ADMIN_EMAIL_CHANGED", emailSnapshot: email, oldEmail: user.email, newEmail: email } }),
   ]);
   return NextResponse.json({ message: "User profile updated" });
 }

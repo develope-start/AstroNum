@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
       userAgent: true,
       createdAt: true,
       updatedAt: true,
-      user: { select: { email: true, publicId: true, adminId: true, role: true } },
+      user: { select: { email: true, username: true, publicId: true, adminId: true, role: true } },
     },
   });
   const calculations = dedupeRecentCalculations(allCalculations.filter((calculation) => calculation.userId));
@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
       oldEmail: true,
       newEmail: true,
       createdAt: true,
-      user: { select: { email: true, role: true, adminId: true } },
+      user: { select: { email: true, username: true, role: true, adminId: true } },
     },
   });
 

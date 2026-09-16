@@ -304,6 +304,7 @@ export default function AdminUsersPage() {
   const [modal, setModal] = useState<ModalState | null>(null);
   const [draft, setDraft] = useState<CalculationDraft>(EMPTY_DRAFT);
   const [nameDraft, setNameDraft] = useState("");
+  const [usernameDraft, setUsernameDraft] = useState("");
   const [emailDraft, setEmailDraft] = useState("");
   const [roleDraft, setRoleDraft] = useState("USER");
   const [message, setMessage] = useState<string | null>(null);
@@ -359,6 +360,7 @@ export default function AdminUsersPage() {
 
   function openEditUser(user: ManagedUser) {
     setNameDraft(user.name ?? "");
+    setUsernameDraft(user.username ?? "");
     setEmailDraft(user.email);
     setRoleDraft(user.role);
     setModal({ kind: "edit-user", user });
@@ -620,7 +622,9 @@ export default function AdminUsersPage() {
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/60 pb-3">
                 <div>
                   <p className="mb-1 text-xs font-semibold text-orange-400">ADMIN ID: {user.adminId ?? "—"}</p>
-                  <p className="text-xs text-[#55e6e1]">@{user.username ?? "—"}</p>
+                  <p className="text-xs font-bold text-[#55e6e1]">
+                    Username: {user.username ? `@${user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
+                  </p>
                   <p className="text-lg font-semibold text-parchment">{user.email} <span className="ml-2 text-sm text-brass-2">{user.publicId ?? "—"}</span></p>
                   <p className="text-xs text-parchment-dim">შეიქმნა: {formatDate(user.createdAt)} · რუკები: {user.calculations.length}</p>
                 </div>
@@ -713,7 +717,9 @@ export default function AdminUsersPage() {
                 <input type="checkbox" aria-label={`${user.email} მონიშვნა`} className="mt-1 h-4 w-4 cursor-pointer accent-brass" checked={selectedDeletedUsers.includes(user.id)} onChange={() => toggleSelected(selectedDeletedUsers, user.id, setSelectedDeletedUsers)} />
                 <div>
                 <p className="mb-1 text-xs font-semibold text-orange-400">ADMIN ID: {user.adminId ?? "—"}</p>
-                <p className="text-xs text-[#55e6e1]">@{user.username ?? "—"}</p>
+                <p className="text-xs font-bold text-[#55e6e1]">
+                  Username: {user.username ? `@${user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
+                </p>
                 <p className="text-parchment flex flex-wrap items-center gap-2">
                   <span className="inline-flex rounded-full border border-rose-400/70 bg-rose-950/50 px-2.5 py-0.5 text-xs font-bold text-rose-300">წაშლილი ანგარიში</span>
                   <span>{user.email} <span className="text-xs">({user.role})</span></span>
@@ -805,7 +811,7 @@ export default function AdminUsersPage() {
         <Modal>
           <h2 className="font-display text-xl text-brass-2">რედაქტირების დაწყება</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ ამ მომხმარებლის მონაცემების რედაქტირება?</p>
-          <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><span>{modal.user.name || "—"}</span><br /><span>{modal.user.email}</span></p>
+          <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><span>{modal.user.name || "—"}</span><br /><span>@{modal.user.username || "—"}</span><br /><span>{modal.user.email}</span></p>
           <div className="flex justify-end gap-3"><button className={button} onClick={() => setModal(null)}>უარყოფა</button><button className={button} onClick={() => setModal({ kind: "edit-user-form", user: modal.user })}>თანხმობა, გაგრძელება</button></div>
         </Modal>
       )}
@@ -820,6 +826,7 @@ export default function AdminUsersPage() {
           </label>
           <h2 className="font-display text-xl text-brass-2">მომხმარებლის რედაქტირება</h2>
           <label className="mt-4 block text-xs text-parchment-dim">სახელი<input className={`${input} mt-1`} type="text" value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} /></label>
+          <label className="mt-4 block text-xs text-parchment-dim">Username<input className={`${input} mt-1`} type="text" value={usernameDraft} onChange={(e) => setUsernameDraft(e.target.value)} placeholder="არ არის მითითებული" autoCapitalize="none" autoCorrect="off" /></label>
           <label className="mt-4 block text-xs text-parchment-dim">ელფოსტა<input className={`${input} mt-1`} type="email" value={emailDraft} onChange={(e) => setEmailDraft(e.target.value)} /></label>
           <div className="mt-5 flex justify-end gap-3"><button className={button} onClick={() => setModal({ kind: "cancel-edit", user: modal.user })}>შეწყვეტა</button><button className={button} onClick={() => setModal({ kind: "save-user", user: modal.user })}>შენახვა</button></div>
         </Modal>
@@ -829,8 +836,8 @@ export default function AdminUsersPage() {
         <Modal>
           <h2 className="font-display text-xl text-brass-2">ცვლილების შენახვა</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ მომხმარებლის ცვლილებების შენახვა?</p>
-          <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><span>სახელი: {modal.user.name || "—"} → {nameDraft || "—"}</span><br /><span>მეილი: {modal.user.email} → {emailDraft}</span></p>
-          <div className="flex justify-end gap-3"><button className={button} onClick={() => setModal({ kind: "edit-user-form", user: modal.user })}>უარყოფა</button><button className={button} onClick={() => action(`/api/admin/management/user/${modal.user!.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: nameDraft, email: emailDraft }) })}>თანხმობა, შენახვა</button></div>
+          <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><span>სახელი: {modal.user.name || "—"} → {nameDraft || "—"}</span><br /><span>Username: @{modal.user.username || "—"} → @{usernameDraft || "—"}</span><br /><span>მეილი: {modal.user.email} → {emailDraft}</span></p>
+          <div className="flex justify-end gap-3"><button className={button} onClick={() => setModal({ kind: "edit-user-form", user: modal.user })}>უარყოფა</button><button className={button} onClick={() => action(`/api/admin/management/user/${modal.user!.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: nameDraft, username: usernameDraft, email: emailDraft }) })}>თანხმობა, შენახვა</button></div>
         </Modal>
       )}
 

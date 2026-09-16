@@ -157,10 +157,17 @@ export default function DashboardPage() {
   }
 
   async function removeChart(id: string) {
-    await fetch(`/api/charts/${id}`, { method: "DELETE" });
-    setCharts((prev) => prev?.filter((c) => c.id !== id) ?? null);
-    if (selected?.id === id) {
-      setSelected(null);
+    setError(null);
+    try {
+      const response = await fetch(`/api/charts/${id}`, { method: "DELETE" });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error || "რუკის წაშლა ვერ შესრულდა");
+      setCharts((prev) => prev?.filter((c) => c.id !== id) ?? null);
+      if (selected?.id === id) {
+        setSelected(null);
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "რუკის წაშლა ვერ შესრულდა");
     }
   }
 

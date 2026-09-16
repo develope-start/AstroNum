@@ -24,7 +24,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const session = await getActiveSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: "საჭიროა შესვლა" }, { status: 401 });
 
-  const chart = await prisma.chart.findUnique({ where: { id: params.id } });
+  // Deletion only needs ownership information. Keep this select explicit so
+  // it does not depend on optional chart columns added in later migrations.
+  const chart = await prisma.chart.findUnique({
+    where: { id: params.id },
+    select: { id: true, userId: true },
+  });
   if (!chart) return NextResponse.json({ error: "რუკა ვერ მოიძებნა" }, { status: 404 });
   if (chart.userId !== session.userId && session.role !== "ADMIN") {
     return NextResponse.json({ error: "წვდომა აკრძალულია" }, { status: 403 });

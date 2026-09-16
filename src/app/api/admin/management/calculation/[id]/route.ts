@@ -126,17 +126,29 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     ? await prisma.user.findUnique({ where: { id: calculation.userId }, select: { email: true } })
     : null;
 
-  await prisma.$transaction([
-    prisma.deletedCalculation.create({
-      data: {
-        originalId: calculation.id,
-        type: calculation.type,
-        summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
-        dataJson: JSON.stringify(calculation),
-      },
-    }),
-    prisma.calculation.delete({ where: { id: calculation.id } }),
-  ]);
+  try {
+    await prisma.$transaction([
+      prisma.deletedCalculation.create({
+        data: {
+          originalId: calculation.id,
+          type: calculation.type,
+          summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
+          dataJson: JSON.stringify(calculation),
+        },
+      }),
+      prisma.calculation.delete({ where: { id: calculation.id } }),
+    ]);
+  } catch (error) {
+    const code = error && typeof error === "object" && "code" in error ? error.code : null;
+    if (code === "P2002") {
+      return NextResponse.json({ message: "Calculation is already in trash" });
+    }
+    if (code === "P2025") {
+      return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
+    }
+    console.error("Calculation could not be moved to trash", error);
+    return NextResponse.json({ error: "Calculation could not be moved to trash" }, { status: 500 });
+  }
   if (owner) {
     try {
       await prisma.accountEvent.create({
