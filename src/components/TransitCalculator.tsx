@@ -90,7 +90,7 @@ export default function TransitCalculator() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-4 sm:space-y-6 text-center w-full max-w-full overflow-x-hidden">
+    <div className="mx-auto max-w-2xl lg:max-w-4xl xl:max-w-5xl space-y-4 sm:space-y-6 text-center w-full overflow-x-hidden">
       <div className="relative z-30 text-center w-full">
         <BirthFields value={birth} onChange={setBirth} legend="01. ნატალური მონაცემები" />
       </div>

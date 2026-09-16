@@ -81,8 +81,8 @@ export default function SynastryCalculator() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-4 sm:space-y-6 text-center w-full max-w-full overflow-x-hidden">
-      <div className="relative z-30 space-y-4 sm:space-y-6 text-center w-full">
+    <div className="mx-auto max-w-2xl lg:max-w-4xl xl:max-w-5xl space-y-4 sm:space-y-6 text-center w-full overflow-x-hidden">
+      <div className="relative z-30 grid gap-4 sm:gap-6 lg:grid-cols-2 text-center w-full">
         <BirthFields value={a} onChange={setA} legend="01. პირველი ადამიანი" />
         <BirthFields value={b} onChange={setB} legend="02. მეორე ადამიანი" />
       </div>

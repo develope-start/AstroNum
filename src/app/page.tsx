@@ -11,7 +11,7 @@ type Tab = "natal" | "synastry" | "transit";
 const TABS: { id: Tab; label: string; hint: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "natal", label: "ნატალური რუკა", hint: "დაბადების დღის სურათი — თქვენი ფსიქოლოგიური & სულიერი პორტრეტი", icon: Sun },
   { id: "synastry", label: "სინასტრია", hint: "ორი ნატალური რუკის შედარება — ურთიერთობების თავსებადობა", icon: Heart },
-  { id: "transit", label: "ტრანზიტები", hint: "დღევანდელი პლანეტების მოძრაობა თქვენს ნატალურ ცასთან", icon: Activity },
+  { id: "transit", label: "ტრანზიტები", hint: "დღევანდელი პლანეტების მოძრაობა თქვენს ნატალურ რუკასთან", icon: Activity },
 ];
 
 export default function HomePage() {
@@ -47,8 +47,8 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center justify-center gap-2 rounded-xl border border-amber-400/20 bg-gradient-to-b from-[#130a35]/70 to-[#09041a]/90 px-2.5 py-2 backdrop-blur-xl">
-            <span className="font-display text-sm sm:text-base font-black text-violet-300">12</span>
-            <span className="text-[0.65rem] font-bold text-slate-300">სახლი</span>
+            <span className="font-display text-sm sm:text-base font-black text-violet-300">4</span>
+            <span className="text-[0.65rem] font-bold text-slate-300">სტიქია</span>
           </div>
 
           <div className="flex items-center justify-center gap-2 rounded-xl border border-amber-400/20 bg-gradient-to-b from-[#130a35]/70 to-[#09041a]/90 px-2.5 py-2 backdrop-blur-xl">
