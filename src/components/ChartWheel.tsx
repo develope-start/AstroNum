@@ -21,6 +21,21 @@ const PLANET_GLYPHS: Record<string, string> = {
   TrueNode: "☊",
 };
 
+// საერთაშორისო ასტროლოგიური სტანდარტის მიხედვით აღიარებული პლანეტებისა და მნათობების ფერები
+const PLANET_COLORS: Record<string, string> = {
+  Sun: "#FBBF24",      // ☉ ოქროსფერი კაშკაშა მზე
+  Moon: "#F1F5F9",     // ☽ ვერცხლისფერი მთვარე
+  Mercury: "#C084FC",  // ☿ იასამნისფერი მერკური
+  Venus: "#F472B6",    // ♀ ვარდისფერი ვენერა
+  Mars: "#EF4444",     // ♂ მეწამული წითელი მარსი
+  Jupiter: "#60A5FA",  // ♃ საფირისფერი ლურჯი იუპიტერი
+  Saturn: "#F59E0B",   // ♄ ბრინჯაოსფერი სატურნი
+  Uranus: "#22D3EE",   // ♅ ელექტრიკ აკვა ურანი
+  Neptune: "#818CF8",  // ♆ ოკეანისფერი იასამნისფერი ნეპტუნი
+  Pluto: "#E879F9",    // ♇ კოსმოსური მაგენტა პლუტონი
+  TrueNode: "#2DD4BF", // ☊ ტირკიზისფერი ჩრდილოეთ კვანძი
+};
+
 export interface WheelPlanet {
   name: string;
   longitude: number;
@@ -63,7 +78,7 @@ export default function ChartWheel({
       const prev = sorted[i - 1];
       let diff = sorted[i].longitude - prev.longitude;
       if (diff < 0) diff += 360;
-      if (diff < 8 && radii[i - 1] === rPlanetBase) r = rPlanetBase - size * 0.05;
+      if (diff < 8 && radii[i - 1] === rPlanetBase) r = rPlanetBase - size * 0.048;
     }
     radii.push(r);
   }
@@ -161,15 +176,14 @@ export default function ChartWheel({
           );
         })}
 
-        {/* ASC/MC/DESC/IC ღერძები და გამოსახული პილების ბეჯები (Zero-Clipping) */}
+        {/* ASC/MC/DESC/IC ღერძები და გამოსახული პილების ბეჯები */}
         {angleLines.map(({ lon, label, color, textColor, bg }) => {
           const pEnd = toXY(lon, rOuter + size * 0.035);
-          const pBadge = toXY(lon, rOuter + size * 0.08); // Radius 230 - perfect 20px padding from 250 edge
+          const pBadge = toXY(lon, rOuter + size * 0.08);
           const pInner = toXY(lon, rInner);
 
           return (
             <g key={label}>
-              {/* ღერძის ხაზი ცენტრიდან გარე ბეჯამდე */}
               <line
                 x1={pInner.x}
                 y1={pInner.y}
@@ -181,7 +195,6 @@ export default function ChartWheel({
                 filter="url(#gold-glow)"
               />
 
-              {/* კაშკაშა ბეჯის ფონი (Pill Badge) */}
               <rect
                 x={pBadge.x - 22}
                 y={pBadge.y - 11}
@@ -194,7 +207,6 @@ export default function ChartWheel({
                 style={{ filter: `drop-shadow(0 0 10px ${color})` }}
               />
 
-              {/* ASC / MC / DESC / IC ტექსტი */}
               <text
                 x={pBadge.x}
                 y={pBadge.y}
@@ -210,35 +222,46 @@ export default function ChartWheel({
           );
         })}
 
-        {/* პლანეტები წრეების გარეშე, სტიქიური ფერებითა და გლოუ ნათებით */}
+        {/* პლანეტები - პროფესიონალური ასტროლოგიური სტანდარტით */}
         {sorted.map((p, idx) => {
           const pos = toXY(p.longitude, radii[idx]);
           const deg = Math.floor(norm360(p.longitude) % 30);
-          const signIdx = Math.floor(norm360(p.longitude) / 30);
-          const color = SIGN_COLORS[signIdx % 4];
+          const color = PLANET_COLORS[p.name] ?? "#F59E0B";
+          const glyph = PLANET_GLYPHS[p.name] ?? "•";
 
           return (
             <g key={p.name} className="group cursor-pointer">
-              {/* პლანეტის სიმბოლო - წრის გარეშე, სტიქიური ფერის გლოუ ნათებით */}
+              {/* ნაზი, ელეგანტური ფონის ჰალო (Halo) პლანეტის გარშემო */}
+              <circle
+                cx={pos.x}
+                cy={pos.y}
+                r={size * 0.024}
+                fill="#0d0726"
+                stroke={color}
+                strokeWidth="1.2"
+                opacity="0.9"
+                style={{ filter: `drop-shadow(0 0 6px ${color}bb)` }}
+              />
+              {/* პლანეტის ოფიციალური სიმბოლო */}
               <text
                 x={pos.x}
-                y={pos.y}
+                y={pos.y + 0.5}
                 fill={color}
-                className="font-black select-none transition-transform duration-300 group-hover:scale-125"
-                fontSize={size * 0.038}
+                className="font-extrabold select-none transition-transform duration-300 group-hover:scale-125"
+                fontSize={size * 0.034}
                 textAnchor="middle"
                 dominantBaseline="central"
-                style={{ textShadow: `0 0 10px ${color}, 0 0 20px ${color}aa` }}
+                style={{ textShadow: `0 0 8px ${color}` }}
               >
-                {PLANET_GLYPHS[p.name] ?? "•"}
+                {glyph}
               </text>
-              {/* გრადუსის მაჩვენებელი ქვემოთ */}
+              {/* გრადუსის მაჩვენებელი */}
               <text
                 x={pos.x}
-                y={pos.y + size * 0.032}
-                fill={color}
-                className="font-bold select-none opacity-85 group-hover:opacity-100"
-                fontSize={size * 0.02}
+                y={pos.y + size * 0.034}
+                fill="#CBD5E1"
+                className="font-bold select-none opacity-80 group-hover:opacity-100"
+                fontSize={size * 0.018}
                 textAnchor="middle"
                 dominantBaseline="central"
               >
