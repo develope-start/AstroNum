@@ -713,6 +713,7 @@ export default function AdminUsersPage() {
                 <p className="mb-1 text-xs font-semibold text-orange-400">ADMIN ID: {user.adminId ?? "—"}</p>
                 <p className="text-xs text-[#55e6e1]">@{user.username ?? "—"}</p>
                 <p className="text-parchment flex flex-wrap items-center gap-2">
+                  <span className="inline-flex rounded-full border border-rose-400/70 bg-rose-950/50 px-2.5 py-0.5 text-xs font-bold text-rose-300">წაშლილი ანგარიში</span>
                   <span>{user.email} <span className="text-xs">({user.role})</span></span>
                   <span className="text-xs text-brass-2">აიდი: {user.publicId ?? "—"}</span>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">
@@ -760,6 +761,7 @@ export default function AdminUsersPage() {
                 <input type="checkbox" aria-label={`${calculation.summary} მონიშვნა`} className="mt-1 h-4 w-4 cursor-pointer accent-brass" checked={selectedDeletedCalculations.includes(calculation.id)} onChange={() => toggleSelected(selectedDeletedCalculations, calculation.id, setSelectedDeletedCalculations)} />
                 <div>
                 <p className="text-parchment flex flex-wrap items-center gap-2">
+                  <span className="inline-flex rounded-full border border-rose-400/70 bg-rose-950/50 px-2.5 py-0.5 text-xs font-bold text-rose-300">წაშლილი შედგენილი რუკა</span>
                   <span>{TYPE_LABEL[calculation.type] ?? calculation.type} · აიდი: {calculation.data.publicId ?? "—"}</span>
                   {calculation.data.userId ? (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">

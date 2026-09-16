@@ -118,16 +118,25 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   });
   if (!calculation) return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
 
-  await prisma.$transaction([
-    prisma.deletedCalculation.create({
+  const owner = calculation.userId
+    ? await prisma.user.findUnique({ where: { id: calculation.userId }, select: { email: true } })
+    : null;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.deletedCalculation.create({
       data: {
         originalId: calculation.id,
         type: calculation.type,
         summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
         dataJson: JSON.stringify(calculation),
       },
-    }),
-    prisma.calculation.delete({ where: { id: calculation.id } }),
-  ]);
+    });
+    if (owner) {
+      await tx.accountEvent.create({
+        data: { userId: calculation.userId, type: `CALCULATION_DELETED:${calculation.id}`, emailSnapshot: owner.email },
+      });
+    }
+    await tx.calculation.delete({ where: { id: calculation.id } });
+  });
   return NextResponse.json({ message: "Calculation moved to trash" });
 }

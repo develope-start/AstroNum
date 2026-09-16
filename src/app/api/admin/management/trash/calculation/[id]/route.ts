@@ -18,7 +18,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const { interpretation: _interpretation, ...calculationData } = calculation;
   const userId = typeof calculation.userId === "string" ? calculation.userId : null;
   const user = userId
-    ? await prisma.user.findUnique({ where: { id: userId }, select: { id: true, publicId: true } })
+    ? await prisma.user.findUnique({ where: { id: userId }, select: { id: true, publicId: true, email: true } })
     : null;
   if (userId && !user) {
     calculation.userId = null;
@@ -37,6 +37,15 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         createdAt: new Date(calculation.createdAt as string),
       },
     });
+    if (user) {
+      await tx.accountEvent.create({
+        data: {
+          userId: user.id,
+          type: `CALCULATION_RESTORED:${deleted.originalId}`,
+          emailSnapshot: user.email,
+        },
+      });
+    }
     await tx.deletedCalculation.delete({ where: { id: deleted.id } });
   });
 

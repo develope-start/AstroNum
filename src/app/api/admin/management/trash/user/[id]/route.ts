@@ -30,6 +30,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     for (const event of events) {
       await tx.accountEvent.create({ data: { ...event, userId: deleted.id, createdAt: new Date(event.createdAt as string) } as any });
     }
+    await tx.accountEvent.create({
+      data: {
+        userId: deleted.id,
+        type: "ACCOUNT_RESTORED",
+        emailSnapshot: deleted.email,
+      },
+    });
     await tx.deletedUser.delete({ where: { id: deleted.id } });
   });
   return NextResponse.json({ message: "მომხმარებელი აღდგა" });

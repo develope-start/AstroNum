@@ -199,40 +199,60 @@ export default function HomePage() {
 
           {/* Element Colors Infographic Legend */}
           <div className="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-4 max-w-3xl sm:max-w-4xl mx-auto gap-3 sm:gap-4 w-full px-2">
-            {/* Fire Card */}
-            <div className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-orange-500/50 bg-gradient-to-br from-rose-950/80 via-red-950/50 to-orange-950/80 p-3 sm:p-4 text-orange-200 shadow-[0_0_20px_rgba(249,115,22,0.25)] backdrop-blur-xl">
+            {/* Fire Card - Vibrant Red */}
+            <div className="group relative overflow-hidden flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-red-500/60 bg-gradient-to-br from-[#3b0909] via-[#280505] to-[#1a0202] p-3.5 sm:p-5 text-red-200 shadow-[0_0_25px_rgba(239,68,68,0.35)] backdrop-blur-xl transition-all duration-500 hover:scale-[1.06] hover:border-red-400 hover:shadow-[0_0_45px_rgba(239,68,68,0.7)] cursor-pointer">
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-red-500/20 to-transparent transition-transform duration-1000 group-hover:translate-x-full pointer-events-none" />
               <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-[#FF5722] shadow-[0_0_10px_#FF5722]" />
-                <span className="text-sm sm:text-base font-black tracking-wide text-orange-300">🔥 ცეცხლი</span>
+                <span className="h-3.5 w-3.5 rounded-full bg-red-500 shadow-[0_0_14px_#EF4444] transition-all duration-300 group-hover:scale-125 group-hover:shadow-[0_0_20px_#EF4444]" />
+                <span className="text-sm sm:text-base font-black tracking-wide text-red-400 transition-all duration-300 group-hover:text-red-300 group-hover:drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">🔥 ცეცხლი</span>
               </div>
-              <span className="text-lg sm:text-xl font-black text-orange-100 tracking-widest drop-shadow">♈  ♌  ♐</span>
+              <div className="flex items-center justify-center gap-3 text-xl sm:text-2xl font-black text-red-200 tracking-widest">
+                <span className="inline-block transition-all duration-300 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-red-100 drop-shadow-[0_0_12px_rgba(239,68,68,0.8)]">♈</span>
+                <span className="inline-block transition-all duration-300 delay-75 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-red-100 drop-shadow-[0_0_12px_rgba(239,68,68,0.8)]">♌</span>
+                <span className="inline-block transition-all duration-300 delay-150 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-red-100 drop-shadow-[0_0_12px_rgba(239,68,68,0.8)]">♐</span>
+              </div>
             </div>
 
-            {/* Earth Card */}
-            <div className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-emerald-500/50 bg-gradient-to-br from-emerald-950/80 via-teal-950/50 to-green-950/80 p-3 sm:p-4 text-emerald-200 shadow-[0_0_20px_rgba(16,185,129,0.25)] backdrop-blur-xl">
+            {/* Earth Card - Light Warm Brown */}
+            <div className="group relative overflow-hidden flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-amber-700/60 bg-gradient-to-br from-[#2f1f14] via-[#22160d] to-[#180e08] p-3.5 sm:p-5 text-amber-200 shadow-[0_0_25px_rgba(180,83,9,0.35)] backdrop-blur-xl transition-all duration-500 hover:scale-[1.06] hover:border-amber-500 hover:shadow-[0_0_45px_rgba(217,119,6,0.7)] cursor-pointer">
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-amber-500/20 to-transparent transition-transform duration-1000 group-hover:translate-x-full pointer-events-none" />
               <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-[#10B981] shadow-[0_0_10px_#10B981]" />
-                <span className="text-sm sm:text-base font-black tracking-wide text-emerald-300">🏔️ მიწა</span>
+                <span className="h-3.5 w-3.5 rounded-full bg-[#d97706] shadow-[0_0_14px_#d97706] transition-all duration-300 group-hover:scale-125 group-hover:shadow-[0_0_20px_#d97706]" />
+                <span className="text-sm sm:text-base font-black tracking-wide text-amber-400 transition-all duration-300 group-hover:text-amber-300 group-hover:drop-shadow-[0_0_10px_rgba(217,119,6,0.8)]">🏔️ მიწა</span>
               </div>
-              <span className="text-lg sm:text-xl font-black text-emerald-100 tracking-widest drop-shadow">♉  ♍  ♑</span>
+              <div className="flex items-center justify-center gap-3 text-xl sm:text-2xl font-black text-amber-200 tracking-widest">
+                <span className="inline-block transition-all duration-300 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-amber-100 drop-shadow-[0_0_12px_rgba(217,119,6,0.8)]">♉</span>
+                <span className="inline-block transition-all duration-300 delay-75 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-amber-100 drop-shadow-[0_0_12px_rgba(217,119,6,0.8)]">♍</span>
+                <span className="inline-block transition-all duration-300 delay-150 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-amber-100 drop-shadow-[0_0_12px_rgba(217,119,6,0.8)]">♑</span>
+              </div>
             </div>
 
-            {/* Air Card */}
-            <div className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-amber-500/50 bg-gradient-to-br from-amber-950/80 via-yellow-950/50 to-amber-900/80 p-3 sm:p-4 text-amber-200 shadow-[0_0_20px_rgba(245,158,11,0.25)] backdrop-blur-xl">
+            {/* Air Card - Light Sky Blue */}
+            <div className="group relative overflow-hidden flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-sky-400/60 bg-gradient-to-br from-[#0c1f36] via-[#071526] to-[#030b14] p-3.5 sm:p-5 text-sky-200 shadow-[0_0_25px_rgba(56,189,248,0.35)] backdrop-blur-xl transition-all duration-500 hover:scale-[1.06] hover:border-sky-300 hover:shadow-[0_0_45px_rgba(56,189,248,0.7)] cursor-pointer">
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-sky-400/25 to-transparent transition-transform duration-1000 group-hover:translate-x-full pointer-events-none" />
               <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-[#FBBF24] shadow-[0_0_10px_#FBBF24]" />
-                <span className="text-sm sm:text-base font-black tracking-wide text-amber-300">💨 ჰაერი</span>
+                <span className="h-3.5 w-3.5 rounded-full bg-[#38bdf8] shadow-[0_0_14px_#38bdf8] transition-all duration-300 group-hover:scale-125 group-hover:shadow-[0_0_20px_#38bdf8]" />
+                <span className="text-sm sm:text-base font-black tracking-wide text-sky-300 transition-all duration-300 group-hover:text-sky-200 group-hover:drop-shadow-[0_0_10px_rgba(56,189,248,0.8)]">💨 ჰაერი</span>
               </div>
-              <span className="text-lg sm:text-xl font-black text-amber-100 tracking-widest drop-shadow">♊  ♎  ♒</span>
+              <div className="flex items-center justify-center gap-3 text-xl sm:text-2xl font-black text-sky-100 tracking-widest">
+                <span className="inline-block transition-all duration-300 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-white drop-shadow-[0_0_12px_rgba(56,189,248,0.8)]">♊</span>
+                <span className="inline-block transition-all duration-300 delay-75 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-white drop-shadow-[0_0_12px_rgba(56,189,248,0.8)]">♎</span>
+                <span className="inline-block transition-all duration-300 delay-150 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-white drop-shadow-[0_0_12px_rgba(56,189,248,0.8)]">♒</span>
+              </div>
             </div>
 
-            {/* Water Card */}
-            <div className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-cyan-500/50 bg-gradient-to-br from-cyan-950/80 via-sky-950/50 to-blue-950/80 p-3 sm:p-4 text-cyan-200 shadow-[0_0_20px_rgba(6,182,212,0.25)] backdrop-blur-xl">
+            {/* Water Card - Cyan/Blue */}
+            <div className="group relative overflow-hidden flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-cyan-500/60 bg-gradient-to-br from-[#062433] via-[#031824] to-[#010e17] p-3.5 sm:p-5 text-cyan-200 shadow-[0_0_25px_rgba(6,182,212,0.35)] backdrop-blur-xl transition-all duration-500 hover:scale-[1.06] hover:border-cyan-300 hover:shadow-[0_0_45px_rgba(6,182,212,0.7)] cursor-pointer">
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent transition-transform duration-1000 group-hover:translate-x-full pointer-events-none" />
               <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-[#00E5FF] shadow-[0_0_10px_#00E5FF]" />
-                <span className="text-sm sm:text-base font-black tracking-wide text-cyan-300">💧 წყალი</span>
+                <span className="h-3.5 w-3.5 rounded-full bg-[#06b6d4] shadow-[0_0_14px_#06b6d4] transition-all duration-300 group-hover:scale-125 group-hover:shadow-[0_0_20px_#06b6d4]" />
+                <span className="text-sm sm:text-base font-black tracking-wide text-cyan-300 transition-all duration-300 group-hover:text-cyan-200 group-hover:drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]">💧 წყალი</span>
               </div>
-              <span className="text-lg sm:text-xl font-black text-cyan-100 tracking-widest drop-shadow">♋  ♏  ♓</span>
+              <div className="flex items-center justify-center gap-3 text-xl sm:text-2xl font-black text-cyan-100 tracking-widest">
+                <span className="inline-block transition-all duration-300 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-white drop-shadow-[0_0_12px_rgba(6,182,212,0.8)]">♋</span>
+                <span className="inline-block transition-all duration-300 delay-75 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-white drop-shadow-[0_0_12px_rgba(6,182,212,0.8)]">♏</span>
+                <span className="inline-block transition-all duration-300 delay-150 group-hover:scale-150 group-hover:-translate-y-1 group-hover:text-white drop-shadow-[0_0_12px_rgba(6,182,212,0.8)]">♓</span>
+              </div>
             </div>
           </div>
         </div>

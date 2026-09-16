@@ -47,11 +47,21 @@ export async function POST(req: NextRequest) {
   }
 
   if (actionToken.type === ACTION_TYPES.ACCOUNT_DELETE) {
-    await prisma.$transaction([
-      prisma.actionToken.update({ where: { id: actionToken.id }, data: { usedAt: new Date() } }),
-      prisma.accountEvent.create({ data: { userId: user.id, type: "ACCOUNT_DELETED", emailSnapshot: user.email } }),
-      prisma.user.delete({ where: { id: user.id } }),
-    ]);
+    const chartCount = await prisma.chart.count({ where: { userId: user.id } });
+    const deletedChartEvent = await prisma.accountEvent.findFirst({
+      where: { userId: user.id, type: { startsWith: "CHART_DELETED" } },
+      select: { id: true },
+    });
+    const deletionType = chartCount > 0 || Boolean(deletedChartEvent)
+      ? "ACCOUNT_AND_CHARTS_DELETED"
+      : "ACCOUNT_DELETED";
+
+    await prisma.$transaction(async (tx) => {
+      await tx.actionToken.update({ where: { id: actionToken.id }, data: { usedAt: new Date() } });
+      await tx.accountEvent.deleteMany({ where: { userId: user.id, type: { startsWith: "CHART_DELETED" } } });
+      await tx.accountEvent.create({ data: { userId: user.id, type: deletionType, emailSnapshot: user.email } });
+      await tx.user.delete({ where: { id: user.id } });
+    });
     const response = NextResponse.json({ message: "კაბინეტი წაიშალა" });
     response.cookies.set(SESSION_COOKIE, "", { path: "/", maxAge: 0 });
     return response;

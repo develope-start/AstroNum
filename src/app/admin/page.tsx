@@ -434,6 +434,17 @@ export default function AdminPage() {
   const show = (value: string | number | null | undefined) => value ?? "—";
   const showDateTime = (value: string) =>
     new Date(value).toLocaleString("ka-GE", { dateStyle: "medium", timeStyle: "short" });
+  const eventStatusLabel: Record<string, string> = {
+    ACCOUNT_AND_CHARTS_DELETED: "წაშლილი — ანგარიში და შედგენილი რუკები",
+    CHART_DELETED: "წაშლილი — შედგენილი რუკა",
+    CALCULATION_DELETED: "წაშლილი — რუკის ჩანაწერი",
+    ACCOUNT_RESTORED: "აღდგენილი — ანგარიში",
+    CALCULATION_RESTORED: "აღდგენილი — შედგენილი რუკა",
+  };
+  const eventBaseType = (type: string) => type.split(":", 1)[0];
+  const eventIsDeleted = (type: string) => ["ACCOUNT_DELETED", "ACCOUNT_AND_CHARTS_DELETED", "CHART_DELETED", "CALCULATION_DELETED"].includes(eventBaseType(type));
+  const eventIsRestored = (type: string) => ["ACCOUNT_RESTORED", "CALCULATION_RESTORED"].includes(eventBaseType(type));
+
   const hasFilters =
     Boolean(filters.createdFrom || filters.createdTo || filters.email || filters.publicId || filters.name || filters.birthDate || filters.time || filters.place) ||
     filters.type !== "ALL" ||
@@ -719,7 +730,9 @@ export default function AdminPage() {
           {accountEvents?.map((event) => (
             <div key={event.id} className={`flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-ink-2/60 p-3 text-xs ${event.user?.role === "ADMIN" ? "border-2 border-[#35c759] bg-[#35c759]/10" : "border-line"}`}>
               <div>
-                <span className="font-medium text-brass-2">{eventLabel[event.type] ?? event.type}</span>
+                <span className={`inline-flex rounded-full border px-2.5 py-1 font-bold ${eventIsDeleted(event.type) ? "border-rose-400/70 bg-rose-950/50 text-rose-300" : eventIsRestored(event.type) ? "border-emerald-400/70 bg-emerald-950/50 text-emerald-300" : "border-amber-400/50 bg-amber-500/10 text-brass-2"}`}>
+                  {eventStatusLabel[eventBaseType(event.type)] ?? eventLabel[eventBaseType(event.type)] ?? event.type}
+                </span>
                 <span className="ml-3 text-parchment-dim">იუზერი:</span>
                 {event.user?.role === "ADMIN" ? (
                   <span className="ml-2 inline-flex items-center gap-5">

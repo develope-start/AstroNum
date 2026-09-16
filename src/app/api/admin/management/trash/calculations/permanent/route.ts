@@ -13,6 +13,16 @@ export async function DELETE(req: NextRequest) {
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "სამუდამოდ წასაშლელი რუკები არ არის მონიშნული" }, { status: 400 });
 
-  const result = await prisma.deletedCalculation.deleteMany({ where: { id: { in: parsed.data.ids } } });
+  const deleted = await prisma.deletedCalculation.findMany({
+    where: { id: { in: parsed.data.ids } },
+    select: { originalId: true },
+  });
+  const deletedEventTypes = deleted.flatMap(({ originalId }) => [`CALCULATION_DELETED:${originalId}`, "CALCULATION_DELETED"]);
+  const result = await prisma.$transaction(async (tx) => {
+    if (deletedEventTypes.length) {
+      await tx.accountEvent.deleteMany({ where: { type: { in: deletedEventTypes } } });
+    }
+    return tx.deletedCalculation.deleteMany({ where: { id: { in: parsed.data.ids } } });
+  });
   return NextResponse.json({ message: `სამუდამოდ წაიშალა ${result.count} რუკა` });
 }

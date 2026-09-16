@@ -30,6 +30,16 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     return NextResponse.json({ error: "წვდომა აკრძალულია" }, { status: 403 });
   }
 
-  await prisma.chart.delete({ where: { id: params.id } });
+  const owner = await prisma.user.findUnique({ where: { id: chart.userId }, select: { email: true } });
+  await prisma.$transaction([
+    prisma.accountEvent.create({
+      data: {
+        userId: chart.userId,
+        type: `CHART_DELETED:${chart.id}`,
+        emailSnapshot: owner?.email ?? session.email,
+      },
+    }),
+    prisma.chart.delete({ where: { id: params.id } }),
+  ]);
   return NextResponse.json({ ok: true });
 }
