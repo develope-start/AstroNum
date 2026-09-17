@@ -6,6 +6,7 @@ import { computeNatalChart, computeTransitAspects } from "@/lib/astro/chart";
 import { generateTransitInterpretation } from "@/lib/interpretations/natal";
 import { getRequestInfo } from "@/lib/requestInfo";
 import { tryRecordCalculation } from "@/lib/calculationHistory";
+import { allocateMapNumber } from "@/lib/publicIds";
 
 const schema = z.object({
   natal: z.object({
@@ -77,9 +78,11 @@ export async function POST(req: NextRequest) {
 
   if (save) {
     if (!sessionUserId) return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
+    const mapNumber = calculation?.mapNumber ?? await allocateMapNumber();
     const chart = await prisma.chart.create({
       data: {
         userId: sessionUserId,
+        mapNumber,
         type: "TRANSIT",
         label: label || `ტრანზიტი — ${natal.name} (${transitDate})`,
         name1: natal.name,
@@ -98,8 +101,8 @@ export async function POST(req: NextRequest) {
     if (calculation) {
       await prisma.calculation.update({ where: { id: calculation.id }, data: { saved: true } });
     }
-    return NextResponse.json({ ...responseBody, savedId: chart.id });
+    return NextResponse.json({ ...responseBody, mapNumber, savedId: chart.id });
   }
 
-  return NextResponse.json(responseBody);
+  return NextResponse.json({ ...responseBody, mapNumber: calculation?.mapNumber ?? null });
 }

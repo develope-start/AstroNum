@@ -4,6 +4,7 @@ export const calculationWithoutInterpretationSelect = {
   id: true,
   userId: true,
   publicId: true,
+  mapNumber: true,
   saved: true,
   type: true,
   name1: true,

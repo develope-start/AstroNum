@@ -9,6 +9,7 @@ const calculationSelect = {
   userId: true,
   saved: true,
   publicId: true,
+  mapNumber: true,
   type: true,
   name1: true,
   date1: true,
@@ -74,6 +75,7 @@ export async function GET(req: NextRequest) {
           orderBy: { createdAt: "desc" },
           select: {
             id: true,
+            mapNumber: true,
             type: true,
             name1: true,
             date1: true,
@@ -136,6 +138,7 @@ export async function GET(req: NextRequest) {
         id: chart.id,
         userId: user.id,
         publicId: user.publicId,
+        mapNumber: chart.mapNumber,
         saved: true,
         type: chart.type,
         name1: chart.name1,

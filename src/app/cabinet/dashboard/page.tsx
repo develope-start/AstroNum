@@ -17,6 +17,7 @@ interface AccountSummary {
 
 interface ChartSummary {
   id: string;
+  mapNumber: string | null;
   type: "NATAL" | "SYNASTRY" | "TRANSIT";
   label: string;
   name1: string;
@@ -35,6 +36,7 @@ interface WheelResult {
 
 interface SelectedChart {
   id: string;
+  mapNumber: string | null;
   label: string;
   type: string;
   interpretation: string;
@@ -134,6 +136,7 @@ export default function DashboardPage() {
       const res = await fetch(`/api/charts/${id}`);
       const data = await readApiResponse<{
         id?: string;
+        mapNumber?: string | null;
         label?: string;
         type?: string;
         interpretation?: string | null;
@@ -158,6 +161,7 @@ export default function DashboardPage() {
 
       setSelected({
         id: data.id ?? id,
+        mapNumber: data.mapNumber ?? null,
         label: data.label ?? "რუკა",
         type: data.type ?? "NATAL",
         interpretation: data.interpretation ?? "",
@@ -290,6 +294,7 @@ export default function DashboardPage() {
                   {new Date(c.createdAt).toLocaleDateString("ka-GE")}
                 </span>
               </div>
+              <p className="mt-2 text-xs font-bold tracking-wide text-amber-300">რუკის ნომერი: {c.mapNumber ?? "—"}</p>
               <h3 className="font-display mt-2.5 text-lg font-bold text-slate-100 group-hover:text-amber-300 transition-colors">
                 {c.label}
               </h3>
@@ -343,6 +348,7 @@ export default function DashboardPage() {
             <h2 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)]">
               {selected.label}
             </h2>
+            <span className="text-xs font-bold tracking-wide text-amber-300">რუკის ნომერი: {selected.mapNumber ?? "—"}</span>
           </div>
 
           {/* Action Toolbar: Light Moss Green Glow Button (ღია ჭაობისფერი გლოუ) & Copy Button */}

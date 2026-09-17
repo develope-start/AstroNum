@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { allocatePublicId, ensureUserPublicId } from "@/lib/publicIds";
+import { allocateMapNumber, allocatePublicId, ensureUserPublicId } from "@/lib/publicIds";
 
 const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 
@@ -54,14 +54,14 @@ export async function recordCalculation(input: CalculationHistoryInput) {
     ? await prisma.calculation.findFirst({
         where: { userId: input.userId, createdAt: { gte: since }, ...identity },
         orderBy: { createdAt: "desc" },
-        select: { id: true, publicId: true },
+        select: { id: true, publicId: true, mapNumber: true },
       })
     : null;
   const existingGuest = !input.userId && input.ipAddress && input.userAgent
     ? await prisma.calculation.findFirst({
         where: { userId: null, ipAddress: input.ipAddress, userAgent: input.userAgent, createdAt: { gte: since }, ...identity },
         orderBy: { createdAt: "desc" },
-        select: { id: true, publicId: true },
+        select: { id: true, publicId: true, mapNumber: true },
       })
     : null;
   const recentGuestCalculation = !input.userId && input.ipAddress && input.userAgent
@@ -84,10 +84,11 @@ export async function recordCalculation(input: CalculationHistoryInput) {
     console.error("Calculation public ID could not be allocated", error instanceof Error ? error.message : error);
   }
   const existingRecord = existing ?? existingGuest;
+  const mapNumber = existingRecord?.mapNumber ?? await allocateMapNumber();
   // `interpretation` is intentionally not written here. Older deployed databases
   // may not have that optional column yet; the calculation itself must still work.
   const { interpretation: _interpretation, ...calculationInput } = input;
-  const data = { ...calculationInput, saved: false, updatedAt: existingRecord ? now : null, publicId, createdAt: now };
+  const data = { ...calculationInput, saved: false, updatedAt: existingRecord ? now : null, publicId, mapNumber, createdAt: now };
   if (existing) {
     return prisma.calculation.update({ where: { id: existing.id }, data });
   }

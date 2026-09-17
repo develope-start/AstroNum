@@ -24,6 +24,7 @@ interface ChartRow {
 interface CalculationRow {
   id: string;
   publicId: string | null;
+  mapNumber: string | null;
   saved: boolean;
   guestGroupId?: string;
   type: string;
@@ -237,7 +238,8 @@ function CalculationHistoryPicker({
 
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-parchment-dim">
                   <span>👤 <strong>სახელი:</strong> {names}</span>
-                  <span>🆔 <strong>აიდი:</strong> {displayPublicId}</span>
+                  <span>🆔 <strong className="admin-id-label">აიდი:</strong> <span className="admin-id-value-guest">{displayPublicId}</span></span>
+                  <span>რუკის ნომერი: <strong className="text-amber-300">{calculation.mapNumber ?? "—"}</strong></span>
                   {user?.username && (
                     <span className="text-cyan-300 font-medium">
                       <strong>Username:</strong> @{user.username}
@@ -309,7 +311,8 @@ function RegisteredUserCalculationCard({
               </span>
             )}
           </div>
-          <span className="mt-1 block text-parchment-dim">აიდი: {displayValue(calculation.publicId ?? group.user.publicId)}</span>
+          <span className="mt-1 block"><strong className="admin-id-label">აიდი:</strong> <span className={calculation.user ? "admin-id-value-registered" : "admin-id-value-guest"}>{displayValue(calculation.publicId ?? group.user.publicId)}</span></span>
+          <span className="block text-amber-300">რუკის ნომერი: {displayValue(calculation.mapNumber)}</span>
           <span className="block text-parchment-dim">იუზერი: {group.user.email}</span>
           <span className="mt-0.5 block text-xs font-semibold text-[#55e6e1]">
             Username: {group.user.username ? `@${group.user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
@@ -423,7 +426,8 @@ function GuestCalculationCard({
               </span>
               <span>დაურეგისტრირებელი</span>
             </span>
-            <span className="text-red-400 font-bold">· აიდი: {displayValue(calculation.publicId ?? group.publicId)}</span>
+            <span className="font-bold"><span className="admin-id-label">· აიდი:</span> <span className="admin-id-value-guest">{displayValue(calculation.publicId ?? group.publicId)}</span></span>
+            <span className="text-amber-300 font-bold">· რუკის ნომერი: {displayValue(calculation.mapNumber)}</span>
             {isCustomSelected && (
               <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/60 bg-amber-950/70 px-2.5 py-0.5 text-xs font-bold text-amber-300 animate-pulse">
                 <span>🕒 არჩეულია წინა რუკა</span>
@@ -525,6 +529,7 @@ interface CalculationFilters {
   status: FilterStatus;
   email: string;
   publicId: string;
+  mapNumber: string;
   name: string;
   birthDate: string;
   time: string;
@@ -538,6 +543,7 @@ const EMPTY_FILTERS: CalculationFilters = {
   status: "ALL",
   email: "",
   publicId: "",
+  mapNumber: "",
   name: "",
   birthDate: "",
   time: "",
@@ -678,6 +684,7 @@ export default function AdminPage() {
           (filters.status === "ALL" || (filters.status === "REGISTERED" ? registered : !registered)) &&
           includes([calculation.user?.email], filters.email) &&
           includes([calculation.publicId, calculation.user?.publicId, calculation.user?.adminId], filters.publicId) &&
+          includes([calculation.mapNumber], filters.mapNumber) &&
           includes([calculation.name1, calculation.name2], filters.name) &&
           includes([calculation.date1, calculation.date2], filters.birthDate) &&
           includes([calculation.time1, calculation.time2], filters.time) &&
@@ -725,6 +732,7 @@ export default function AdminPage() {
           (!filters.createdTo || createdDate <= filters.createdTo) &&
           (filters.type === "ALL" || guestCalculation.type === filters.type) &&
           includes([], filters.email) &&
+          includes([guestCalculation.mapNumber], filters.mapNumber) &&
           includes([guestCalculation.publicId, guestGroup.publicId], filters.publicId) &&
           includes([guestCalculation.name1, guestCalculation.name2], filters.name) &&
           includes([guestCalculation.date1, guestCalculation.date2], filters.birthDate) &&
@@ -923,7 +931,7 @@ export default function AdminPage() {
   const eventIsRestored = (type: string) => ["ACCOUNT_RESTORED", "CALCULATION_RESTORED", "ACCOUNT_CREATED", "ADMIN_CREATED", "PRIMARY_ADMIN_RECOVERED"].includes(eventBaseType(type));
 
   const hasFilters =
-    Boolean(filters.createdFrom || filters.createdTo || filters.email || filters.publicId || filters.name || filters.birthDate || filters.time || filters.place) ||
+    Boolean(filters.createdFrom || filters.createdTo || filters.email || filters.publicId || filters.mapNumber || filters.name || filters.birthDate || filters.time || filters.place) ||
     filters.type !== "ALL" ||
     filters.status !== "ALL";
 
@@ -1025,6 +1033,10 @@ export default function AdminPage() {
         </div>
         <div className="mb-4 rounded-xl border border-line bg-ink-2/60 p-4">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <label className="text-xs text-parchment-dim">
+              რუკის ნომერი
+              <input value={filters.mapNumber} onChange={(e) => setFilters((current) => ({ ...current, mapNumber: e.target.value }))} placeholder="მაგ. Z-00001" className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+            </label>
             <label className="text-xs text-parchment-dim">
               აიდი
               <input value={filters.publicId} onChange={(e) => setFilters((current) => ({ ...current, publicId: e.target.value }))} placeholder="მაგ. R00001 ან 00001" className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
@@ -1222,7 +1234,7 @@ export default function AdminPage() {
                       </span>
                     )}
                     {event.user.publicId && (
-                      <span className="rounded bg-indigo-950/70 px-2 py-0.5 font-mono text-[11px] font-black text-cyan-300 border border-cyan-500/40 shadow-[0_0_8px_rgba(34,211,238,0.2)]">
+                      <span className="admin-id-value-registered rounded bg-indigo-950/70 px-2 py-0.5 font-mono text-[11px] font-black border border-cyan-500/40 shadow-[0_0_8px_rgba(34,211,238,0.2)]">
                         {event.user.publicId}
                       </span>
                     )}

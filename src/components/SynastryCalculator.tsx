@@ -12,6 +12,7 @@ interface CacheShape {
   a: BirthValue;
   b: BirthValue;
   interpretation: string;
+  mapNumber?: string | null;
 }
 
 export default function SynastryCalculator() {
@@ -22,6 +23,7 @@ export default function SynastryCalculator() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [mapNumber, setMapNumber] = useState<string | null>(null);
 
   useEffect(() => {
     const cached = loadGuestCache<CacheShape>("synastry");
@@ -31,11 +33,13 @@ export default function SynastryCalculator() {
         setA(EMPTY_BIRTH);
         setB(EMPTY_BIRTH);
         setInterpretation(null);
+        setMapNumber(null);
         return;
       }
       setA(cached.a);
       setB(cached.b);
       setInterpretation(cached.interpretation);
+      setMapNumber(cached.mapNumber ?? null);
     });
   }, []);
 
@@ -71,8 +75,9 @@ export default function SynastryCalculator() {
         return;
       }
       setInterpretation(data.interpretation);
+      setMapNumber(data.mapNumber ?? null);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("synastry", { a, b, interpretation: data.interpretation });
+      else saveGuestCache<CacheShape>("synastry", { a, b, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {
@@ -156,12 +161,11 @@ export default function SynastryCalculator() {
 
       {interpretation && (
         <div className="glass-panel rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl text-left w-full">
+          <p className="mb-4 text-xs font-bold tracking-wide text-amber-300">რუკის ნომერი: {mapNumber ?? "—"}</p>
           <InterpretationText text={interpretation} />
         </div>
       )}
     </div>
   );
 }
-
-
 

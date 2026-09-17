@@ -7,6 +7,7 @@ import { generateNatalInterpretation } from "@/lib/interpretations/natal";
 import { houseOfLongitude } from "@/lib/astro/positions";
 import { getRequestInfo } from "@/lib/requestInfo";
 import { tryRecordCalculation } from "@/lib/calculationHistory";
+import { allocateMapNumber } from "@/lib/publicIds";
 
 const schema = z.object({
   name: z.string().min(1, "სახელი აუცილებელია"),
@@ -83,9 +84,11 @@ export async function POST(req: NextRequest) {
 
   if (data.save) {
     if (!sessionUserId) return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
+    const mapNumber = calculation?.mapNumber ?? await allocateMapNumber();
     const chart = await prisma.chart.create({
       data: {
         userId: sessionUserId,
+        mapNumber,
         type: "NATAL",
         label: data.label || `ნატალური — ${data.name}`,
         name1: data.name,
@@ -103,8 +106,8 @@ export async function POST(req: NextRequest) {
     if (calculation) {
       await prisma.calculation.update({ where: { id: calculation.id }, data: { saved: true } });
     }
-    return NextResponse.json({ ...responseBody, savedId: chart.id });
+    return NextResponse.json({ ...responseBody, mapNumber, savedId: chart.id });
   }
 
-  return NextResponse.json(responseBody);
+  return NextResponse.json({ ...responseBody, mapNumber: calculation?.mapNumber ?? null });
 }

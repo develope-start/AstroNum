@@ -4,6 +4,7 @@ import InterpretationText from "@/components/InterpretationText";
 import ChartWheel, { WheelPlanet } from "@/components/ChartWheel";
 
 export type CalculationViewData = {
+  mapNumber?: string | null;
   type: string;
   name1: string;
   name2: string | null;
@@ -88,6 +89,7 @@ export default function AdminCalculationViewer({
         </div>
 
         <div className="mt-5 grid gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-4 text-sm text-slate-200 sm:grid-cols-2">
+          <p><span className="text-slate-400">რუკის ნომერი:</span> {calculation.mapNumber ?? "—"}</p>
           <p><span className="text-slate-400">პირველი პროფილი:</span> {calculation.name1}</p>
           <p><span className="text-slate-400">დაბადება:</span> {calculation.date1} {calculation.time1}</p>
           <p><span className="text-slate-400">ადგილი:</span> {calculation.place1}</p>

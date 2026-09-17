@@ -21,6 +21,7 @@ interface CacheShape {
   houseSystem: string;
   interpretation: string;
   wheel: WheelData | null;
+  mapNumber?: string | null;
 }
 
 const ZODIAC_SIGNS = [
@@ -62,6 +63,7 @@ export default function NatalCalculator() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [mapNumber, setMapNumber] = useState<string | null>(null);
 
   useEffect(() => {
     const cached = loadGuestCache<CacheShape>("natal");
@@ -72,12 +74,14 @@ export default function NatalCalculator() {
         setHouseSystem("placidus");
         setInterpretation(null);
         setWheel(null);
+        setMapNumber(null);
         return;
       }
       setBirth(cached.birth);
       setHouseSystem(cached.houseSystem);
       setInterpretation(cached.interpretation);
       setWheel(cached.wheel ?? null);
+      setMapNumber(cached.mapNumber ?? null);
     });
   }, []);
 
@@ -110,6 +114,7 @@ export default function NatalCalculator() {
         return;
       }
       setInterpretation(data.interpretation);
+      setMapNumber(data.mapNumber ?? null);
       const w: WheelData = {
         ascendant: data.result.ascendant,
         mc: data.result.mc,
@@ -121,7 +126,7 @@ export default function NatalCalculator() {
       };
       setWheel(w);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("natal", { birth, houseSystem, interpretation: data.interpretation, wheel: w });
+      else saveGuestCache<CacheShape>("natal", { birth, houseSystem, interpretation: data.interpretation, wheel: w, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {
@@ -292,12 +297,11 @@ export default function NatalCalculator() {
       {/* Full Width Interpretation Block */}
       {interpretation && (
         <div className="glass-panel rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl text-left w-full">
+          <p className="mb-4 text-xs font-bold tracking-wide text-amber-300">რუკის ნომერი: {mapNumber ?? "—"}</p>
           <InterpretationText text={interpretation} />
         </div>
       )}
     </div>
   );
 }
-
-
 

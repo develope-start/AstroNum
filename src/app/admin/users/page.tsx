@@ -8,6 +8,7 @@ type NullableString = string | null;
 interface CalculationData {
   id: string;
   publicId: string | null;
+  mapNumber: string | null;
   saved: boolean;
   type: string;
   name1: string;
@@ -98,7 +99,7 @@ interface ModalState {
   calculation?: CalculationData;
 }
 
-type CalculationDraft = Omit<CalculationData, "id" | "createdAt" | "updatedAt" | "publicId" | "saved">;
+type CalculationDraft = Omit<CalculationData, "id" | "createdAt" | "updatedAt" | "publicId" | "mapNumber" | "saved">;
 type UserStatusFilter = "ALL" | "REGISTERED" | "UNREGISTERED";
 type DeletedFilter = "ALL" | "ONLY";
 
@@ -111,6 +112,7 @@ interface ManagementFilters {
   deletedCalculations: DeletedFilter;
   email: string;
   publicId: string;
+  mapNumber: string;
   name: string;
   birthDate: string;
   time: string;
@@ -126,6 +128,7 @@ const EMPTY_FILTERS: ManagementFilters = {
   deletedCalculations: "ALL",
   email: "",
   publicId: "",
+  mapNumber: "",
   name: "",
   birthDate: "",
   time: "",
@@ -153,7 +156,7 @@ function value(value: string | number | null | undefined) {
 }
 
 function draftFromCalculation(calculation: CalculationData): CalculationDraft {
-  const { id, createdAt, updatedAt, publicId, saved, ...draft } = calculation;
+  const { id, createdAt, updatedAt, publicId, mapNumber, saved, ...draft } = calculation;
   return draft;
 }
 
@@ -166,6 +169,7 @@ function CalculationDetails({ calculation, onView }: { calculation: CalculationD
       {calculation.updatedAt && <p className="mb-3 text-xs text-parchment-dim/70">განახლებული: {formatDate(calculation.updatedAt)}</p>}
       {onView && <button type="button" onClick={() => onView(calculation)} className="mb-3 rounded-full border border-slate-400/70 bg-slate-500/10 px-4 py-1.5 text-xs font-bold text-slate-200 shadow-[0_0_14px_rgba(148,163,184,0.18)] transition hover:border-slate-200 hover:bg-slate-400/20">რუკის ნახვა</button>}
       <div className="grid gap-x-6 gap-y-1 text-xs sm:grid-cols-2">
+      <p><span className="text-parchment-dim">რუკის ნომერი:</span> <strong className="text-amber-300">{value(calculation.mapNumber)}</strong></p>
       <p><span className="text-parchment-dim">ტიპი:</span> {TYPE_LABEL[calculation.type] ?? calculation.type}</p>
       <p><span className="text-parchment-dim">შედგენის დრო:</span> {formatDate(calculation.createdAt)}</p>
       <p><span className="text-parchment-dim">სახელი 1:</span> {calculation.name1}</p>
@@ -219,12 +223,12 @@ function GuestCalculationHistory({
             <span>დაურეგისტრირებელი</span>
           </span>
           <span className="font-medium text-red-400">
-            · აიდი: {group.publicId ?? "—"} · რუკები: {group.calculations.length}
+            <span className="admin-id-label">· აიდი:</span> <span className="admin-id-value-guest">{group.publicId ?? "—"}</span> · რუკები: {group.calculations.length}
           </span>
         </div>
         <div className="flex gap-2">
-          <button className={button} onClick={() => onEdit(active)}>რედაქტირება</button>
-          <button className={dangerButton} onClick={() => onDelete(active)}>წაშლა</button>
+          <button className={button} onClick={() => onEdit(active)}>რუკის რედაქტირება</button>
+          <button className={dangerButton} onClick={() => onDelete(active)}>რუკის წაშლა</button>
         </div>
       </div>
       <CalculationDetails calculation={active} onView={onView} />
@@ -431,6 +435,7 @@ export default function AdminUsersPage() {
       (filters.type === "ALL" || calculation.type === filters.type) &&
       includes(emailValues, filters.email) &&
       includes([calculation.publicId], filters.publicId) &&
+      includes([calculation.mapNumber], filters.mapNumber) &&
       includes([calculation.name1, calculation.name2], filters.name) &&
       includes([calculation.date1, calculation.date2], filters.birthDate) &&
       includes([calculation.time1, calculation.time2], filters.time) &&
@@ -440,7 +445,7 @@ export default function AdminUsersPage() {
 
   const filteredData = useMemo(() => {
     if (!data) return null;
-    const hasCalculationFilters = Boolean(filters.createdFrom || filters.createdTo || filters.type !== "ALL" || filters.name || filters.birthDate || filters.time || filters.place);
+    const hasCalculationFilters = Boolean(filters.createdFrom || filters.createdTo || filters.type !== "ALL" || filters.mapNumber || filters.name || filters.birthDate || filters.time || filters.place);
     const users = data.users
       .map((user) => ({
         ...user,
@@ -463,7 +468,7 @@ export default function AdminUsersPage() {
         if (!includes([user.email], filters.email) || !includes([user.publicId, user.adminId], filters.publicId)) return false;
         if (filters.createdFrom && user.deletedAt.slice(0, 10) < filters.createdFrom) return false;
         if (filters.createdTo && user.deletedAt.slice(0, 10) > filters.createdTo) return false;
-        if (filters.type !== "ALL" || filters.name || filters.birthDate || filters.time || filters.place) {
+        if (filters.type !== "ALL" || filters.mapNumber || filters.name || filters.birthDate || filters.time || filters.place) {
           return user.calculations.some((calculation) => matchesCalculation(calculation, [user.email]));
         }
         return true;
@@ -553,6 +558,10 @@ export default function AdminUsersPage() {
       <section className="rounded-xl border border-line bg-ink-2/50 p-4">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <label className="text-xs text-parchment-dim">
+            რუკის ნომერი
+            <input value={filters.mapNumber} onChange={(event) => setFilters((current) => ({ ...current, mapNumber: event.target.value }))} placeholder="მაგ. Z-00001" className={input} />
+          </label>
+          <label className="text-xs text-parchment-dim">
             აიდი
             <input value={filters.publicId} onChange={(event) => setFilters((current) => ({ ...current, publicId: event.target.value }))} placeholder="მაგ. R00001 ან 00001" className={input} />
           </label>
@@ -632,38 +641,114 @@ export default function AdminUsersPage() {
         </h2>
         <div className="space-y-4">
           {filteredData?.users.length === 0 && <p className="text-xs text-parchment-dim">ამ ფილტრებით რეგისტრირებული მომხმარებელი ვერ მოიძებნა.</p>}
-          {filteredData?.users.map((user) => (
-            <article key={user.id} className="rounded-xl border border-line bg-ink-2/60 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/60 pb-3">
-                <div>
-                  <p className="mb-1 text-xs font-semibold text-orange-400">ADMIN ID: {user.adminId ?? "—"}</p>
-                  <p className="text-xs font-bold text-[#55e6e1]">
-                    Username: {user.username ? `@${user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
-                  </p>
-                  <p className="text-lg font-semibold text-parchment">{user.email} <span className="ml-2 text-sm text-brass-2">{user.publicId ?? "—"}</span></p>
-                  <p className="text-xs text-parchment-dim">შეიქმნა: {formatDate(user.createdAt)} · რუკები: {user.calculations.length}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button className={button} onClick={() => openEditUser(user)}>რედაქტირება</button>
-                  {user.id !== data?.currentUserId && (user.role !== "ADMIN" || data?.currentUserAdminId === "ADMIN") && (
-                    <button className={dangerButton} onClick={() => setModal({ kind: "delete-user", user })}>წაშლა</button>
-                  )}
-                </div>
-              </div>
-              <div className="mt-3 space-y-3">
-                {user.calculations.length === 0 && <p className="text-xs text-parchment-dim">ამ ანგარიშს გამოთვლილი რუკა არ აქვს.</p>}
-                {user.calculations.map((calculation) => (
-                  <div key={calculation.id} className="rounded-lg border border-line/60 p-3">
-                    <CalculationDetails calculation={calculation} onView={openCalculationView} />
-                    <div className="mt-3 flex gap-2">
-                      <button className={button} onClick={() => openEditCalculation(calculation)}>რუკის რედაქტირება</button>
-                      <button className={dangerButton} onClick={() => setModal({ kind: "delete-calculation", calculation })}>რუკის წაშლა</button>
+          {filteredData?.users.map((user) => {
+            const latestCalc = user.calculations[0];
+            const mapNum = latestCalc?.mapNumber ?? latestCalc?.publicId ?? user.publicId ?? "—";
+            const displayName = latestCalc?.name1 ? `${latestCalc.name1} (${user.name || (user.username ? `@${user.username}` : user.email)})` : (user.name || (user.username ? `@${user.username}` : user.email));
+            const calcTime = latestCalc ? formatDate(latestCalc.createdAt) : formatDate(user.createdAt);
+
+            return (
+              <details key={user.id} className="group rounded-xl border border-line/80 bg-ink-2/60 p-4 transition-all duration-200">
+                <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                      </span>
+                      <span>რეგისტრირებული</span>
+                    </span>
+
+                    <span><strong className="admin-id-label">აიდი:</strong> <span className="admin-id-value-registered">{user.publicId ?? user.adminId ?? "—"}</span></span>
+                    <span className="font-semibold text-parchment">👤 {displayName}</span>
+                    <span className="text-cyan-300 font-medium">📧 {user.email}</span>
+                    <span className="rounded-md border border-purple-400/50 bg-purple-950/40 px-2 py-0.5 text-xs font-bold text-purple-200">
+                      🗺️ რუკის #: {mapNum}
+                    </span>
+                    <span className="text-parchment-dim text-xs">🕒 {calcTime}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-brass-2 transition-transform duration-200 group-open:rotate-180">▼ ჩამოშლა</span>
+                  </div>
+                </summary>
+
+                <div className="mt-4 border-t border-line/60 pt-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/60 pb-3">
+                    <div>
+                      <p className="mb-1 text-xs font-semibold text-orange-400">ADMIN ID: {user.adminId ?? "—"}</p>
+                      <p className="text-xs font-bold text-[#55e6e1]">
+                        Username: {user.username ? `@${user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
+                      </p>
+                      <p className="text-lg font-semibold text-parchment">{user.email} <span className="ml-2 text-sm admin-id-value-registered">{user.publicId ?? "—"}</span></p>
+                      <p className="text-xs text-parchment-dim">შეიქმნა: {formatDate(user.createdAt)} · რუკები: {user.calculations.length}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button className={button} onClick={() => openEditUser(user)}>რედაქტირება</button>
+                      {user.id !== data?.currentUserId && (user.role !== "ADMIN" || data?.currentUserAdminId === "ADMIN") && (
+                        <button className={dangerButton} onClick={() => setModal({ kind: "delete-user", user })}>წაშლა</button>
+                      )}
                     </div>
                   </div>
-                ))}
-              </div>
-            </article>
-          ))}
+                  <div className="mt-3 space-y-3">
+                    {user.calculations.length === 0 && <p className="text-xs text-parchment-dim">ამ ანგარიშს გამოთვლილი რუკა არ აქვს.</p>}
+                    {user.calculations.map((calculation) => {
+                      const isCreatedAfterRegistration = new Date(calculation.createdAt).getTime() >= new Date(user.createdAt).getTime();
+                      const calcMapNum = calculation.mapNumber ?? calculation.publicId ?? "—";
+                      return (
+                        <details key={calculation.id} className="group/calc rounded-lg border border-line/60 bg-ink/40 p-3 transition-all duration-200">
+                          <summary className="flex flex-wrap items-center justify-between gap-2 cursor-pointer select-none text-xs sm:text-sm font-medium">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-bold text-purple-300">🗺️ #{calcMapNum}</span>
+                              <span className="font-semibold text-parchment">👤 {calculation.name1}</span>
+                              <span className="text-parchment-dim">({TYPE_LABEL[calculation.type] ?? calculation.type})</span>
+                              {isCreatedAfterRegistration ? (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-sky-400/60 bg-sky-950/60 px-2 py-0.5 text-[11px] font-bold text-sky-300">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-sky-400"></span>
+                                  <span>რეგისტრირების შემდეგ</span>
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/60 bg-rose-950/60 px-2 py-0.5 text-[11px] font-bold text-rose-300">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                                  <span>დარეგისტრირებამდე</span>
+                                </span>
+                              )}
+                              <span className="text-parchment-dim text-[11px]">🕒 {formatDate(calculation.createdAt)}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-brass-2 transition-transform duration-200 group-open/calc:rotate-180">▼ ჩამოშლა</span>
+                            </div>
+                          </summary>
+
+                          <div className="mt-3 border-t border-line/40 pt-3">
+                            <CalculationDetails calculation={calculation} onView={openCalculationView} />
+                            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-line/40 pt-2.5">
+                              <div className="flex items-center">
+                                {isCreatedAfterRegistration ? (
+                                  <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-400/60 bg-sky-950/60 px-3 py-1 text-xs font-bold text-sky-300 shadow-[0_0_12px_rgba(56,189,248,0.4)]">
+                                    <span className="h-2 w-2 rounded-full bg-sky-400"></span>
+                                    <span>რეგისტრირების შემდეგ შექმნილია</span>
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-3 py-1 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
+                                    <span className="h-2 w-2 rounded-full bg-rose-500"></span>
+                                    <span>დარეგისტრირებამდე შექმნილია</span>
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <button className={button} onClick={() => openEditCalculation(calculation)}>რუკის რედაქტირება</button>
+                                <button className={dangerButton} onClick={() => setModal({ kind: "delete-calculation", calculation })}>რუკის წაშლა</button>
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+                      );
+                    })}
+                  </div>
+                </div>
+              </details>
+            );
+          })}
         </div>
       </section>}
 
@@ -676,31 +761,54 @@ export default function AdminUsersPage() {
           {filteredData?.guestCalculationGroups.map((group) => {
             const calculation = group.calculations.find((item) => item.id === selectedGuestCalculations[group.id]) ?? group.calculations[0];
             if (!calculation) return null;
+            const mapNum = calculation.mapNumber ?? calculation.publicId ?? group.publicId ?? "—";
+            const displayName = calculation.name1 || "—";
+            const calcTime = formatDate(calculation.createdAt);
+
             return (
-            <article key={calculation.id} className="rounded-xl border border-red-500/50 bg-red-500/5 p-4">
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-2.5 py-0.5 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
-                    <span className="relative flex h-2 w-2">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
+              <details key={calculation.id} className="group rounded-xl border border-red-500/50 bg-red-500/5 p-4 transition-all duration-200">
+                <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-2.5 py-0.5 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
+                      </span>
+                      <span>დაურეგისტრირებელი</span>
                     </span>
-                    <span>დაურეგისტრირებელი</span>
-                  </span>
-                  <span className="font-medium text-red-400">· აიდი: {calculation.publicId ?? "—"}</span>
+
+                    <span><strong className="admin-id-label">აიდი:</strong> <span className="admin-id-value-guest">{calculation.publicId ?? group.publicId ?? "—"}</span></span>
+                    <span className="font-semibold text-parchment">👤 {displayName}</span>
+                    <span className="text-rose-300/70 italic text-xs">📧 მეილი: არ აქვს</span>
+                    <span className="rounded-md border border-purple-400/50 bg-purple-950/40 px-2 py-0.5 text-xs font-bold text-purple-200">
+                      🗺️ რუკის #: {mapNum}
+                    </span>
+                    <span className="text-parchment-dim text-xs">🕒 {calcTime}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-brass-2 transition-transform duration-200 group-open:rotate-180">▼ ჩამოშლა</span>
+                  </div>
+                </summary>
+
+                <div className="mt-4 border-t border-red-500/30 pt-4">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium"><span className="admin-id-label">· აიდი:</span> <span className="admin-id-value-guest">{calculation.publicId ?? "—"}</span></span>
+                      {group.ipAddress && <span className="text-xs text-parchment-dim">IP: {group.ipAddress}</span>}
+                    </div>
+                    <div className="flex gap-2">
+                      <button className={button} onClick={() => openEditCalculation(calculation)}>რუკის რედაქტირება</button>
+                      <button className={dangerButton} onClick={() => setModal({ kind: "delete-calculation", calculation })}>რუკის წაშლა</button>
+                    </div>
+                  </div>
+                  <CalculationDetails calculation={calculation} onView={openCalculationView} />
+                  <GuestCalculationPicker
+                    group={group}
+                    activeId={calculation.id}
+                    onSelect={(id) => setSelectedGuestCalculations((current) => ({ ...current, [group.id]: id }))}
+                  />
                 </div>
-                <div className="flex gap-2">
-                  <button className={button} onClick={() => openEditCalculation(calculation)}>რედაქტირება</button>
-                  <button className={dangerButton} onClick={() => setModal({ kind: "delete-calculation", calculation })}>წაშლა</button>
-                </div>
-              </div>
-              <CalculationDetails calculation={calculation} onView={openCalculationView} />
-              <GuestCalculationPicker
-                group={group}
-                activeId={calculation.id}
-                onSelect={(id) => setSelectedGuestCalculations((current) => ({ ...current, [group.id]: id }))}
-              />
-            </article>
+              </details>
             );
           })}
         </div>
@@ -729,35 +837,54 @@ export default function AdminUsersPage() {
         <div className="space-y-3">
           {filteredData?.deletedUsers.length === 0 && <p className="text-xs text-parchment-dim">ამ ფილტრებით წაშლილი ანგარიში ვერ მოიძებნა.</p>}
           {filteredData?.deletedUsers.map((user) => (
-            <div key={user.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-ink-2/40 p-4">
-              <div className="flex items-start gap-3 text-sm text-parchment-dim">
-                <input type="checkbox" aria-label={`${user.email} მონიშვნა`} className="mt-1 h-4 w-4 cursor-pointer accent-brass" checked={selectedDeletedUsers.includes(user.id)} onChange={() => toggleSelected(selectedDeletedUsers, user.id, setSelectedDeletedUsers)} />
-                <div>
-                <p className="mb-1 text-xs font-semibold text-orange-400">ADMIN ID: {user.adminId ?? "—"}</p>
-                <p className="text-xs font-bold text-[#55e6e1]">
-                  Username: {user.username ? `@${user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
-                </p>
-                <p className="text-parchment flex flex-wrap items-center gap-2">
-                  <span className="inline-flex rounded-full border border-rose-400/70 bg-rose-950/50 px-2.5 py-0.5 text-xs font-bold text-rose-300">წაშლილი ანგარიში</span>
-                  <span>{user.email} <span className="text-xs">({user.role})</span></span>
-                  <span className="text-xs text-brass-2">აიდი: {user.publicId ?? "—"}</span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">
-                    <span className="relative flex h-2 w-2">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
-                    </span>
-                    <span>რეგისტრირებული</span>
+            <details key={user.id} className="group rounded-xl border border-line/70 bg-ink-2/40 p-4 transition-all duration-200">
+              <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+                  <input
+                    type="checkbox"
+                    aria-label={`${user.email} მონიშვნა`}
+                    className="h-4 w-4 cursor-pointer accent-brass"
+                    checked={selectedDeletedUsers.includes(user.id)}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => toggleSelected(selectedDeletedUsers, user.id, setSelectedDeletedUsers)}
+                  />
+                  <span className="inline-flex rounded-full border border-rose-400/70 bg-rose-950/50 px-2.5 py-0.5 text-xs font-bold text-rose-300">
+                    🗑️ წაშლილი ანგარიში
                   </span>
-                </p>
-                <p>წაშლილია: {formatDate(user.deletedAt)} · რუკები: {user.calculationCount}</p>
+                  <span><strong className="admin-id-label">აიდი:</strong> <span className="admin-id-value-registered">{user.publicId ?? user.adminId ?? "—"}</span></span>
+                  <span className="font-semibold text-parchment">👤 {user.name || (user.username ? `@${user.username}` : user.email)}</span>
+                  <span className="text-cyan-300 font-medium">📧 {user.email}</span>
+                  <span className="rounded-md border border-purple-400/50 bg-purple-950/40 px-2 py-0.5 text-xs font-bold text-purple-200">
+                    🗺️ რუკები: {user.calculationCount}
+                  </span>
+                  <span className="text-parchment-dim text-xs">🕒 წაშლილია: {formatDate(user.deletedAt)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-brass-2 transition-transform duration-200 group-open:rotate-180">▼ ჩამოშლა</span>
+                </div>
+              </summary>
+
+              <div className="mt-4 border-t border-line/60 pt-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-1 text-sm text-parchment-dim">
+                  <p className="text-xs font-semibold text-orange-400">ADMIN ID: {user.adminId ?? "—"}</p>
+                  <p className="text-xs font-bold text-[#55e6e1]">
+                    Username: {user.username ? `@${user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
+                  </p>
+                  <p className="text-parchment flex flex-wrap items-center gap-2">
+                    <span>{user.email} <span className="text-xs">({user.role})</span></span>
+                    <span className="text-xs"><strong className="admin-id-label">აიდი:</strong> <span className="admin-id-value-registered">{user.publicId ?? "—"}</span></span>
+                  </p>
+                  <p className="text-xs">შეიქმნა: {formatDate(user.originalCreatedAt)} · წაშლილია: {formatDate(user.deletedAt)} · რუკები: {user.calculationCount}</p>
+                </div>
+                <div>
+                  {user.role === "ADMIN" && user.adminId === "ADMIN" ? (
+                    <span className="rounded-full border border-amber-400/40 px-4 py-2 text-xs font-semibold text-amber-300">მთავარი კაბინეტი ვერ აღდგება</span>
+                  ) : (
+                    <button className={button} onClick={() => action(`/api/admin/management/trash/user/${user.id}`, { method: "POST" })}>აღდგენა</button>
+                  )}
                 </div>
               </div>
-              {user.role === "ADMIN" && user.adminId === "ADMIN" ? (
-                <span className="rounded-full border border-amber-400/40 px-4 py-2 text-xs font-semibold text-amber-300">მთავარი კაბინეტი ვერ აღდგება</span>
-              ) : (
-                <button className={button} onClick={() => action(`/api/admin/management/trash/user/${user.id}`, { method: "POST" })}>აღდგენა</button>
-              )}
-            </div>
+            </details>
           ))}
         </div>
       </section>}
@@ -785,13 +912,20 @@ export default function AdminUsersPage() {
         <div className="space-y-3">
           {filteredData?.deletedCalculations.length === 0 && <p className="text-xs text-parchment-dim">ამ ფილტრებით წაშლილი რუკა ვერ მოიძებნა.</p>}
           {filteredData?.deletedCalculations.map((calculation) => (
-            <div key={calculation.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-ink-2/40 p-4">
-              <div className="flex items-start gap-3 text-sm text-parchment-dim">
-                <input type="checkbox" aria-label={`${calculation.summary} მონიშვნა`} className="mt-1 h-4 w-4 cursor-pointer accent-brass" checked={selectedDeletedCalculations.includes(calculation.id)} onChange={() => toggleSelected(selectedDeletedCalculations, calculation.id, setSelectedDeletedCalculations)} />
-                <div>
-                <p className="text-parchment flex flex-wrap items-center gap-2">
-                  <span className="inline-flex rounded-full border border-rose-400/70 bg-rose-950/50 px-2.5 py-0.5 text-xs font-bold text-rose-300">წაშლილი შედგენილი რუკა</span>
-                  <span>{TYPE_LABEL[calculation.type] ?? calculation.type} · აიდი: {calculation.data.publicId ?? "—"}</span>
+            <details key={calculation.id} className="group rounded-xl border border-line/70 bg-ink-2/40 p-4 transition-all duration-200">
+              <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+                  <input
+                    type="checkbox"
+                    aria-label={`${calculation.summary} მონიშვნა`}
+                    className="h-4 w-4 cursor-pointer accent-brass"
+                    checked={selectedDeletedCalculations.includes(calculation.id)}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => toggleSelected(selectedDeletedCalculations, calculation.id, setSelectedDeletedCalculations)}
+                  />
+                  <span className="inline-flex rounded-full border border-rose-400/70 bg-rose-950/50 px-2.5 py-0.5 text-xs font-bold text-rose-300">
+                    🗑️ წაშლილი რუკა
+                  </span>
                   {calculation.data.userId ? (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">
                       <span className="relative flex h-2 w-2">
@@ -809,12 +943,26 @@ export default function AdminUsersPage() {
                       <span>დაურეგისტრირებელი</span>
                     </span>
                   )}
-                </p>
-                <p>{calculation.summary} · წაშლილია: {formatDate(calculation.deletedAt)}</p>
+                  <span className="font-bold text-purple-300">🗺️ #{calculation.data.mapNumber ?? calculation.data.publicId ?? "—"}</span>
+                  <span className="font-semibold text-parchment">👤 {calculation.data.name1}</span>
+                  <span className="text-cyan-300 font-medium">📧 {calculation.userEmail ?? "დაურეგისტრირებელი"}</span>
+                  <span className="text-parchment-dim text-xs">🕒 წაშლილია: {formatDate(calculation.deletedAt)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-brass-2 transition-transform duration-200 group-open:rotate-180">▼ ჩამოშლა</span>
+                </div>
+              </summary>
+
+              <div className="mt-4 border-t border-line/60 pt-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-2 w-full sm:w-auto">
+                  <p className="text-xs text-parchment-dim">{calculation.summary} · წაშლილია: {formatDate(calculation.deletedAt)}</p>
+                  <CalculationDetails calculation={calculation.data} onView={openCalculationView} />
+                </div>
+                <div className="flex justify-end w-full sm:w-auto mt-2 sm:mt-0">
+                  <button className={button} onClick={() => action(`/api/admin/management/trash/calculation/${calculation.id}`, { method: "POST" })}>აღდგენა</button>
                 </div>
               </div>
-              <button className={button} onClick={() => action(`/api/admin/management/trash/calculation/${calculation.id}`, { method: "POST" })}>აღდგენა</button>
-            </div>
+            </details>
           ))}
         </div>
       </section>}

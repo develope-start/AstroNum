@@ -67,6 +67,23 @@ export async function allocatePublicId(kind: IdKind, preferredNumber?: number) {
   return prisma.$transaction((tx) => allocateWithClient(tx as unknown as DbClient, kind, preferredNumber));
 }
 
+export async function allocateMapNumber() {
+  return prisma.$transaction(async (tx) => {
+    const sequence = await tx.idSequence.upsert({
+      where: { key: "MAP" },
+      update: {},
+      create: { key: "MAP", nextNumber: 1 },
+    });
+    const updated = await tx.idSequence.update({
+      where: { key: "MAP" },
+      data: { nextNumber: { increment: 1 } },
+      select: { nextNumber: true },
+    });
+    const number = Math.max(1, updated.nextNumber - 1, sequence.nextNumber);
+    return `Z-${formatNumber(number)}`;
+  });
+}
+
 export async function ensureUserPublicId(userId: string, preferredNumber?: number) {
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { publicId: true } });
   if (user?.publicId) return user.publicId;

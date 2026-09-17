@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
-import { allocatePublicId, ensureUserPublicId, numberFromPublicId } from "@/lib/publicIds";
+import { allocateMapNumber, allocatePublicId, ensureUserPublicId, numberFromPublicId } from "@/lib/publicIds";
 
 function parseJsonObject(value: string): Record<string, unknown> | null {
   try {
@@ -50,8 +50,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     ? user.publicId || await ensureUserPublicId(user.id)
     : await allocatePublicId("GUEST", numberFromPublicId(typeof calculation.publicId === "string" ? calculation.publicId : null));
   calculation.publicId = publicId;
+  calculation.mapNumber = typeof calculation.mapNumber === "string" ? calculation.mapNumber : await allocateMapNumber();
   calculationData.userId = calculation.userId;
   calculationData.publicId = publicId;
+  calculationData.mapNumber = calculation.mapNumber;
 
   await prisma.$transaction(async (tx) => {
     await tx.calculation.create({

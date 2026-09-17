@@ -12,6 +12,7 @@ interface CacheShape {
   birth: BirthValue;
   transitDate: string;
   interpretation: string;
+  mapNumber?: string | null;
 }
 
 function today(): string {
@@ -32,6 +33,7 @@ export default function TransitCalculator() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [mapNumber, setMapNumber] = useState<string | null>(null);
 
   useEffect(() => {
     const cached = loadGuestCache<CacheShape>("transit");
@@ -41,11 +43,13 @@ export default function TransitCalculator() {
         setBirth(EMPTY_BIRTH);
         setTransitDate(today());
         setInterpretation(null);
+        setMapNumber(null);
         return;
       }
       setBirth(cached.birth);
       setTransitDate(cached.transitDate);
       setInterpretation(cached.interpretation);
+      setMapNumber(cached.mapNumber ?? null);
     });
   }, []);
 
@@ -80,8 +84,9 @@ export default function TransitCalculator() {
         return;
       }
       setInterpretation(data.interpretation);
+      setMapNumber(data.mapNumber ?? null);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("transit", { birth, transitDate, interpretation: data.interpretation });
+      else saveGuestCache<CacheShape>("transit", { birth, transitDate, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {
@@ -208,12 +213,11 @@ export default function TransitCalculator() {
 
       {interpretation && (
         <div className="glass-panel rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl text-left w-full">
+          <p className="mb-4 text-xs font-bold tracking-wide text-amber-300">რუკის ნომერი: {mapNumber ?? "—"}</p>
           <InterpretationText text={interpretation} />
         </div>
       )}
     </div>
   );
 }
-
-
 

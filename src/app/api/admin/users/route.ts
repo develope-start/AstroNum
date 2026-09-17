@@ -53,6 +53,7 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         publicId: true,
+        mapNumber: true,
         userId: true,
         saved: true,
         type: true,
@@ -83,6 +84,7 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
+        mapNumber: true,
         userId: true,
         type: true,
         name1: true,
@@ -155,6 +157,7 @@ export async function GET(req: NextRequest) {
     .filter((chart) => !allCalculations.some((calculation) => sameInput(chart, calculation)))
     .map((chart) => ({
       id: chart.id,
+      mapNumber: chart.mapNumber,
       publicId: chart.user.publicId,
       userId: chart.userId,
       saved: true,

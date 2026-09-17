@@ -28,7 +28,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   let calculation = await prisma.calculation.findUnique({
     where: { id: params.id },
     select: {
-      id: true, userId: true, publicId: true, saved: true, type: true,
+      id: true, userId: true, publicId: true, mapNumber: true, saved: true, type: true,
       name1: true, date1: true, time1: true, place1: true, lat1: true, lon1: true, tz1: true,
       name2: true, date2: true, time2: true, place2: true, lat2: true, lon2: true, tz2: true,
       transitDate: true, houseSystem: true, ipAddress: true, userAgent: true,
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     const savedChart = await prisma.chart.findUnique({
       where: { id: params.id },
       select: {
-        id: true, userId: true, type: true,
+        id: true, userId: true, mapNumber: true, type: true,
         name1: true, date1: true, time1: true, place1: true, lat1: true, lon1: true, tz1: true,
         name2: true, date2: true, time2: true, place2: true, lat2: true, lon2: true, tz2: true,
         transitDate: true, houseSystem: true, resultJson: true, createdAt: true,

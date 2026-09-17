@@ -36,6 +36,7 @@ model User {
 // და მათგან გამოთვლილ შედეგსა და ინტერპრეტაციას JSON სახით.
 model Chart {
   id     String @id @default(cuid())
+  mapNumber String?
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   type   String // "NATAL" | "SYNASTRY" | "TRANSIT"
@@ -76,6 +77,7 @@ model Calculation {
   id     String @id @default(cuid())
   userId String?
   publicId String?
+  mapNumber String? @unique
   user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
   saved  Boolean @default(false)
 

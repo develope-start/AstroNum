@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     where: { userId: session.userId },
     orderBy: { createdAt: "desc" },
     select: {
-      id: true, type: true, label: true, name1: true, name2: true,
+      id: true, mapNumber: true, type: true, label: true, name1: true, name2: true,
       date1: true, transitDate: true, houseSystem: true, createdAt: true,
     },
   });
