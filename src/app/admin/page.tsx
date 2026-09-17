@@ -419,32 +419,86 @@ export default function AdminPage() {
     let charts7d = 0;
     let charts30d = 0;
 
+    const registeredUsers24h = new Set<string>();
+    const registeredUsers7d = new Set<string>();
+    const registeredUsers30d = new Set<string>();
+
+    // 1. Registered calculations
     if (calculations) {
       for (const c of calculations) {
         const time = new Date(c.createdAt).getTime();
         const diff = now - time;
-        if (diff <= h24) charts24h++;
-        if (diff <= d7) charts7d++;
-        if (diff <= d30) charts30d++;
+        const userKey = c.user?.email ?? c.user?.publicId ?? c.user?.adminId;
+
+        if (diff <= h24) {
+          charts24h++;
+          if (userKey) registeredUsers24h.add(userKey);
+        }
+        if (diff <= d7) {
+          charts7d++;
+          if (userKey) registeredUsers7d.add(userKey);
+        }
+        if (diff <= d30) {
+          charts30d++;
+          if (userKey) registeredUsers30d.add(userKey);
+        }
       }
     }
 
-    let users24h = 0;
-    let users7d = 0;
-    let users30d = 0;
+    // 2. Guest / Unregistered calculations & unique guest user groups
+    let guestUsers24h = 0;
+    let guestUsers7d = 0;
+    let guestUsers30d = 0;
 
+    if (guestCalculationGroups) {
+      for (const group of guestCalculationGroups) {
+        let has24h = false;
+        let has7d = false;
+        let has30d = false;
+
+        for (const gc of group.calculations) {
+          const time = new Date(gc.createdAt).getTime();
+          const diff = now - time;
+
+          if (diff <= h24) {
+            charts24h++;
+            has24h = true;
+          }
+          if (diff <= d7) {
+            charts7d++;
+            has7d = true;
+          }
+          if (diff <= d30) {
+            charts30d++;
+            has30d = true;
+          }
+        }
+
+        if (has24h) guestUsers24h++;
+        if (has7d) guestUsers7d++;
+        if (has30d) guestUsers30d++;
+      }
+    }
+
+    // 3. Registered user registrations (accounts created in timeframe)
     if (users) {
       for (const u of users) {
         const time = new Date(u.createdAt).getTime();
         const diff = now - time;
-        if (diff <= h24) users24h++;
-        if (diff <= d7) users7d++;
-        if (diff <= d30) users30d++;
+        const userKey = u.id ?? u.email;
+
+        if (diff <= h24 && userKey) registeredUsers24h.add(userKey);
+        if (diff <= d7 && userKey) registeredUsers7d.add(userKey);
+        if (diff <= d30 && userKey) registeredUsers30d.add(userKey);
       }
     }
 
+    const users24h = registeredUsers24h.size + guestUsers24h;
+    const users7d = registeredUsers7d.size + guestUsers7d;
+    const users30d = registeredUsers30d.size + guestUsers30d;
+
     return { charts24h, users24h, charts7d, users7d, charts30d, users30d };
-  }, [calculations, users]);
+  }, [calculations, guestCalculationGroups, users]);
 
   if (error) {
     return <p className="mt-10 text-center text-ember">{error}</p>;
