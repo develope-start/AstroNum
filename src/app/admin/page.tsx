@@ -428,19 +428,19 @@ export default function AdminPage() {
       for (const c of calculations) {
         const time = new Date(c.createdAt).getTime();
         const diff = now - time;
-        const userKey = c.user?.email ?? c.user?.publicId ?? c.user?.adminId;
+        const emailKey = c.user?.email ? c.user.email.trim().toLowerCase() : null;
 
         if (diff <= h24) {
           charts24h++;
-          if (userKey) registeredUsers24h.add(userKey);
+          if (emailKey) registeredUsers24h.add(emailKey);
         }
         if (diff <= d7) {
           charts7d++;
-          if (userKey) registeredUsers7d.add(userKey);
+          if (emailKey) registeredUsers7d.add(emailKey);
         }
         if (diff <= d30) {
           charts30d++;
-          if (userKey) registeredUsers30d.add(userKey);
+          if (emailKey) registeredUsers30d.add(emailKey);
         }
       }
     }
@@ -485,11 +485,11 @@ export default function AdminPage() {
       for (const u of users) {
         const time = new Date(u.createdAt).getTime();
         const diff = now - time;
-        const userKey = u.id ?? u.email;
+        const emailKey = u.email ? u.email.trim().toLowerCase() : null;
 
-        if (diff <= h24 && userKey) registeredUsers24h.add(userKey);
-        if (diff <= d7 && userKey) registeredUsers7d.add(userKey);
-        if (diff <= d30 && userKey) registeredUsers30d.add(userKey);
+        if (diff <= h24 && emailKey) registeredUsers24h.add(emailKey);
+        if (diff <= d7 && emailKey) registeredUsers7d.add(emailKey);
+        if (diff <= d30 && emailKey) registeredUsers30d.add(emailKey);
       }
     }
 
