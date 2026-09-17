@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
-import { dedupeRecentCalculations, groupGuestCalculations } from "@/lib/calculationHistory";
+import { groupGuestCalculations } from "@/lib/calculationHistory";
 import { ensureAdminIds } from "@/lib/publicIds";
 
 const calculationSelect = {
@@ -160,7 +160,7 @@ export async function GET(req: NextRequest) {
 
     return {
       ...user,
-      calculations: dedupeRecentCalculations([...user.calculations, ...chartFallbacks]),
+      calculations: [...user.calculations, ...chartFallbacks].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
       charts: undefined,
     };
   });

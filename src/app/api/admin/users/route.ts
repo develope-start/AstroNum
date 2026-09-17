@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
-import { dedupeRecentCalculations, groupGuestCalculations } from "@/lib/calculationHistory";
+import { groupGuestCalculations } from "@/lib/calculationHistory";
 import { ensureAdminIds } from "@/lib/publicIds";
 
 // ადმინის პანელი: ყველა რეგისტრირებული მომხმარებელი და მათ მიერ შენახული ყველა რუკის
@@ -158,10 +158,10 @@ export async function GET(req: NextRequest) {
       user: chart.user,
     }));
 
-  const calculations = dedupeRecentCalculations([
+  const calculations = [
     ...allCalculations.filter((calculation) => calculation.userId),
     ...chartFallbacks,
-  ]);
+  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   const guestCalculationGroups = groupGuestCalculations(allCalculations.filter((calculation) => !calculation.userId));
 
   const accountEvents = await prisma.accountEvent.findMany({

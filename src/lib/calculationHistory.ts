@@ -52,7 +52,7 @@ export async function recordCalculation(input: CalculationHistoryInput) {
   };
   const existing = input.userId
     ? await prisma.calculation.findFirst({
-        where: { userId: input.userId, type: input.type, createdAt: { gte: since } },
+        where: { userId: input.userId, createdAt: { gte: since }, ...identity },
         orderBy: { createdAt: "desc" },
         select: { id: true, publicId: true },
       })
