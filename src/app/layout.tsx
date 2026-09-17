@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ka" className="dark">
+    <html lang="ka" className="dark premium-ui">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           h1, h2, h3, .font-display { font-family: var(--font-display); }
         `}</style>
       </head>
-      <body className="relative min-h-screen overflow-x-hidden star-field bg-[#07050f] text-slate-100 selection:bg-[#FFD26A] selection:text-[#07050f]">
+      <body className="premium-ui relative min-h-screen overflow-x-hidden star-field bg-[#06040A] text-slate-100 selection:bg-[#FFD26A] selection:text-[#06040A]">
         {/* Mystic Ambient Cosmic Nebula Orbs */}
         <div className="pointer-events-none fixed -top-40 left-1/2 -z-10 h-[700px] w-[1100px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-purple-900/25 via-indigo-600/15 to-amber-500/10 blur-[160px]" />
         <div className="pointer-events-none fixed top-1/3 -right-40 -z-10 h-[600px] w-[600px] rounded-full bg-cyan-600/15 blur-[150px]" />

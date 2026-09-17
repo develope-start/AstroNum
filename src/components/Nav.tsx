@@ -29,14 +29,20 @@ export default function Nav() {
       .then((d) => setToggleAllowed(Boolean(d?.allowed)))
       .catch(() => setToggleAllowed(true));
 
-    // 3. Initialize theme from localStorage
+    // 3. Initialize theme from localStorage (default to premium-ui)
     const savedTheme = localStorage.getItem("ui_theme");
     if (savedTheme === "legacy") {
       setIsLegacyUi(true);
       document.documentElement.classList.add("legacy-ui");
+      document.documentElement.classList.remove("premium-ui");
+      document.body.classList.add("legacy-ui");
+      document.body.classList.remove("premium-ui");
     } else {
       setIsLegacyUi(false);
+      document.documentElement.classList.add("premium-ui");
       document.documentElement.classList.remove("legacy-ui");
+      document.body.classList.add("premium-ui");
+      document.body.classList.remove("legacy-ui");
     }
   }, []);
 
@@ -46,8 +52,14 @@ export default function Nav() {
     localStorage.setItem("ui_theme", nextLegacy ? "legacy" : "premium");
     if (nextLegacy) {
       document.documentElement.classList.add("legacy-ui");
+      document.documentElement.classList.remove("premium-ui");
+      document.body.classList.add("legacy-ui");
+      document.body.classList.remove("premium-ui");
     } else {
+      document.documentElement.classList.add("premium-ui");
       document.documentElement.classList.remove("legacy-ui");
+      document.body.classList.add("premium-ui");
+      document.body.classList.remove("legacy-ui");
     }
   }
 
