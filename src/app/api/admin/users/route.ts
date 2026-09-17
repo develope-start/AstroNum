@@ -47,35 +47,35 @@ export async function GET(req: NextRequest) {
     },
   });
 
-  const [allCalculations, savedCharts] = await Promise.all([
+  const [allCalculations, savedCharts, liveAccountEvents, deletedUsers] = await Promise.all([
     prisma.calculation.findMany({
       orderBy: { createdAt: "desc" },
       select: {
-      id: true,
-      publicId: true,
-      userId: true,
-      saved: true,
-      type: true,
-      name1: true,
-      date1: true,
-      time1: true,
-      place1: true,
-      lat1: true,
-      lon1: true,
-      tz1: true,
-      name2: true,
-      date2: true,
-      time2: true,
-      place2: true,
-      lat2: true,
-      lon2: true,
-      tz2: true,
-      transitDate: true,
-      houseSystem: true,
-      ipAddress: true,
-      userAgent: true,
-      createdAt: true,
-      updatedAt: true,
+        id: true,
+        publicId: true,
+        userId: true,
+        saved: true,
+        type: true,
+        name1: true,
+        date1: true,
+        time1: true,
+        place1: true,
+        lat1: true,
+        lon1: true,
+        tz1: true,
+        name2: true,
+        date2: true,
+        time2: true,
+        place2: true,
+        lat2: true,
+        lon2: true,
+        tz2: true,
+        transitDate: true,
+        houseSystem: true,
+        ipAddress: true,
+        userAgent: true,
+        createdAt: true,
+        updatedAt: true,
         user: { select: { email: true, username: true, publicId: true, adminId: true, role: true } },
       },
     }),
@@ -103,6 +103,28 @@ export async function GET(req: NextRequest) {
         houseSystem: true,
         createdAt: true,
         user: { select: { email: true, username: true, publicId: true, adminId: true, role: true } },
+      },
+    }),
+    prisma.accountEvent.findMany({
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        type: true,
+        emailSnapshot: true,
+        oldEmail: true,
+        newEmail: true,
+        createdAt: true,
+        user: { select: { email: true, username: true, role: true, adminId: true } },
+      },
+    }),
+    prisma.deletedUser.findMany({
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        role: true,
+        adminId: true,
+        accountEventsJson: true,
       },
     }),
   ]);
@@ -164,18 +186,44 @@ export async function GET(req: NextRequest) {
   ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   const guestCalculationGroups = groupGuestCalculations(allCalculations.filter((calculation) => !calculation.userId));
 
-  const accountEvents = await prisma.accountEvent.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      type: true,
-      emailSnapshot: true,
-      oldEmail: true,
-      newEmail: true,
-      createdAt: true,
-      user: { select: { email: true, username: true, role: true, adminId: true } },
-    },
-  });
+  function parseEvents(json: string | null | undefined) {
+    if (!json) return [];
+    try {
+      const parsed = JSON.parse(json);
+      return Array.isArray(parsed) ? (parsed as Array<Record<string, any>>) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  const liveEventIds = new Set(liveAccountEvents.map((event) => event.id));
+  const archivedAccountEvents: typeof liveAccountEvents = [];
+
+  for (const deletedUser of deletedUsers) {
+    const events = parseEvents(deletedUser.accountEventsJson);
+    events.forEach((event, idx) => {
+      const id = String(event.id || `archived-${deletedUser.id}-${idx}`);
+      if (liveEventIds.has(id)) return;
+      archivedAccountEvents.push({
+        id,
+        type: String(event.type || "ACCOUNT_DELETED"),
+        emailSnapshot: String(event.emailSnapshot || deletedUser.email),
+        oldEmail: event.oldEmail ? String(event.oldEmail) : null,
+        newEmail: event.newEmail ? String(event.newEmail) : null,
+        createdAt: event.createdAt ? new Date(event.createdAt as string) : new Date(),
+        user: {
+          email: deletedUser.email,
+          username: deletedUser.username,
+          role: deletedUser.role,
+          adminId: deletedUser.adminId,
+        },
+      });
+    });
+  }
+
+  const accountEvents = [...liveAccountEvents, ...archivedAccountEvents].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
   return NextResponse.json({
     admin: { email: session.email, adminId: users.find((user) => user.id === session.userId)?.adminId ?? null },

@@ -86,6 +86,23 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   if (user?.role === "ADMIN" && actor?.adminId !== "ADMIN") return NextResponse.json({ error: "Only the primary administrator can delete an administrator" }, { status: 403 });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
+  const chartCount = user.charts.length;
+  const deletedChartEvent = user.accountEvents.some((event) => event.type.startsWith("CHART_DELETED"));
+  const deletionType = chartCount > 0 || deletedChartEvent || user.calculations.length > 0
+    ? "ACCOUNT_AND_CHARTS_DELETED"
+    : "ACCOUNT_DELETED";
+
+  const deletionEvent = {
+    id: `del-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    userId: user.id,
+    type: deletionType,
+    emailSnapshot: user.email,
+    oldEmail: null,
+    newEmail: null,
+    createdAt: new Date().toISOString(),
+  };
+  const finalAccountEvents = [...user.accountEvents, deletionEvent];
+
   await prisma.$transaction([
     prisma.deletedUser.create({
       data: {
@@ -100,7 +117,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         originalCreatedAt: user.createdAt,
         chartsJson: JSON.stringify(user.charts),
         calculationsJson: JSON.stringify(user.calculations),
-        accountEventsJson: JSON.stringify(user.accountEvents),
+        accountEventsJson: JSON.stringify(finalAccountEvents),
       },
     }),
     prisma.accountEvent.deleteMany({ where: { userId: user.id } }),

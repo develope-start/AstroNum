@@ -771,6 +771,10 @@ export default function AdminPage() {
     NAME_CHANGED: "სახელი შეიცვალა (ადმინის მიერ)",
     USERNAME_CHANGED: "Username შეიცვალა (ადმინის მიერ)",
     PROFILE_CHANGED: "პროფილი შეიცვალა (ადმინის მიერ)",
+    ADMIN_ROLE_CHANGED: "ადმინის როლი შეიცვალა",
+    ADMIN_CREATED: "ახალი ადმინი შეიქმნა",
+    ADMIN_PROFILE_CHANGED: "ადმინის პროფილი შეიცვალა",
+    PRIMARY_ADMIN_RECOVERED: "მთავარი ადმინი შეიქმნა/აღდგა",
   };
 
   const show = (value: string | number | null | undefined) => value ?? "—";
@@ -785,7 +789,7 @@ export default function AdminPage() {
   };
   const eventBaseType = (type: string) => type.split(":", 1)[0];
   const eventIsDeleted = (type: string) => ["ACCOUNT_DELETED", "ACCOUNT_AND_CHARTS_DELETED", "CHART_DELETED", "CALCULATION_DELETED"].includes(eventBaseType(type));
-  const eventIsRestored = (type: string) => ["ACCOUNT_RESTORED", "CALCULATION_RESTORED"].includes(eventBaseType(type));
+  const eventIsRestored = (type: string) => ["ACCOUNT_RESTORED", "CALCULATION_RESTORED", "ACCOUNT_CREATED", "ADMIN_CREATED", "PRIMARY_ADMIN_RECOVERED"].includes(eventBaseType(type));
 
   const hasFilters =
     Boolean(filters.createdFrom || filters.createdTo || filters.email || filters.publicId || filters.name || filters.birthDate || filters.time || filters.place) ||
