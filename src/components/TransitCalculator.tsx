@@ -6,7 +6,7 @@ import InterpretationText from "./InterpretationText";
 import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
-import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Calendar, Clock, Info } from "lucide-react";
+import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Calendar, Info } from "lucide-react";
 
 interface CacheShape {
   birth: BirthValue;
@@ -96,7 +96,7 @@ export default function TransitCalculator() {
           <BirthFields value={birth} onChange={setBirth} legend="01. ნატალური მონაცემები" />
         </div>
 
-        <div className="glass-panel relative z-10 space-y-5 rounded-2xl sm:rounded-[28px] p-4 sm:p-7 border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 backdrop-blur-2xl shadow-xl text-center w-full lg:col-span-5 lg:h-full flex flex-col justify-center">
+        <div className="glass-panel relative z-10 space-y-5 rounded-2xl sm:rounded-[28px] p-5 sm:p-7 backdrop-blur-2xl shadow-xl text-center w-full lg:col-span-5 lg:h-full flex flex-col justify-center">
           <div className="flex flex-col items-center justify-center gap-2.5 w-full">
             <div className="flex items-center justify-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
@@ -109,16 +109,16 @@ export default function TransitCalculator() {
               type="date"
               value={transitDate}
               onChange={(e) => setTransitDate(e.target.value)}
-              className="w-full rounded-xl sm:rounded-2xl border border-amber-500/25 bg-[#080418] px-3 py-2.5 text-xs font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:border-amber-500/40 text-center cursor-pointer"
+              className="glass-input w-full rounded-xl px-3 py-3 text-xs sm:text-sm font-semibold text-slate-100 outline-none transition-all text-center cursor-pointer"
             />
 
             <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold w-full pt-1">
               <button
                 type="button"
                 onClick={() => setTransitDate(today())}
-                className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
+                className={`rounded-full px-3.5 py-1 text-xs transition-all cursor-pointer ${
                   transitDate === today()
-                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
+                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-black shadow-[0_0_12px_rgba(229,169,59,0.3)]"
                     : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
                 }`}
               >
@@ -127,9 +127,9 @@ export default function TransitCalculator() {
               <button
                 type="button"
                 onClick={() => setTransitDate(offsetDays(1))}
-                className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
+                className={`rounded-full px-3.5 py-1 text-xs transition-all cursor-pointer ${
                   transitDate === offsetDays(1)
-                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
+                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-black shadow-[0_0_12px_rgba(229,169,59,0.3)]"
                     : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
                 }`}
               >
@@ -138,9 +138,9 @@ export default function TransitCalculator() {
               <button
                 type="button"
                 onClick={() => setTransitDate(offsetDays(7))}
-                className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
+                className={`rounded-full px-3.5 py-1 text-xs transition-all cursor-pointer ${
                   transitDate === offsetDays(7)
-                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
+                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-black shadow-[0_0_12px_rgba(229,169,59,0.3)]"
                     : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
                 }`}
               >
@@ -153,16 +153,16 @@ export default function TransitCalculator() {
             <button
               onClick={() => calculate(false)}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 py-3.5 px-6 text-xs sm:text-sm font-extrabold text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03] hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] disabled:opacity-50 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 rounded-full btn-gold py-3.5 px-6 text-xs sm:text-sm font-black disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin text-slate-950" />
+                  <Loader2 className="h-4 w-4 animate-spin text-[#07050f]" />
                   <span>ითვლის…</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="h-4 w-4 text-slate-950" />
+                  <Sparkles className="h-4 w-4 text-[#07050f]" />
                   <span>✦ ტრანზიტების გამოთვლა</span>
                 </>
               )}
@@ -172,7 +172,7 @@ export default function TransitCalculator() {
               <button
                 onClick={() => calculate(true)}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 py-3 px-6 text-xs sm:text-sm font-bold text-amber-300 shadow-[0_0_18px_rgba(245,158,11,0.2)] transition-all hover:scale-[1.03] hover:border-amber-400 cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 rounded-full border border-amber-400/40 bg-purple-950/40 py-3 px-6 text-xs sm:text-sm font-bold text-amber-300 shadow-[0_0_18px_rgba(229,169,59,0.2)] transition-all hover:scale-[1.03] hover:border-amber-400 cursor-pointer"
               >
                 <Bookmark className="h-4 w-4 text-amber-400" />
                 <span>შენახვა</span>
@@ -197,7 +197,7 @@ export default function TransitCalculator() {
       )}
 
       {!me && interpretation && (
-        <div className="flex items-start justify-center gap-2.5 rounded-2xl border border-amber-500/30 bg-purple-950/40 p-3.5 sm:p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center">
+        <div className="flex items-start justify-center gap-2.5 rounded-2xl border border-amber-500/30 bg-purple-950/40 p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center">
           <Info className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
           <p>
             დაურეგისტრირებელი მომხმარებელი — ეს შედეგი შენახული იქნება ამ მოწყობილობაზე 12 საათის განმავლობაში. მუდმივი
@@ -207,13 +207,10 @@ export default function TransitCalculator() {
       )}
 
       {interpretation && (
-        <div className="glass-panel rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl text-left w-full">
+        <div className="glass-panel rounded-2xl sm:rounded-[28px] p-5 sm:p-8 shadow-2xl backdrop-blur-2xl text-left w-full">
           <InterpretationText text={interpretation} />
         </div>
       )}
     </div>
   );
 }
-
-
-
