@@ -90,7 +90,7 @@ interface UserRow {
 
 interface RegisteredUserCalculationGroup {
   id: string;
-  user: { email: string; username?: string | null; publicId: string | null; adminId: string | null; createdAt: string };
+  user: { name?: string | null; email: string; username?: string | null; publicId: string | null; adminId: string | null; createdAt: string };
   calculations: CalculationRow[];
 }
 
@@ -292,104 +292,126 @@ function RegisteredUserCalculationCard({
 
   if (!calculation) return null;
 
+  const mapNum = calculation.mapNumber ?? calculation.publicId ?? group.user.publicId ?? "—";
+  const userAccountLabel = group.user.name || (group.user.username ? `@${group.user.username}` : group.user.email);
+  const displayName = calculation.name1 ? `${calculation.name1} (${userAccountLabel})` : userAccountLabel;
+  const calcTime = formatDateTime(calculation.createdAt);
+
   return (
-    <article className="relative rounded-xl border border-line bg-ink-2/60 p-4 text-sm transition-all duration-300 hover:border-emerald-500/40 shadow-lg">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-semibold text-orange-400">ADMIN ID: {displayValue(group.user.adminId)}</span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
-              </span>
-              <span>რეგისტრირებული</span>
+    <details className="group rounded-xl border border-line bg-ink-2/60 p-4 text-sm transition-all duration-300 hover:border-emerald-500/40 shadow-lg">
+      <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
             </span>
-            {isCustomSelected && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/60 bg-amber-950/70 px-2.5 py-0.5 text-xs font-bold text-amber-300 animate-pulse">
-                <span>🕒 არჩეულია წინა რუკა</span>
-              </span>
-            )}
-          </div>
-          <span className="mt-1 block"><strong className="admin-id-label">აიდი:</strong> <span className={calculation.user ? "admin-id-value-registered" : "admin-id-value-guest"}>{displayValue(calculation.publicId ?? group.user.publicId)}</span></span>
-          <span className="block text-amber-300">რუკის ნომერი: {displayValue(calculation.mapNumber)}</span>
-          <span className="block text-parchment-dim">იუზერი: {group.user.email}</span>
-          <span className="mt-0.5 block text-xs font-semibold text-[#55e6e1]">
-            Username: {group.user.username ? `@${group.user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
+            <span>რეგისტრირებული</span>
           </span>
-          <p className="mt-1 text-xs text-parchment-dim">სულ შედგენილი რუკები: <strong className="text-emerald-400 font-bold">{group.calculations.length}</strong></p>
-        </div>
 
-        <div className="flex flex-col items-end gap-2">
-          <p className="text-xs text-parchment-dim">გამოთვლილია: {formatDateTime(calculation.createdAt)}</p>
-
-          {/* Close / Return to Latest Button */}
+          <span><strong className="admin-id-label">აიდი:</strong> <span className="admin-id-value-registered">{displayValue(calculation.publicId ?? group.user.publicId)}</span></span>
+          <span className="font-semibold text-parchment">👤 {displayName}</span>
+          <span className="text-cyan-300 font-medium">📧 {group.user.email}</span>
+          <span className="rounded-md border border-purple-400/50 bg-purple-950/40 px-2 py-0.5 text-xs font-bold text-purple-200">
+            🗺️ რუკის #: {mapNum}
+          </span>
+          <span className="text-parchment-dim text-xs">🕒 {calcTime}</span>
           {isCustomSelected && (
-            <button
-              type="button"
-              onClick={onResetToLatest}
-              className="flex items-center gap-1.5 rounded-lg border border-rose-400/60 bg-rose-950/60 px-2.5 py-1 text-xs font-bold text-rose-200 shadow-[0_0_12px_rgba(244,63,94,0.4)] transition-all hover:bg-rose-900 hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
-              title="დახურვა და ბოლო შეყვანილ მონაცემებზე დაბრუნება"
-            >
-              <span className="text-sm font-black">✕</span>
-              <span>ბოლო რუკაზე დაბრუნება</span>
-            </button>
+            <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/60 bg-amber-950/70 px-2.5 py-0.5 text-xs font-bold text-amber-300 animate-pulse">
+              <span>🕒 არჩეულია წინა რუკა</span>
+            </span>
           )}
         </div>
-      </div>
-
-      {/* Action Button */}
-      <div className="my-3 flex justify-center border-y border-line/50 py-2.5">
-        <button
-          type="button"
-          onClick={() => onView(calculation)}
-          className="group flex items-center justify-center gap-2 rounded-full border-2 border-slate-300/80 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-2.5 text-xs sm:text-sm font-black text-slate-100 shadow-[0_0_22px_rgba(148,163,184,0.45)] ring-2 ring-slate-400/30 transition-all hover:scale-105 hover:border-white hover:text-white hover:shadow-[0_0_32px_rgba(148,163,184,0.7)] active:scale-95 cursor-pointer"
-        >
-          <span className="tracking-wide text-slate-100 font-extrabold">✦ რუკის ნახვა ({typeLabel[calculation.type] ?? calculation.type})</span>
-        </button>
-      </div>
-
-      {/* Profiles Grid */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div>
-          <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">პირველი პროფილი</h4>
-          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-            <dt className="text-parchment-dim">სახელი</dt><dd>{calculation.name1}</dd>
-            <dt className="text-parchment-dim">თარიღი</dt><dd>{calculation.date1}</dd>
-            <dt className="text-parchment-dim">დრო</dt><dd>{calculation.time1}</dd>
-            <dt className="text-parchment-dim">ადგილი</dt><dd>{calculation.place1}</dd>
-            <dt className="text-parchment-dim">კოორდინატები</dt><dd>{calculation.lat1}, {calculation.lon1}</dd>
-            <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{calculation.tz1}</dd>
-          </dl>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-brass-2 transition-transform duration-200 group-open:rotate-180">▼ ჩამოშლა</span>
         </div>
-        {(calculation.type === "SYNASTRY" || calculation.name2) && (
+      </summary>
+
+      <div className="mt-4 border-t border-line/60 pt-4">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3">
           <div>
-            <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">მეორე პროფილი</h4>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold text-orange-400">ADMIN ID: {displayValue(group.user.adminId)}</span>
+            </div>
+            <span className="mt-1 block"><strong className="admin-id-label">აიდი:</strong> <span className={calculation.user ? "admin-id-value-registered" : "admin-id-value-guest"}>{displayValue(calculation.publicId ?? group.user.publicId)}</span></span>
+            <span className="block text-amber-300">რუკის ნომერი: {displayValue(calculation.mapNumber)}</span>
+            <span className="block text-parchment-dim">იუზერი: {group.user.email}</span>
+            <span className="mt-0.5 block text-xs font-semibold text-[#55e6e1]">
+              Username: {group.user.username ? `@${group.user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
+            </span>
+            <p className="mt-1 text-xs text-parchment-dim">სულ შედგენილი რუკები: <strong className="text-emerald-400 font-bold">{group.calculations.length}</strong></p>
+          </div>
+
+          <div className="flex flex-col items-end gap-2">
+            <p className="text-xs text-parchment-dim">გამოთვლილია: {formatDateTime(calculation.createdAt)}</p>
+
+            {isCustomSelected && (
+              <button
+                type="button"
+                onClick={onResetToLatest}
+                className="flex items-center gap-1.5 rounded-lg border border-rose-400/60 bg-rose-950/60 px-2.5 py-1 text-xs font-bold text-rose-200 shadow-[0_0_12px_rgba(244,63,94,0.4)] transition-all hover:bg-rose-900 hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
+                title="დახურვა და ბოლო შეყვანილ მონაცემებზე დაბრუნება"
+              >
+                <span className="text-sm font-black">✕</span>
+                <span>ბოლო რუკაზე დაბრუნება</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <div className="my-3 flex justify-center border-y border-line/50 py-2.5">
+          <button
+            type="button"
+            onClick={() => onView(calculation)}
+            className="group flex items-center justify-center gap-2 rounded-full border-2 border-slate-300/80 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-2.5 text-xs sm:text-sm font-black text-slate-100 shadow-[0_0_22px_rgba(148,163,184,0.45)] ring-2 ring-slate-400/30 transition-all hover:scale-105 hover:border-white hover:text-white hover:shadow-[0_0_32px_rgba(148,163,184,0.7)] active:scale-95 cursor-pointer"
+          >
+            <span className="tracking-wide text-slate-100 font-extrabold">✦ რუკის ნახვა ({typeLabel[calculation.type] ?? calculation.type})</span>
+          </button>
+        </div>
+
+        {/* Profiles Grid */}
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div>
+            <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">პირველი პროფილი</h4>
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-              <dt className="text-parchment-dim">სახელი</dt><dd>{displayValue(calculation.name2)}</dd>
-              <dt className="text-parchment-dim">თარიღი</dt><dd>{displayValue(calculation.date2)}</dd>
-              <dt className="text-parchment-dim">დრო</dt><dd>{displayValue(calculation.time2)}</dd>
-              <dt className="text-parchment-dim">ადგილი</dt><dd>{displayValue(calculation.place2)}</dd>
-              <dt className="text-parchment-dim">კოორდინატები</dt><dd>{displayValue(calculation.lat2)}, {displayValue(calculation.lon2)}</dd>
-              <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{displayValue(calculation.tz2)}</dd>
+              <dt className="text-parchment-dim">სახელი</dt><dd>{calculation.name1}</dd>
+              <dt className="text-parchment-dim">თარიღი</dt><dd>{calculation.date1}</dd>
+              <dt className="text-parchment-dim">დრო</dt><dd>{calculation.time1}</dd>
+              <dt className="text-parchment-dim">ადგილი</dt><dd>{calculation.place1}</dd>
+              <dt className="text-parchment-dim">კოორდინატები</dt><dd>{calculation.lat1}, {calculation.lon1}</dd>
+              <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{calculation.tz1}</dd>
             </dl>
           </div>
-        )}
+          {(calculation.type === "SYNASTRY" || calculation.name2) && (
+            <div>
+              <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">მეორე პროფილი</h4>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+                <dt className="text-parchment-dim">სახელი</dt><dd>{displayValue(calculation.name2)}</dd>
+                <dt className="text-parchment-dim">თარიღი</dt><dd>{displayValue(calculation.date2)}</dd>
+                <dt className="text-parchment-dim">დრო</dt><dd>{displayValue(calculation.time2)}</dd>
+                <dt className="text-parchment-dim">ადგილი</dt><dd>{displayValue(calculation.place2)}</dd>
+                <dt className="text-parchment-dim">კოორდინატები</dt><dd>{displayValue(calculation.lat2)}, {displayValue(calculation.lon2)}</dd>
+                <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{displayValue(calculation.tz2)}</dd>
+              </dl>
+            </div>
+          )}
+        </div>
+
+        <dl className="mt-4 grid gap-x-3 gap-y-1 border-t border-line/60 pt-3 text-xs sm:grid-cols-[auto_1fr_auto_1fr]">
+          <dt className="text-parchment-dim">სახლთა სისტემა</dt><dd>{calculation.houseSystem}</dd>
+          <dt className="text-parchment-dim">ტრანზიტის თარიღი</dt><dd>{displayValue(calculation.transitDate)}</dd>
+        </dl>
+
+        {/* Previous Calculation List Picker */}
+        <GroupedCalculationHistory
+          sections={historySections}
+          activeId={calculation.id}
+          onSelect={onSelect}
+          typeLabel={typeLabel}
+        />
       </div>
-
-      <dl className="mt-4 grid gap-x-3 gap-y-1 border-t border-line/60 pt-3 text-xs sm:grid-cols-[auto_1fr_auto_1fr]">
-        <dt className="text-parchment-dim">სახლთა სისტემა</dt><dd>{calculation.houseSystem}</dd>
-        <dt className="text-parchment-dim">ტრანზიტის თარიღი</dt><dd>{displayValue(calculation.transitDate)}</dd>
-      </dl>
-
-      {/* Previous Calculation List Picker */}
-      <GroupedCalculationHistory
-        sections={historySections}
-        activeId={calculation.id}
-        onSelect={onSelect}
-        typeLabel={typeLabel}
-      />
-    </article>
+    </details>
   );
 }
 
@@ -414,109 +436,130 @@ function GuestCalculationCard({
 
   if (!calculation) return null;
 
+  const mapNum = calculation.mapNumber ?? calculation.publicId ?? group.publicId ?? "—";
+  const displayName = calculation.name1 || "—";
+  const calcTime = formatDateTime(calculation.createdAt);
+
   return (
-    <article className="relative rounded-xl border border-red-500/50 bg-red-500/5 p-4 text-sm transition-all duration-300 hover:border-rose-500/70 shadow-lg">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3">
-        <div>
-          <h3 className="font-medium flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-2.5 py-0.5 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
-              </span>
-              <span>დაურეგისტრირებელი</span>
+    <details className="group rounded-xl border border-red-500/50 bg-red-500/5 p-4 text-sm transition-all duration-300 hover:border-rose-500/70 shadow-lg">
+      <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-2.5 py-0.5 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
             </span>
-            <span className="font-bold"><span className="admin-id-label">· აიდი:</span> <span className="admin-id-value-guest">{displayValue(calculation.publicId ?? group.publicId)}</span></span>
-            <span className="text-amber-300 font-bold">· რუკის ნომერი: {displayValue(calculation.mapNumber)}</span>
-            {isCustomSelected && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/60 bg-amber-950/70 px-2.5 py-0.5 text-xs font-bold text-amber-300 animate-pulse">
-                <span>🕒 არჩეულია წინა რუკა</span>
-              </span>
-            )}
-          </h3>
-          {calculation.updatedAt && <p className="text-xs text-parchment-dim/70">განახლებული: {formatDateTime(calculation.createdAt)}</p>}
-          <div className="mt-1 flex flex-wrap items-center gap-2">
-            <span className={`inline-flex rounded-full border px-3 py-0.5 text-xs font-bold ${calculation.saved ? "border-fuchsia-400/70 bg-fuchsia-500/15 text-fuchsia-300" : "border-amber-400/50 bg-amber-500/10 text-amber-300"}`}>
-              {calculation.saved ? "მონაცემები შენახულია" : "შენახვის გარეშე"}
-            </span>
-            <span className="text-xs text-parchment-dim">სულ შედგენილი რუკები: <strong className="text-rose-400 font-bold">{group.calculations.length}</strong></span>
-          </div>
-          <p className="mt-1 text-xs text-parchment-dim">IP: {displayValue(group.ipAddress)}</p>
-          <p className="max-w-3xl break-words text-xs text-parchment-dim">მოწყობილობა: {displayValue(group.userAgent)}</p>
-        </div>
+            <span>დაურეგისტრირებელი</span>
+          </span>
 
-        <div className="flex flex-col items-end gap-2">
-          <p className="text-xs text-parchment-dim">გამოთვლილია: {formatDateTime(calculation.createdAt)}</p>
-
-          {/* Close / Return to Latest Button */}
+          <span className="font-bold text-red-400">აიდი: {displayValue(calculation.publicId ?? group.publicId)}</span>
+          <span className="font-semibold text-parchment">👤 {displayName}</span>
+          <span className="text-rose-300/70 italic text-xs">📧 მეილი: არ აქვს</span>
+          <span className="rounded-md border border-purple-400/50 bg-purple-950/40 px-2 py-0.5 text-xs font-bold text-purple-200">
+            🗺️ რუკის #: {mapNum}
+          </span>
+          <span className="text-parchment-dim text-xs">🕒 {calcTime}</span>
           {isCustomSelected && (
-            <button
-              type="button"
-              onClick={onResetToLatest}
-              className="flex items-center gap-1.5 rounded-lg border border-rose-400/60 bg-rose-950/60 px-2.5 py-1 text-xs font-bold text-rose-200 shadow-[0_0_12px_rgba(244,63,94,0.4)] transition-all hover:bg-rose-900 hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
-              title="დახურვა და ბოლო შეყვანილ მონაცემებზე დაბრუნება"
-            >
-              <span className="text-sm font-black">✕</span>
-              <span>ბოლო რუკაზე დაბრუნება</span>
-            </button>
+            <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/60 bg-amber-950/70 px-2.5 py-0.5 text-xs font-bold text-amber-300 animate-pulse">
+              <span>🕒 არჩეულია წინა რუკა</span>
+            </span>
           )}
         </div>
-      </div>
-
-      {/* Action Button */}
-      <div className="my-3 flex justify-center border-y border-line/50 py-2.5">
-        <button
-          type="button"
-          onClick={() => onView(calculation)}
-          className="group flex items-center justify-center gap-2 rounded-full border-2 border-slate-300/80 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-2.5 text-xs sm:text-sm font-black text-slate-100 shadow-[0_0_22px_rgba(148,163,184,0.45)] ring-2 ring-slate-400/30 transition-all hover:scale-105 hover:border-white hover:text-white hover:shadow-[0_0_32px_rgba(148,163,184,0.7)] active:scale-95 cursor-pointer"
-        >
-          <span className="tracking-wide text-slate-100 font-extrabold">✦ რუკის ნახვა ({typeLabel[calculation.type] ?? calculation.type})</span>
-        </button>
-      </div>
-
-      {/* Profiles Grid */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div>
-          <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">პირველი პროფილი</h4>
-          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-            <dt className="text-parchment-dim">სახელი</dt><dd>{calculation.name1}</dd>
-            <dt className="text-parchment-dim">თარიღი</dt><dd>{calculation.date1}</dd>
-            <dt className="text-parchment-dim">დრო</dt><dd>{calculation.time1}</dd>
-            <dt className="text-parchment-dim">ადგილი</dt><dd>{calculation.place1}</dd>
-            <dt className="text-parchment-dim">კოორდინატები</dt><dd>{calculation.lat1}, {calculation.lon1}</dd>
-            <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{calculation.tz1}</dd>
-          </dl>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-brass-2 transition-transform duration-200 group-open:rotate-180">▼ ჩამოშლა</span>
         </div>
-        {(calculation.type === "SYNASTRY" || calculation.name2) && (
+      </summary>
+
+      <div className="mt-4 border-t border-red-500/30 pt-4">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3">
           <div>
-            <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">მეორე პროფილი</h4>
+            <h3 className="font-medium flex flex-wrap items-center gap-2">
+              <span className="font-bold"><span className="admin-id-label">· აიდი:</span> <span className="admin-id-value-guest">{displayValue(calculation.publicId ?? group.publicId)}</span></span>
+              <span className="text-amber-300 font-bold">· რუკის ნომერი: {displayValue(calculation.mapNumber)}</span>
+            </h3>
+            {calculation.updatedAt && <p className="text-xs text-parchment-dim/70">განახლებული: {formatDateTime(calculation.createdAt)}</p>}
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <span className={`inline-flex rounded-full border px-3 py-0.5 text-xs font-bold ${calculation.saved ? "border-fuchsia-400/70 bg-fuchsia-500/15 text-fuchsia-300" : "border-amber-400/50 bg-amber-500/10 text-amber-300"}`}>
+                {calculation.saved ? "მონაცემები შენახულია" : "შენახვის გარეშე"}
+              </span>
+              <span className="text-xs text-parchment-dim">სულ შედგენილი რუკები: <strong className="text-rose-400 font-bold">{group.calculations.length}</strong></span>
+            </div>
+            <p className="mt-1 text-xs text-parchment-dim">IP: {displayValue(group.ipAddress)}</p>
+            <p className="max-w-3xl break-words text-xs text-parchment-dim">მოწყობილობა: {displayValue(group.userAgent)}</p>
+          </div>
+
+          <div className="flex flex-col items-end gap-2">
+            <p className="text-xs text-parchment-dim">გამოთვლილია: {formatDateTime(calculation.createdAt)}</p>
+
+            {isCustomSelected && (
+              <button
+                type="button"
+                onClick={onResetToLatest}
+                className="flex items-center gap-1.5 rounded-lg border border-rose-400/60 bg-rose-950/60 px-2.5 py-1 text-xs font-bold text-rose-200 shadow-[0_0_12px_rgba(244,63,94,0.4)] transition-all hover:bg-rose-900 hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
+                title="დახურვა და ბოლო შეყვანილ მონაცემებზე დაბრუნება"
+              >
+                <span className="text-sm font-black">✕</span>
+                <span>ბოლო რუკაზე დაბრუნება</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <div className="my-3 flex justify-center border-y border-line/50 py-2.5">
+          <button
+            type="button"
+            onClick={() => onView(calculation)}
+            className="group flex items-center justify-center gap-2 rounded-full border-2 border-slate-300/80 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-2.5 text-xs sm:text-sm font-black text-slate-100 shadow-[0_0_22px_rgba(148,163,184,0.45)] ring-2 ring-slate-400/30 transition-all hover:scale-105 hover:border-white hover:text-white hover:shadow-[0_0_32px_rgba(148,163,184,0.7)] active:scale-95 cursor-pointer"
+          >
+            <span className="tracking-wide text-slate-100 font-extrabold">✦ რუკის ნახვა ({typeLabel[calculation.type] ?? calculation.type})</span>
+          </button>
+        </div>
+
+        {/* Profiles Grid */}
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div>
+            <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">პირველი პროფილი</h4>
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-              <dt className="text-parchment-dim">სახელი</dt><dd>{displayValue(calculation.name2)}</dd>
-              <dt className="text-parchment-dim">თარიღი</dt><dd>{displayValue(calculation.date2)}</dd>
-              <dt className="text-parchment-dim">დრო</dt><dd>{displayValue(calculation.time2)}</dd>
-              <dt className="text-parchment-dim">ადგილი</dt><dd>{displayValue(calculation.place2)}</dd>
-              <dt className="text-parchment-dim">კოორდინატები</dt><dd>{displayValue(calculation.lat2)}, {displayValue(calculation.lon2)}</dd>
-              <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{displayValue(calculation.tz2)}</dd>
+              <dt className="text-parchment-dim">სახელი</dt><dd>{calculation.name1}</dd>
+              <dt className="text-parchment-dim">თარიღი</dt><dd>{calculation.date1}</dd>
+              <dt className="text-parchment-dim">დრო</dt><dd>{calculation.time1}</dd>
+              <dt className="text-parchment-dim">ადგილი</dt><dd>{calculation.place1}</dd>
+              <dt className="text-parchment-dim">კოორდინატები</dt><dd>{calculation.lat1}, {calculation.lon1}</dd>
+              <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{calculation.tz1}</dd>
             </dl>
           </div>
-        )}
+          {(calculation.type === "SYNASTRY" || calculation.name2) && (
+            <div>
+              <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">მეორე პროფილი</h4>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+                <dt className="text-parchment-dim">სახელი</dt><dd>{displayValue(calculation.name2)}</dd>
+                <dt className="text-parchment-dim">თარიღი</dt><dd>{displayValue(calculation.date2)}</dd>
+                <dt className="text-parchment-dim">დრო</dt><dd>{displayValue(calculation.time2)}</dd>
+                <dt className="text-parchment-dim">ადგილი</dt><dd>{displayValue(calculation.place2)}</dd>
+                <dt className="text-parchment-dim">კოორდინატები</dt><dd>{displayValue(calculation.lat2)}, {displayValue(calculation.lon2)}</dd>
+                <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{displayValue(calculation.tz2)}</dd>
+              </dl>
+            </div>
+          )}
+        </div>
+
+        <dl className="mt-4 grid gap-x-3 gap-y-1 border-t border-line/60 pt-3 text-xs sm:grid-cols-[auto_1fr_auto_1fr]">
+          <dt className="text-parchment-dim">სახლთა სისტემა</dt><dd>{calculation.houseSystem}</dd>
+          <dt className="text-parchment-dim">ტრანზიტის თარიღი</dt><dd>{displayValue(calculation.transitDate)}</dd>
+        </dl>
+
+        {/* Calculation History Picker */}
+        <CalculationHistoryPicker
+          calculations={group.calculations}
+          activeId={calculation.id}
+          latestId={latestCalculation.id}
+          onSelect={onSelect}
+          typeLabel={typeLabel}
+          guestPublicId={group.publicId}
+        />
       </div>
-
-      <dl className="mt-4 grid gap-x-3 gap-y-1 border-t border-line/60 pt-3 text-xs sm:grid-cols-[auto_1fr_auto_1fr]">
-        <dt className="text-parchment-dim">სახლთა სისტემა</dt><dd>{calculation.houseSystem}</dd>
-        <dt className="text-parchment-dim">ტრანზიტის თარიღი</dt><dd>{displayValue(calculation.transitDate)}</dd>
-      </dl>
-
-      {/* Previous Calculation List Picker */}
-      <CalculationHistoryPicker
-        calculations={group.calculations}
-        activeId={calculation.id}
-        latestId={latestCalculation.id}
-        onSelect={onSelect}
-        typeLabel={typeLabel}
-        guestPublicId={group.publicId}
-      />
-    </article>
+    </details>
   );
 }
 
@@ -1096,81 +1139,51 @@ export default function AdminPage() {
             </button>
           </div>
         </div>
-
-        {/* Registered Users Map History Sub-Header & Jump Button to Unregistered */}
-        <div id="registered-calculations-section" className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-line/60 pb-3 scroll-mt-6">
-          <h3 className="font-display text-lg sm:text-xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-blue-400 drop-shadow-[0_0_15px_rgba(56,189,248,0.55)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(56,189,248,0.95)] hover:scale-[1.01] cursor-default">
-            რეგისტრირებული მომხმარებლების რუკების ისტორია
-          </h3>
-          {filteredGuestCalculationGroups.length > 0 && (
-            <button
-              type="button"
-              onClick={() => {
-                document.getElementById("guest-calculations-section")?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="group flex items-center gap-2 rounded-xl border border-rose-500/50 bg-rose-950/40 px-3.5 py-1.5 text-xs sm:text-sm font-black text-rose-300 shadow-[0_0_14px_rgba(244,63,94,0.4)] ring-1 ring-rose-500/30 transition-all duration-300 hover:scale-105 hover:border-rose-400 hover:bg-rose-900/60 hover:text-white hover:shadow-[0_0_25px_rgba(244,63,94,0.85)] active:scale-95 cursor-pointer"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
-              </span>
-              <span>დაურეგისტრირებელი მომხმარებლების რუკების ისტორია ↓</span>
-            </button>
-          )}
-        </div>
-
-        {calculations?.length === 0 && (
-          <p className="text-xs text-parchment-dim">ჯერ არცერთი რუკა არ გამოთვლილა.</p>
-        )}
-        {calculations && calculations.length > 0 && filteredRegisteredGroups.length === 0 && (
-          <p className="text-xs text-parchment-dim">ამ ფილტრებით ჩანაწერი ვერ მოიძებნა.</p>
-        )}
-        <div className="space-y-4">
-          {filteredRegisteredGroups.map((group) => (
-            <RegisteredUserCalculationCard
-              key={group.id}
-              group={group}
-              selectedId={selectedRegisteredCalculations[group.id]}
-              onSelect={(id) => setSelectedRegisteredCalculations((current) => ({ ...current, [group.id]: id }))}
-              onResetToLatest={() =>
-                setSelectedRegisteredCalculations((current) => {
-                  const updated = { ...current };
-                  delete updated[group.id];
-                  return updated;
-                })
-              }
-              typeLabel={typeLabel}
-              onView={openCalculationView}
-            />
-          ))}
-        </div>
       </section>
 
-      {filteredGuestCalculationGroups.length > 0 && (
-        <section id="guest-calculations-section" className="mb-8 scroll-mt-6">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-line/60 pb-3">
-            <h2 className="font-display text-xl sm:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-rose-500 drop-shadow-[0_0_18px_rgba(244,63,94,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(244,63,94,0.95)] hover:scale-[1.01] cursor-default">
-              დაურეგისტრირებელი მომხმარებლების რუკების ისტორია
-            </h2>
-            <button
-              type="button"
-              onClick={() => {
-                document.getElementById("registered-calculations-section")?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="group flex items-center gap-2 rounded-xl border border-sky-400/50 bg-cyan-950/40 px-3.5 py-1.5 text-xs sm:text-sm font-black text-cyan-300 shadow-[0_0_14px_rgba(56,189,248,0.4)] ring-1 ring-sky-400/30 transition-all duration-300 hover:scale-105 hover:border-cyan-300 hover:bg-cyan-900/60 hover:text-white hover:shadow-[0_0_25px_rgba(56,189,248,0.85)] active:scale-95 cursor-pointer"
-            >
-              <span>↑ რეგისტრირებული მომხმარებლების რუკების ისტორია</span>
-            </button>
-          </div>
-          <div className="space-y-4">
-            {filteredGuestCalculationGroups.map((group) => (
-              <GuestCalculationCard
+      {/* Registered Users Section */}
+      <section id="registered-calculations-section" className="mb-8 scroll-mt-6">
+        <details open className="group/section rounded-2xl border border-sky-500/30 bg-sky-950/10 p-5 backdrop-blur-sm transition-all">
+          <summary className="flex cursor-pointer select-none items-center justify-between gap-3">
+            <h3 className="font-display text-lg sm:text-xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-blue-400 drop-shadow-[0_0_15px_rgba(56,189,248,0.55)]">
+              ✅ რეგისტრირებული მომხმარებლების რუკების ისტორია ({filteredRegisteredGroups.length})
+            </h3>
+            <div className="flex items-center gap-3">
+              {filteredGuestCalculationGroups.length > 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    document.getElementById("guest-calculations-section")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="group flex items-center gap-2 rounded-xl border border-rose-500/50 bg-rose-950/40 px-3.5 py-1.5 text-xs sm:text-sm font-black text-rose-300 shadow-[0_0_14px_rgba(244,63,94,0.4)] ring-1 ring-rose-500/30 transition-all hover:scale-105 hover:border-rose-400 hover:bg-rose-900/60 hover:text-white cursor-pointer"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
+                  </span>
+                  <span>დაურეგისტრირებელი ↓</span>
+                </button>
+              )}
+              <span className="text-xs sm:text-sm font-bold text-sky-300 group-open/section:rotate-180 transition-transform">▼ ჩამოშლა</span>
+            </div>
+          </summary>
+
+          <div className="mt-5 space-y-4 border-t border-sky-500/20 pt-4">
+            {calculations?.length === 0 && (
+              <p className="text-xs text-parchment-dim">ჯერ არცერთი რუკა არ გამოთვლილა.</p>
+            )}
+            {calculations && calculations.length > 0 && filteredRegisteredGroups.length === 0 && (
+              <p className="text-xs text-parchment-dim">ამ ფილტრებით ჩანაწერი ვერ მოიძებნა.</p>
+            )}
+            {filteredRegisteredGroups.map((group) => (
+              <RegisteredUserCalculationCard
                 key={group.id}
                 group={group}
-                selectedId={selectedGuestCalculations[group.id]}
-                onSelect={(id) => setSelectedGuestCalculations((current) => ({ ...current, [group.id]: id }))}
+                selectedId={selectedRegisteredCalculations[group.id]}
+                onSelect={(id) => setSelectedRegisteredCalculations((current) => ({ ...current, [group.id]: id }))}
                 onResetToLatest={() =>
-                  setSelectedGuestCalculations((current) => {
+                  setSelectedRegisteredCalculations((current) => {
                     const updated = { ...current };
                     delete updated[group.id];
                     return updated;
@@ -1181,36 +1194,88 @@ export default function AdminPage() {
               />
             ))}
           </div>
+        </details>
+      </section>
+
+      {/* Unregistered Users Section */}
+      {filteredGuestCalculationGroups.length > 0 && (
+        <section id="guest-calculations-section" className="mb-8 scroll-mt-6">
+          <details open className="group/section rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5 backdrop-blur-sm transition-all">
+            <summary className="flex cursor-pointer select-none items-center justify-between gap-3">
+              <h2 className="font-display text-xl sm:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-rose-500 drop-shadow-[0_0_18px_rgba(244,63,94,0.6)]">
+                ⚠️ დაურეგისტრირებელი მომხმარებლების რუკების ისტორია ({filteredGuestCalculationGroups.length})
+              </h2>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    document.getElementById("registered-calculations-section")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="group flex items-center gap-2 rounded-xl border border-sky-400/50 bg-cyan-950/40 px-3.5 py-1.5 text-xs sm:text-sm font-black text-cyan-300 shadow-[0_0_14px_rgba(56,189,248,0.4)] ring-1 ring-sky-400/30 transition-all hover:scale-105 hover:border-cyan-300 hover:bg-cyan-900/60 hover:text-white cursor-pointer"
+                >
+                  <span>↑ რეგისტრირებული</span>
+                </button>
+                <span className="text-xs sm:text-sm font-bold text-rose-300 group-open/section:rotate-180 transition-transform">▼ ჩამოშლა</span>
+              </div>
+            </summary>
+            <div className="mt-5 space-y-4 border-t border-rose-500/20 pt-4">
+              {filteredGuestCalculationGroups.map((group) => (
+                <GuestCalculationCard
+                  key={group.id}
+                  group={group}
+                  selectedId={selectedGuestCalculations[group.id]}
+                  onSelect={(id) => setSelectedGuestCalculations((current) => ({ ...current, [group.id]: id }))}
+                  onResetToLatest={() =>
+                    setSelectedGuestCalculations((current) => {
+                      const updated = { ...current };
+                      delete updated[group.id];
+                      return updated;
+                    })
+                  }
+                  typeLabel={typeLabel}
+                  onView={openCalculationView}
+                />
+              ))}
+            </div>
+          </details>
         </section>
       )}
 
+      {/* Account Events History Section */}
       <section id="account-events-section" className="mb-8 scroll-mt-6">
-        {accountEvents && accountEvents.length > 0 && (
-          <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-950/30 px-3 py-2 text-xs font-bold text-cyan-200">
-              <input
-                type="checkbox"
-                className="h-4 w-4 cursor-pointer accent-cyan-400"
-                checked={selectedAccountEvents.length === accountEvents.length}
-                onChange={(event) => setSelectedAccountEvents(event.target.checked ? accountEvents.map((item) => item.id) : [])}
-              />
-              ყველას მონიშვნა
-            </label>
-            <button
-              type="button"
-              disabled={selectedAccountEvents.length === 0 || eventsDeleteLoading}
-              onClick={() => setShowDeleteEventsModal(true)}
-              className="rounded-full border border-rose-500/70 bg-rose-950/50 px-4 py-2 text-xs font-black text-rose-300 transition hover:bg-rose-900/70 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              სამუდამოდ წაშლა ({selectedAccountEvents.length})
-            </button>
-          </div>
-        )}
-        <h2 className="font-display mb-4 text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-indigo-400 drop-shadow-[0_0_18px_rgba(34,211,238,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.95)] hover:scale-[1.01] cursor-default">
-          🔑 კაბინეტების ცვლილებების ისტორია
-        </h2>
-        {accountEvents?.length === 0 && <p className="text-xs text-parchment-dim">ცვლილებების ისტორია ჯერ ცარიელია.</p>}
-        <div className="space-y-2">
+        <details open className="group/section rounded-2xl border border-cyan-500/30 bg-cyan-950/10 p-5 backdrop-blur-sm transition-all">
+          <summary className="flex cursor-pointer select-none items-center justify-between gap-3">
+            <h2 className="font-display text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-indigo-400 drop-shadow-[0_0_18px_rgba(34,211,238,0.6)]">
+              🔑 კაბინეტების ცვლილებების ისტორია ({accountEvents?.length ?? 0})
+            </h2>
+            <span className="text-sm font-bold text-cyan-300 group-open/section:rotate-180 transition-transform">▼ ჩამოშლა</span>
+          </summary>
+
+          <div className="mt-5 space-y-3 border-t border-cyan-500/20 pt-4">
+            {accountEvents && accountEvents.length > 0 && (
+              <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-950/30 px-3 py-2 text-xs font-bold text-cyan-200">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer accent-cyan-400"
+                    checked={selectedAccountEvents.length === accountEvents.length}
+                    onChange={(event) => setSelectedAccountEvents(event.target.checked ? accountEvents.map((item) => item.id) : [])}
+                  />
+                  ყველას მონიშვნა
+                </label>
+                <button
+                  type="button"
+                  disabled={selectedAccountEvents.length === 0 || eventsDeleteLoading}
+                  onClick={() => setShowDeleteEventsModal(true)}
+                  className="rounded-full border border-rose-500/70 bg-rose-950/50 px-4 py-2 text-xs font-black text-rose-300 transition hover:bg-rose-900/70 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  სამუდამოდ წაშლა ({selectedAccountEvents.length})
+                </button>
+              </div>
+            )}
+            {accountEvents?.length === 0 && <p className="text-xs text-parchment-dim">ცვლილებების ისტორია ჯერ ცარიელია.</p>}
+            <div className="space-y-2">
           {accountEvents?.map((event) => (
             <div key={event.id} className={`flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-ink-2/60 p-3 text-xs ${event.user?.role === "ADMIN" ? "border-2 border-[#35c759] bg-[#35c759]/10" : "border-line"}`}>
               <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -1259,9 +1324,11 @@ export default function AdminPage() {
                <span className="text-parchment-dim">{showDateTime(event.createdAt)}</span>
              </div>
             </div>
-           ))}
+          ))}
         </div>
-      </section>
+      </div>
+    </details>
+  </section>
 
       {showDeleteEventsModal && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
