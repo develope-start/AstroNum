@@ -155,7 +155,64 @@ body {
   min-width: 0;
 }
 
+.admin-live-stats {
+  width: 100%;
+  align-items: stretch;
+}
+
+.admin-stat-item {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid rgba(245, 158, 11, 0.12);
+  border-radius: 0.65rem;
+  line-height: 1.45;
+}
+
+.admin-stat-item > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Shared viewport guard for every page and every responsive breakpoint. */
+main,
+main > *,
+main > * > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
 @media (max-width: 640px) {
+  header > div > div:first-child {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+
+  header > div > div:first-child > nav {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  header > div > div:first-child > nav > a,
+  header > div > div:first-child > nav > button {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  header > div > div:first-child > nav > a span,
+  header > div > div:first-child > nav > button span {
+    overflow-wrap: anywhere;
+  }
+
   .admin-page {
     overflow-x: hidden;
   }
@@ -208,6 +265,15 @@ body {
     letter-spacing: 0.08em;
   }
 
+  .admin-stats-card {
+    padding: 0.65rem;
+  }
+
+  .admin-stat-item {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
   .admin-page section {
     min-width: 0;
   }
@@ -229,4 +295,3 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
-

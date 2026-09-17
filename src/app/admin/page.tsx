@@ -858,10 +858,10 @@ export default function AdminPage() {
         </div>
 
         {/* Subtle Live Stats Indicator Banner */}
-        <div className="mb-4 rounded-xl border border-line/50 bg-ink-2/40 px-4 py-2.5 backdrop-blur-sm">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs italic text-parchment-dim/85">
+        <div className="admin-stats-card mb-4 rounded-xl border border-line/50 bg-ink-2/40 px-3 py-3 backdrop-blur-sm sm:px-4 sm:py-2.5">
+          <div className="admin-live-stats grid gap-2 text-xs italic text-parchment-dim/85 sm:grid-cols-2 lg:grid-cols-4">
             {/* Live Beep / Pulse Indicator Dot */}
-            <div className="flex items-center gap-2 not-italic">
+            <div className="admin-stat-item flex items-center gap-2 not-italic">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
@@ -870,7 +870,7 @@ export default function AdminPage() {
             </div>
 
             {/* 24 Hours */}
-            <div className="flex items-center gap-1.5">
+            <div className="admin-stat-item flex items-center gap-1.5">
               <span>⚡ ბოლო 24 საათში:</span>
               <span className="font-semibold text-amber-300 not-italic">{stats.charts24h}</span>
               <span>რუკა</span>
@@ -880,7 +880,7 @@ export default function AdminPage() {
             </div>
 
             {/* 1 Week */}
-            <div className="flex items-center gap-1.5">
+            <div className="admin-stat-item flex items-center gap-1.5">
               <span>📅 ბოლო 1 კვირაში:</span>
               <span className="font-semibold text-amber-300 not-italic">{stats.charts7d}</span>
               <span>რუკა</span>
@@ -890,7 +890,7 @@ export default function AdminPage() {
             </div>
 
             {/* 1 Month */}
-            <div className="flex items-center gap-1.5">
+            <div className="admin-stat-item flex items-center gap-1.5">
               <span>🗓️ ბოლო 1 თვეში:</span>
               <span className="font-semibold text-amber-300 not-italic">{stats.charts30d}</span>
               <span>რუკა</span>
