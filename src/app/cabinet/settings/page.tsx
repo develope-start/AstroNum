@@ -207,7 +207,16 @@ export default function CabinetSettingsPage() {
 
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div className="max-w-md w-full rounded-2xl border border-rose-500/50 bg-[#120826] p-6 shadow-[0_0_50px_rgba(244,63,94,0.4)] space-y-4">
+          <div className="relative max-w-md w-full rounded-2xl border border-rose-500/50 bg-[#120826] p-6 shadow-[0_0_50px_rgba(244,63,94,0.4)] space-y-4">
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              type="button"
+              className="sticky top-1 right-1 z-50 float-right mb-2 flex items-center gap-1.5 rounded-full border border-rose-500/70 bg-gradient-to-r from-rose-950/95 via-red-950/95 to-rose-950/95 px-3 py-1.5 text-xs font-black text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.6)] transition-all hover:scale-105 hover:border-rose-400 hover:text-white hover:shadow-[0_0_20px_rgba(244,63,94,0.9)] active:scale-95"
+              title="დახურვა"
+            >
+              <span className="text-sm leading-none text-red-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.9)]">✕</span>
+              <span className="tracking-tight">დახურვა</span>
+            </button>
             <div className="flex items-center gap-3 text-rose-400 border-b border-rose-500/30 pb-3">
               <span className="text-2xl">⚠️</span>
               <h3 className="font-display text-lg font-bold text-rose-300">კაბინეტის წაშლის დადასტურება</h3>

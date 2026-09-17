@@ -291,10 +291,23 @@ function GuestCalculationPicker({
   );
 }
 
-function Modal({ children }: { children: React.ReactNode }) {
+function Modal({ children, onClose }: { children: React.ReactNode; onClose?: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-line bg-ink p-5 shadow-2xl">{children}</div>
+      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-line bg-ink p-5 shadow-2xl">
+        {onClose && (
+          <button
+            onClick={onClose}
+            type="button"
+            className="sticky top-1 right-1 z-50 float-right mb-2 flex items-center gap-1.5 rounded-full border border-rose-500/70 bg-gradient-to-r from-rose-950/95 via-red-950/95 to-rose-950/95 px-3 py-1.5 text-xs font-black text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.6)] transition-all hover:scale-105 hover:border-rose-400 hover:text-white hover:shadow-[0_0_20px_rgba(244,63,94,0.9)] active:scale-95"
+            title="დახურვა"
+          >
+            <span className="text-sm leading-none text-red-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.9)]">✕</span>
+            <span className="tracking-tight">დახურვა</span>
+          </button>
+        )}
+        {children}
+      </div>
     </div>
   );
 }
@@ -807,7 +820,7 @@ export default function AdminUsersPage() {
       </section>}
 
       {modal?.kind === "delete-user" && modal.user && (
-        <Modal>
+        <Modal onClose={() => setModal(null)}>
           <h2 className="font-display text-xl text-ember">მომხმარებლის წაშლა</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ ამ მომხმარებლის წაშლა? ანგარიში და მისი რუკები ურნაში გადავა.</p>
           <div className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><p>{modal.user.email}</p><p>რუკების რაოდენობა: {modal.user.calculations.length}</p></div>
@@ -816,7 +829,7 @@ export default function AdminUsersPage() {
       )}
 
       {modal?.kind === "edit-user" && modal.user && (
-        <Modal>
+        <Modal onClose={() => setModal(null)}>
           <h2 className="font-display text-xl text-brass-2">რედაქტირების დაწყება</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ ამ მომხმარებლის მონაცემების რედაქტირება?</p>
           <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><span>{modal.user.name || "—"}</span><br /><span>@{modal.user.username || "—"}</span><br /><span>{modal.user.email}</span></p>
@@ -825,7 +838,7 @@ export default function AdminUsersPage() {
       )}
 
       {modal?.kind === "edit-user-form" && modal.user && (
-        <Modal>
+        <Modal onClose={() => setModal(null)}>
           <label className="mt-4 block text-xs text-parchment-dim">Role
             <select className={`${input} mt-1`} value={roleDraft} disabled={data?.currentUserAdminId !== "ADMIN" || modal.user.id === data?.currentUserId} onChange={(e) => setRoleDraft(e.target.value)}>
               <option value="USER">USER</option>
@@ -841,7 +854,7 @@ export default function AdminUsersPage() {
       )}
 
       {modal?.kind === "save-user" && modal.user && (
-        <Modal>
+        <Modal onClose={() => setModal(null)}>
           <h2 className="font-display text-xl text-brass-2">ცვლილების შენახვა</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ მომხმარებლის ცვლილებების შენახვა?</p>
           <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><span>სახელი: {modal.user.name || "—"} → {nameDraft || "—"}</span><br /><span>Username: @{modal.user.username || "—"} → @{usernameDraft || "—"}</span><br /><span>მეილი: {modal.user.email} → {emailDraft}</span></p>
@@ -850,7 +863,7 @@ export default function AdminUsersPage() {
       )}
 
       {modal?.kind === "delete-calculation" && modal.calculation && (
-        <Modal>
+        <Modal onClose={() => setModal(null)}>
           <h2 className="font-display text-xl text-ember">რუკის ჩანაწერის წაშლა</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ ამ მომხმარებლის რუკის ჩანაწერის წაშლა? ის ურნაში გადავა.</p>
           <div className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><CalculationDetails calculation={modal.calculation} /></div>
@@ -859,7 +872,7 @@ export default function AdminUsersPage() {
       )}
 
       {modal?.kind === "edit-calculation" && modal.calculation && (
-        <Modal>
+        <Modal onClose={() => setModal(null)}>
           <h2 className="font-display text-xl text-brass-2">რუკის რედაქტირების დაწყება</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ ამ რუკის ჩანაწერის რედაქტირება?</p>
           <div className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><CalculationDetails calculation={modal.calculation} /></div>
@@ -868,7 +881,7 @@ export default function AdminUsersPage() {
       )}
 
       {modal?.kind === "edit-calculation-form" && modal.calculation && (
-        <Modal>
+        <Modal onClose={() => setModal(null)}>
           <h2 className="font-display text-xl text-brass-2">რუკის მონაცემების რედაქტირება</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <label className="text-xs text-parchment-dim">ტიპი<select className={`${input} mt-1`} value={draft.type} onChange={(e) => updateDraft("type", e.target.value)}><option value="NATAL">ნატალური</option><option value="SYNASTRY">სინასტრიული</option><option value="TRANSIT">ტრანზიტული</option></select></label>
@@ -894,7 +907,7 @@ export default function AdminUsersPage() {
       )}
 
       {modal?.kind === "save-calculation" && modal.calculation && (
-        <Modal>
+        <Modal onClose={() => setModal(null)}>
           <h2 className="font-display text-xl text-brass-2">ცვლილების შენახვა</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ რუკის ცვლილებების შენახვა?</p>
           <div className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><p>{modal.calculation.name1} → {draft.name1}</p><p>{modal.calculation.date1} → {draft.date1}</p><p>{modal.calculation.place1} → {draft.place1}</p></div>
@@ -903,7 +916,7 @@ export default function AdminUsersPage() {
       )}
 
       {modal?.kind === "permanent-delete-users" && (
-        <Modal>
+        <Modal onClose={() => setModal(null)}>
           <h2 className="font-display text-xl text-ember">ანგარიშების სამუდამოდ წაშლა</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ მონიშნული ანგარიშების სამუდამოდ წაშლა? ეს მოქმედება საბოლოოა და მათი აღდგენა ვეღარ მოხდება.</p>
           <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim">მონიშნულია: {selectedDeletedUsers.length} ანგარიში</p>
@@ -912,7 +925,7 @@ export default function AdminUsersPage() {
       )}
 
       {modal?.kind === "permanent-delete-calculations" && (
-        <Modal>
+        <Modal onClose={() => setModal(null)}>
           <h2 className="font-display text-xl text-ember">რუკების სამუდამოდ წაშლა</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ მონიშნული რუკების სამუდამოდ წაშლა? ეს მოქმედება საბოლოოა და მათი აღდგენა ვეღარ მოხდება.</p>
           <p className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim">მონიშნულია: {selectedDeletedCalculations.length} რუკა</p>
@@ -921,7 +934,7 @@ export default function AdminUsersPage() {
       )}
 
       {modal?.kind === "cancel-edit" && (
-        <Modal>
+        <Modal onClose={() => setModal(null)}>
           <h2 className="font-display text-xl text-ember">რედაქტირების შეწყვეტა</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ შეწყვეტა? შეყვანილი ცვლილებები დაიკარგება.</p>
           <div className="mt-5 flex justify-end gap-3"><button className={button} onClick={() => setModal(modal.calculation ? { kind: "edit-calculation-form", calculation: modal.calculation } : { kind: "edit-user-form", user: modal.user })}>გაგრძელება</button><button className={dangerButton} onClick={() => setModal(null)}>დიახ, შეწყვეტა</button></div>

@@ -47,7 +47,7 @@ interface CalculationRow {
   userAgent: string | null;
   createdAt: string;
   updatedAt: string | null;
-  user: { email: string; username?: string | null; publicId: string | null; adminId: string | null } | null;
+  user: { email: string; username?: string | null; publicId: string | null; adminId: string | null; createdAt: string } | null;
 }
 
 interface GuestCalculationGroup {
@@ -89,12 +89,82 @@ interface UserRow {
 
 interface RegisteredUserCalculationGroup {
   id: string;
-  user: { email: string; username?: string | null; publicId: string | null; adminId: string | null };
+  user: { email: string; username?: string | null; publicId: string | null; adminId: string | null; createdAt: string };
+  calculations: CalculationRow[];
+}
+
+interface HistorySection {
+  id: string;
+  label: string;
+  tone: "registered" | "before-registration" | "guest-after-registration";
   calculations: CalculationRow[];
 }
 
 function formatDateTime(value: string) {
   return new Date(value).toLocaleString("ka-GE", { dateStyle: "medium", timeStyle: "short" });
+}
+
+function buildHistorySections(group: RegisteredUserCalculationGroup): HistorySection[] {
+  const registrationAt = new Date(group.user.createdAt).getTime();
+  const registered = group.calculations.filter((calculation) => Boolean(calculation.user) && new Date(calculation.createdAt).getTime() >= registrationAt);
+  const beforeRegistration = group.calculations.filter((calculation) => new Date(calculation.createdAt).getTime() < registrationAt);
+  const guestAfterRegistration = group.calculations.filter((calculation) => !calculation.user && new Date(calculation.createdAt).getTime() >= registrationAt);
+
+  return [
+    { id: "registered", label: "რეგისტრირებული მომხმარებლის სტატუსით შექმნილი რუკები", tone: "registered" as const, calculations: registered },
+    { id: "before-registration", label: "დარეგისტრირებამდე შექმნილი რუკები", tone: "before-registration" as const, calculations: beforeRegistration },
+    { id: "guest-after-registration", label: "დაურეგისტრირებელი სტატუსით შექმნილი რუკები", tone: "guest-after-registration" as const, calculations: guestAfterRegistration },
+  ]
+    .map((section) => ({ ...section, calculations: [...section.calculations].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) }))
+    .filter((section) => section.calculations.length > 0);
+}
+
+function GroupedCalculationHistory({
+  sections,
+  activeId,
+  onSelect,
+  typeLabel,
+}: {
+  sections: HistorySection[];
+  activeId: string;
+  onSelect: (id: string) => void;
+  typeLabel: Record<string, string>;
+}) {
+  const total = sections.reduce((count, section) => count + section.calculations.length, 0);
+  if (total <= 1) return null;
+
+  return (
+    <div className="mt-4 space-y-2">
+      {sections.map((section) => (
+        <details
+          key={section.id}
+          className={`admin-history-section rounded-xl border p-3 ${
+            section.tone === "registered" ? "border-emerald-500/35 bg-emerald-950/15" : "border-dashed border-rose-500/60 bg-rose-950/10"
+          }`}
+        >
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-bold marker:hidden sm:text-sm">
+            <span className="min-w-0 break-words">{section.label}</span>
+            <span className="shrink-0 rounded-full border border-line/60 px-2 py-1 text-[10px] text-parchment-dim">{section.calculations.length} რუკა</span>
+          </summary>
+          <div className="mt-3 grid gap-2">
+            {section.calculations.map((calculation, index) => (
+              <button
+                key={calculation.id}
+                type="button"
+                onClick={() => onSelect(calculation.id)}
+                className={`flex min-w-0 flex-col items-start gap-1 rounded-lg border p-3 text-left text-xs transition sm:flex-row sm:items-center sm:justify-between ${
+                  calculation.id === activeId ? "border-sky-400/70 bg-sky-950/50 text-white" : "border-line/60 bg-ink/40 text-parchment-dim hover:border-cyan-400/60"
+                }`}
+              >
+                <span className="min-w-0 break-words font-semibold">#{index + 1} · {typeLabel[calculation.type] ?? calculation.type} · {calculation.name1}</span>
+                <span className="shrink-0 text-[11px] text-parchment-dim">{formatDateTime(calculation.createdAt)}</span>
+              </button>
+            ))}
+          </div>
+        </details>
+      ))}
+    </div>
+  );
 }
 
 function displayValue(value: string | number | null | undefined) {
@@ -213,7 +283,8 @@ function RegisteredUserCalculationCard({
   typeLabel: Record<string, string>;
   onView: (calculation: CalculationRow) => void;
 }) {
-  const latestCalculation = group.calculations[0];
+  const historySections = buildHistorySections(group);
+  const latestCalculation = historySections.find((section) => section.id === "registered")?.calculations[0] ?? group.calculations[0];
   const isCustomSelected = Boolean(selectedId && selectedId !== latestCalculation.id);
   const calculation = group.calculations.find((item) => item.id === selectedId) ?? latestCalculation;
 
@@ -309,13 +380,11 @@ function RegisteredUserCalculationCard({
       </dl>
 
       {/* Previous Calculation List Picker */}
-      <CalculationHistoryPicker
-        calculations={group.calculations}
+      <GroupedCalculationHistory
+        sections={historySections}
         activeId={calculation.id}
-        latestId={latestCalculation.id}
         onSelect={onSelect}
         typeLabel={typeLabel}
-        user={group.user}
       />
     </article>
   );
@@ -637,10 +706,63 @@ export default function AdminPage() {
       groupMap.get(userKey)!.calculations.push(calculation);
     }
 
-    return Array.from(groupMap.values());
-  }, [filteredCalculations]);
+    const registeredGroups = Array.from(groupMap.values());
+    if (filters.status !== "ALL") return registeredGroups;
+
+    const includes = (values: Array<string | null | undefined>, query: string) => {
+      if (!query.trim()) return true;
+      const normalizedQuery = query.trim().toLocaleLowerCase("ka-GE");
+      return values.some((value) => value?.toLocaleLowerCase("ka-GE").includes(normalizedQuery));
+    };
+    const twelveHoursMs = 12 * 60 * 60 * 1000;
+    const attachedGuestIds = new Set<string>();
+
+    for (const guestGroup of guestCalculationGroups) {
+      for (const guestCalculation of guestGroup.calculations) {
+        const createdDate = guestCalculation.createdAt.slice(0, 10);
+        const matchesFilters =
+          (!filters.createdFrom || createdDate >= filters.createdFrom) &&
+          (!filters.createdTo || createdDate <= filters.createdTo) &&
+          (filters.type === "ALL" || guestCalculation.type === filters.type) &&
+          includes([], filters.email) &&
+          includes([guestCalculation.publicId, guestGroup.publicId], filters.publicId) &&
+          includes([guestCalculation.name1, guestCalculation.name2], filters.name) &&
+          includes([guestCalculation.date1, guestCalculation.date2], filters.birthDate) &&
+          includes([guestCalculation.time1, guestCalculation.time2], filters.time) &&
+          includes([guestCalculation.place1, guestCalculation.place2], filters.place);
+        if (!matchesFilters || attachedGuestIds.has(guestCalculation.id)) continue;
+
+        const guestAt = new Date(guestCalculation.createdAt).getTime();
+        const target = registeredGroups
+          .filter((group) => {
+            const registeredAt = new Date(group.user.createdAt).getTime();
+            if (guestAt < registeredAt || guestAt - registeredAt > twelveHoursMs) return false;
+            return group.calculations.some(
+              (calculation) =>
+                calculation.ipAddress &&
+                calculation.userAgent &&
+                calculation.ipAddress === guestCalculation.ipAddress &&
+                calculation.userAgent === guestCalculation.userAgent
+            );
+          })
+          .sort((left, right) => new Date(right.user.createdAt).getTime() - new Date(left.user.createdAt).getTime())[0];
+
+        if (!target) continue;
+        target.calculations.push(guestCalculation);
+        attachedGuestIds.add(guestCalculation.id);
+      }
+    }
+
+    return registeredGroups.map((group) => ({
+      ...group,
+      calculations: [...group.calculations].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    }));
+  }, [filteredCalculations, guestCalculationGroups, filters]);
 
   const filteredGuestCalculationGroups = useMemo(() => {
+    const linkedGuestIds = new Set(
+      filteredRegisteredGroups.flatMap((group) => group.calculations.filter((calculation) => !calculation.user).map((calculation) => calculation.id))
+    );
     const includes = (values: Array<string | null | undefined>, query: string) => {
       if (!query.trim()) return true;
       const normalizedQuery = query.trim().toLocaleLowerCase("ka-GE");
@@ -651,6 +773,7 @@ export default function AdminPage() {
       .map((group) => ({
         ...group,
         calculations: group.calculations.filter((calculation) => {
+          if (linkedGuestIds.has(calculation.id)) return false;
           const createdDate = calculation.createdAt.slice(0, 10);
           return (
             (!filters.createdFrom || createdDate >= filters.createdFrom) &&
@@ -667,7 +790,7 @@ export default function AdminPage() {
         }),
       }))
       .filter((group) => group.calculations.length > 0);
-  }, [guestCalculationGroups, filters]);
+  }, [guestCalculationGroups, filteredRegisteredGroups, filters]);
 
   const stats = useMemo(() => {
     const now = Date.now();
@@ -1130,7 +1253,16 @@ export default function AdminPage() {
 
       {showDeleteEventsModal && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-md space-y-4 rounded-2xl border border-rose-500/50 bg-[#120826] p-6 shadow-[0_0_50px_rgba(244,63,94,0.4)]">
+          <div className="relative w-full max-w-md space-y-4 rounded-2xl border border-rose-500/50 bg-[#120826] p-6 shadow-[0_0_50px_rgba(244,63,94,0.4)]">
+            <button
+              onClick={() => setShowDeleteEventsModal(false)}
+              type="button"
+              className="sticky top-1 right-1 z-50 float-right mb-2 flex items-center gap-1.5 rounded-full border border-rose-500/70 bg-gradient-to-r from-rose-950/95 via-red-950/95 to-rose-950/95 px-3 py-1.5 text-xs font-black text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.6)] transition-all hover:scale-105 hover:border-rose-400 hover:text-white hover:shadow-[0_0_20px_rgba(244,63,94,0.9)] active:scale-95"
+              title="დახურვა"
+            >
+              <span className="text-sm leading-none text-red-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.9)]">✕</span>
+              <span className="tracking-tight">დახურვა</span>
+            </button>
             <h3 className="font-display text-xl font-bold text-rose-300">ისტორიის სამუდამოდ წაშლა</h3>
             <p className="text-sm leading-relaxed text-slate-200">
               ნამდვილად გსურთ მონიშნული {selectedAccountEvents.length} ისტორიის ჩანაწერის სამუდამოდ წაშლა? ეს მოქმედება საბოლოოა და ჩანაწერების აღდგენა ვეღარ მოხდება.

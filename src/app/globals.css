@@ -176,6 +176,35 @@ body {
   overflow-wrap: anywhere;
 }
 
+.admin-history-section {
+  overflow: hidden;
+}
+
+.admin-history-section > summary {
+  list-style: none;
+}
+
+.admin-history-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-history-section > summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  color: rgba(186, 230, 253, 0.8);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.admin-history-section[open] > summary::after {
+  content: "−";
+}
+
+.admin-history-section button {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 /* Shared viewport guard for every page and every responsive breakpoint. */
 main,
 main > *,
@@ -276,6 +305,14 @@ svg {
 
   .admin-page section {
     min-width: 0;
+  }
+
+  .admin-history-section {
+    padding: 0.65rem;
+  }
+
+  .admin-history-section > summary {
+    align-items: flex-start;
   }
 }
 

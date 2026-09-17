@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
         userAgent: true,
         createdAt: true,
         updatedAt: true,
-        user: { select: { email: true, username: true, publicId: true, adminId: true, role: true } },
+        user: { select: { email: true, username: true, publicId: true, adminId: true, role: true, createdAt: true } },
       },
     }),
     prisma.chart.findMany({
@@ -102,7 +102,7 @@ export async function GET(req: NextRequest) {
         transitDate: true,
         houseSystem: true,
         createdAt: true,
-        user: { select: { email: true, username: true, publicId: true, adminId: true, role: true } },
+        user: { select: { email: true, username: true, publicId: true, adminId: true, role: true, createdAt: true } },
       },
     }),
     prisma.accountEvent.findMany({

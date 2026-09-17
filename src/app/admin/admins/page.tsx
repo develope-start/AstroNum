@@ -153,7 +153,16 @@ export default function AdminsPage() {
 
       {editing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <form onSubmit={saveEdit} className="w-full max-w-md space-y-4 rounded-2xl border border-line bg-ink p-5">
+          <form onSubmit={saveEdit} className="relative w-full max-w-md space-y-4 rounded-2xl border border-line bg-ink p-5 shadow-2xl">
+            <button
+              onClick={() => setEditing(null)}
+              type="button"
+              className="sticky top-1 right-1 z-50 float-right mb-2 flex items-center gap-1.5 rounded-full border border-rose-500/70 bg-gradient-to-r from-rose-950/95 via-red-950/95 to-rose-950/95 px-3 py-1.5 text-xs font-black text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.6)] transition-all hover:scale-105 hover:border-rose-400 hover:text-white hover:shadow-[0_0_20px_rgba(244,63,94,0.9)] active:scale-95"
+              title="დახურვა"
+            >
+              <span className="text-sm leading-none text-red-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.9)]">✕</span>
+              <span className="tracking-tight">დახურვა</span>
+            </button>
             <h2 className="font-display text-xl text-brass-2">{editing.adminId}-ის რედაქტირება</h2>
             <input className={input} required placeholder="სახელი" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
             <input className={input} required placeholder="Username" value={editForm.username} onChange={(e) => setEditForm({ ...editForm, username: e.target.value })} />
