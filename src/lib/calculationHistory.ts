@@ -72,9 +72,17 @@ export async function recordCalculation(input: CalculationHistoryInput) {
       })
     : null;
 
-  const publicId = input.userId
-    ? await ensureUserPublicId(input.userId)
-    : recentGuestCalculation?.publicId ?? await allocatePublicId("GUEST");
+  let publicId: string | null = null;
+  try {
+    publicId = input.userId
+      ? await ensureUserPublicId(input.userId)
+      : recentGuestCalculation?.publicId ?? await allocatePublicId("GUEST");
+  } catch (error) {
+    // IDs are useful for administration, but they must never prevent the
+    // calculation itself from being recorded. IP/device grouping still works
+    // for guests when an ID cannot be allocated temporarily.
+    console.error("Calculation public ID could not be allocated", error instanceof Error ? error.message : error);
+  }
   const existingRecord = existing ?? existingGuest;
   // `interpretation` is intentionally not written here. Older deployed databases
   // may not have that optional column yet; the calculation itself must still work.
@@ -92,10 +100,10 @@ export async function recordCalculation(input: CalculationHistoryInput) {
 export async function tryRecordCalculation(input: CalculationHistoryInput) {
   try {
     return await recordCalculation(input);
-  } catch {
+  } catch (error) {
     // Chart calculation is still useful when history storage is temporarily
     // unavailable. The error is deliberately not exposed as a blank response.
-    console.error("Calculation history could not be stored");
+    console.error("Calculation history could not be stored", error instanceof Error ? error.message : error);
     return null;
   }
 }
