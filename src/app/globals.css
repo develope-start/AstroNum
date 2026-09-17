@@ -4,14 +4,20 @@
 
 @layer base {
   :root {
-    --bg-main: #050409;
-    --bg-card: rgba(255, 255, 255, 0.02);
-    --border-color: rgba(255, 255, 255, 0.06);
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
-    --accent-gold: #e5a93b;
-    --accent-gold-bright: #f9d076;
+    --bg-main: #06040e;
+    --bg-card: rgba(16, 10, 36, 0.85);
+    --bg-card-hover: rgba(26, 15, 56, 0.92);
+    --border-color: rgba(245, 158, 11, 0.22);
+    --border-glow: rgba(245, 158, 11, 0.55);
+    --border-purple: rgba(168, 85, 247, 0.35);
+    --text-primary: #F8FAFC;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
+    --text-accent: #FDE68A;
+    --accent-gold: #F59E0B;
+    --accent-gold-hover: #FBBF24;
+    --accent-purple: #A855F7;
+    --accent-blue: #38BDF8;
   }
 }
 
@@ -21,292 +27,116 @@ html {
 }
 
 body {
-  background: #0b071e;
-  color: #fff;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
   font-family: var(--font-body), sans-serif;
-  overflow-x: hidden;
-  position: relative;
 }
 
-/* =========================================================
-   AstroNum Luxury Cosmic Bento UI v2
-   All new presentation rules are scoped to .premium-ui-v2.
-   ========================================================= */
-
-.premium-ui-v2,
-html.premium-ui-v2 body,
-body.premium-ui-v2 {
-  background-color: #050409 !important;
-  color: #f8fafc !important;
+::selection {
+  background: var(--accent-gold);
+  color: #06040e;
 }
 
-body.premium-ui-v2 {
-  background:
-    radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-    #050409 !important;
+:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
 }
 
-body.premium-ui-v2::before,
-body.premium-ui-v2::after {
-  content: "";
-  position: fixed;
-  pointer-events: none;
-  z-index: -2;
+/* Deep Space Twinkling Star Field */
+.star-field {
+  background-image: 
+    radial-gradient(1.5px 1.5px at 12% 18%, rgba(254, 240, 138, 0.85) 50%, transparent 51%),
+    radial-gradient(1px 1px at 68% 28%, rgba(250, 250, 249, 0.75) 50%, transparent 51%),
+    radial-gradient(2px 2px at 38% 72%, rgba(245, 158, 11, 0.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 12%, rgba(196, 181, 253, 0.85) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 48% 38%, rgba(245, 158, 11, 0.65) 50%, transparent 51%),
+    radial-gradient(1px 1px at 22% 82%, rgba(250, 250, 249, 0.75) 50%, transparent 51%),
+    radial-gradient(2px 2px at 78% 78%, rgba(168, 85, 247, 0.7) 50%, transparent 51%);
+  background-repeat: repeat;
+  background-size: 550px 550px;
+}
+
+/* Rounded Expressive Glassmorphism Cards */
+.glass-panel {
+  background: linear-gradient(135deg, rgba(20, 12, 44, 0.88) 0%, rgba(12, 7, 28, 0.92) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.75), 0 0 30px 0 rgba(139, 92, 246, 0.12);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  border-color: var(--border-glow);
+  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.85), 0 0 40px 0 rgba(245, 158, 11, 0.25);
+  transform: translateY(-2px);
+}
+
+.glass-input {
+  background: rgba(8, 4, 22, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: var(--text-primary);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-input:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 24px 0 rgba(245, 158, 11, 0.3);
+}
+
+/* Vibrant Text Glow Effects */
+.text-glow {
+  text-shadow: 0 0 25px rgba(245, 158, 11, 0.5), 0 0 50px rgba(168, 85, 247, 0.3);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+/* Cosmic Animation Keyframes */
+@keyframes cosmic-pulse {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes glow-rotate {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+.animate-cosmic-pulse {
+  animation: cosmic-pulse 4s infinite ease-in-out;
+}
+
+.animate-float-slow {
+  animation: float-slow 5s infinite ease-in-out;
+}
+
+/* Infographic Progress Bars */
+.infographic-bar-bg {
+  background: rgba(255, 255, 255, 0.07);
   border-radius: 9999px;
-  filter: blur(120px);
+  overflow: hidden;
 }
 
-body.premium-ui-v2::before {
-  top: 8%;
-  left: 8%;
-  width: 25rem;
-  height: 25rem;
-  background: rgba(139, 92, 246, 0.08);
-}
-
-body.premium-ui-v2::after {
-  right: 8%;
-  bottom: 5%;
-  width: 24rem;
-  height: 24rem;
-  background: rgba(59, 130, 246, 0.07);
-}
-
-.premium-ui-v2 .star-field {
-  background-image:
-    radial-gradient(1px 1px at 12% 18%, rgba(255, 230, 160, 0.8) 50%, transparent 51%),
-    radial-gradient(1px 1px at 68% 28%, rgba(255, 255, 255, 0.65) 50%, transparent 51%),
-    radial-gradient(1px 1px at 38% 72%, rgba(229, 169, 59, 0.7) 50%, transparent 51%),
-    radial-gradient(1px 1px at 88% 12%, rgba(196, 181, 253, 0.65) 50%, transparent 51%);
-  background-size: 600px 600px;
-}
-
-.premium-ui-v2 main {
-  isolation: isolate;
-}
-
-.premium-ui-v2 header > div {
-  background: rgba(255, 255, 255, 0.025) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 24px !important;
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.32) !important;
-}
-
-.premium-ui-v2 .design-toggle {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border-color: rgba(229, 169, 59, 0.42) !important;
-  color: #f9d076 !important;
-  box-shadow: 0 0 18px rgba(229, 169, 59, 0.12) !important;
-}
-
-.premium-ui-v2 .design-toggle:hover {
-  background: rgba(229, 169, 59, 0.1) !important;
-  border-color: rgba(249, 208, 118, 0.72) !important;
-}
-
-.premium-ui-v2 main > div > section,
-.premium-ui-v2 .glass-panel,
-.premium-ui-v2 fieldset,
-.premium-ui-v2 form,
-.premium-ui-v2 .card,
-.premium-ui-v2 .box-container,
-.premium-ui-v2 section.glass-section,
-.premium-ui-v2 .premium-setting {
-  background: rgba(255, 255, 255, 0.02) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
-  border-radius: 24px !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3) !important;
-}
-
-.premium-ui-v2 main > div > section {
-  padding: clamp(1.25rem, 3vw, 3rem);
-}
-
-.premium-ui-v2 .glass-panel-hover,
-.premium-ui-v2 .glass-panel {
-  transition: border-color 240ms ease, box-shadow 240ms ease, transform 240ms ease;
-}
-
-.premium-ui-v2 .glass-panel-hover:hover,
-.premium-ui-v2 .glass-panel:hover {
-  border-color: rgba(229, 169, 59, 0.24) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), 0 0 30px rgba(229, 169, 59, 0.06) !important;
-}
-
-/* Tone down legacy utility outlines and purple surfaces inside the v2 shell. */
-.premium-ui-v2 [class*="border-purple"],
-.premium-ui-v2 [class*="border-cyan"],
-.premium-ui-v2 [class*="border-amber"],
-.premium-ui-v2 [class*="border-indigo"],
-.premium-ui-v2 [class*="border-rose"] {
-  border-color: rgba(255, 255, 255, 0.09) !important;
-}
-
-.premium-ui-v2 [class*="border-2"] {
-  border-width: 1px !important;
-}
-
-.premium-ui-v2 [class*="bg-purple"],
-.premium-ui-v2 [class*="bg-indigo"],
-.premium-ui-v2 [class*="bg-cyan-950"],
-.premium-ui-v2 [class*="bg-rose-950"] {
-  background-color: rgba(255, 255, 255, 0.025) !important;
-}
-
-.premium-ui-v2 input:not([type="checkbox"]):not([type="radio"]),
-.premium-ui-v2 select,
-.premium-ui-v2 textarea,
-.premium-ui-v2 .glass-input {
-  min-height: 2.9rem;
-  background: rgba(255, 255, 255, 0.015) !important;
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
-  border-radius: 12px !important;
-  color: #f8fafc !important;
-  transition: border-color 220ms ease, box-shadow 220ms ease, background 220ms ease !important;
-}
-
-.premium-ui-v2 input:not([type="checkbox"]):not([type="radio"]):focus,
-.premium-ui-v2 select:focus,
-.premium-ui-v2 textarea:focus,
-.premium-ui-v2 .glass-input:focus {
-  border-color: rgba(229, 169, 59, 0.62) !important;
-  box-shadow: 0 0 15px rgba(229, 169, 59, 0.25) !important;
-  outline: none !important;
-}
-
-.premium-ui-v2 input::placeholder,
-.premium-ui-v2 textarea::placeholder {
-  color: rgba(203, 213, 225, 0.5) !important;
-}
-
-.premium-ui-v2 .btn-gold,
-.premium-ui-v2 .btn-primary,
-.premium-ui-v2 .submit-btn,
-.premium-ui-v2 a[href="/#calculator"] {
-  background: linear-gradient(135deg, #df9f28 0%, #f9d076 100%) !important;
-  color: #050409 !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.5px;
-  border: 0 !important;
-  box-shadow: 0 4px 25px rgba(229, 169, 59, 0.3) !important;
-  transition: all 0.3s ease !important;
-}
-
-.premium-ui-v2 .btn-gold:hover,
-.premium-ui-v2 .btn-primary:hover,
-.premium-ui-v2 .submit-btn:hover,
-.premium-ui-v2 a[href="/#calculator"]:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 32px rgba(229, 169, 59, 0.48) !important;
-}
-
-.premium-ui-v2 .zodiac-hero {
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-.premium-ui-v2 .zodiac-wheel {
-  filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.18));
-}
-
-.premium-ui-v2 .zodiac-wheel line,
-.premium-ui-v2 .zodiac-wheel circle,
-.premium-ui-v2 .zodiac-wheel path,
-.premium-ui-v2 .zodiac-wheel polygon {
-  filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.4));
-}
-
-.premium-ui-v2 .zodiac-wheel line {
-  stroke-width: 1px !important;
-}
-
-.premium-ui-v2 h1,
-.premium-ui-v2 h2,
-.premium-ui-v2 h3,
-.premium-ui-v2 header,
-.premium-ui-v2 .font-display {
-  font-family: var(--font-display), serif;
-}
-
-.premium-ui-v2 p,
-.premium-ui-v2 label,
-.premium-ui-v2 li,
-.premium-ui-v2 input,
-.premium-ui-v2 select,
-.premium-ui-v2 textarea,
-.premium-ui-v2 button {
-  font-family: var(--font-body), sans-serif;
-}
-
-.premium-ui-v2 .text-glow,
-.premium-ui-v2 .text-glow-gold {
-  text-shadow: 0 0 20px rgba(229, 169, 59, 0.38);
-}
-
-.premium-ui-v2 .premium-setting {
-  margin-bottom: 1.5rem;
-  padding: 1.25rem;
-}
-
-/* Legacy mode is intentionally outside the v2 scope and remains switchable. */
-.legacy-ui,
-.legacy-ui body {
-  background: #0b071e !important;
-  color: #fff !important;
-}
-
-.legacy-ui body::before,
-.legacy-ui body::after {
-  display: none !important;
-}
-
-.legacy-ui .glass-panel,
-.legacy-ui fieldset,
-.legacy-ui form,
-.legacy-ui .card,
-.legacy-ui .box-container {
-  background: rgba(24, 15, 52, 0.92) !important;
-  backdrop-filter: blur(8px) !important;
-  border: 1px solid rgba(245, 158, 11, 0.35) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6) !important;
-}
-
-.legacy-ui input,
-.legacy-ui select,
-.legacy-ui textarea {
-  background: #080418 !important;
-  border: 1px solid rgba(245, 158, 11, 0.3) !important;
-  border-radius: 8px !important;
-  color: #fff !important;
-}
-
-.legacy-ui .btn-gold,
-.legacy-ui .btn-primary,
-.legacy-ui .submit-btn,
-.legacy-ui a[href="/#calculator"] {
-  background: linear-gradient(to right, #f59e0b, #d97706) !important;
-  color: #000 !important;
-  font-weight: 800 !important;
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4) !important;
-}
-
-@media (max-width: 640px) {
-  .premium-ui-v2 main > div > section {
-    padding: 1rem;
-  }
+.infographic-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+
+
