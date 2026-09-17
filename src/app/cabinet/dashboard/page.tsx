@@ -321,19 +321,28 @@ export default function DashboardPage() {
 
       {/* Selected Opened Chart View Modal / Card */}
       {selected && (
-        <div id="chart-view" className="glass-panel mt-8 rounded-2xl sm:rounded-[28px] p-5 sm:p-8 border-amber-500/30 bg-[#120833]/95 backdrop-blur-2xl shadow-2xl space-y-5 transition-all">
+        <div id="chart-view" className="glass-panel relative mt-8 rounded-2xl sm:rounded-[28px] p-5 sm:p-8 border-amber-500/30 bg-[#120833]/95 backdrop-blur-2xl shadow-2xl space-y-5 transition-all">
+          
+          {/* Sticky Fixed Top-Right Red Glowing Close Button */}
+          <div className="sticky top-2 sm:top-4 z-50 flex justify-end float-right -mt-2 -mr-2 sm:-mt-4 sm:-mr-4 mb-2 pointer-events-none">
+            <button
+              type="button"
+              onClick={() => setSelected(null)}
+              className="pointer-events-auto group inline-flex items-center gap-2 rounded-full border border-rose-500/70 bg-gradient-to-r from-rose-950/90 via-red-950/90 to-rose-950/90 px-4 py-2 text-xs sm:text-sm font-black text-rose-300 shadow-[0_0_18px_rgba(244,63,94,0.55)] ring-1 ring-rose-500/40 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-rose-400 hover:bg-gradient-to-r hover:from-rose-900 hover:via-red-800 hover:to-rose-900 hover:shadow-[0_0_30px_rgba(244,63,94,0.95)] active:scale-95 cursor-pointer"
+              title="ფანჯრის დახურვა"
+            >
+              <span className="text-base font-black text-rose-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.85)] group-hover:text-white transition-colors">✕</span>
+              <span className="font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-red-200 to-rose-400 group-hover:from-white group-hover:to-rose-100 transition-colors">
+                დახურვა
+              </span>
+            </button>
+          </div>
+
           {/* Header Row */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/20 pb-4">
             <h2 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)]">
               {selected.label}
             </h2>
-            <button
-              onClick={() => setSelected(null)}
-              className="flex items-center gap-1 rounded-full border border-amber-400/30 px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-amber-300 hover:bg-amber-400/10 transition-colors cursor-pointer"
-            >
-              <X className="h-4 w-4" />
-              <span>დახურვა</span>
-            </button>
           </div>
 
           {/* Action Toolbar: Light Moss Green Glow Button (ღია ჭაობისფერი გლოუ) & Copy Button */}
