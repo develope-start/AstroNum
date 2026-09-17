@@ -39,6 +39,17 @@ interface SelectedChart {
   mapNumber: string | null;
   label: string;
   type: string;
+  name1: string;
+  name2: string | null;
+  date1: string;
+  time1: string;
+  place1: string;
+  date2: string | null;
+  time2: string | null;
+  place2: string | null;
+  transitDate: string | null;
+  houseSystem: string;
+  createdAt: string;
   interpretation: string;
   result?: WheelResult;
 }
@@ -48,6 +59,34 @@ const TYPE_LABEL_KA: Record<string, string> = {
   SYNASTRY: "სინასტრია",
   TRANSIT: "ტრანზიტი",
 };
+
+function wheelFromResult(result: unknown): WheelResult | undefined {
+  if (!result || typeof result !== "object") return undefined;
+  const candidate = result as Record<string, unknown>;
+  const source = candidate.ascendant !== undefined
+    ? candidate
+    : candidate.natalChart && typeof candidate.natalChart === "object"
+      ? candidate.natalChart as Record<string, unknown>
+      : candidate.chartA && typeof candidate.chartA === "object"
+        ? candidate.chartA as Record<string, unknown>
+        : null;
+
+  if (
+    !source ||
+    typeof source.ascendant !== "number" ||
+    !Array.isArray(source.planets) ||
+    !Array.isArray(source.houseCusps)
+  ) {
+    return undefined;
+  }
+
+  return {
+    ascendant: source.ascendant,
+    mc: typeof source.mc === "number" ? source.mc : 0,
+    houseCusps: source.houseCusps as number[],
+    planets: source.planets as WheelPlanet[],
+  };
+}
 
 function formatRemaining(seconds: number) {
   if (seconds <= 0) return "სესია დასრულდა";
@@ -139,8 +178,19 @@ export default function DashboardPage() {
         mapNumber?: string | null;
         label?: string;
         type?: string;
+        name1?: string;
+        name2?: string | null;
+        date1?: string;
+        time1?: string;
+        place1?: string;
+        date2?: string | null;
+        time2?: string | null;
+        place2?: string | null;
+        transitDate?: string | null;
+        houseSystem?: string;
+        createdAt?: string;
         interpretation?: string | null;
-        result?: { ascendant?: unknown; mc?: number; houseCusps?: number[]; planets?: Array<{ name: string; longitude: number }> };
+        result?: unknown;
         error?: string;
       }>(res);
       if (!res.ok) {
@@ -148,24 +198,24 @@ export default function DashboardPage() {
         return;
       }
 
-      // Format result payload cleanly if available
-      let wheelData: WheelResult | undefined = undefined;
-      if (data.result && typeof data.result.ascendant === "number") {
-        wheelData = {
-          ascendant: data.result.ascendant,
-          mc: data.result.mc ?? 0,
-          houseCusps: data.result.houseCusps ?? [],
-          planets: data.result.planets ?? [],
-        };
-      }
-
       setSelected({
         id: data.id ?? id,
         mapNumber: data.mapNumber ?? null,
         label: data.label ?? "რუკა",
         type: data.type ?? "NATAL",
+        name1: data.name1 ?? "—",
+        name2: data.name2 ?? null,
+        date1: data.date1 ?? "—",
+        time1: data.time1 ?? "—",
+        place1: data.place1 ?? "—",
+        date2: data.date2 ?? null,
+        time2: data.time2 ?? null,
+        place2: data.place2 ?? null,
+        transitDate: data.transitDate ?? null,
+        houseSystem: data.houseSystem ?? "—",
+        createdAt: data.createdAt ?? new Date().toISOString(),
         interpretation: data.interpretation ?? "",
-        result: wheelData,
+        result: wheelFromResult(data.result),
       });
       setShowWheel(true);
       setCopied(false);
@@ -280,48 +330,65 @@ export default function DashboardPage() {
 
       {/* Grid of Saved Charts */}
       <div className="grid gap-4 sm:grid-cols-2">
-        {charts?.map((c) => (
-          <div
-            key={c.id}
-            className="glass-panel group rounded-2xl p-5 border-amber-500/25 bg-gradient-to-b from-[#130a35]/85 to-[#080417]/95 transition-all hover:border-amber-400/50 hover:shadow-[0_0_25px_rgba(245,158,11,0.2)] flex flex-col justify-between space-y-3"
-          >
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-amber-300">
-                  {TYPE_LABEL_KA[c.type]}
-                </span>
-                <span className="text-[0.68rem] font-medium text-slate-400">
-                  {new Date(c.createdAt).toLocaleDateString("ka-GE")}
-                </span>
+        {charts?.map((c) => {
+          const isSelected = selected?.id === c.id;
+          return (
+            <div
+              key={c.id}
+              className={`glass-panel group rounded-2xl p-5 border-amber-500/25 bg-gradient-to-b from-[#130a35]/85 to-[#080417]/95 transition-all hover:border-amber-400/50 hover:shadow-[0_0_25px_rgba(245,158,11,0.2)] flex flex-col justify-between space-y-3 ${
+                isSelected ? "border-amber-400/70 shadow-[0_0_30px_rgba(245,158,11,0.35)] ring-1 ring-amber-400/40" : ""
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-amber-300">
+                    {TYPE_LABEL_KA[c.type]}
+                  </span>
+                  <span className="text-[0.68rem] font-medium text-slate-400">
+                    {new Date(c.createdAt).toLocaleDateString("ka-GE")}
+                  </span>
+                </div>
+                <p className="mt-2 text-xs font-bold tracking-wide text-amber-300">რუკის ნომერი: {c.mapNumber ?? "—"}</p>
+                <h3 className="font-display mt-2.5 text-lg font-bold text-slate-100 group-hover:text-amber-300 transition-colors">
+                  {c.label}
+                </h3>
+                <p className="mt-1 text-xs text-slate-300">
+                  {c.name1}
+                  {c.name2 ? ` & ${c.name2}` : ""}
+                </p>
               </div>
-              <p className="mt-2 text-xs font-bold tracking-wide text-amber-300">რუკის ნომერი: {c.mapNumber ?? "—"}</p>
-              <h3 className="font-display mt-2.5 text-lg font-bold text-slate-100 group-hover:text-amber-300 transition-colors">
-                {c.label}
-              </h3>
-              <p className="mt-1 text-xs text-slate-300">
-                {c.name1}
-                {c.name2 ? ` & ${c.name2}` : ""}
-              </p>
+              <div className="flex items-center gap-3 pt-2 border-t border-amber-500/15 text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isSelected) {
+                      setSelected(null);
+                    } else {
+                      openChart(c.id);
+                    }
+                  }}
+                  disabled={loadingChart === c.id}
+                  className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 transition-all cursor-pointer disabled:opacity-50 ${
+                    isSelected
+                      ? "bg-amber-400 text-slate-950 font-black shadow-[0_0_20px_rgba(245,158,11,0.65)] ring-2 ring-amber-300 hover:bg-amber-300"
+                      : "bg-amber-500/20 text-amber-300 hover:bg-amber-400 hover:text-slate-950 font-bold"
+                  }`}
+                >
+                  <Eye className={`h-3.5 w-3.5 ${isSelected ? "text-slate-950 stroke-[2.5]" : ""}`} />
+                  <span>{loadingChart === c.id ? "იტვირთება..." : "ნახვა"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeChart(c.id)}
+                  className="flex items-center gap-1.5 rounded-full bg-rose-950/40 border border-rose-500/30 px-4 py-1.5 text-rose-300 transition-all hover:bg-rose-900/60 cursor-pointer"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  <span>წაშლა</span>
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-3 pt-2 border-t border-amber-500/15 text-xs font-bold">
-              <button
-                onClick={() => openChart(c.id)}
-                disabled={loadingChart === c.id}
-                className="flex items-center gap-1.5 rounded-full bg-amber-500/20 px-4 py-1.5 text-amber-300 transition-all hover:bg-amber-400 hover:text-slate-950 cursor-pointer disabled:opacity-50"
-              >
-                <Eye className="h-3.5 w-3.5" />
-                <span>{loadingChart === c.id ? "იტვირთება..." : "ნახვა"}</span>
-              </button>
-              <button
-                onClick={() => removeChart(c.id)}
-                className="flex items-center gap-1.5 rounded-full bg-rose-950/40 border border-rose-500/30 px-4 py-1.5 text-rose-300 transition-all hover:bg-rose-900/60 cursor-pointer"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                <span>წაშლა</span>
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Selected Opened Chart View Modal / Card */}
@@ -345,10 +412,29 @@ export default function DashboardPage() {
 
           {/* Header Row */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/20 pb-4">
-            <h2 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-              {selected.label}
-            </h2>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                {TYPE_LABEL_KA[selected.type] ?? selected.type}
+              </p>
+              <h2 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                {selected.label}
+              </h2>
+            </div>
             <span className="text-xs font-bold tracking-wide text-amber-300">რუკის ნომერი: {selected.mapNumber ?? "—"}</span>
+          </div>
+
+          {/* Full chart input details, matching the administrator's chart view */}
+          <div className="grid gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-4 text-sm text-slate-200 sm:grid-cols-2">
+            <p><span className="text-slate-400">რუკის ნომერი:</span> {selected.mapNumber ?? "—"}</p>
+            <p><span className="text-slate-400">პირველი პროფილი:</span> {selected.name1}</p>
+            <p><span className="text-slate-400">დაბადება:</span> {selected.date1} {selected.time1}</p>
+            <p><span className="text-slate-400">ადგილი:</span> {selected.place1}</p>
+            {selected.name2 && <p><span className="text-slate-400">მეორე პროფილი:</span> {selected.name2}</p>}
+            {selected.date2 && <p><span className="text-slate-400">მეორე დაბადება:</span> {selected.date2} {selected.time2 ?? ""}</p>}
+            {selected.place2 && <p><span className="text-slate-400">მეორე ადგილი:</span> {selected.place2}</p>}
+            {selected.transitDate && <p><span className="text-slate-400">ტრანზიტის თარიღი:</span> {selected.transitDate}</p>}
+            <p><span className="text-slate-400">სახლთა სისტემა:</span> {selected.houseSystem}</p>
+            <p><span className="text-slate-400">შედგენის დრო:</span> {new Date(selected.createdAt).toLocaleString("ka-GE")}</p>
           </div>
 
           {/* Action Toolbar: Light Moss Green Glow Button (ღია ჭაობისფერი გლოუ) & Copy Button */}
@@ -404,7 +490,11 @@ export default function DashboardPage() {
             <h3 className="font-display text-lg sm:text-xl font-bold text-amber-300 mb-3 border-b border-amber-500/20 pb-2">
               ასტროლოგიური ინტერპრეტაცია & ანალიზი
             </h3>
-            <InterpretationText text={selected.interpretation} />
+            {selected.interpretation ? (
+              <InterpretationText text={selected.interpretation} />
+            ) : (
+              <p className="text-sm text-slate-400">ამ ჩანაწერისთვის ინტერპრეტაცია ვერ მოიძებნა.</p>
+            )}
           </div>
         </div>
       )}
