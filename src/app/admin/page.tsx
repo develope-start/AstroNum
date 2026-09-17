@@ -643,6 +643,29 @@ export default function AdminPage() {
             </button>
           </div>
         </div>
+
+        {/* Registered Users Map History Sub-Header & Jump Button to Unregistered */}
+        <div id="registered-calculations-section" className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-line/60 pb-3 scroll-mt-6">
+          <h3 className="font-display text-lg sm:text-xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-blue-400 drop-shadow-[0_0_15px_rgba(56,189,248,0.55)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(56,189,248,0.95)] hover:scale-[1.01] cursor-default">
+            რეგისტრირებული მომხმარებლების რუკების ისტორია
+          </h3>
+          {filteredGuestCalculationGroups.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                document.getElementById("guest-calculations-section")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="group flex items-center gap-2 rounded-xl border border-rose-500/50 bg-rose-950/40 px-3.5 py-1.5 text-xs sm:text-sm font-black text-rose-300 shadow-[0_0_14px_rgba(244,63,94,0.4)] ring-1 ring-rose-500/30 transition-all duration-300 hover:scale-105 hover:border-rose-400 hover:bg-rose-900/60 hover:text-white hover:shadow-[0_0_25px_rgba(244,63,94,0.85)] active:scale-95 cursor-pointer"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
+              </span>
+              <span>დაურეგისტრირებელი მომხმარებლების რუკების ისტორია ↓</span>
+            </button>
+          )}
+        </div>
+
         {calculations?.length === 0 && (
           <p className="text-xs text-parchment-dim">ჯერ არცერთი რუკა არ გამოთვლილა.</p>
         )}
@@ -743,8 +766,21 @@ export default function AdminPage() {
       </section>
 
       {filteredGuestCalculationGroups.length > 0 && (
-        <section className="mb-8">
-          <h2 className="font-display mb-3 text-xl text-brass-2">დაურეგისტრირებელი მომხმარებლების რუკების ისტორია</h2>
+        <section id="guest-calculations-section" className="mb-8 scroll-mt-6">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-line/60 pb-3">
+            <h2 className="font-display text-xl sm:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-rose-500 drop-shadow-[0_0_18px_rgba(244,63,94,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(244,63,94,0.95)] hover:scale-[1.01] cursor-default">
+              დაურეგისტრირებელი მომხმარებლების რუკების ისტორია
+            </h2>
+            <button
+              type="button"
+              onClick={() => {
+                document.getElementById("registered-calculations-section")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="group flex items-center gap-2 rounded-xl border border-sky-400/50 bg-cyan-950/40 px-3.5 py-1.5 text-xs sm:text-sm font-black text-cyan-300 shadow-[0_0_14px_rgba(56,189,248,0.4)] ring-1 ring-sky-400/30 transition-all duration-300 hover:scale-105 hover:border-cyan-300 hover:bg-cyan-900/60 hover:text-white hover:shadow-[0_0_25px_rgba(56,189,248,0.85)] active:scale-95 cursor-pointer"
+            >
+              <span>↑ რეგისტრირებული მომხმარებლების რუკების ისტორია</span>
+            </button>
+          </div>
           <div className="space-y-4">
             {filteredGuestCalculationGroups.map((group) => (
               <GuestCalculationCard
