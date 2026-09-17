@@ -100,8 +100,8 @@ export default function AdminsPage() {
   const danger = "rounded-full border border-ember px-4 py-2 text-sm text-ember hover:bg-ember/10";
 
   return (
-    <div className="mx-auto max-w-5xl space-y-7">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="admin-page mx-auto max-w-5xl space-y-7">
+      <div className="admin-page-header flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl text-brass-2">ადმინისტრატორების მართვა</h1>
           <p className="mt-1 text-sm text-parchment-dim">მთავარი ადმინისტრატორი: ADMIN · დამატებითი: ADMIN1, ADMIN2...</p>

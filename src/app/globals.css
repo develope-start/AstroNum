@@ -121,6 +121,98 @@ body {
   animation: float-slow 5s infinite ease-in-out;
 }
 
+/* Admin workspace: keep long account values, labels and actions inside the viewport. */
+.admin-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-page *,
+.admin-page *::before,
+.admin-page *::after {
+  min-width: 0;
+}
+
+.admin-page h1,
+.admin-page h2,
+.admin-page h3,
+.admin-page p,
+.admin-page span,
+.admin-page label,
+.admin-page a,
+.admin-page button {
+  overflow-wrap: anywhere;
+}
+
+.admin-page input,
+.admin-page select,
+.admin-page textarea {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.admin-account-info > div {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .admin-page {
+    overflow-x: hidden;
+  }
+
+  .admin-page .admin-header-actions > a,
+  .admin-page .admin-header-actions > button {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .admin-page .admin-account-info {
+    border-width: 1px;
+  }
+
+  .admin-page .admin-account-info > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 0.25rem;
+  }
+
+  .admin-page .admin-account-info > div > span {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-page .admin-account-info > div > span:first-child {
+    font-size: 1rem !important;
+    line-height: 1.35;
+  }
+
+  .admin-page .admin-account-info > div > span:nth-child(2) {
+    font-size: 0.875rem !important;
+    line-height: 1.35;
+  }
+
+  .admin-page .admin-account-info > div > span:nth-child(3) {
+    font-size: 1.5rem !important;
+    line-height: 1.2;
+  }
+
+  .admin-page h1 {
+    font-size: clamp(1.1rem, 5vw, 1.5rem) !important;
+    line-height: 1.25;
+  }
+
+  .admin-page .admin-account-info p {
+    letter-spacing: 0.08em;
+  }
+
+  .admin-page section {
+    min-width: 0;
+  }
+}
+
 /* Infographic Progress Bars */
 .infographic-bar-bg {
   background: rgba(255, 255, 255, 0.07);
@@ -137,6 +229,4 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
-
-
 

@@ -805,10 +805,10 @@ export default function AdminPage() {
     filters.status !== "ALL";
 
   return (
-    <div>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-line/60 pb-5">
+    <div className="admin-page">
+      <div className="admin-page-header mb-6 flex flex-col items-stretch gap-4 border-b border-line/60 pb-5 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-2xl font-black text-brass-2 drop-shadow">ადმინის პანელი — ყველა მომხმარებელი</h1>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="admin-header-actions flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
           {/* Left: მომხმარებლების მართვა (Users Management) */}
           <a
             href="/admin/users"
@@ -828,7 +828,7 @@ export default function AdminPage() {
           )}
         </div>
       </div>
-      <div className="mb-8 rounded-2xl border-2 border-[#35c759] bg-[#35c759]/10 p-5 shadow-lg shadow-[#35c759]/20">
+      <div className="admin-account-info mb-8 rounded-2xl border-2 border-[#35c759] bg-[#35c759]/10 p-4 shadow-lg shadow-[#35c759]/20 sm:p-5">
         <p className="mb-2 text-sm font-medium uppercase tracking-widest text-[#d98a9b]">ადმინის ანგარიში</p>
         <div className="flex flex-wrap items-center gap-6">
           <span className="text-2xl font-bold tracking-wide text-[#55e6e1]">{adminEmail ?? "იტვირთება…"}</span>

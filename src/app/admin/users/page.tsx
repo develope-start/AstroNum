@@ -483,8 +483,8 @@ export default function AdminUsersPage() {
   }, [filteredData]);
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line/40 pb-4">
+    <div className="admin-page space-y-8">
+      <div className="admin-page-header flex flex-col items-stretch gap-4 border-b border-line/40 pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 drop-shadow-[0_0_18px_rgba(245,158,11,0.65)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(251,191,36,0.9)] hover:scale-[1.01] cursor-default">
             👥 მომხმარებლების მართვა
