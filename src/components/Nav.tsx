@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Compass, User, LayoutDashboard, Shield, Menu, X } from "lucide-react";
+import { Compass, User, LayoutDashboard, Shield, Menu, X, Sparkles, Layers } from "lucide-react";
 
 interface Me {
   userId: string;
@@ -13,17 +13,47 @@ interface Me {
 export default function Nav() {
   const [me, setMe] = useState<Me | null | undefined>(undefined);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLegacyUi, setIsLegacyUi] = useState(false);
+  const [toggleAllowed, setToggleAllowed] = useState(true);
 
   useEffect(() => {
+    // 1. Fetch user auth status
     fetch("/api/auth/me", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => setMe(d.user))
       .catch(() => setMe(null));
+
+    // 2. Fetch admin permission setting for design toggle
+    fetch("/api/settings/design-toggle", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => setToggleAllowed(Boolean(d?.allowed)))
+      .catch(() => setToggleAllowed(true));
+
+    // 3. Initialize theme from localStorage
+    const savedTheme = localStorage.getItem("ui_theme");
+    if (savedTheme === "legacy") {
+      setIsLegacyUi(true);
+      document.documentElement.classList.add("legacy-ui");
+    } else {
+      setIsLegacyUi(false);
+      document.documentElement.classList.remove("legacy-ui");
+    }
   }, []);
 
+  function toggleDesignTheme() {
+    const nextLegacy = !isLegacyUi;
+    setIsLegacyUi(nextLegacy);
+    localStorage.setItem("ui_theme", nextLegacy ? "legacy" : "premium");
+    if (nextLegacy) {
+      document.documentElement.classList.add("legacy-ui");
+    } else {
+      document.documentElement.classList.remove("legacy-ui");
+    }
+  }
+
   return (
-    <header className="w-full px-2 py-2 sm:px-6 lg:px-12 xl:px-16 sm:py-3.5">
-      <div className="mx-auto w-full max-w-full rounded-2xl sm:rounded-full border border-amber-400/40 bg-[#08041a]/95 p-2.5 sm:px-8 sm:py-2.5 backdrop-blur-3xl shadow-[0_16px_50px_rgba(0,0,0,0.85)] ring-1 ring-amber-500/20">
+    <header className="w-full px-2 py-2 sm:px-6 lg:px-12 xl:px-16 sm:py-3.5 relative z-50">
+      <div className="mx-auto w-full max-w-full rounded-2xl sm:rounded-full border border-amber-400/40 bg-[#070418]/90 p-2.5 sm:px-8 sm:py-2.5 backdrop-blur-3xl shadow-[0_16px_50px_rgba(0,0,0,0.85)] ring-1 ring-amber-500/20">
         
         {/* Main Header Row */}
         <div className="flex items-center justify-between gap-2 sm:gap-4 w-full">
@@ -54,7 +84,7 @@ export default function Nav() {
             </div>
           </Link>
 
-          {/* 2. Center Focus: Astrological Chart Creation CTA (Dominant Warm Amber fill + Aqua cyan stroke) */}
+          {/* 2. Center Focus: Astrological Chart Creation CTA */}
           <div className="hidden md:flex items-center justify-center flex-1 max-w-md px-2">
             <Link
               href="/#calculator"
@@ -67,8 +97,35 @@ export default function Nav() {
             </Link>
           </div>
 
-          {/* 3. Right: Cabinet Button with VIBRANT STRIKING COLOR & LOGGED-IN DISTINCTION */}
+          {/* 3. Right: Design Toggle & Cabinet Controls */}
           <nav className="flex items-center gap-2 sm:gap-3 text-xs font-bold shrink-0">
+            
+            {/* DESIGN TOGGLE BUTTON (Controlled by Admin Checkbox via toggleAllowed) */}
+            {toggleAllowed && (
+              <button
+                type="button"
+                onClick={toggleDesignTheme}
+                title={isLegacyUi ? "პრემიუმ ახალ დიზაინზე გადართვა" : "ძველ დიზაინზე გადართვა"}
+                className={`relative flex items-center gap-1.5 rounded-full border px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-black transition-all duration-300 hover:scale-105 active:scale-95 ${
+                  isLegacyUi
+                    ? "border-purple-400/60 bg-purple-950/80 text-purple-200 shadow-[0_0_18px_rgba(168,85,247,0.4)] hover:bg-purple-900"
+                    : "border-cyan-400/60 bg-cyan-950/70 text-cyan-200 shadow-[0_0_18px_rgba(34,211,238,0.4)] hover:bg-cyan-900/90"
+                }`}
+              >
+                {isLegacyUi ? (
+                  <>
+                    <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
+                    <span>ახალი დიზაინი</span>
+                  </>
+                ) : (
+                  <>
+                    <Layers className="h-3.5 w-3.5 text-cyan-300" />
+                    <span>ძველი დიზაინი</span>
+                  </>
+                )}
+              </button>
+            )}
+
             {/* Guest / Not Logged In State -> Yellow/Amber Pulsing Cabinet Button */}
             {me === null && (
               <Link

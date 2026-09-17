@@ -4,20 +4,30 @@
 
 @layer base {
   :root {
-    --bg-main: #06040e;
-    --bg-card: rgba(16, 10, 36, 0.85);
-    --bg-card-hover: rgba(26, 15, 56, 0.92);
-    --border-color: rgba(245, 158, 11, 0.22);
-    --border-glow: rgba(245, 158, 11, 0.55);
+    --bg-main: #07050f;
+    --bg-card: rgba(15, 12, 28, 0.65);
+    --bg-card-hover: rgba(22, 17, 42, 0.8);
+    --border-color: rgba(229, 169, 59, 0.2);
+    --border-glow: rgba(255, 210, 106, 0.55);
     --border-purple: rgba(168, 85, 247, 0.35);
     --text-primary: #F8FAFC;
     --text-secondary: #CBD5E1;
     --text-muted: #94A3B8;
-    --text-accent: #FDE68A;
-    --accent-gold: #F59E0B;
-    --accent-gold-hover: #FBBF24;
+    --text-accent: #FFD26A;
+    --accent-gold: #E5A93B;
+    --accent-gold-bright: #FFD26A;
     --accent-purple: #A855F7;
-    --accent-blue: #38BDF8;
+    --accent-cyan: #22D3EE;
+  }
+
+  /* Legacy UI Overrides when .legacy-ui is active on html/body */
+  html.legacy-ui, body.legacy-ui {
+    --bg-main: #0b071e;
+    --bg-card: rgba(24, 15, 52, 0.92);
+    --bg-card-hover: rgba(35, 20, 75, 0.95);
+    --border-color: rgba(245, 158, 11, 0.35);
+    --border-glow: rgba(245, 158, 11, 0.7);
+    --text-primary: #ffffff;
   }
 }
 
@@ -30,113 +40,116 @@ body {
   background-color: var(--bg-main);
   color: var(--text-primary);
   font-family: var(--font-body), sans-serif;
+  overflow-x: hidden;
+  position: relative;
 }
 
-::selection {
-  background: var(--accent-gold);
-  color: #06040e;
+/* Ambient Cosmic Nebula Glow & Twinkling Stars */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -2;
+  background: 
+    radial-gradient(circle at 15% 20%, rgba(120, 50, 220, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(30, 140, 240, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(229, 169, 59, 0.06) 0%, transparent 60%);
+  transition: opacity 0.5s ease;
 }
 
-:focus-visible {
-  outline: 2px solid var(--accent-gold);
-  outline-offset: 2px;
+html.legacy-ui body::before {
+  opacity: 0.2;
 }
 
-/* Deep Space Twinkling Star Field */
+/* Twinkling Star Field */
 .star-field {
   background-image: 
-    radial-gradient(1.5px 1.5px at 12% 18%, rgba(254, 240, 138, 0.85) 50%, transparent 51%),
-    radial-gradient(1px 1px at 68% 28%, rgba(250, 250, 249, 0.75) 50%, transparent 51%),
-    radial-gradient(2px 2px at 38% 72%, rgba(245, 158, 11, 0.8) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 12% 18%, rgba(255, 230, 160, 0.9) 50%, transparent 51%),
+    radial-gradient(1px 1px at 68% 28%, rgba(255, 255, 255, 0.8) 50%, transparent 51%),
+    radial-gradient(2px 2px at 38% 72%, rgba(229, 169, 59, 0.85) 50%, transparent 51%),
     radial-gradient(1px 1px at 88% 12%, rgba(196, 181, 253, 0.85) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 48% 38%, rgba(245, 158, 11, 0.65) 50%, transparent 51%),
-    radial-gradient(1px 1px at 22% 82%, rgba(250, 250, 249, 0.75) 50%, transparent 51%),
-    radial-gradient(2px 2px at 78% 78%, rgba(168, 85, 247, 0.7) 50%, transparent 51%);
+    radial-gradient(1.5px 1.5px at 48% 38%, rgba(34, 211, 238, 0.75) 50%, transparent 51%),
+    radial-gradient(1px 1px at 22% 82%, rgba(255, 255, 255, 0.8) 50%, transparent 51%),
+    radial-gradient(2px 2px at 78% 78%, rgba(168, 85, 247, 0.75) 50%, transparent 51%);
   background-repeat: repeat;
-  background-size: 550px 550px;
+  background-size: 600px 600px;
 }
 
-/* Rounded Expressive Glassmorphism Cards */
+/* Premium Glassmorphism Cards */
 .glass-panel {
-  background: linear-gradient(135deg, rgba(20, 12, 44, 0.88) 0%, rgba(12, 7, 28, 0.92) 100%);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.75), 0 0 30px 0 rgba(139, 92, 246, 0.12);
+  background: linear-gradient(135deg, rgba(17, 12, 34, 0.75) 0%, rgba(10, 7, 22, 0.85) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(229, 169, 59, 0.22);
+  box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.85), 0 0 30px 0 rgba(168, 85, 247, 0.1);
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+html.legacy-ui .glass-panel {
+  background: rgba(24, 15, 52, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
 .glass-panel-hover:hover {
-  border-color: var(--border-glow);
-  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.85), 0 0 40px 0 rgba(245, 158, 11, 0.25);
+  border-color: rgba(255, 210, 106, 0.55);
+  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.9), 0 0 40px 0 rgba(229, 169, 59, 0.3);
   transform: translateY(-2px);
 }
 
+/* Form Glass Inputs */
 .glass-input {
-  background: rgba(8, 4, 22, 0.85);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: rgba(10, 6, 24, 0.8);
+  border: 1px solid rgba(229, 169, 59, 0.25);
   color: var(--text-primary);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-input:focus {
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 24px 0 rgba(245, 158, 11, 0.3);
+  border-color: #FFD26A;
+  box-shadow: 0 0 20px 0 rgba(229, 169, 59, 0.4);
+  outline: none;
 }
 
-/* Vibrant Text Glow Effects */
+/* Gold CTA Solar Accent Buttons */
+.btn-gold {
+  background: linear-gradient(135deg, #E5A93B 0%, #FFD26A 50%, #D49024 100%);
+  color: #07050f;
+  font-weight: 900;
+  box-shadow: 0 0 25px rgba(229, 169, 59, 0.55);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-gold:hover {
+  box-shadow: 0 0 40px rgba(229, 169, 59, 0.85);
+  transform: scale(1.02);
+}
+
+/* Text Glow Helpers */
 .text-glow {
-  text-shadow: 0 0 25px rgba(245, 158, 11, 0.5), 0 0 50px rgba(168, 85, 247, 0.3);
+  text-shadow: 0 0 25px rgba(229, 169, 59, 0.55), 0 0 50px rgba(168, 85, 247, 0.35);
 }
 
 .text-glow-purple {
-  text-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
+  text-shadow: 0 0 25px rgba(168, 85, 247, 0.65);
 }
 
 .text-glow-gold {
-  text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+  text-shadow: 0 0 20px rgba(255, 210, 106, 0.6);
 }
 
-/* Cosmic Animation Keyframes */
-@keyframes cosmic-pulse {
-  0%, 100% { opacity: 0.85; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.03); }
-}
-
+/* Animations */
 @keyframes float-slow {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-6px); }
-}
-
-@keyframes glow-rotate {
-  0% { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
-}
-
-.animate-cosmic-pulse {
-  animation: cosmic-pulse 4s infinite ease-in-out;
 }
 
 .animate-float-slow {
   animation: float-slow 5s infinite ease-in-out;
 }
 
-/* Infographic Progress Bars */
-.infographic-bar-bg {
-  background: rgba(255, 255, 255, 0.07);
-  border-radius: 9999px;
-  overflow: hidden;
-}
-
-.infographic-bar-fill {
-  height: 100%;
-  border-radius: 9999px;
-  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
-
-
-

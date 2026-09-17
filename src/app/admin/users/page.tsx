@@ -317,6 +317,8 @@ export default function AdminUsersPage() {
   const [viewingCalculation, setViewingCalculation] = useState<CalculationViewData | null>(null);
   const [viewLoading, setViewLoading] = useState(false);
 
+  const [designToggleAllowed, setDesignToggleAllowed] = useState(true);
+
   async function loadData() {
     setLoading(true);
     try {
@@ -331,7 +333,15 @@ export default function AdminUsersPage() {
     }
   }
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    loadData();
+    fetch("/api/settings/design-toggle", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        if (typeof d?.allowed === "boolean") setDesignToggleAllowed(d.allowed);
+      })
+      .catch(() => {});
+  }, []);
 
   async function action(url: string, options: RequestInit = {}, clearSelection?: "users" | "calculations") {
     setError(null);
@@ -531,6 +541,41 @@ export default function AdminUsersPage() {
 
           <a href="/admin" className={button}>ადმინის პანელზე დაბრუნება</a>
         </div>
+      </div>
+
+      {/* Admin Setting Control: Design Toggle Permission ("დიზაინის გადართვის ვარიანტი") */}
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-cyan-500/40 bg-cyan-950/25 p-4 sm:p-5 shadow-[0_0_30px_rgba(34,211,238,0.15)] backdrop-blur-xl">
+        <div className="flex items-center gap-3.5">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/50 bg-cyan-500/20 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.3)]">
+            <span className="text-lg font-black">✦</span>
+          </div>
+          <div>
+            <h3 className="font-bold text-sm sm:text-base text-cyan-200 tracking-wide">
+              დიზაინის გადართვის ვარიანტი (გადართვის ნებართვა)
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed max-w-2xl">
+              ჩართვისას („პწიჩკა“ მონიშნულია) მთავარ გვერდზე გამოჩნდება „ძველი დიზაინი / ახალი დიზაინი“ გადასართავი ღილაკი. გამორთვისას ღილაკი სრულად დაიმალება.
+            </p>
+          </div>
+        </div>
+
+        <label className="inline-flex cursor-pointer items-center gap-3 rounded-full border border-cyan-400/60 bg-cyan-950/80 px-4 py-2 font-black text-xs text-cyan-200 shadow-[0_0_15px_rgba(34,211,238,0.25)] transition hover:bg-cyan-900/90 hover:scale-105 active:scale-95">
+          <input
+            type="checkbox"
+            className="h-4.5 w-4.5 cursor-pointer accent-cyan-400"
+            checked={designToggleAllowed}
+            onChange={async (e) => {
+              const checked = e.target.checked;
+              setDesignToggleAllowed(checked);
+              await fetch("/api/settings/design-toggle", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ allowed: checked }),
+              }).catch(() => {});
+            }}
+          />
+          <span>{designToggleAllowed ? "ნებადართულია (ჩართულია)" : "აკრძალულია (გამორთულია)"}</span>
+        </label>
       </div>
 
       {message && <p className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm text-emerald-400">{message}</p>}

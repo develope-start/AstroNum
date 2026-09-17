@@ -170,3 +170,9 @@ model DeletedCalculation {
   dataJson   String
   deletedAt  DateTime @default(now())
 }
+
+model SystemSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
