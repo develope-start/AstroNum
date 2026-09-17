@@ -1,1 +1,0 @@
-ALTER TABLE "Calculation" ADD COLUMN "saved" BOOLEAN NOT NULL DEFAULT false;

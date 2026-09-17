@@ -4,8 +4,8 @@
 // რადგან SQLite (დეველოპმენტის ბაზა) enum-ებს არ უჭერს მხარს — ვიყენებთ
 // ჩვეულებრივ String ველებს, რაც ერთნაირად მუშაობს SQLite-ზეც და PostgreSQL-ზეც.
 //
-// დეველოპმენტისთვის provider "sqlite" საკმარისია.
-// საბოლოო დეპლოიზე გადართე "postgresql"-ზე — იხილეთ README.md-ის ინსტრუქცია.
+// Development and production use the same PostgreSQL provider so the
+// migration history cannot diverge between local and deployed environments.
 
 generator client {
   provider = "prisma-client-js"

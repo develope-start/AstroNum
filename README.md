@@ -35,7 +35,7 @@ cp .env.example .env
 # და ADMIN_EMAIL / ADMIN_PASSWORD — თქვენი, როგორც საიტის შემქმნელის, ანგარიშისთვის
 # რეალური ელფოსტებისთვის დაამატეთ APP_URL, RESEND_API_KEY და EMAIL_FROM
 
-npx prisma migrate dev --name init   # ქმნის dev.db (SQLite) ფაილს სქემით
+npx prisma migrate dev --name init   # იყენებს .env-ში მითითებულ PostgreSQL-ს
 npm run seed:admin                    # ქმნის თქვენს ADMIN ანგარიშს
 
 npm run dev
@@ -48,19 +48,9 @@ npm run dev
 
 ## დეპლოი პროდაქშენში
 
-1. **ბაზა.** SQLite კარგია ტესტირებისთვის, მაგრამ რეალურ საიტზე გამოიყენეთ
-   PostgreSQL (მაგ. Supabase, Neon, Railway — ყველას აქვს უფასო ტიერი დასაწყისისთვის).
-
-   გახსენით `prisma/schema.prisma`, იპოვეთ სტრიქონი:
-   ```
-   provider = "sqlite"
-   ```
-   და შეცვალეთ **მხოლოდ ეს ერთი სიტყვა** — არაფერი სხვა არ შეეხოთ ამ ფაილში:
-   ```
-   provider = "postgresql"
-   ```
-   შემდეგ `.env`-ში `DATABASE_URL`-ის ადგილას ჩასვით თქვენი PostgreSQL-ის
-   ნამდვილი მისამართი (Neon/Supabase-დან დაკოპირებული, არა მაგალითი).
+1. **ბაზა.** პროექტი იყენებს PostgreSQL-ს როგორც დეველოპმენტში, ისე production-ში
+   (მაგ. Supabase, Neon ან Railway). `.env`-ში ჩასვით თქვენი PostgreSQL-ის ნამდვილი
+   `DATABASE_URL` (Neon/Supabase-დან დაკოპირებული, არა მაგალითი).
 
 2. **ჰოსტინგი.** ყველაზე მარტივია [Vercel](https://vercel.com) (თავად Next.js-ის
    შემქმნელები) — უბრალოდ დააკავშირეთ GitHub რეპოზიტორია. ალტერნატივები:
@@ -72,7 +62,11 @@ npm run dev
 
 4. **დომენი.** ჰოსტინგის პანელიდან მიაბით საკუთარი დომენი (მაგ. astro.ge).
 
-5. დეპლოის შემდეგ ერთხელ გაუშვით `npm run seed:admin` (ან ხელით შექმენით ანგარიში
+5. **მიგრაციები.** Vercel-ის build ბრძანება ავტომატურად ასრულებს
+   `prisma migrate deploy`-ს და შემდეგ ქმნის Next.js build-ს. საჭიროა მხოლოდ სწორი
+   production `DATABASE_URL`.
+
+6. დეპლოის შემდეგ ერთხელ გაუშვით `npm run seed:admin` (ან ხელით შექმენით ანგარიში
    და მონაცემთა ბაზაში როლი `ADMIN`-ზე შეცვალეთ) — ეს არის თქვენი, საიტის
    შემქმნელის, სპეციალური შესვლა.
 
