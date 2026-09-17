@@ -544,7 +544,7 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Admin Setting Control: Design Toggle Permission ("დიზაინის გადართვის ვარიანტი") */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-cyan-500/40 bg-cyan-950/25 p-4 sm:p-5 shadow-[0_0_30px_rgba(34,211,238,0.15)] backdrop-blur-xl">
+      <div className="premium-setting flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-cyan-500/40 bg-cyan-950/25 p-4 sm:p-5 shadow-[0_0_30px_rgba(34,211,238,0.15)] backdrop-blur-xl">
         <div className="flex items-center gap-3.5">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/50 bg-cyan-500/20 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.3)]">
             <span className="text-lg font-black">✦</span>

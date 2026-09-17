@@ -67,8 +67,8 @@ export default function HomePage() {
       <section id="calculator" className="scroll-mt-20 sm:scroll-mt-28 space-y-8">
         {/* Impressive 12 Zodiac Wheel Hero Graphic Emblem */}
         <div className="mx-auto flex flex-col items-center justify-center pt-2 pb-2 w-full">
-          <div className="group relative flex h-72 w-72 sm:h-96 sm:w-96 md:h-[460px] md:w-[460px] lg:h-[520px] lg:w-[520px] items-center justify-center rounded-full border border-amber-400/40 bg-gradient-to-br from-purple-950/70 via-[#0a061b]/90 to-amber-950/60 shadow-[0_0_70px_rgba(229,169,59,0.35)] backdrop-blur-3xl transition-all hover:scale-[1.02] hover:shadow-[0_0_90px_rgba(229,169,59,0.55)] duration-500">
-            <svg viewBox="0 0 380 380" className="h-full w-full p-2">
+          <div className="zodiac-hero group relative flex h-72 w-72 sm:h-96 sm:w-96 md:h-[460px] md:w-[460px] lg:h-[520px] lg:w-[520px] items-center justify-center rounded-full border border-amber-400/40 bg-gradient-to-br from-purple-950/70 via-[#0a061b]/90 to-amber-950/60 shadow-[0_0_70px_rgba(229,169,59,0.35)] backdrop-blur-3xl transition-all hover:scale-[1.02] hover:shadow-[0_0_90px_rgba(229,169,59,0.55)] duration-500">
+            <svg viewBox="0 0 380 380" className="zodiac-wheel h-full w-full p-2">
               <defs>
                 <radialGradient id="zodiac-hero-glow" cx="50%" cy="50%" r="50%">
                   <stop offset="0%" stopColor="#FFD26A" stopOpacity="0.3" />

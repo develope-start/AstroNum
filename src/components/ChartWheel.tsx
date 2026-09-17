@@ -136,7 +136,7 @@ export default function ChartWheel({
     <div className="w-full flex justify-center items-center py-2 px-1">
       <svg
         viewBox={`0 0 ${size} ${size}`}
-        className="w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl drop-shadow-[0_16px_50px_rgba(0,0,0,0.9)] overflow-visible"
+        className="zodiac-wheel w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl drop-shadow-[0_16px_50px_rgba(0,0,0,0.9)] overflow-visible"
       >
         <defs>
           <radialGradient id="glass-center-glow" cx="50%" cy="50%" r="50%">

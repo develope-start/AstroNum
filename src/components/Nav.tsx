@@ -29,19 +29,19 @@ export default function Nav() {
       .then((d) => setToggleAllowed(Boolean(d?.allowed)))
       .catch(() => setToggleAllowed(true));
 
-    // 3. Initialize theme from localStorage (default to premium-ui)
+    // 3. Initialize theme from localStorage (default to premium-ui-v2)
     const savedTheme = localStorage.getItem("ui_theme");
     if (savedTheme === "legacy") {
       setIsLegacyUi(true);
       document.documentElement.classList.add("legacy-ui");
-      document.documentElement.classList.remove("premium-ui");
+      document.documentElement.classList.remove("premium-ui-v2");
       document.body.classList.add("legacy-ui");
-      document.body.classList.remove("premium-ui");
+      document.body.classList.remove("premium-ui-v2");
     } else {
       setIsLegacyUi(false);
-      document.documentElement.classList.add("premium-ui");
+      document.documentElement.classList.add("premium-ui-v2");
       document.documentElement.classList.remove("legacy-ui");
-      document.body.classList.add("premium-ui");
+      document.body.classList.add("premium-ui-v2");
       document.body.classList.remove("legacy-ui");
     }
   }, []);
@@ -52,13 +52,13 @@ export default function Nav() {
     localStorage.setItem("ui_theme", nextLegacy ? "legacy" : "premium");
     if (nextLegacy) {
       document.documentElement.classList.add("legacy-ui");
-      document.documentElement.classList.remove("premium-ui");
+      document.documentElement.classList.remove("premium-ui-v2");
       document.body.classList.add("legacy-ui");
-      document.body.classList.remove("premium-ui");
+      document.body.classList.remove("premium-ui-v2");
     } else {
-      document.documentElement.classList.add("premium-ui");
+      document.documentElement.classList.add("premium-ui-v2");
       document.documentElement.classList.remove("legacy-ui");
-      document.body.classList.add("premium-ui");
+      document.body.classList.add("premium-ui-v2");
       document.body.classList.remove("legacy-ui");
     }
   }
@@ -118,7 +118,7 @@ export default function Nav() {
                 type="button"
                 onClick={toggleDesignTheme}
                 title={isLegacyUi ? "პრემიუმ ახალ დიზაინზე გადართვა" : "ძველ დიზაინზე გადართვა"}
-                className={`relative flex items-center gap-1.5 rounded-full border px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-black transition-all duration-300 hover:scale-105 active:scale-95 ${
+                className={`design-toggle relative flex items-center gap-1.5 rounded-full border px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-black transition-all duration-300 hover:scale-105 active:scale-95 ${
                   isLegacyUi
                     ? "border-purple-400/60 bg-purple-950/80 text-purple-200 shadow-[0_0_18px_rgba(168,85,247,0.4)] hover:bg-purple-900"
                     : "border-cyan-400/60 bg-cyan-950/70 text-cyan-200 shadow-[0_0_18px_rgba(34,211,238,0.4)] hover:bg-cyan-900/90"
