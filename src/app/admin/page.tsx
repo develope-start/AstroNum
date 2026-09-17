@@ -65,7 +65,15 @@ interface AccountEventRow {
   oldEmail: string | null;
   newEmail: string | null;
   createdAt: string;
-  user: { email: string; username?: string | null; role: string; adminId: string | null } | null;
+  user: {
+    id?: string | null;
+    name?: string | null;
+    publicId?: string | null;
+    email: string;
+    username?: string | null;
+    role: string;
+    adminId: string | null;
+  } | null;
 }
 
 interface UserRow {
@@ -1082,22 +1090,33 @@ export default function AdminPage() {
                 <span className={`inline-flex rounded-full border px-2.5 py-1 font-bold ${eventIsDeleted(event.type) ? "border-rose-400/70 bg-rose-950/50 text-rose-300" : eventIsRestored(event.type) ? "border-emerald-400/70 bg-emerald-950/50 text-emerald-300" : "border-amber-400/50 bg-amber-500/10 text-brass-2"}`}>
                   {eventStatusLabel[eventBaseType(event.type)] ?? eventLabel[eventBaseType(event.type)] ?? event.type}
                 </span>
-                <span className="ml-3 text-parchment-dim">იუზერი:</span>
-                {event.user?.role === "ADMIN" ? (
-                  <span className="ml-2 inline-flex flex-wrap items-center gap-4">
-                    <span className="text-xl font-bold tracking-wide text-[#55e6e1]">{event.user.email}</span>
-                    <span className="text-xs font-bold text-[#55e6e1]">
-                      Username: {event.user.username ? `@${event.user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
+                <span className="ml-3 font-bold text-parchment-dim">იუზერი:</span>
+                {event.user ? (
+                  <span className="ml-2 inline-flex flex-wrap items-center gap-2">
+                    {event.user.name && (
+                      <span className="font-extrabold text-parchment-bright bg-parchment/10 px-2 py-0.5 rounded border border-parchment/20">
+                        {event.user.name}
+                      </span>
+                    )}
+                    {event.user.publicId && (
+                      <span className="rounded bg-indigo-950/70 px-2 py-0.5 font-mono text-[11px] font-black text-cyan-300 border border-cyan-500/40 shadow-[0_0_8px_rgba(34,211,238,0.2)]">
+                        {event.user.publicId}
+                      </span>
+                    )}
+                    <span className="font-bold text-[#55e6e1]">{event.user.email}</span>
+                    <span className="text-xs font-semibold text-[#55e6e1]">
+                      (Username: {event.user.username ? `@${event.user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს</span>})
                     </span>
-                    <span className="text-lg font-bold text-orange-400">{event.user.adminId ?? "ADMIN"}</span>
-                    <span className="text-3xl font-black tracking-wide text-[#ff7a18]">ადმინი</span>
+                    {event.user.role === "ADMIN" && (
+                      <span className="inline-flex items-center gap-1 rounded-md border border-orange-500/60 bg-orange-950/50 px-2 py-0.5 font-black text-orange-300 shadow-[0_0_8px_rgba(249,115,22,0.3)]">
+                        <span>{event.user.adminId ?? "ADMIN"}</span>
+                        <span className="text-[10px] text-orange-400 font-bold uppercase tracking-wider">ადმინი</span>
+                      </span>
+                    )}
                   </span>
                 ) : (
-                  <span className="ml-2 inline-flex flex-wrap items-center gap-3 text-parchment-dim">
-                    <span>{event.user?.email ?? event.emailSnapshot}</span>
-                    <span className="text-xs font-semibold text-[#55e6e1]">
-                      (Username: {event.user?.username ? `@${event.user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>})
-                    </span>
+                  <span className="ml-2 inline-flex flex-wrap items-center gap-2 text-parchment-dim">
+                    <span>{event.emailSnapshot}</span>
                   </span>
                 )}
                 {event.oldEmail && event.newEmail && <span className="ml-3 text-parchment-dim">{event.oldEmail} → {event.newEmail}</span>}

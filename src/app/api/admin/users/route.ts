@@ -114,12 +114,14 @@ export async function GET(req: NextRequest) {
         oldEmail: true,
         newEmail: true,
         createdAt: true,
-        user: { select: { email: true, username: true, role: true, adminId: true } },
+        user: { select: { id: true, name: true, publicId: true, email: true, username: true, role: true, adminId: true } },
       },
     }),
     prisma.deletedUser.findMany({
       select: {
         id: true,
+        publicId: true,
+        name: true,
         email: true,
         username: true,
         role: true,
@@ -212,6 +214,9 @@ export async function GET(req: NextRequest) {
         newEmail: event.newEmail ? String(event.newEmail) : null,
         createdAt: event.createdAt ? new Date(event.createdAt as string) : new Date(),
         user: {
+          id: deletedUser.id,
+          name: deletedUser.name,
+          publicId: deletedUser.publicId,
           email: deletedUser.email,
           username: deletedUser.username,
           role: deletedUser.role,
