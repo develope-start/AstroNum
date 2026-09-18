@@ -21,6 +21,7 @@ export interface EphemerisMetadata {
   zodiac: Zodiac;
   nodeType: NodeType;
   topocentric: boolean;
+  includeAsteroids: boolean;
   siderealMode?: number;
   precision: "swiss" | "astronomy-engine";
   fallbackReason?: string;
@@ -186,6 +187,7 @@ export function metadata(options?: CalculationOptions, date?: Date): EphemerisMe
     zodiac: resolved.zodiac,
     nodeType: resolved.nodeType,
     topocentric: resolved.topocentric,
+    includeAsteroids: resolved.includeAsteroids,
     siderealMode: resolved.zodiac === "sidereal" ? resolved.siderealMode : undefined,
     precision: source === "swiss" ? "swiss" : "astronomy-engine",
     fallbackReason: source === "astronomy" && resolved.ephemeris === "swiss" ? swissFallbackReason() : undefined,

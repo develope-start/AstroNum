@@ -2,6 +2,9 @@
 
 import { useEffect, useState, useRef } from "react";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
+import SharedWideDateInput from "./WideDateInput";
+import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
+import type { CalculationOptions } from "@/lib/astro/ephemeris";
 import InterpretationText from "./InterpretationText";
 import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
@@ -17,6 +20,7 @@ interface CacheShape {
   inputMode?: "date" | "interval";
   interpretation: string;
   mapNumber?: string | null;
+  calculation?: CalculationOptions;
 }
 
 function today(): string {
@@ -276,6 +280,7 @@ export default function TransitCalculator() {
   const [transitStartDate, setTransitStartDate] = useState(today());
   const [transitEndDate, setTransitEndDate] = useState(offsetDays(7));
   const [inputMode, setInputMode] = useState<TransitInputMode>("date");
+  const [calculation, setCalculation] = useState<CalculationOptions>({ ...DEFAULT_UI_CALCULATION });
   const [interpretation, setInterpretation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -301,6 +306,7 @@ export default function TransitCalculator() {
       setTransitStartDate(cached.transitStartDate ?? cached.transitDate);
       setTransitEndDate(cached.transitEndDate ?? cached.transitDate);
       setInputMode("date");
+      setCalculation({ ...DEFAULT_UI_CALCULATION, ...(cached.calculation ?? {}) });
       setInterpretation(cached.interpretation);
       setMapNumber(cached.mapNumber ?? null);
     });
@@ -342,6 +348,7 @@ export default function TransitCalculator() {
           transitDate: calculationDate,
           transitStartDate: calculationStartDate,
           transitEndDate: calculationEndDate,
+          calculation,
           save,
         }),
       });
@@ -353,7 +360,7 @@ export default function TransitCalculator() {
       setInterpretation(data.interpretation);
       setMapNumber(data.mapNumber ?? null);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("transit", { birth, transitDate: calculationDate, transitStartDate: calculationStartDate, transitEndDate: calculationEndDate, inputMode: selectedMode, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
+      else saveGuestCache<CacheShape>("transit", { birth, transitDate: calculationDate, transitStartDate: calculationStartDate, transitEndDate: calculationEndDate, inputMode: selectedMode, calculation, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {
@@ -391,8 +398,8 @@ export default function TransitCalculator() {
               </div>
             </div>
             <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-              <WideDateInput label="დან" value={transitStartDate} onChange={setTransitStartDate} onActivate={() => activateMode("interval")} />
-              <WideDateInput label="მდე" value={transitEndDate} onChange={setTransitEndDate} onActivate={() => activateMode("interval")} />
+              <SharedWideDateInput label="დან" value={transitStartDate} onChange={setTransitStartDate} onActivate={() => activateMode("interval")} />
+              <SharedWideDateInput label="მდე" value={transitEndDate} onChange={setTransitEndDate} onActivate={() => activateMode("interval")} />
             </div>
             <p className="mx-auto max-w-xl text-center text-[0.65rem] leading-relaxed text-slate-500">შეგიძლიათ გამოიყენოთ კალენდრის ამოსქროლავი არჩევა ან პირდაპირ ჩაწეროთ თარიღი. ძველი წელთაღრიცხვისთვის გამოიყენეთ მინუსი, მაგალითად: -10000-01-01.</p>
           </div>
@@ -411,7 +418,7 @@ export default function TransitCalculator() {
               <label className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის თარიღი:</label>
             </div>
 
-            <WideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={setTransitDate} onActivate={() => activateMode("date")} />
+            <SharedWideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={setTransitDate} onActivate={() => activateMode("date")} />
 
             <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold w-full pt-1">
               <button
@@ -449,6 +456,8 @@ export default function TransitCalculator() {
               </button>
             </div>
           </div>
+
+          <CalculationSettings value={calculation} onChange={setCalculation} />
 
           <div className="flex flex-col gap-3 pt-2">
             <button

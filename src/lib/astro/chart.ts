@@ -105,6 +105,7 @@ export function computeTransitAspects(natal: NatalResult, transitDate: Date): {
     nodeType: calculation.nodeType,
     topocentric: calculation.topocentric,
     siderealMode: calculation.siderealMode,
+    includeAsteroids: calculation.includeAsteroids,
   };
   const transitPlanets = computePlanetPositions(transitDate, options, natal.longitude, natal.latitude);
   const transitNode = computeNorthNode(transitDate, options, natal.longitude, natal.latitude);

@@ -2,15 +2,19 @@
   "name": "astro-app",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.16.0"
+  },
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && npm run db:deploy && next build",
+    "build": "prisma generate && next build",
+    "release": "npm run db:deploy && npm run build",
     "start": "next start",
-    "test:astro": "tsx scripts/astro-validation.ts",
+    "test:astro": "node --require ./scripts/node25-compat.cjs --import tsx scripts/astro-validation.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
-    "db:deploy": "tsx scripts/deploy-db.ts",
+    "db:deploy": "node scripts/deploy-db.mjs",
     "seed:admin": "tsx scripts/seed-admin.ts"
   },
   "dependencies": {

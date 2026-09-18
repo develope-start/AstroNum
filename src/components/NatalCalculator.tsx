@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
 import InterpretationText from "./InterpretationText";
 import ChartWheel, { WheelPlanet } from "./ChartWheel";
+import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
+import type { CalculationOptions } from "@/lib/astro/ephemeris";
 import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
@@ -22,6 +24,7 @@ interface CacheShape {
   interpretation: string;
   wheel: WheelData | null;
   mapNumber?: string | null;
+  calculation?: CalculationOptions;
 }
 
 const ZODIAC_SIGNS = [
@@ -58,6 +61,7 @@ export default function NatalCalculator() {
   const me = useMe();
   const [birth, setBirth] = useState<BirthValue>(EMPTY_BIRTH);
   const [houseSystem, setHouseSystem] = useState("placidus");
+  const [calculation, setCalculation] = useState<CalculationOptions>({ ...DEFAULT_UI_CALCULATION });
   const [interpretation, setInterpretation] = useState<string | null>(null);
   const [wheel, setWheel] = useState<WheelData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -79,6 +83,7 @@ export default function NatalCalculator() {
       }
       setBirth(cached.birth);
       setHouseSystem(cached.houseSystem);
+      setCalculation({ ...DEFAULT_UI_CALCULATION, ...(cached.calculation ?? {}) });
       setInterpretation(cached.interpretation);
       setWheel(cached.wheel ?? null);
       setMapNumber(cached.mapNumber ?? null);
@@ -105,6 +110,7 @@ export default function NatalCalculator() {
           lon: birth.lon,
           timezone: birth.timezone,
           houseSystem,
+          calculation,
           save,
         }),
       });
@@ -126,7 +132,7 @@ export default function NatalCalculator() {
       };
       setWheel(w);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("natal", { birth, houseSystem, interpretation: data.interpretation, wheel: w, mapNumber: data.mapNumber ?? null });
+      else saveGuestCache<CacheShape>("natal", { birth, houseSystem, calculation, interpretation: data.interpretation, wheel: w, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {
@@ -168,6 +174,8 @@ export default function NatalCalculator() {
               <option value="porphyry" className="bg-[#0A051D] text-slate-100">პორფირი (Porphyry)</option>
             </select>
           </div>
+
+          <CalculationSettings value={calculation} onChange={setCalculation} />
 
           <div className="flex flex-col gap-3 pt-2">
             <button
@@ -304,4 +312,3 @@ export default function NatalCalculator() {
     </div>
   );
 }
-

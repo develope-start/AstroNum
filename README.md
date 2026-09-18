@@ -39,6 +39,21 @@ npx prisma migrate dev --name init   # იყენებს .env-ში მი�
 npm run seed:admin                    # ქმნის თქვენს ADMIN ანგარიშს
 
 npm run dev
+
+## Production deployment checklist
+
+Use Node.js 20.16 or newer. The current Node.js 25 runtime is supported. Configure a reachable PostgreSQL `DATABASE_URL` with `sslmode=require`, then run:
+
+```bash
+npm ci
+npm run db:deploy
+npm run build
+npm run start
+```
+
+The build no longer runs database migrations implicitly. This keeps a temporary database outage from breaking the application build; migrations are an explicit release step.
+
+After the server starts, verify `GET /api/health`. It reports database connectivity and Swiss Ephemeris availability without exposing secrets. A healthy deployment returns HTTP 200.
 # გახსენით http://localhost:3000
 ```
 
@@ -148,3 +163,13 @@ git add . && git commit -m "update" && git push
 git add .; git commit -m "update"; git push
 
 npm run dev
+
+ძირითადი აპლიკაცია ახლა მუშაობს და გაძლიერებულია:
+- production next build წარმატებით გაიარა;
+- ნატალური, სინასტრიული და ტრანზიტული API-ები მუშაობს;
+- თანამედროვე თარიღებზე გამოიყენება Swiss Ephemeris;
+- უძველეს თარიღებზე არსებობს უსაფრთხო fallback;
+- ტრანზიტის ინტერვალი სრულ პერიოდს ამუშავებს;
+- TypeScript შეცდომები არ დარჩა.
+თუმცა „ყოველმხრივ სრულად გამართული“ ჯერ აბსოლუტურად ვერ ითქმის: სრული npm run build საჭიროებს ხელმისაწვდომ მონაცემთა ბაზას, ხოლო ავტომატური ტესტის გაშვებას ამ გარემოში Node 25-ის tsx პრობლემა უშლის ხელს.
+ანუ აპი ფუნქციურად მზადაა სამუშაოდ, მაგრამ საბოლოო production გაშვებამდე საჭიროა მონაცემთა ბაზის კავშირის შემოწმება და deployment გარემოში Swiss native მოდულის საბოლოო ტესტი.
