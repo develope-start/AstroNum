@@ -343,6 +343,40 @@ svg {
   }
 }
 
+/* Keep the celestial instrument as the sole hero visual after the legacy layout rules. */
+.app-home .hero-grid {
+  display: block;
+  min-height: auto;
+  padding: clamp(0.75rem, 3vw, 2.5rem) 0 clamp(2rem, 5vw, 4rem);
+}
+
+.app-home .hero-grid > div:first-child {
+  display: none;
+}
+
+.app-home .hero-orbit-card {
+  position: relative;
+  width: min(100%, 78rem);
+  min-height: clamp(30rem, 68vw, 48rem);
+  margin: 0 auto;
+}
+
+.app-home .hero-orbit-card > .zodiac-aura,
+.app-home .hero-orbit-card > .element-frame,
+.app-home .hero-orbit-card > .zodiac-wheel,
+.app-home .hero-orbit-card > .orbit-ring,
+.app-home .hero-orbit-card > .orbit-core,
+.app-home .hero-orbit-card > .orbit-dot,
+.app-home .hero-orbit-card > .hero-orbit-meta {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .app-home .hero-orbit-card {
+    min-height: clamp(24rem, 105vw, 34rem);
+  }
+}
+
 /* Main-page celestial instrument: restrained dark glass, constellations and planetary rulers. */
 .hero-grid {
   display: block;
@@ -1823,5 +1857,39 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   .admin-page details[data-map-count] > summary::before {
     order: 0;
     margin-left: 0;
+  }
+}
+
+/* Final hero layout override: the celestial instrument is the only visible hero block. */
+.app-home .hero-grid {
+  display: block;
+  min-height: auto;
+  padding: clamp(0.75rem, 3vw, 2.5rem) 0 clamp(2rem, 5vw, 4rem);
+}
+
+.app-home .hero-grid > div:first-child {
+  display: none;
+}
+
+.app-home .hero-orbit-card {
+  position: relative;
+  width: min(100%, 78rem);
+  min-height: clamp(30rem, 68vw, 48rem);
+  margin: 0 auto;
+}
+
+.app-home .hero-orbit-card > .zodiac-aura,
+.app-home .hero-orbit-card > .element-frame,
+.app-home .hero-orbit-card > .zodiac-wheel,
+.app-home .hero-orbit-card > .orbit-ring,
+.app-home .hero-orbit-card > .orbit-core,
+.app-home .hero-orbit-card > .orbit-dot,
+.app-home .hero-orbit-card > .hero-orbit-meta {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .app-home .hero-orbit-card {
+    min-height: clamp(24rem, 105vw, 34rem);
   }
 }

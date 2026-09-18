@@ -78,10 +78,10 @@ export default function HomePage() {
                     {item.lines.map(([from, to]) => (
                       <line
                         key={`${from}-${to}`}
-                        x1={item.stars[from][0]}
-                        y1={item.stars[from][1]}
-                        x2={item.stars[to][0]}
-                        y2={item.stars[to][1]}
+                        x1={item.stars[from]![0]}
+                        y1={item.stars[from]![1]}
+                        x2={item.stars[to]![0]}
+                        y2={item.stars[to]![1]}
                       />
                     ))}
                     {item.stars.map(([cx, cy, radius], starIndex) => (
