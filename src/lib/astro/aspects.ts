@@ -53,8 +53,10 @@ export function computeAspects(
       for (const def of aspectDefs) {
         const delta = Math.abs(dist - def.angle);
         if (delta <= def.orb) {
-          // მიახლოებადია თუ არა: სწრაფი სხეული ნელს უახლოვდება ზუსტ კუთხეს
-          const probeDays = 1 / 24;
+          // applying/separating-ის დადგენა ხდება ადგილობრივი მოძრაობით.
+          // ერთი საათის ნაცვლად წუთიანი ნაბიჯი განსაკუთრებით მნიშვნელოვანია
+          // სწრაფი მთვარისა და ასტეროიდებისთვის, რათა ფართო ორბში ფაზა არ აირიოს.
+          const probeDays = 1 / 1440;
           const probeDistance = angularDistance(
             p1.longitude + (p1.speed ?? 0) * probeDays,
             p2.longitude + (p2.speed ?? 0) * probeDays,

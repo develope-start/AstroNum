@@ -72,6 +72,8 @@ function planetLine(p: PlanetPosition, houseNum: number): string {
 function aspectLine(hit: AspectHit): string {
   const a = PLANET_NAMES_KA[hit.a] ?? hit.a;
   const b = PLANET_NAMES_KA[hit.b] ?? hit.b;
+  const strength = hit.orb <= 1 ? "ზუსტად" : hit.orb <= 3 ? "ძლიერად" : "უფრო ფართო ორბით";
+  const phase = hit.applying ? "მოახლოების ფაზაშია" : "დაშორების ფაზაშია";
   const tone =
     hit.aspect === "Trine" || hit.aspect === "Sextile"
       ? "ეს ურთიერთობა ბუნებრივად, თითქმის შეუმჩნევლად მუშაობს თქვენს სასარგებლოდ"
@@ -81,7 +83,11 @@ function aspectLine(hit: AspectHit): string {
       ? "ეს არის შინაგანი ხახუნი, რომელიც ზრდის მამოძრავებელი ძალაა, თუ შეგნებულად გაუმკლავდებით"
       : "ეს ორი ძალა ერთმანეთში ირევა და ერთ თემად ერწყმის თქვენს ხასიათს";
 
-  return `${a} — ${hit.aspectKa} — ${b} (ორბი ${hit.orb}°). ${tone}.`;
+  return `${a} — ${hit.aspectKa} — ${b} (ორბი ${hit.orb}°, ${strength}; ${phase}). ${tone}.`;
+}
+
+function methodNote(): string {
+  return "ეს ტექსტი აგებულია გამოთვლილი პოზიციების, სახლებისა და ასპექტების მიხედვით. ორბი მიუთითებს ასპექტის სიზუსტეს, ხოლო applying/separating — მოძრაობის ფაზას. ინტერპრეტაცია არის სიმბოლური, შემოწმებადი წესების მიხედვით შედგენილი ანალიზი და არა გარანტირებული წინასწარმეტყველება ან სამედიცინო/ფინანსური დიაგნოზი.";
 }
 
 const ELEMENTS_KA = ["ცეცხლი", "მიწა", "ჰაერი", "წყალი"];
@@ -134,6 +140,7 @@ export function generateNatalInterpretation(input: PlacementInput): string {
 
   const parts: string[] = [];
 
+  parts.push(`## გამოთვლისა და ინტერპრეტაციის საფუძველი\n\n${methodNote()}`);
   parts.push(`## ასცენდენტი — ${ascSign.signName} (${formatDegree(ascSign.degreeInSign)})`);
   parts.push(
     `თქვენი ასცენდენტი განსაზღვრავს, როგორ წარსდგებით სამყაროს წინაშე პირველი შეხვედრისას — ${SIGN_QUALITY_KA[ascSign.signName]}. ეს არის თქვენი "ინტერფეისი" გარესამყაროსთან, არა აუცილებლად შინაგანი არსი.`
@@ -192,7 +199,7 @@ export function generateSynastryInterpretation(
   for (const hit of sorted) {
     const a = PLANET_NAMES_KA[hit.a] ?? hit.a;
     const b = PLANET_NAMES_KA[hit.b] ?? hit.b;
-    parts.push(`**${nameA}-ს ${a}** — ${hit.aspectKa} — **${nameB}-ს ${b}** (ორბი ${hit.orb}°)`);
+    parts.push(`**${nameA}-ს ${a}** — ${hit.aspectKa} — **${nameB}-ს ${b}** (ორბი ${hit.orb}°, ${hit.applying ? "მოახლოების" : "დაშორების"} ფაზა)`);
     parts.push(aspectLibraryInsight(hit, "SYNASTRY").text);
   }
   return parts.join("\n\n");
@@ -209,7 +216,7 @@ export function generateTransitInterpretation(aspects: AspectHit[], transitDate:
   for (const hit of sorted) {
     const a = PLANET_NAMES_KA[hit.a] ?? hit.a;
     const b = PLANET_NAMES_KA[hit.b] ?? hit.b;
-    parts.push(`ტრანზიტული **${a}** — ${hit.aspectKa} — ნატალური **${b}** (ორბი ${hit.orb}°)`);
+    parts.push(`ტრანზიტული **${a}** — ${hit.aspectKa} — ნატალური **${b}** (ორბი ${hit.orb}°, ${hit.applying ? "მოახლოების" : "დაშორების"} ფაზა)`);
     parts.push(aspectLibraryInsight(hit, "TRANSIT").text);
   }
   return parts.join("\n\n");
