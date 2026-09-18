@@ -5,6 +5,7 @@ import { getActiveSessionFromRequest } from "@/lib/auth";
 import { generateNatalInterpretation, generateSynastryInterpretation, generateTransitInterpretation } from "@/lib/interpretations/natal";
 import { houseOfLongitude } from "@/lib/astro/positions";
 import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect";
+import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
 const nullableString = z.string().nullable().optional();
 const schema = z.object({
@@ -154,12 +155,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
           create: {
             originalId: savedChart.id,
             type: savedChart.type,
-            summary: `${savedChart.name1} · ${savedChart.date1} · ${savedChart.place1}`,
+            summary: `${savedChart.name1} · ${formatWideDateDisplay(savedChart.date1)} · ${savedChart.place1}`,
             dataJson: JSON.stringify({ ...savedChart, ownerEmail, sourceType: "CHART" }),
           },
           update: {
             type: savedChart.type,
-            summary: `${savedChart.name1} · ${savedChart.date1} · ${savedChart.place1}`,
+            summary: `${savedChart.name1} · ${formatWideDateDisplay(savedChart.date1)} · ${savedChart.place1}`,
             dataJson: JSON.stringify({ ...savedChart, ownerEmail, sourceType: "CHART" }),
             deletedAt: new Date(),
           },
@@ -211,12 +212,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         create: {
           originalId: item.id,
           type: item.type,
-          summary: `${item.name1} · ${item.date1} · ${item.place1}`,
+          summary: `${item.name1} · ${formatWideDateDisplay(item.date1)} · ${item.place1}`,
           dataJson: JSON.stringify(item),
         },
         update: {
           type: item.type,
-          summary: `${item.name1} · ${item.date1} · ${item.place1}`,
+          summary: `${item.name1} · ${formatWideDateDisplay(item.date1)} · ${item.place1}`,
           dataJson: JSON.stringify(item),
         },
       });

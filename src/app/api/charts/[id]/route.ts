@@ -4,6 +4,7 @@ import { getActiveSessionFromRequest } from "@/lib/auth";
 import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect";
 import { generateNatalInterpretation, generateSynastryInterpretation, generateTransitInterpretation } from "@/lib/interpretations/natal";
 import { houseOfLongitude } from "@/lib/astro/positions";
+import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getActiveSessionFromRequest(req);
@@ -127,7 +128,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
             create: {
               originalId: matchingCalculation.id,
               type: matchingCalculation.type,
-              summary: `${matchingCalculation.name1} · ${matchingCalculation.date1} · ${matchingCalculation.place1}`,
+              summary: `${matchingCalculation.name1} · ${formatWideDateDisplay(matchingCalculation.date1)} · ${matchingCalculation.place1}`,
               dataJson: JSON.stringify({
                 ...matchingCalculation,
                 ownerEmail,
@@ -137,7 +138,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
             },
             update: {
               type: matchingCalculation.type,
-              summary: `${matchingCalculation.name1} · ${matchingCalculation.date1} · ${matchingCalculation.place1}`,
+              summary: `${matchingCalculation.name1} · ${formatWideDateDisplay(matchingCalculation.date1)} · ${matchingCalculation.place1}`,
               dataJson: JSON.stringify({
                 ...matchingCalculation,
                 ownerEmail,
@@ -155,12 +156,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
           create: {
             originalId: chart.id,
             type: chart.type,
-            summary: `${chart.name1} · ${chart.date1} · ${chart.place1}`,
+              summary: `${chart.name1} · ${formatWideDateDisplay(chart.date1)} · ${chart.place1}`,
             dataJson: JSON.stringify({ ...chart, ownerEmail, sourceType: "CHART" }),
           },
           update: {
             type: chart.type,
-            summary: `${chart.name1} · ${chart.date1} · ${chart.place1}`,
+              summary: `${chart.name1} · ${formatWideDateDisplay(chart.date1)} · ${chart.place1}`,
             dataJson: JSON.stringify({ ...chart, ownerEmail, sourceType: "CHART" }),
             deletedAt: new Date(),
           },

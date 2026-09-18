@@ -7,7 +7,7 @@ import { generateTransitInterpretation, generateTransitIntervalInterpretation } 
 import { getRequestInfo } from "@/lib/requestInfo";
 import { tryRecordCalculation } from "@/lib/calculationHistory";
 import { allocateMapNumber } from "@/lib/publicIds";
-import { compareWideDates, isWideDate, wideDateToUtcDate } from "@/lib/astro/wideDate";
+import { compareWideDates, formatWideDateDisplay, isWideDate, wideDateToUtcDate } from "@/lib/astro/wideDate";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
 import { aspectLibraryInsight } from "@/lib/interpretations/library";
 import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/interpretations/libraryStore";
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
         userId: sessionUserId,
         mapNumber,
         type: "TRANSIT",
-        label: label || `ტრანზიტი — ${natal.name} (${transitStartDate} — ${transitEndDate})`,
+        label: label || `ტრანზიტი — ${natal.name} (${formatWideDateDisplay(transitStartDate)} — ${formatWideDateDisplay(transitEndDate)})`,
         name1: natal.name,
         date1: natal.date,
         time1: natal.time,

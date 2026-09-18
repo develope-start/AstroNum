@@ -698,7 +698,7 @@ svg {
 .wide-date-editor:focus-within,
 .time-editor:focus-within {
   border-color: rgba(196, 181, 253, 0.68) !important;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.18), 0 0 18px rgba(139, 92, 246, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
 }
 
 .wide-date-editor input,
@@ -720,11 +720,17 @@ svg {
 }
 
 .wide-date-editor > div:last-child,
-.time-editor > div:last-child {
+.time-editor .time-picker-trigger > button {
   border-color: rgba(167, 139, 250, 0.28) !important;
   background: rgba(99, 102, 241, 0.12) !important;
   color: #c4b5fd !important;
   box-shadow: none !important;
+}
+
+.time-picker-trigger > button:focus-visible,
+.wide-date-editor button:focus-visible {
+  outline: 1px solid rgba(196, 181, 253, 0.7);
+  outline-offset: 1px;
 }
 
 .place-map-button {

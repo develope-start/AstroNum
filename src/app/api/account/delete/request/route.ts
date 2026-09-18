@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 import { getActiveSessionFromRequest, verifyPassword, SESSION_COOKIE } from "@/lib/auth";
 import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect";
 
@@ -70,12 +71,12 @@ export async function POST(req: NextRequest) {
           create: {
             originalId: calculation.id,
             type: calculation.type,
-            summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
+            summary: `${calculation.name1} · ${formatWideDateDisplay(calculation.date1)} · ${calculation.place1}`,
             dataJson: JSON.stringify({ ...calculation, ownerEmail: user.email }),
           },
           update: {
             type: calculation.type,
-            summary: `${calculation.name1} · ${calculation.date1} · ${calculation.place1}`,
+            summary: `${calculation.name1} · ${formatWideDateDisplay(calculation.date1)} · ${calculation.place1}`,
             dataJson: JSON.stringify({ ...calculation, ownerEmail: user.email }),
             deletedAt: new Date(),
           },
