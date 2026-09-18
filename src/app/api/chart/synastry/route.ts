@@ -9,6 +9,8 @@ import { tryRecordCalculation } from "@/lib/calculationHistory";
 import { allocateMapNumber } from "@/lib/publicIds";
 import { isWideDate } from "@/lib/astro/wideDate";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
+import { aspectLibraryInsight } from "@/lib/interpretations/library";
+import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/interpretations/libraryStore";
 
 const calculationSchema = z.object({
   ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
@@ -56,7 +58,10 @@ export async function POST(req: NextRequest) {
   }
 
   const aspects = computeSynastryAspects(chartA, chartB);
-  const interpretation = generateSynastryInterpretation(personA.name, personB.name, aspects);
+  const baseInterpretation = generateSynastryInterpretation(personA.name, personB.name, aspects);
+  void persistLibraryEntries(aspects.map((aspect) => aspectLibraryInsight(aspect, "SYNASTRY")));
+  const externalEntries = await translatedExternalLibraryEntries({ chartType: "SYNASTRY", aspects });
+  const interpretation = [baseInterpretation, ...externalEntries].join("\n\n");
 
   const responseBody = { chartA, chartB, aspects, interpretation };
   const session = await getActiveSessionFromRequest(req);

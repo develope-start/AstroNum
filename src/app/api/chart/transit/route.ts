@@ -9,6 +9,8 @@ import { tryRecordCalculation } from "@/lib/calculationHistory";
 import { allocateMapNumber } from "@/lib/publicIds";
 import { compareWideDates, isWideDate, wideDateToUtcDate } from "@/lib/astro/wideDate";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
+import { aspectLibraryInsight } from "@/lib/interpretations/library";
+import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/interpretations/libraryStore";
 
 const calculationSchema = z.object({
   ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
@@ -76,9 +78,12 @@ export async function POST(req: NextRequest) {
   const interval = transitStartUtc && transitEndUtc
     ? computeTransitInterval(natalChart, transitStartUtc, transitEndUtc)
     : null;
-  const interpretation = interval
+  const baseInterpretation = interval
     ? generateTransitIntervalInterpretation(aspects, transitDate, transitStartDate, transitEndDate, interval.peakAspects)
     : generateTransitInterpretation(aspects, transitDate);
+  void persistLibraryEntries((interval?.peakAspects.length ? interval.peakAspects : aspects).map((aspect) => aspectLibraryInsight(aspect, "TRANSIT")));
+  const externalEntries = await translatedExternalLibraryEntries({ chartType: "TRANSIT", aspects: interval?.peakAspects.length ? interval.peakAspects : aspects });
+  const interpretation = [baseInterpretation, ...externalEntries].join("\n\n");
 
   const responseBody = { natalChart, transitPlanets, aspects, interpretation, transitStartDate, transitEndDate, interval };
   const session = await getActiveSessionFromRequest(req);

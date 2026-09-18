@@ -1,6 +1,7 @@
 import { PlanetPosition } from "@/lib/astro/positions";
 import { AspectHit } from "@/lib/astro/aspects";
 import { eclipticToSign, formatDegree, HOUSE_LABELS_KA, PLANET_NAMES_KA } from "@/lib/astro/signs";
+import { aspectLibraryInsight, dedupeInsights, natalLibraryInsights } from "./library";
 
 const PLANET_MEANING_KA: Record<string, string> = {
   Sun: "იდენტობა და ნებისყოფა",
@@ -164,6 +165,12 @@ export function generateNatalInterpretation(input: PlacementInput): string {
     }
   }
 
+  const libraryEntries = dedupeInsights(natalLibraryInsights(planets, aspects, houseOfFn));
+  if (libraryEntries.length) {
+    parts.push(`\n## დამატებითი ბიბლიოთეკური განმარტებები`);
+    parts.push(...libraryEntries.slice(0, 24).map((entry) => entry.text));
+  }
+
   return parts.join("\n\n");
 }
 
@@ -186,6 +193,7 @@ export function generateSynastryInterpretation(
     const a = PLANET_NAMES_KA[hit.a] ?? hit.a;
     const b = PLANET_NAMES_KA[hit.b] ?? hit.b;
     parts.push(`**${nameA}-ს ${a}** — ${hit.aspectKa} — **${nameB}-ს ${b}** (ორბი ${hit.orb}°)`);
+    parts.push(aspectLibraryInsight(hit, "SYNASTRY").text);
   }
   return parts.join("\n\n");
 }
@@ -202,6 +210,7 @@ export function generateTransitInterpretation(aspects: AspectHit[], transitDate:
     const a = PLANET_NAMES_KA[hit.a] ?? hit.a;
     const b = PLANET_NAMES_KA[hit.b] ?? hit.b;
     parts.push(`ტრანზიტული **${a}** — ${hit.aspectKa} — ნატალური **${b}** (ორბი ${hit.orb}°)`);
+    parts.push(aspectLibraryInsight(hit, "TRANSIT").text);
   }
   return parts.join("\n\n");
 }

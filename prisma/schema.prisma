@@ -144,6 +144,43 @@ model IdSequence {
   nextNumber Int    @default(1)
 }
 
+// Curated interpretation library. Every imported entry must carry its source
+// and license metadata; proprietary text is never silently copied here.
+model InterpretationLibraryEntry {
+  id             String   @id @default(cuid())
+  entryKey       String   @unique
+  chartType      String
+  language       String   @default("ka")
+  sourceText     String
+  sourceUrl      String?
+  license        String?
+  sourceHash     String   @unique
+  tagsJson       String   @default("[]")
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([chartType, active])
+  @@index([language])
+}
+
+// Exact-content translation cache. The fingerprint includes source text,
+// language pair and provider version, so stale translations are not reused.
+model TranslationCache {
+  id              String   @id @default(cuid())
+  fingerprint     String   @unique
+  sourceLanguage  String
+  targetLanguage  String
+  sourceText      String
+  translatedText  String
+  provider        String
+  providerVersion String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([sourceLanguage, targetLanguage])
+}
+
 // ადმინისტრატორის ურნა — წაშლილი რეგისტრირებული ანგარიშის სრული სნეპშოტი.
 // ელფოსტა უნიკალურია, ამიტომ წაშლილი ანგარიშის იგივე ელფოსტით ხელახლა
 // რეგისტრაცია აღდგენამდე შეუძლებელია.

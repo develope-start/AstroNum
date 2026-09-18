@@ -10,6 +10,9 @@ import { tryRecordCalculation } from "@/lib/calculationHistory";
 import { allocateMapNumber } from "@/lib/publicIds";
 import { isWideDate } from "@/lib/astro/wideDate";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
+import { natalLibraryInsights } from "@/lib/interpretations/library";
+import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/interpretations/libraryStore";
+import { eclipticToSign } from "@/lib/astro/signs";
 
 const calculationSchema = z.object({
   ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
@@ -53,7 +56,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "გამოთვლის შეცდომა" }, { status: 400 });
   }
 
-  const interpretation = generateNatalInterpretation({
+  const baseInterpretation = generateNatalInterpretation({
     planets: result.planets,
     houseCusps: result.houseCusps,
     ascendant: result.ascendant,
@@ -61,6 +64,14 @@ export async function POST(req: NextRequest) {
     aspects: result.aspects,
     houseOfFn: (lon: number) => houseOfLongitude(lon, result.houseCusps),
   });
+  const builtInEntries = natalLibraryInsights(result.planets, result.aspects, (lon: number) => houseOfLongitude(lon, result.houseCusps));
+  void persistLibraryEntries(builtInEntries);
+  const externalEntries = await translatedExternalLibraryEntries({
+    chartType: "NATAL",
+    planets: result.planets.map((planet) => ({ name: planet.name, sign: eclipticToSign(planet.longitude).signName, house: result.planetHouses[planet.name] })),
+    aspects: result.aspects,
+  });
+  const interpretation = [baseInterpretation, ...externalEntries].join("\n\n");
 
   const responseBody = { result, interpretation };
   const session = await getActiveSessionFromRequest(req);
