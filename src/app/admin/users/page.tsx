@@ -5,6 +5,7 @@ import AdminCalculationViewer, { CalculationViewData } from "@/components/AdminC
 import DateSelect from "@/components/DateSelect";
 import TimeSelect from "@/components/TimeSelect";
 import PlaceAutocomplete from "@/components/PlaceAutocomplete";
+import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
 type NullableString = string | null;
 
@@ -177,17 +178,17 @@ function CalculationDetails({ calculation, onView }: { calculation: CalculationD
       <p><span className="text-parchment-dim">ტიპი:</span> {TYPE_LABEL[calculation.type] ?? calculation.type}</p>
       <p><span className="text-parchment-dim">შედგენის დრო:</span> {formatDate(calculation.createdAt)}</p>
       <p><span className="text-parchment-dim">სახელი 1:</span> {calculation.name1}</p>
-      <p><span className="text-parchment-dim">დაბადება 1:</span> {calculation.date1} {calculation.time1}</p>
+      <p><span className="text-parchment-dim">დაბადება 1:</span> {formatWideDateDisplay(calculation.date1)} {calculation.time1}</p>
       <p><span className="text-parchment-dim">ადგილი 1:</span> {calculation.place1}</p>
       <p><span className="text-parchment-dim">კოორდინატები 1:</span> {calculation.lat1}, {calculation.lon1}</p>
       <p><span className="text-parchment-dim">დროის სარტყელი 1:</span> {calculation.tz1}</p>
       {calculation.name2 && <p><span className="text-parchment-dim">სახელი 2:</span> {calculation.name2}</p>}
-      {calculation.date2 && <p><span className="text-parchment-dim">დაბადება 2:</span> {calculation.date2} {value(calculation.time2)}</p>}
+      {calculation.date2 && <p><span className="text-parchment-dim">დაბადება 2:</span> {formatWideDateDisplay(calculation.date2)} {value(calculation.time2)}</p>}
       {calculation.place2 && <p><span className="text-parchment-dim">ადგილი 2:</span> {calculation.place2}</p>}
       {calculation.lat2 !== null && <p><span className="text-parchment-dim">კოორდინატები 2:</span> {calculation.lat2}, {value(calculation.lon2)}</p>}
       {calculation.tz2 && <p><span className="text-parchment-dim">დროის სარტყელი 2:</span> {calculation.tz2}</p>}
       <p><span className="text-parchment-dim">სახლთა სისტემა:</span> {calculation.houseSystem}</p>
-      {calculation.transitDate && <p><span className="text-parchment-dim">ტრანზიტის თარიღი:</span> {calculation.transitDate}</p>}
+      {calculation.transitDate && <p><span className="text-parchment-dim">ტრანზიტის თარიღი:</span> {formatWideDateDisplay(calculation.transitDate)}</p>}
       </div>
     </div>
   );
@@ -1117,7 +1118,7 @@ export default function AdminUsersPage() {
         <Modal onClose={() => setModal(null)}>
           <h2 className="font-display text-xl text-brass-2">ცვლილების შენახვა</h2>
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ რუკის ცვლილებების შენახვა?</p>
-          <div className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><p>{modal.calculation.name1} → {draft.name1}</p><p>{modal.calculation.date1} → {draft.date1}</p><p>{modal.calculation.place1} → {draft.place1}</p></div>
+          <div className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><p>{modal.calculation.name1} → {draft.name1}</p><p>{formatWideDateDisplay(modal.calculation.date1)} → {formatWideDateDisplay(draft.date1)}</p><p>{modal.calculation.place1} → {draft.place1}</p></div>
           <div className="flex justify-end gap-3"><button className={button} onClick={() => setModal({ kind: "edit-calculation-form", calculation: modal.calculation })}>უარყოფა</button><button className={button} onClick={() => action(`/api/admin/management/calculation/${modal.calculation!.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(draft) })}>თანხმობა, შენახვა</button></div>
         </Modal>
       )}

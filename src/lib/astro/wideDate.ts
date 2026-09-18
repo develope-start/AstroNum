@@ -43,6 +43,14 @@ export function formatWideDate({ year, month, day }: WideDateParts): string {
   return `${yearText}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
+/** Format a stored wide date for human-facing UI without changing the API format. */
+export function formatWideDateDisplay(value: string | null | undefined): string {
+  if (!value) return "—";
+  const parts = parseWideDate(value);
+  if (!parts) return value;
+  return `${String(parts.year)}/${String(parts.month).padStart(2, "0")}/${String(parts.day).padStart(2, "0")}`;
+}
+
 /** Convert a wide date to the signed ISO form understood by JavaScript Date. */
 export function wideDateToUtcDate(value: string): Date | null {
   const parts = parseWideDate(value);

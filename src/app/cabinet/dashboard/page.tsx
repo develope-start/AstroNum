@@ -6,6 +6,7 @@ import InterpretationText from "@/components/InterpretationText";
 import ChartWheel, { WheelPlanet } from "@/components/ChartWheel";
 import { Compass, Copy, Check, X, Sparkles, Trash2, Eye } from "lucide-react";
 import { readApiResponse } from "@/lib/apiResponse";
+import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
 interface AccountSummary {
   name: string | null;
@@ -487,12 +488,12 @@ export default function DashboardPage() {
           <div className="grid gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-4 text-sm text-slate-200 sm:grid-cols-2">
             <p><span className="text-slate-400">რუკის ნომერი:</span> {selected.mapNumber ?? "—"}</p>
             <p><span className="text-slate-400">პირველი პროფილი:</span> {selected.name1}</p>
-            <p><span className="text-slate-400">დაბადება:</span> {selected.date1} {selected.time1}</p>
+            <p><span className="text-slate-400">დაბადება:</span> {formatWideDateDisplay(selected.date1)} {selected.time1}</p>
             <p><span className="text-slate-400">ადგილი:</span> {selected.place1}</p>
             {selected.name2 && <p><span className="text-slate-400">მეორე პროფილი:</span> {selected.name2}</p>}
-            {selected.date2 && <p><span className="text-slate-400">მეორე დაბადება:</span> {selected.date2} {selected.time2 ?? ""}</p>}
+            {selected.date2 && <p><span className="text-slate-400">მეორე დაბადება:</span> {formatWideDateDisplay(selected.date2)} {selected.time2 ?? ""}</p>}
             {selected.place2 && <p><span className="text-slate-400">მეორე ადგილი:</span> {selected.place2}</p>}
-            {selected.transitDate && <p><span className="text-slate-400">ტრანზიტის თარიღი:</span> {selected.transitDate}</p>}
+            {selected.transitDate && <p><span className="text-slate-400">ტრანზიტის თარიღი:</span> {formatWideDateDisplay(selected.transitDate)}</p>}
             <p><span className="text-slate-400">სახლთა სისტემა:</span> {selected.houseSystem}</p>
             <p><span className="text-slate-400">შედგენის დრო:</span> {new Date(selected.createdAt).toLocaleString("ka-GE")}</p>
           </div>

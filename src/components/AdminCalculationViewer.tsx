@@ -2,6 +2,7 @@
 
 import InterpretationText from "@/components/InterpretationText";
 import ChartWheel, { WheelPlanet } from "@/components/ChartWheel";
+import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
 export type CalculationViewData = {
   mapNumber?: string | null;
@@ -91,12 +92,12 @@ export default function AdminCalculationViewer({
         <div className="mt-5 grid gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-4 text-sm text-slate-200 sm:grid-cols-2">
           <p><span className="text-slate-400">რუკის ნომერი:</span> {calculation.mapNumber ?? "—"}</p>
           <p><span className="text-slate-400">პირველი პროფილი:</span> {calculation.name1}</p>
-          <p><span className="text-slate-400">დაბადება:</span> {calculation.date1} {calculation.time1}</p>
+          <p><span className="text-slate-400">დაბადება:</span> {formatWideDateDisplay(calculation.date1)} {calculation.time1}</p>
           <p><span className="text-slate-400">ადგილი:</span> {calculation.place1}</p>
           {calculation.name2 && <p><span className="text-slate-400">მეორე პროფილი:</span> {calculation.name2}</p>}
-          {calculation.date2 && <p><span className="text-slate-400">მეორე დაბადება:</span> {calculation.date2} {calculation.time2}</p>}
+          {calculation.date2 && <p><span className="text-slate-400">მეორე დაბადება:</span> {formatWideDateDisplay(calculation.date2)} {calculation.time2}</p>}
           {calculation.place2 && <p><span className="text-slate-400">მეორე ადგილი:</span> {calculation.place2}</p>}
-          {calculation.transitDate && <p><span className="text-slate-400">ტრანზიტის თარიღი:</span> {calculation.transitDate}</p>}
+          {calculation.transitDate && <p><span className="text-slate-400">ტრანზიტის თარიღი:</span> {formatWideDateDisplay(calculation.transitDate)}</p>}
           <p><span className="text-slate-400">სახლთა სისტემა:</span> {calculation.houseSystem}</p>
         </div>
 

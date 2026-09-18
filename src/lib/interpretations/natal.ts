@@ -4,6 +4,7 @@ import { eclipticToSign, formatDegree, HOUSE_LABELS_KA, PLANET_NAMES_KA } from "
 import { aspectLibraryInsight, dedupeInsights, natalLibraryInsights } from "./library";
 import type { SecondaryProgressionResult } from "@/lib/astro/progressions";
 import type { AngularityResult, DeclinationContact, DignityResult, FixedStarContact } from "@/lib/astro/advanced";
+import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
 const PLANET_MEANING_KA: Record<string, string> = {
   Sun: "იდენტობა და ნებისყოფა",
@@ -259,7 +260,7 @@ export function generateSynastryInterpretation(
 
 export function generateTransitInterpretation(aspects: AspectHit[], transitDate: string): string {
   const parts: string[] = [];
-  parts.push(`## ტრანზიტები — ${transitDate}`);
+  parts.push(`## ტრანზიტები — ${formatWideDateDisplay(transitDate)}`);
   if (!aspects.length) {
     parts.push("ამ დღეს ნატალურ რუკასთან მკვეთრი მაჟორული ტრანზიტული ასპექტი არ ფიქსირდება — მშვიდი პერიოდია.");
     return parts.join("\n\n");
@@ -284,7 +285,7 @@ export function generateTransitIntervalInterpretation(
 ): string {
   const relevant = peakAspects.length ? peakAspects : currentAspects;
   const parts = [generateTransitInterpretation(relevant, transitDate)];
-  parts.push(`\n## ტრანზიტის ინტერვალის დინამიკა — ${startDate} — ${endDate}`);
+  parts.push(`\n## ტრანზიტის ინტერვალის დინამიკა — ${formatWideDateDisplay(startDate)} — ${formatWideDateDisplay(endDate)}`);
   if (!relevant.length) {
     parts.push("მითითებულ შუალედში ძირითადი ტრანზიტული ასპექტი არ დაფიქსირდა. შედეგი ეფუძნება არჩეული პერიოდის მთელ სკანირებას.");
     return parts.join("\n\n");
@@ -297,7 +298,7 @@ export function generateTransitIntervalInterpretation(
 export function generateSecondaryProgressionInterpretation(result: SecondaryProgressionResult): string {
   const parts: string[] = [];
   parts.push("## მეორეული პროგრესია");
-  parts.push(`სამიზნე თარიღი: ${result.targetDate}. გამოთვლილი ასაკი: ${result.ageYears} წელი. პროგრესირებული მომენტი: ${result.progressedUtcIso}.`);
+  parts.push(`სამიზნე თარიღი: ${formatWideDateDisplay(result.targetDate)}. გამოთვლილი ასაკი: ${result.ageYears} წელი. პროგრესირებული მომენტი: ${result.progressedUtcIso}.`);
   parts.push("მეთოდი იყენებს კლასიკურ day-for-a-year პრინციპს: დაბადებიდან ერთი ასტრონომიული დღე პროგრესირებულ რუკაში ერთ წელს შეესაბამება. ეს არის დროითი სიმბოლური ტექნიკა და არა ფიზიკური პროგნოზის მტკიცება.");
   parts.push("### პროგრესირებული ძირითადი განლაგებები");
   for (const planet of result.progressed.planets.filter((item) => ["Sun", "Moon", "Mercury", "Venus", "Mars"].includes(item.name))) {

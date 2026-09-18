@@ -7,6 +7,7 @@ import DateSelect from "@/components/DateSelect";
 import TimeSelect from "@/components/TimeSelect";
 import PlaceAutocomplete from "@/components/PlaceAutocomplete";
 import { readApiResponse } from "@/lib/apiResponse";
+import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
 interface ChartRow {
   id: string;
@@ -409,7 +410,7 @@ function RegisteredUserCalculationCard({
             <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">პირველი პროფილი</h4>
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
               <dt className="text-parchment-dim">სახელი</dt><dd><HighlightText value={calculation.name1} query={highlightQuery} /></dd>
-              <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={calculation.date1} query={highlightQuery} /></dd>
+              <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={formatWideDateDisplay(calculation.date1)} query={highlightQuery} /></dd>
               <dt className="text-parchment-dim">დრო</dt><dd><HighlightText value={calculation.time1} query={highlightQuery} /></dd>
               <dt className="text-parchment-dim">ადგილი</dt><dd><HighlightText value={calculation.place1} query={highlightQuery} /></dd>
               <dt className="text-parchment-dim">კოორდინატები</dt><dd>{calculation.lat1}, {calculation.lon1}</dd>
@@ -421,7 +422,7 @@ function RegisteredUserCalculationCard({
               <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">მეორე პროფილი</h4>
               <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
                 <dt className="text-parchment-dim">სახელი</dt><dd><HighlightText value={calculation.name2} query={highlightQuery} /></dd>
-                <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={calculation.date2} query={highlightQuery} /></dd>
+                <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={formatWideDateDisplay(calculation.date2)} query={highlightQuery} /></dd>
                 <dt className="text-parchment-dim">დრო</dt><dd><HighlightText value={calculation.time2} query={highlightQuery} /></dd>
                 <dt className="text-parchment-dim">ადგილი</dt><dd><HighlightText value={calculation.place2} query={highlightQuery} /></dd>
                 <dt className="text-parchment-dim">კოორდინატები</dt><dd>{displayValue(calculation.lat2)}, {displayValue(calculation.lon2)}</dd>
@@ -433,7 +434,7 @@ function RegisteredUserCalculationCard({
 
         <dl className="mt-4 grid gap-x-3 gap-y-1 border-t border-line/60 pt-3 text-xs sm:grid-cols-[auto_1fr_auto_1fr]">
           <dt className="text-parchment-dim">სახლთა სისტემა</dt><dd>{calculation.houseSystem}</dd>
-          <dt className="text-parchment-dim">ტრანზიტის თარიღი</dt><dd>{displayValue(calculation.transitDate)}</dd>
+          <dt className="text-parchment-dim">ტრანზიტის თარიღი</dt><dd>{formatWideDateDisplay(calculation.transitDate)}</dd>
         </dl>
 
         {/* Previous Calculation List Picker */}
@@ -558,7 +559,7 @@ function GuestCalculationCard({
             <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">პირველი პროფილი</h4>
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
               <dt className="text-parchment-dim">სახელი</dt><dd><HighlightText value={calculation.name1} query={highlightQuery} /></dd>
-              <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={calculation.date1} query={highlightQuery} /></dd>
+              <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={formatWideDateDisplay(calculation.date1)} query={highlightQuery} /></dd>
               <dt className="text-parchment-dim">დრო</dt><dd><HighlightText value={calculation.time1} query={highlightQuery} /></dd>
               <dt className="text-parchment-dim">ადგილი</dt><dd><HighlightText value={calculation.place1} query={highlightQuery} /></dd>
               <dt className="text-parchment-dim">კოორდინატები</dt><dd>{calculation.lat1}, {calculation.lon1}</dd>
@@ -570,7 +571,7 @@ function GuestCalculationCard({
               <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">მეორე პროფილი</h4>
               <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
                 <dt className="text-parchment-dim">სახელი</dt><dd><HighlightText value={calculation.name2} query={highlightQuery} /></dd>
-                <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={calculation.date2} query={highlightQuery} /></dd>
+                <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={formatWideDateDisplay(calculation.date2)} query={highlightQuery} /></dd>
                 <dt className="text-parchment-dim">დრო</dt><dd><HighlightText value={calculation.time2} query={highlightQuery} /></dd>
                 <dt className="text-parchment-dim">ადგილი</dt><dd><HighlightText value={calculation.place2} query={highlightQuery} /></dd>
                 <dt className="text-parchment-dim">კოორდინატები</dt><dd>{displayValue(calculation.lat2)}, {displayValue(calculation.lon2)}</dd>
@@ -582,7 +583,7 @@ function GuestCalculationCard({
 
         <dl className="mt-4 grid gap-x-3 gap-y-1 border-t border-line/60 pt-3 text-xs sm:grid-cols-[auto_1fr_auto_1fr]">
           <dt className="text-parchment-dim">სახლთა სისტემა</dt><dd>{calculation.houseSystem}</dd>
-          <dt className="text-parchment-dim">ტრანზიტის თარიღი</dt><dd>{displayValue(calculation.transitDate)}</dd>
+          <dt className="text-parchment-dim">ტრანზიტის თარიღი</dt><dd>{formatWideDateDisplay(calculation.transitDate)}</dd>
         </dl>
 
         {/* Calculation History Picker */}
