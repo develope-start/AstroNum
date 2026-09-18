@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminCalculationViewer, { CalculationViewData } from "@/components/AdminCalculationViewer";
 import DateSelect from "@/components/DateSelect";
@@ -108,6 +108,30 @@ function formatDateTime(value: string) {
   return new Date(value).toLocaleString("ka-GE", { dateStyle: "medium", timeStyle: "short" });
 }
 
+function HighlightText({ value, query }: { value: string | number | null | undefined; query: string }) {
+  const text = String(value ?? "—");
+  const needle = query.trim().toLocaleLowerCase("ka-GE");
+  if (!needle || !text) return <>{text}</>;
+
+  const lowerText = text.toLocaleLowerCase("ka-GE");
+  const parts: ReactNode[] = [];
+  let cursor = 0;
+  let matchIndex = lowerText.indexOf(needle, cursor);
+  while (matchIndex !== -1) {
+    if (matchIndex > cursor) parts.push(text.slice(cursor, matchIndex));
+    parts.push(
+      <mark key={`${matchIndex}-${needle}`} className="admin-filter-match">
+        {text.slice(matchIndex, matchIndex + needle.length)}
+      </mark>,
+    );
+    cursor = matchIndex + needle.length;
+    matchIndex = lowerText.indexOf(needle, cursor);
+  }
+  if (cursor === 0) return <>{text}</>;
+  if (cursor < text.length) parts.push(text.slice(cursor));
+  return <>{parts}</>;
+}
+
 function buildHistorySections(group: RegisteredUserCalculationGroup): HistorySection[] {
   const registrationAt = new Date(group.user.createdAt).getTime();
   const registered = group.calculations.filter((calculation) => Boolean(calculation.user) && new Date(calculation.createdAt).getTime() >= registrationAt);
@@ -128,11 +152,13 @@ function GroupedCalculationHistory({
   activeId,
   onSelect,
   typeLabel,
+  highlightQuery,
 }: {
   sections: HistorySection[];
   activeId: string;
   onSelect: (id: string) => void;
   typeLabel: Record<string, string>;
+  highlightQuery: string;
 }) {
   const total = sections.reduce((count, section) => count + section.calculations.length, 0);
   if (total <= 1) return null;
@@ -160,8 +186,8 @@ function GroupedCalculationHistory({
                   calculation.id === activeId ? "border-sky-400/70 bg-sky-950/50 text-white" : "border-line/60 bg-ink/40 text-parchment-dim hover:border-cyan-400/60"
                 }`}
               >
-                <span className="min-w-0 break-words font-semibold">#{index + 1} · {typeLabel[calculation.type] ?? calculation.type} · {calculation.name1}</span>
-                <span className="shrink-0 text-[11px] text-parchment-dim">{formatDateTime(calculation.createdAt)}</span>
+                <span className="min-w-0 break-words font-semibold">#{index + 1} · <HighlightText value={typeLabel[calculation.type] ?? calculation.type} query={highlightQuery} /> · <HighlightText value={calculation.name1} query={highlightQuery} /></span>
+                <span className="shrink-0 text-[11px] text-parchment-dim"><HighlightText value={formatDateTime(calculation.createdAt)} query={highlightQuery} /></span>
               </button>
             ))}
           </div>
@@ -183,6 +209,7 @@ function CalculationHistoryPicker({
   typeLabel,
   user,
   guestPublicId,
+  highlightQuery,
 }: {
   calculations: CalculationRow[];
   activeId: string;
@@ -191,6 +218,7 @@ function CalculationHistoryPicker({
   typeLabel: Record<string, string>;
   user?: { email: string; username?: string | null; publicId: string | null; adminId: string | null } | null;
   guestPublicId?: string | null;
+  highlightQuery: string;
 }) {
   if (calculations.length <= 1) return null;
 
@@ -225,7 +253,7 @@ function CalculationHistoryPicker({
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-extrabold text-parchment">
-                    #{calculations.length - index} · {typeLabel[calculation.type] ?? calculation.type}
+                    #{calculations.length - index} · <HighlightText value={typeLabel[calculation.type] ?? calculation.type} query={highlightQuery} />
                   </span>
                   {isLatest && (
                     <span className="rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2 py-0.5 text-[10px] font-bold text-emerald-300 shadow-[0_0_8px_rgba(52,211,153,0.3)]">
@@ -240,9 +268,9 @@ function CalculationHistoryPicker({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-parchment-dim">
-                  <span>👤 <strong>სახელი:</strong> {names}</span>
-                  <span>🆔 <strong className="admin-id-label">აიდი:</strong> <span className="admin-id-value-guest">{displayPublicId}</span></span>
-                  <span>რუკის ნომერი: <strong className="text-amber-300">{calculation.mapNumber ?? "—"}</strong></span>
+                  <span>👤 <strong>სახელი:</strong> <HighlightText value={names} query={highlightQuery} /></span>
+                  <span>🆔 <strong className="admin-id-label">აიდი:</strong> <span className="admin-id-value-guest"><HighlightText value={displayPublicId} query={highlightQuery} /></span></span>
+                  <span>რუკის ნომერი: <strong className="text-amber-300"><HighlightText value={calculation.mapNumber} query={highlightQuery} /></strong></span>
                   {user?.username && (
                     <span className="text-cyan-300 font-medium">
                       <strong>Username:</strong> @{user.username}
@@ -252,7 +280,7 @@ function CalculationHistoryPicker({
               </div>
 
               <div className="text-right text-[11px] text-parchment-dim/80">
-                <p className="font-medium">📅 {formatDateTime(calculation.createdAt)}</p>
+                <p className="font-medium">📅 <HighlightText value={formatDateTime(calculation.createdAt)} query={highlightQuery} /></p>
                 <div className="mt-1">
                   {calculation.saved ? (
                     <span className="inline-block rounded-full border border-fuchsia-400/50 bg-fuchsia-950/50 px-2 py-0.5 text-[10px] font-semibold text-fuchsia-300">
@@ -280,6 +308,7 @@ function RegisteredUserCalculationCard({
   onResetToLatest,
   typeLabel,
   onView,
+  highlightQuery,
 }: {
   group: RegisteredUserCalculationGroup;
   selectedId?: string;
@@ -287,6 +316,7 @@ function RegisteredUserCalculationCard({
   onResetToLatest: () => void;
   typeLabel: Record<string, string>;
   onView: (calculation: CalculationRow) => void;
+  highlightQuery: string;
 }) {
   const historySections = buildHistorySections(group);
   const latestCalculation = historySections.find((section) => section.id === "registered")?.calculations[0] ?? group.calculations[0];
@@ -312,13 +342,13 @@ function RegisteredUserCalculationCard({
             <span>რეგისტრირებული</span>
           </span>
 
-          <span><strong className="admin-id-label">აიდი:</strong> <span className="admin-id-value-registered">{displayValue(calculation.publicId ?? group.user.publicId)}</span></span>
-          <span className="font-semibold text-parchment">👤 {displayName}</span>
-          <span className="text-cyan-300 font-medium">📧 {group.user.email}</span>
+          <span><strong className="admin-id-label">აიდი:</strong> <span className="admin-id-value-registered"><HighlightText value={calculation.publicId ?? group.user.publicId} query={highlightQuery} /></span></span>
+          <span className="font-semibold text-parchment">👤 <HighlightText value={displayName} query={highlightQuery} /></span>
+          <span className="text-cyan-300 font-medium">📧 <HighlightText value={group.user.email} query={highlightQuery} /></span>
           <span className="rounded-md border border-purple-400/50 bg-purple-950/40 px-2 py-0.5 text-xs font-bold text-purple-200">
-            🗺️ რუკის #: {mapNum}
+            🗺️ რუკის #: <HighlightText value={mapNum} query={highlightQuery} />
           </span>
-          <span className="text-parchment-dim text-xs">🕒 {calcTime}</span>
+          <span className="text-parchment-dim text-xs">🕒 <HighlightText value={calcTime} query={highlightQuery} /></span>
           {isCustomSelected && (
             <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/60 bg-amber-950/70 px-2.5 py-0.5 text-xs font-bold text-amber-300 animate-pulse">
               <span>🕒 არჩეულია წინა რუკა</span>
@@ -334,19 +364,19 @@ function RegisteredUserCalculationCard({
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-semibold text-orange-400">ADMIN ID: {displayValue(group.user.adminId)}</span>
+              <span className="font-semibold text-orange-400">ADMIN ID: <HighlightText value={group.user.adminId} query={highlightQuery} /></span>
             </div>
-            <span className="mt-1 block"><strong className="admin-id-label">აიდი:</strong> <span className={calculation.user ? "admin-id-value-registered" : "admin-id-value-guest"}>{displayValue(calculation.publicId ?? group.user.publicId)}</span></span>
-            <span className="block text-amber-300">რუკის ნომერი: {displayValue(calculation.mapNumber)}</span>
-            <span className="block text-parchment-dim">იუზერი: {group.user.email}</span>
+            <span className="mt-1 block"><strong className="admin-id-label">აიდი:</strong> <span className={calculation.user ? "admin-id-value-registered" : "admin-id-value-guest"}><HighlightText value={calculation.publicId ?? group.user.publicId} query={highlightQuery} /></span></span>
+            <span className="block text-amber-300">რუკის ნომერი: <HighlightText value={calculation.mapNumber} query={highlightQuery} /></span>
+            <span className="block text-parchment-dim">იუზერი: <HighlightText value={group.user.email} query={highlightQuery} /></span>
             <span className="mt-0.5 block text-xs font-semibold text-[#55e6e1]">
-              Username: {group.user.username ? `@${group.user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
+              Username: {group.user.username ? <HighlightText value={`@${group.user.username}`} query={highlightQuery} /> : <span className="text-amber-400/80 italic font-normal">არ აქვს მითითებული</span>}
             </span>
             <p className="mt-1 text-xs text-parchment-dim">სულ შედგენილი რუკები: <strong className="text-emerald-400 font-bold">{group.calculations.length}</strong></p>
           </div>
 
           <div className="flex flex-col items-end gap-2">
-            <p className="text-xs text-parchment-dim">გამოთვლილია: {formatDateTime(calculation.createdAt)}</p>
+            <p className="text-xs text-parchment-dim">გამოთვლილია: <HighlightText value={formatDateTime(calculation.createdAt)} query={highlightQuery} /></p>
 
             {isCustomSelected && (
               <button
@@ -378,10 +408,10 @@ function RegisteredUserCalculationCard({
           <div>
             <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">პირველი პროფილი</h4>
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-              <dt className="text-parchment-dim">სახელი</dt><dd>{calculation.name1}</dd>
-              <dt className="text-parchment-dim">თარიღი</dt><dd>{calculation.date1}</dd>
-              <dt className="text-parchment-dim">დრო</dt><dd>{calculation.time1}</dd>
-              <dt className="text-parchment-dim">ადგილი</dt><dd>{calculation.place1}</dd>
+              <dt className="text-parchment-dim">სახელი</dt><dd><HighlightText value={calculation.name1} query={highlightQuery} /></dd>
+              <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={calculation.date1} query={highlightQuery} /></dd>
+              <dt className="text-parchment-dim">დრო</dt><dd><HighlightText value={calculation.time1} query={highlightQuery} /></dd>
+              <dt className="text-parchment-dim">ადგილი</dt><dd><HighlightText value={calculation.place1} query={highlightQuery} /></dd>
               <dt className="text-parchment-dim">კოორდინატები</dt><dd>{calculation.lat1}, {calculation.lon1}</dd>
               <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{calculation.tz1}</dd>
             </dl>
@@ -390,10 +420,10 @@ function RegisteredUserCalculationCard({
             <div>
               <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">მეორე პროფილი</h4>
               <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-                <dt className="text-parchment-dim">სახელი</dt><dd>{displayValue(calculation.name2)}</dd>
-                <dt className="text-parchment-dim">თარიღი</dt><dd>{displayValue(calculation.date2)}</dd>
-                <dt className="text-parchment-dim">დრო</dt><dd>{displayValue(calculation.time2)}</dd>
-                <dt className="text-parchment-dim">ადგილი</dt><dd>{displayValue(calculation.place2)}</dd>
+                <dt className="text-parchment-dim">სახელი</dt><dd><HighlightText value={calculation.name2} query={highlightQuery} /></dd>
+                <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={calculation.date2} query={highlightQuery} /></dd>
+                <dt className="text-parchment-dim">დრო</dt><dd><HighlightText value={calculation.time2} query={highlightQuery} /></dd>
+                <dt className="text-parchment-dim">ადგილი</dt><dd><HighlightText value={calculation.place2} query={highlightQuery} /></dd>
                 <dt className="text-parchment-dim">კოორდინატები</dt><dd>{displayValue(calculation.lat2)}, {displayValue(calculation.lon2)}</dd>
                 <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{displayValue(calculation.tz2)}</dd>
               </dl>
@@ -412,6 +442,7 @@ function RegisteredUserCalculationCard({
           activeId={calculation.id}
           onSelect={onSelect}
           typeLabel={typeLabel}
+          highlightQuery={highlightQuery}
         />
       </div>
     </details>
@@ -425,6 +456,7 @@ function GuestCalculationCard({
   onResetToLatest,
   typeLabel,
   onView,
+  highlightQuery,
 }: {
   group: GuestCalculationGroup;
   selectedId?: string;
@@ -432,6 +464,7 @@ function GuestCalculationCard({
   onResetToLatest: () => void;
   typeLabel: Record<string, string>;
   onView: (calculation: CalculationRow) => void;
+  highlightQuery: string;
 }) {
   const latestCalculation = group.calculations[0];
   const isCustomSelected = Boolean(selectedId && selectedId !== latestCalculation.id);
@@ -455,13 +488,13 @@ function GuestCalculationCard({
             <span>დაურეგისტრირებელი</span>
           </span>
 
-          <span className="font-bold text-red-400">აიდი: {displayValue(calculation.publicId ?? group.publicId)}</span>
-          <span className="font-semibold text-parchment">👤 {displayName}</span>
+          <span className="font-bold text-red-400">აიდი: <HighlightText value={calculation.publicId ?? group.publicId} query={highlightQuery} /></span>
+          <span className="font-semibold text-parchment">👤 <HighlightText value={displayName} query={highlightQuery} /></span>
           <span className="text-rose-300/70 italic text-xs">📧 მეილი: არ აქვს</span>
           <span className="rounded-md border border-purple-400/50 bg-purple-950/40 px-2 py-0.5 text-xs font-bold text-purple-200">
-            🗺️ რუკის #: {mapNum}
+            🗺️ რუკის #: <HighlightText value={mapNum} query={highlightQuery} />
           </span>
-          <span className="text-parchment-dim text-xs">🕒 {calcTime}</span>
+          <span className="text-parchment-dim text-xs">🕒 <HighlightText value={calcTime} query={highlightQuery} /></span>
           {isCustomSelected && (
             <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/60 bg-amber-950/70 px-2.5 py-0.5 text-xs font-bold text-amber-300 animate-pulse">
               <span>🕒 არჩეულია წინა რუკა</span>
@@ -477,8 +510,8 @@ function GuestCalculationCard({
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3">
           <div>
             <h3 className="font-medium flex flex-wrap items-center gap-2">
-              <span className="font-bold"><span className="admin-id-label">· აიდი:</span> <span className="admin-id-value-guest">{displayValue(calculation.publicId ?? group.publicId)}</span></span>
-              <span className="text-amber-300 font-bold">· რუკის ნომერი: {displayValue(calculation.mapNumber)}</span>
+              <span className="font-bold"><span className="admin-id-label">· აიდი:</span> <span className="admin-id-value-guest"><HighlightText value={calculation.publicId ?? group.publicId} query={highlightQuery} /></span></span>
+              <span className="text-amber-300 font-bold">· რუკის ნომერი: <HighlightText value={calculation.mapNumber} query={highlightQuery} /></span>
             </h3>
             {calculation.updatedAt && <p className="text-xs text-parchment-dim/70">განახლებული: {formatDateTime(calculation.createdAt)}</p>}
             <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -487,12 +520,12 @@ function GuestCalculationCard({
               </span>
               <span className="text-xs text-parchment-dim">სულ შედგენილი რუკები: <strong className="text-rose-400 font-bold">{group.calculations.length}</strong></span>
             </div>
-            <p className="mt-1 text-xs text-parchment-dim">IP: {displayValue(group.ipAddress)}</p>
-            <p className="max-w-3xl break-words text-xs text-parchment-dim">მოწყობილობა: {displayValue(group.userAgent)}</p>
+            <p className="mt-1 text-xs text-parchment-dim">IP: <HighlightText value={group.ipAddress} query={highlightQuery} /></p>
+            <p className="max-w-3xl break-words text-xs text-parchment-dim">მოწყობილობა: <HighlightText value={group.userAgent} query={highlightQuery} /></p>
           </div>
 
           <div className="flex flex-col items-end gap-2">
-            <p className="text-xs text-parchment-dim">გამოთვლილია: {formatDateTime(calculation.createdAt)}</p>
+            <p className="text-xs text-parchment-dim">გამოთვლილია: <HighlightText value={formatDateTime(calculation.createdAt)} query={highlightQuery} /></p>
 
             {isCustomSelected && (
               <button
@@ -524,10 +557,10 @@ function GuestCalculationCard({
           <div>
             <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">პირველი პროფილი</h4>
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-              <dt className="text-parchment-dim">სახელი</dt><dd>{calculation.name1}</dd>
-              <dt className="text-parchment-dim">თარიღი</dt><dd>{calculation.date1}</dd>
-              <dt className="text-parchment-dim">დრო</dt><dd>{calculation.time1}</dd>
-              <dt className="text-parchment-dim">ადგილი</dt><dd>{calculation.place1}</dd>
+              <dt className="text-parchment-dim">სახელი</dt><dd><HighlightText value={calculation.name1} query={highlightQuery} /></dd>
+              <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={calculation.date1} query={highlightQuery} /></dd>
+              <dt className="text-parchment-dim">დრო</dt><dd><HighlightText value={calculation.time1} query={highlightQuery} /></dd>
+              <dt className="text-parchment-dim">ადგილი</dt><dd><HighlightText value={calculation.place1} query={highlightQuery} /></dd>
               <dt className="text-parchment-dim">კოორდინატები</dt><dd>{calculation.lat1}, {calculation.lon1}</dd>
               <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{calculation.tz1}</dd>
             </dl>
@@ -536,10 +569,10 @@ function GuestCalculationCard({
             <div>
               <h4 className="mb-2 text-xs font-medium uppercase tracking-wide text-brass/80">მეორე პროფილი</h4>
               <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-                <dt className="text-parchment-dim">სახელი</dt><dd>{displayValue(calculation.name2)}</dd>
-                <dt className="text-parchment-dim">თარიღი</dt><dd>{displayValue(calculation.date2)}</dd>
-                <dt className="text-parchment-dim">დრო</dt><dd>{displayValue(calculation.time2)}</dd>
-                <dt className="text-parchment-dim">ადგილი</dt><dd>{displayValue(calculation.place2)}</dd>
+                <dt className="text-parchment-dim">სახელი</dt><dd><HighlightText value={calculation.name2} query={highlightQuery} /></dd>
+                <dt className="text-parchment-dim">თარიღი</dt><dd><HighlightText value={calculation.date2} query={highlightQuery} /></dd>
+                <dt className="text-parchment-dim">დრო</dt><dd><HighlightText value={calculation.time2} query={highlightQuery} /></dd>
+                <dt className="text-parchment-dim">ადგილი</dt><dd><HighlightText value={calculation.place2} query={highlightQuery} /></dd>
                 <dt className="text-parchment-dim">კოორდინატები</dt><dd>{displayValue(calculation.lat2)}, {displayValue(calculation.lon2)}</dd>
                 <dt className="text-parchment-dim">დროის სარტყელი</dt><dd>{displayValue(calculation.tz2)}</dd>
               </dl>
@@ -560,6 +593,7 @@ function GuestCalculationCard({
           onSelect={onSelect}
           typeLabel={typeLabel}
           guestPublicId={group.publicId}
+          highlightQuery={highlightQuery}
         />
       </div>
     </details>
@@ -941,8 +975,10 @@ export default function AdminPage() {
     const users24h = registeredUsers24h.size + guestUsers24h;
     const users7d = registeredUsers7d.size + guestUsers7d;
     const users30d = registeredUsers30d.size + guestUsers30d;
+    const totalCharts = (calculations?.length ?? 0) + guestCalculationGroups.reduce((total, group) => total + group.calculations.length, 0);
+    const totalUsers = (users?.length ?? 0) + guestCalculationGroups.length;
 
-    return { charts24h, users24h, charts7d, users7d, charts30d, users30d };
+    return { charts24h, users24h, charts7d, users7d, charts30d, users30d, totalCharts, totalUsers };
   }, [calculations, guestCalculationGroups, users]);
 
   if (error) {
@@ -984,10 +1020,38 @@ export default function AdminPage() {
   const eventIsDeleted = (type: string) => ["ACCOUNT_DELETED", "ACCOUNT_AND_CHARTS_DELETED", "CHART_DELETED", "CALCULATION_DELETED"].includes(eventBaseType(type));
   const eventIsRestored = (type: string) => ["ACCOUNT_RESTORED", "CALCULATION_RESTORED", "ACCOUNT_CREATED", "ADMIN_CREATED", "PRIMARY_ADMIN_RECOVERED"].includes(eventBaseType(type));
 
+  const filteredAccountEvents = useMemo(() => {
+    if (!accountEvents) return null;
+
+    const hasUnsupportedFilter = Boolean(filters.mapNumber || filters.birthDate || filters.time || filters.place) || filters.type !== "ALL" || filters.status !== "ALL";
+    if (hasUnsupportedFilter) return [];
+
+    const includes = (values: Array<string | null | undefined>, query: string) => {
+      if (!query.trim()) return true;
+      const normalizedQuery = query.trim().toLocaleLowerCase("ka-GE");
+      return values.some((value) => value?.toLocaleLowerCase("ka-GE").includes(normalizedQuery));
+    };
+
+    return accountEvents.filter((event) => {
+      const createdDate = event.createdAt.slice(0, 10);
+      const typeText = eventLabel[eventBaseType(event.type)] ?? eventStatusLabel[eventBaseType(event.type)] ?? event.type;
+      return (
+        (!filters.createdFrom || createdDate >= filters.createdFrom) &&
+        (!filters.createdTo || createdDate <= filters.createdTo) &&
+        includes([event.emailSnapshot, event.oldEmail, event.newEmail, event.user?.email], filters.email) &&
+        includes([event.user?.publicId, event.user?.adminId], filters.publicId) &&
+        includes([event.user?.name, event.user?.username, typeText], filters.name)
+      );
+    });
+  }, [accountEvents, filters, eventLabel]);
+
+  const highlightQuery = filters.email || filters.publicId || filters.mapNumber || filters.name || filters.birthDate || filters.time || filters.place || "";
+
   const hasFilters =
     Boolean(filters.createdFrom || filters.createdTo || filters.email || filters.publicId || filters.mapNumber || filters.name || filters.birthDate || filters.time || filters.place) ||
     filters.type !== "ALL" ||
     filters.status !== "ALL";
+  const visibleAccountEvents = filteredAccountEvents ?? [];
 
   return (
     <div className="admin-page">
@@ -1013,12 +1077,12 @@ export default function AdminPage() {
           )}
         </div>
       </div>
-      <div className="admin-account-info mb-8 rounded-2xl border-2 border-[#35c759] bg-[#35c759]/10 p-4 shadow-lg shadow-[#35c759]/20 sm:p-5">
-        <p className="mb-2 text-sm font-medium uppercase tracking-widest text-[#d98a9b]">ადმინის ანგარიში</p>
-        <div className="flex flex-wrap items-center gap-6">
-          <span className="text-2xl font-bold tracking-wide text-[#55e6e1]">{adminEmail ?? "იტვირთება…"}</span>
-          <span className="text-lg font-bold text-orange-400">{adminId ?? "ADMIN"}</span>
-          <span className="text-4xl font-black tracking-wide text-[#ff7a18]">ადმინი</span>
+      <div className="admin-account-info mb-8 rounded-2xl border border-emerald-400/35 bg-emerald-950/15 p-5 shadow-[0_0_28px_rgba(52,211,153,0.12)] sm:p-6">
+        <div className="admin-account-info-content mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
+          <p className="w-full text-xs font-semibold uppercase tracking-[0.22em] text-emerald-200/70">მთავარი ადმინისტრატორი</p>
+          <span className="text-base font-semibold tracking-wide text-cyan-200 sm:text-lg">{adminEmail ?? "იტვირთება…"}</span>
+          <span className="rounded-full border border-orange-400/30 bg-orange-950/20 px-3 py-1 text-sm font-bold text-orange-300">{adminId ?? "ADMIN"}</span>
+          <span className="text-xl font-black tracking-wide text-emerald-200 sm:text-2xl">ადმინი</span>
         </div>
       </div>
       {users === null && <p className="text-parchment-dim">იტვირთება…</p>}
@@ -1082,6 +1146,16 @@ export default function AdminPage() {
               <span className="text-line/60">|</span>
               <span className="font-semibold text-cyan-300 not-italic">{stats.users30d}</span>
               <span>მომხმარებელი</span>
+            </div>
+
+            {/* All-time totals */}
+            <div className="admin-stat-item flex items-center justify-center gap-1.5 border-emerald-400/25 bg-emerald-950/10 not-italic sm:col-span-2 lg:col-span-4">
+              <span className="font-semibold uppercase tracking-wide text-emerald-200/80">Σ სულ:</span>
+              <span className="font-bold text-amber-200">{stats.totalCharts}</span>
+              <span className="text-amber-100/80">რუკა</span>
+              <span className="text-line/60">|</span>
+              <span className="font-bold text-cyan-200">{stats.totalUsers}</span>
+              <span className="text-cyan-100/80">მომხმარებელი</span>
             </div>
           </div>
         </div>
@@ -1219,6 +1293,7 @@ export default function AdminPage() {
                 }
                 typeLabel={typeLabel}
                 onView={openCalculationView}
+                highlightQuery={highlightQuery}
               />
             ))}
           </div>
@@ -1230,7 +1305,7 @@ export default function AdminPage() {
         <section id="guest-calculations-section" className="mb-8 scroll-mt-6">
           <details open className="group/section rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5 backdrop-blur-sm transition-all">
             <summary className="flex cursor-pointer select-none items-center justify-between gap-3">
-              <h2 className="font-display text-xl sm:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-rose-500 drop-shadow-[0_0_18px_rgba(244,63,94,0.6)]">
+            <h2 className="font-display text-lg sm:text-xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-rose-500 drop-shadow-[0_0_14px_rgba(244,63,94,0.45)]">
                 ⚠️ დაურეგისტრირებელი მომხმარებლების რუკების ისტორია ({filteredGuestCalculationGroups.length})
               </h2>
               <div className="flex items-center gap-3">
@@ -1263,6 +1338,7 @@ export default function AdminPage() {
                   }
                   typeLabel={typeLabel}
                   onView={openCalculationView}
+                  highlightQuery={highlightQuery}
                 />
               ))}
             </div>
@@ -1271,24 +1347,24 @@ export default function AdminPage() {
       )}
 
       {/* Account Events History Section */}
-      <section id="account-events-section" className="mb-8 scroll-mt-6">
+      {(accountEvents === null || !hasFilters || visibleAccountEvents.length > 0) && <section id="account-events-section" className="mb-8 scroll-mt-6">
         <details className="group/section rounded-2xl border border-cyan-500/30 bg-cyan-950/10 p-5 backdrop-blur-sm transition-all">
           <summary className="flex cursor-pointer select-none items-center justify-between gap-3">
-            <h2 className="font-display text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-indigo-400 drop-shadow-[0_0_18px_rgba(34,211,238,0.6)]">
-              🔑 კაბინეტების ცვლილებების ისტორია ({accountEvents?.length ?? 0})
+            <h2 className="font-display text-lg sm:text-xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-indigo-400 drop-shadow-[0_0_14px_rgba(34,211,238,0.45)]">
+              🔑 კაბინეტების ცვლილებების ისტორია ({visibleAccountEvents.length})
             </h2>
             <span className="text-sm font-bold text-cyan-300 group-open/section:rotate-180 transition-transform">▼ ჩამოშლა</span>
           </summary>
 
           <div className="mt-5 space-y-3 border-t border-cyan-500/20 pt-4">
-            {accountEvents && accountEvents.length > 0 && (
+            {visibleAccountEvents.length > 0 && (
               <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-950/30 px-3 py-2 text-xs font-bold text-cyan-200">
                   <input
                     type="checkbox"
                     className="h-4 w-4 cursor-pointer accent-cyan-400"
-                    checked={selectedAccountEvents.length === accountEvents.length}
-                    onChange={(event) => setSelectedAccountEvents(event.target.checked ? accountEvents.map((item) => item.id) : [])}
+                    checked={selectedAccountEvents.length === visibleAccountEvents.length}
+                    onChange={(event) => setSelectedAccountEvents(event.target.checked ? visibleAccountEvents.map((item) => item.id) : [])}
                   />
                   ყველას მონიშვნა
                 </label>
@@ -1302,10 +1378,10 @@ export default function AdminPage() {
                 </button>
               </div>
             )}
-            {accountEvents?.length === 0 && <p className="text-xs text-parchment-dim">ცვლილებების ისტორია ჯერ ცარიელია.</p>}
+            {visibleAccountEvents.length === 0 && <p className="text-xs text-parchment-dim">ცვლილებების ისტორია ჯერ ცარიელია.</p>}
             <div className="space-y-2">
-          {accountEvents?.map((event) => (
-            <div key={event.id} className={`flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-ink-2/60 p-3 text-xs ${event.user?.role === "ADMIN" ? "border-2 border-[#35c759] bg-[#35c759]/10" : "border-line"}`}>
+          {visibleAccountEvents.map((event) => (
+            <div key={event.id} className={`flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-ink-2/60 p-3 text-xs ${event.user?.role === "ADMIN" ? "border-cyan-400/35 bg-cyan-950/20" : "border-line"}`}>
               <div className="flex min-w-0 flex-1 items-start gap-3">
                 <input
                   type="checkbox"
@@ -1316,47 +1392,47 @@ export default function AdminPage() {
                 />
                 <div>
                 <span className={`inline-flex rounded-full border px-2.5 py-1 font-bold ${eventIsDeleted(event.type) ? "border-rose-400/70 bg-rose-950/50 text-rose-300" : eventIsRestored(event.type) ? "border-emerald-400/70 bg-emerald-950/50 text-emerald-300" : "border-amber-400/50 bg-amber-500/10 text-brass-2"}`}>
-                  {eventStatusLabel[eventBaseType(event.type)] ?? eventLabel[eventBaseType(event.type)] ?? event.type}
+                  <HighlightText value={eventStatusLabel[eventBaseType(event.type)] ?? eventLabel[eventBaseType(event.type)] ?? event.type} query={highlightQuery} />
                 </span>
                 <span className="ml-3 font-bold text-parchment-dim">იუზერი:</span>
                 {event.user ? (
                   <span className="ml-2 inline-flex flex-wrap items-center gap-2">
                     {event.user.name && (
                       <span className="font-extrabold text-parchment-bright bg-parchment/10 px-2 py-0.5 rounded border border-parchment/20">
-                        {event.user.name}
+                        <HighlightText value={event.user.name} query={highlightQuery} />
                       </span>
                     )}
                     {event.user.publicId && (
                       <span className="admin-id-value-registered rounded bg-indigo-950/70 px-2 py-0.5 font-mono text-[11px] font-black border border-cyan-500/40 shadow-[0_0_8px_rgba(34,211,238,0.2)]">
-                        {event.user.publicId}
+                        <HighlightText value={event.user.publicId} query={highlightQuery} />
                       </span>
                     )}
-                    <span className="font-bold text-[#55e6e1]">{event.user.email}</span>
+                    <span className="font-bold text-[#55e6e1]"><HighlightText value={event.user.email} query={highlightQuery} /></span>
                     <span className="text-xs font-semibold text-[#55e6e1]">
-                      (Username: {event.user.username ? `@${event.user.username}` : <span className="text-amber-400/80 italic font-normal">არ აქვს</span>})
+                      (Username: {event.user.username ? <HighlightText value={`@${event.user.username}`} query={highlightQuery} /> : <span className="text-amber-400/80 italic font-normal">არ აქვს</span>})
                     </span>
                     {event.user.role === "ADMIN" && (
                       <span className="inline-flex items-center gap-1 rounded-md border border-orange-500/60 bg-orange-950/50 px-2 py-0.5 font-black text-orange-300 shadow-[0_0_8px_rgba(249,115,22,0.3)]">
-                        <span>{event.user.adminId ?? "ADMIN"}</span>
+                        <span><HighlightText value={event.user.adminId ?? "ADMIN"} query={highlightQuery} /></span>
                         <span className="text-[10px] text-orange-400 font-bold uppercase tracking-wider">ადმინი</span>
                       </span>
                     )}
                   </span>
                 ) : (
                   <span className="ml-2 inline-flex flex-wrap items-center gap-2 text-parchment-dim">
-                    <span>{event.emailSnapshot}</span>
+                    <span><HighlightText value={event.emailSnapshot} query={highlightQuery} /></span>
                   </span>
                 )}
-                {event.oldEmail && event.newEmail && <span className="ml-3 text-parchment-dim">{event.oldEmail} → {event.newEmail}</span>}
+                {event.oldEmail && event.newEmail && <span className="ml-3 text-parchment-dim"><HighlightText value={`${event.oldEmail} → ${event.newEmail}`} query={highlightQuery} /></span>}
               </div>
-               <span className="text-parchment-dim">{showDateTime(event.createdAt)}</span>
+               <span className="text-parchment-dim"><HighlightText value={showDateTime(event.createdAt)} query={highlightQuery} /></span>
              </div>
             </div>
           ))}
         </div>
       </div>
     </details>
-  </section>
+  </section>}
 
       {showDeleteEventsModal && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">

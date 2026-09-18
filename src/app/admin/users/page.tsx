@@ -2,6 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import AdminCalculationViewer, { CalculationViewData } from "@/components/AdminCalculationViewer";
+import DateSelect from "@/components/DateSelect";
+import TimeSelect from "@/components/TimeSelect";
+import PlaceAutocomplete from "@/components/PlaceAutocomplete";
 
 type NullableString = string | null;
 
@@ -621,17 +624,34 @@ export default function AdminUsersPage() {
             სახელი
             <input value={filters.name} onChange={(event) => setFilters((current) => ({ ...current, name: event.target.value }))} placeholder="ნებისმიერი პროფილი" className={input} />
           </label>
-          <label className="text-xs text-parchment-dim">
+          <label className="text-xs text-parchment-dim sm:col-span-2 lg:col-span-2">
             დაბადების თარიღი
-            <input type="date" value={filters.birthDate} onChange={(event) => setFilters((current) => ({ ...current, birthDate: event.target.value }))} className={input} />
+            <div className="mt-1">
+              <DateSelect
+                value={filters.birthDate}
+                onChange={(birthDate) => setFilters((current) => ({ ...current, birthDate }))}
+                onDraftChange={(birthDate) => setFilters((current) => ({ ...current, birthDate }))}
+              />
+            </div>
           </label>
-          <label className="text-xs text-parchment-dim">
+          <label className="text-xs text-parchment-dim sm:col-span-2 lg:col-span-2">
             დრო
-            <input type="time" value={filters.time} onChange={(event) => setFilters((current) => ({ ...current, time: event.target.value }))} className={input} />
+            <div className="mt-1">
+              <TimeSelect
+                value={filters.time}
+                onChange={(time) => setFilters((current) => ({ ...current, time }))}
+                onDraftChange={(time) => setFilters((current) => ({ ...current, time }))}
+              />
+            </div>
           </label>
           <label className="text-xs text-parchment-dim sm:col-span-2 lg:col-span-4">
             ადგილი
-            <input value={filters.place} onChange={(event) => setFilters((current) => ({ ...current, place: event.target.value }))} placeholder="ქალაქი ან ქვეყანა" className={input} />
+            <div className="mt-1">
+              <PlaceAutocomplete
+                value={{ place: filters.place, lat: null, lon: null, timezone: null }}
+                onChange={(place) => setFilters((current) => ({ ...current, place: place.place }))}
+              />
+            </div>
           </label>
           <label className="text-xs text-parchment-dim">
             წაშლილი ანგარიშები
@@ -1074,20 +1094,20 @@ export default function AdminUsersPage() {
             <label className="text-xs text-parchment-dim">ტიპი<select className={`${input} mt-1`} value={draft.type} onChange={(e) => updateDraft("type", e.target.value)}><option value="NATAL">ნატალური</option><option value="SYNASTRY">სინასტრიული</option><option value="TRANSIT">ტრანზიტული</option></select></label>
             <label className="text-xs text-parchment-dim">სახლთა სისტემა<input className={`${input} mt-1`} value={draft.houseSystem} onChange={(e) => updateDraft("houseSystem", e.target.value)} /></label>
             <label className="text-xs text-parchment-dim">სახელი 1<input className={`${input} mt-1`} value={draft.name1} onChange={(e) => updateDraft("name1", e.target.value)} /></label>
-            <label className="text-xs text-parchment-dim">დაბადების თარიღი 1<input className={`${input} mt-1`} type="date" value={draft.date1} onChange={(e) => updateDraft("date1", e.target.value)} /></label>
-            <label className="text-xs text-parchment-dim">დრო 1<input className={`${input} mt-1`} type="time" value={draft.time1} onChange={(e) => updateDraft("time1", e.target.value)} /></label>
+            <div className="text-xs text-parchment-dim"><span className="mb-1 block">დაბადების თარიღი 1</span><DateSelect value={draft.date1} onChange={(next) => updateDraft("date1", next)} onDraftChange={(next) => updateDraft("date1", next)} /></div>
+            <div className="text-xs text-parchment-dim"><span className="mb-1 block">დრო 1</span><TimeSelect value={draft.time1} onChange={(next) => updateDraft("time1", next)} onDraftChange={(next) => updateDraft("time1", next)} /></div>
             <label className="text-xs text-parchment-dim">ადგილი 1<input className={`${input} mt-1`} value={draft.place1} onChange={(e) => updateDraft("place1", e.target.value)} /></label>
             <label className="text-xs text-parchment-dim">გრძედი 1<input className={`${input} mt-1`} type="number" step="any" value={draft.lat1} onChange={(e) => updateDraft("lat1", Number(e.target.value))} /></label>
             <label className="text-xs text-parchment-dim">განედი 1<input className={`${input} mt-1`} type="number" step="any" value={draft.lon1} onChange={(e) => updateDraft("lon1", Number(e.target.value))} /></label>
             <label className="text-xs text-parchment-dim">დროის სარტყელი 1<input className={`${input} mt-1`} value={draft.tz1} onChange={(e) => updateDraft("tz1", e.target.value)} /></label>
             <label className="text-xs text-parchment-dim">სახელი 2<input className={`${input} mt-1`} value={draft.name2 ?? ""} onChange={(e) => updateDraft("name2", e.target.value || null)} /></label>
-            <label className="text-xs text-parchment-dim">დაბადების თარიღი 2<input className={`${input} mt-1`} type="date" value={draft.date2 ?? ""} onChange={(e) => updateDraft("date2", e.target.value || null)} /></label>
-            <label className="text-xs text-parchment-dim">დრო 2<input className={`${input} mt-1`} type="time" value={draft.time2 ?? ""} onChange={(e) => updateDraft("time2", e.target.value || null)} /></label>
+            <div className="text-xs text-parchment-dim"><span className="mb-1 block">დაბადების თარიღი 2</span><DateSelect value={draft.date2 ?? ""} onChange={(next) => updateDraft("date2", next || null)} onDraftChange={(next) => updateDraft("date2", next || null)} /></div>
+            <div className="text-xs text-parchment-dim"><span className="mb-1 block">დრო 2</span><TimeSelect value={draft.time2 ?? ""} onChange={(next) => updateDraft("time2", next || null)} onDraftChange={(next) => updateDraft("time2", next || null)} /></div>
             <label className="text-xs text-parchment-dim">ადგილი 2<input className={`${input} mt-1`} value={draft.place2 ?? ""} onChange={(e) => updateDraft("place2", e.target.value || null)} /></label>
             <label className="text-xs text-parchment-dim">გრძედი 2<input className={`${input} mt-1`} type="number" step="any" value={draft.lat2 ?? ""} onChange={(e) => updateDraft("lat2", e.target.value === "" ? null : Number(e.target.value))} /></label>
             <label className="text-xs text-parchment-dim">განედი 2<input className={`${input} mt-1`} type="number" step="any" value={draft.lon2 ?? ""} onChange={(e) => updateDraft("lon2", e.target.value === "" ? null : Number(e.target.value))} /></label>
             <label className="text-xs text-parchment-dim">დროის სარტყელი 2<input className={`${input} mt-1`} value={draft.tz2 ?? ""} onChange={(e) => updateDraft("tz2", e.target.value || null)} /></label>
-            <label className="text-xs text-parchment-dim">ტრანზიტის თარიღი<input className={`${input} mt-1`} type="date" value={draft.transitDate ?? ""} onChange={(e) => updateDraft("transitDate", e.target.value || null)} /></label>
+            <div className="text-xs text-parchment-dim"><span className="mb-1 block">ტრანზიტის თარიღი</span><DateSelect value={draft.transitDate ?? ""} onChange={(next) => updateDraft("transitDate", next || null)} onDraftChange={(next) => updateDraft("transitDate", next || null)} /></div>
           </div>
           <div className="mt-5 flex justify-end gap-3"><button className={button} onClick={() => setModal({ kind: "cancel-edit", calculation: modal.calculation })}>შეწყვეტა</button><button className={button} onClick={() => setModal({ kind: "save-calculation", calculation: modal.calculation })}>შენახვა</button></div>
         </Modal>

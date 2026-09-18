@@ -49,7 +49,11 @@ export default function TimeSelect({
 
   function commit(nextHour = hour, nextMinute = minute) {
     if (!isCompleteTime(nextHour, nextMinute)) return;
-    onChange(`${nextHour.padStart(2, "0")}:${nextMinute.padStart(2, "0")}`);
+    const formattedHour = nextHour.padStart(2, "0");
+    const formattedMinute = nextMinute.padStart(2, "0");
+    setHour(formattedHour);
+    setMinute(formattedMinute);
+    onChange(`${formattedHour}:${formattedMinute}`);
   }
 
   function notifyDraft(nextHour: string, nextMinute: string) {
@@ -89,7 +93,7 @@ export default function TimeSelect({
         ref={hourRef}
         type="text"
         value={hour}
-        onChange={(e) => { if (!/^\d*$/.test(e.target.value)) return; setHour(e.target.value); notifyDraft(e.target.value, minute); }}
+        onChange={(e) => { const next = e.target.value; if (!/^\d*$/.test(next) || (next && Number(next) > 23)) return; setHour(next); notifyDraft(next, minute); }}
         onFocus={focusField}
         onClick={(e) => e.currentTarget.select()}
         onKeyDown={(e) => { if ([":", ".", "/", "Enter"].includes(e.key)) { e.preventDefault(); minuteRef.current?.focus(); } }}
@@ -107,7 +111,7 @@ export default function TimeSelect({
         ref={minuteRef}
         type="text"
         value={minute}
-        onChange={(e) => { if (!/^\d*$/.test(e.target.value)) return; setMinute(e.target.value); notifyDraft(hour, e.target.value); }}
+        onChange={(e) => { const next = e.target.value; if (!/^\d*$/.test(next) || (next && Number(next) > 59)) return; setMinute(next); notifyDraft(hour, next); }}
         onFocus={focusField}
         onClick={(e) => e.currentTarget.select()}
         onKeyDown={(e) => { if (e.key === "Backspace" && minute === "") hourRef.current?.focus(); }}

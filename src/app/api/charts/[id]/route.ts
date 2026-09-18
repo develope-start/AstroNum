@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
 import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect";
+import { generateNatalInterpretation, generateSynastryInterpretation, generateTransitInterpretation } from "@/lib/interpretations/natal";
+import { houseOfLongitude } from "@/lib/astro/positions";
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getActiveSessionFromRequest(req);
@@ -20,7 +22,30 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: "რუკის შედეგის მონაცემები დაზიანებულია" }, { status: 422 });
   }
 
-  return NextResponse.json({ ...chart, result });
+  let interpretation: string | null = chart.interpretation;
+  if (!interpretation && result && typeof result === "object") {
+    const value = result as Record<string, any>;
+    try {
+      if (chart.type === "NATAL" && Array.isArray(value.planets) && Array.isArray(value.houseCusps)) {
+        interpretation = generateNatalInterpretation({
+          planets: value.planets,
+          houseCusps: value.houseCusps,
+          ascendant: value.ascendant,
+          mc: value.mc,
+          aspects: value.aspects ?? [],
+          houseOfFn: (longitude: number) => houseOfLongitude(longitude, value.houseCusps),
+        });
+      } else if (chart.type === "SYNASTRY") {
+        interpretation = generateSynastryInterpretation(chart.name1, chart.name2 ?? "", value.aspects ?? []);
+      } else if (chart.type === "TRANSIT") {
+        interpretation = generateTransitInterpretation(value.aspects ?? [], chart.transitDate ?? "");
+      }
+    } catch {
+      interpretation = null;
+    }
+  }
+
+  return NextResponse.json({ ...chart, result, interpretation });
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {

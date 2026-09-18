@@ -163,8 +163,16 @@ body {
   min-width: 0;
 }
 
-.admin-account-info > div {
+.admin-account-info-content {
   min-width: 0;
+}
+
+.admin-filter-match {
+  border-radius: 0.2rem;
+  background: rgba(250, 204, 21, 0.22);
+  color: #fde68a;
+  padding: 0 0.12rem;
+  box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.12);
 }
 
 .admin-live-stats {
@@ -287,32 +295,21 @@ svg {
     border-width: 1px;
   }
 
-  .admin-page .admin-account-info > div {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    align-items: start;
+  .admin-page .admin-account-info-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     gap: 0.25rem;
   }
 
-  .admin-page .admin-account-info > div > span {
+  .admin-page .admin-account-info-content > span {
     display: block;
     max-width: 100%;
     overflow-wrap: anywhere;
   }
 
-  .admin-page .admin-account-info > div > span:first-child {
-    font-size: 1rem !important;
+  .admin-page .admin-account-info-content > p {
     line-height: 1.35;
-  }
-
-  .admin-page .admin-account-info > div > span:nth-child(2) {
-    font-size: 0.875rem !important;
-    line-height: 1.35;
-  }
-
-  .admin-page .admin-account-info > div > span:nth-child(3) {
-    font-size: 1.5rem !important;
-    line-height: 1.2;
   }
 
   .admin-page h1 {

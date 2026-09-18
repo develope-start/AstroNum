@@ -39,7 +39,7 @@ export function compareWideDates(a: string, b: string): number {
 }
 
 export function formatWideDate({ year, month, day }: WideDateParts): string {
-  const yearText = year < 0 ? `-${String(Math.abs(year)).padStart(4, "0")}` : String(year).padStart(4, "0");
+  const yearText = String(year);
   return `${yearText}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 

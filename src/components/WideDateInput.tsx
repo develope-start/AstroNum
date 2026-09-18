@@ -1,15 +1,28 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Calendar } from "lucide-react";
-import { formatWideDate, isWideDate, parseWideDate } from "@/lib/astro/wideDate";
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { daysInWideMonth, formatWideDate, isWideDate, MAX_WIDE_YEAR, MIN_WIDE_YEAR, parseWideDate } from "@/lib/astro/wideDate";
 
 function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
 function displayYear(year: number): string {
-  return year < 0 ? `-${String(Math.abs(year)).padStart(4, "0")}` : String(year).padStart(4, "0");
+  return String(year);
+}
+
+function weekdayOf(year: number, month: number, day: number): number {
+  let adjustedYear = year;
+  let adjustedMonth = month;
+  if (adjustedMonth < 3) {
+    adjustedMonth += 12;
+    adjustedYear -= 1;
+  }
+  const century = Math.floor(adjustedYear / 100);
+  const yearOfCentury = ((adjustedYear % 100) + 100) % 100;
+  const zeller = (day + Math.floor((13 * (adjustedMonth + 1)) / 5) + yearOfCentury + Math.floor(yearOfCentury / 4) + Math.floor(century / 4) + 5 * century) % 7;
+  return (zeller + 6) % 7;
 }
 
 export interface WideDateInputProps {
@@ -25,12 +38,17 @@ export default function WideDateInput({ label = "თარიღი", value, onC
   const yearRef = useRef<HTMLInputElement>(null);
   const monthRef = useRef<HTMLInputElement>(null);
   const dayRef = useRef<HTMLInputElement>(null);
+  const calendarRef = useRef<HTMLDivElement>(null);
   const editingRef = useRef(false);
   const parsed = parseWideDate(value);
   const [yearStr, setYearStr] = useState(() => (parsed ? displayYear(parsed.year) : ""));
   const [monthStr, setMonthStr] = useState(() => (parsed ? String(parsed.month).padStart(2, "0") : ""));
   const [dayStr, setDayStr] = useState(() => (parsed ? String(parsed.day).padStart(2, "0") : ""));
-  const nativeValue = parsed && parsed.year >= 1 && parsed.year <= 9999 ? value : "";
+  const initialCalendarDate = parsed ?? parseWideDate(today())!;
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarYear, setCalendarYear] = useState(initialCalendarDate.year);
+  const [calendarYearDraft, setCalendarYearDraft] = useState(String(initialCalendarDate.year));
+  const [calendarMonth, setCalendarMonth] = useState(initialCalendarDate.month);
   const isValid = isWideDate(`${yearStr}-${monthStr}-${dayStr}`);
   const isPartial = yearStr === "" || yearStr === "-" || monthStr === "" || monthStr === "0" || dayStr === "" || dayStr === "0";
 
@@ -46,6 +64,15 @@ export default function WideDateInput({ label = "თარიღი", value, onC
     setDayStr(String(next.day).padStart(2, "0"));
   }, [value]);
 
+  useEffect(() => {
+    if (!calendarOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!calendarRef.current?.contains(event.target as Node)) setCalendarOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [calendarOpen]);
+
   function updateParts(year: string, month: string, day: string) {
     setYearStr(year);
     setMonthStr(month);
@@ -59,11 +86,11 @@ export default function WideDateInput({ label = "თარიღი", value, onC
     else onDraftChange(day);
   }
 
-  function commitParts() {
-    if (!/^-?\d{1,5}$/.test(yearStr) || !/^\d{1,2}$/.test(monthStr) || !/^\d{1,2}$/.test(dayStr)) return;
-    const year = Number(yearStr);
-    const month = Number(monthStr);
-    const day = Number(dayStr);
+  function commitParts(nextYearStr = yearStr, nextMonthStr = monthStr, nextDayStr = dayStr) {
+    if (!/^-?\d{1,5}$/.test(nextYearStr) || !/^\d{1,2}$/.test(nextMonthStr) || !/^\d{1,2}$/.test(nextDayStr)) return;
+    const year = Number(nextYearStr);
+    const month = Number(nextMonthStr);
+    const day = Number(nextDayStr);
     const next = Number.isInteger(year) && Number.isInteger(month) && Number.isInteger(day)
       ? parseWideDate(formatWideDate({ year, month, day }))
       : null;
@@ -74,7 +101,13 @@ export default function WideDateInput({ label = "თარიღი", value, onC
   }
 
   function handleBlur() {
-    commitParts();
+    const normalizedMonth = /^\d$/.test(monthStr) ? `0${monthStr}` : monthStr;
+    const normalizedDay = /^\d$/.test(dayStr) ? `0${dayStr}` : dayStr;
+    if (normalizedMonth !== monthStr || normalizedDay !== dayStr) {
+      updateParts(yearStr, normalizedMonth, normalizedDay);
+      notifyDraft(yearStr, normalizedMonth, normalizedDay);
+    }
+    commitParts(yearStr, normalizedMonth, normalizedDay);
     window.setTimeout(() => {
       const active = document.activeElement;
       if (![yearRef.current, monthRef.current, dayRef.current].includes(active as HTMLInputElement | null)) editingRef.current = false;
@@ -95,9 +128,66 @@ export default function WideDateInput({ label = "თარიღი", value, onC
     onChange(formatWideDate(parts));
   }
 
-  function handleCalendarClick() {
-    handleNativeChange(today());
+  function normalizeMonthDraft() {
+    if (/^\d$/.test(monthStr)) {
+      const next = `0${monthStr}`;
+      updateParts(yearStr, next, dayStr);
+      notifyDraft(yearStr, next, dayStr);
+    }
   }
+
+  function normalizeDayDraft() {
+    if (/^\d$/.test(dayStr)) {
+      const next = `0${dayStr}`;
+      updateParts(yearStr, monthStr, next);
+      notifyDraft(yearStr, monthStr, next);
+    }
+  }
+
+  function openCalendar() {
+    const current = parseWideDate(value) ?? parseWideDate(today())!;
+    setCalendarYear(current.year);
+    setCalendarYearDraft(String(current.year));
+    setCalendarMonth(current.month);
+    if (!parseWideDate(value)) handleNativeChange(formatWideDate(current));
+    onActivate?.();
+    setCalendarOpen(true);
+  }
+
+  function selectCalendarDate(year: number, month: number, day: number) {
+    handleNativeChange(formatWideDate({ year, month, day }));
+    setCalendarYear(year);
+    setCalendarYearDraft(String(year));
+    setCalendarMonth(month);
+    setCalendarOpen(false);
+  }
+
+  function moveCalendarMonth(offset: number) {
+    let nextYear = calendarYear;
+    let nextMonth = calendarMonth + offset;
+    if (nextMonth < 1) {
+      nextMonth = 12;
+      nextYear -= 1;
+    } else if (nextMonth > 12) {
+      nextMonth = 1;
+      nextYear += 1;
+    }
+    if (nextYear < -10000 || nextYear > 10000) return;
+    setCalendarYear(nextYear);
+    setCalendarYearDraft(String(nextYear));
+    setCalendarMonth(nextMonth);
+  }
+
+  function goToToday() {
+    const current = parseWideDate(today())!;
+    setCalendarYear(current.year);
+    setCalendarYearDraft(String(current.year));
+    setCalendarMonth(current.month);
+  }
+
+  const calendarDays = Array.from({ length: daysInWideMonth(calendarYear, calendarMonth) }, (_, index) => index + 1);
+  const calendarLeadingDays = weekdayOf(calendarYear, calendarMonth, 1);
+  const selectedDate = parseWideDate(value);
 
   const editor = (
     <div className={`wide-date-editor relative grid min-h-[54px] w-full min-w-0 grid-cols-[minmax(0,1.55fr)_auto_minmax(0,0.8fr)_auto_minmax(0,0.95fr)_auto] items-center gap-1 rounded-xl border bg-gradient-to-b from-[#130a35] via-[#09041b] to-[#0d0626] p-1.5 shadow-lg transition-all duration-300 sm:min-h-[62px] sm:gap-2 sm:rounded-2xl sm:p-2.5 ${
@@ -108,19 +198,57 @@ export default function WideDateInput({ label = "თარიღი", value, onC
           : "border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.3)]"
     }`}>
       <div className="flex min-w-0 w-full items-center justify-center">
-        <input ref={yearRef} type="text" value={yearStr} onChange={(e) => { if (!/^-?\d*$/.test(e.target.value)) return; updateParts(e.target.value, monthStr, dayStr); notifyDraft(e.target.value, monthStr, dayStr); }} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (["/", ".", "Enter"].includes(e.key)) { e.preventDefault(); monthRef.current?.focus(); } }} onBlur={handleBlur} placeholder="წელიწადი" inputMode="text" autoComplete="off" spellCheck={false} maxLength={6} aria-label={`${label} — წელიწადი`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
+        <input ref={yearRef} type="text" value={yearStr} onChange={(e) => { const next = e.target.value; if (!/^-?\d*$/.test(next)) return; if (next && next !== "-" && (Number(next) < MIN_WIDE_YEAR || Number(next) > MAX_WIDE_YEAR)) return; updateParts(next, monthStr, dayStr); notifyDraft(next, monthStr, dayStr); }} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (["/", ".", "Enter"].includes(e.key)) { e.preventDefault(); monthRef.current?.focus(); } }} onBlur={handleBlur} placeholder="წელიწადი" inputMode="text" autoComplete="off" spellCheck={false} maxLength={6} aria-label={`${label} — წელიწადი`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
       </div>
       <span className="select-none px-0.5 text-lg font-black text-amber-300/80 sm:px-1 sm:text-xl">/</span>
       <div className="flex min-w-0 w-full items-center justify-center">
-        <input ref={monthRef} type="text" value={monthStr} onChange={(e) => { if (!/^\d*$/.test(e.target.value)) return; updateParts(yearStr, e.target.value, dayStr); notifyDraft(yearStr, e.target.value, dayStr); }} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (["/", ".", "Enter"].includes(e.key)) { e.preventDefault(); dayRef.current?.focus(); } else if (e.key === "Backspace" && monthStr === "") yearRef.current?.focus(); }} onBlur={handleBlur} placeholder="თვე" inputMode="numeric" autoComplete="off" spellCheck={false} maxLength={2} aria-label={`${label} — თვე`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
+        <input ref={monthRef} type="text" value={monthStr} onChange={(e) => { const next = e.target.value; if (!/^\d*$/.test(next) || (next && Number(next) > 12)) return; updateParts(yearStr, next, dayStr); notifyDraft(yearStr, next, dayStr); }} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (["/", ".", "Enter"].includes(e.key)) { e.preventDefault(); normalizeMonthDraft(); dayRef.current?.focus(); } else if (e.key === "Backspace" && monthStr === "") yearRef.current?.focus(); }} onBlur={handleBlur} placeholder="თვე" inputMode="numeric" autoComplete="off" spellCheck={false} maxLength={2} aria-label={`${label} — თვე`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
       </div>
       <span className="select-none px-0.5 text-lg font-black text-amber-300/80 sm:px-1 sm:text-xl">/</span>
       <div className="flex min-w-0 w-full items-center justify-center">
-        <input ref={dayRef} type="text" value={dayStr} onChange={(e) => { if (!/^\d*$/.test(e.target.value)) return; updateParts(yearStr, monthStr, e.target.value); notifyDraft(yearStr, monthStr, e.target.value); }} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (e.key === "Backspace" && dayStr === "") monthRef.current?.focus(); }} onBlur={handleBlur} placeholder="რიცხვი" inputMode="numeric" autoComplete="off" spellCheck={false} maxLength={2} aria-label={`${label} — რიცხვი`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
+        <input ref={dayRef} type="text" value={dayStr} onChange={(e) => { const next = e.target.value; const year = Number(yearStr); const month = Number(monthStr); const maxDay = Number.isInteger(year) && month >= 1 && month <= 12 ? daysInWideMonth(year, month) : 31; if (!/^\d*$/.test(next) || (next && Number(next) > maxDay)) return; updateParts(yearStr, monthStr, next); notifyDraft(yearStr, monthStr, next); }} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (e.key === "Backspace" && dayStr === "") monthRef.current?.focus(); }} onBlur={handleBlur} placeholder="რიცხვი" inputMode="numeric" autoComplete="off" spellCheck={false} maxLength={2} aria-label={`${label} — რიცხვი`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
       </div>
-      <div className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-amber-400/35 bg-purple-950/60 pl-0.5 text-amber-300 shadow-sm transition-colors hover:border-amber-300 hover:bg-purple-900 sm:h-9 sm:w-9">
-        <Calendar className="pointer-events-none h-4 w-4 text-amber-300 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
-        <input type="date" value={nativeValue} min="0001-01-01" max="9999-12-31" onChange={(e) => handleNativeChange(e.target.value)} onClick={handleCalendarClick} onFocus={onActivate} aria-label={`${label} — კალენდრით არჩევა`} className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0 [color-scheme:dark]" />
+      <div ref={calendarRef} className="relative flex shrink-0 items-center gap-1">
+        <button type="button" onClick={goToToday} className="rounded-md border border-slate-400/20 bg-slate-300/5 px-1.5 py-1 text-[0.55rem] font-bold text-slate-400 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200" aria-label="ახლა-ზე გადასვლა">
+          ახლა
+        </button>
+        <button type="button" onClick={openCalendar} className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-400/35 bg-purple-950/60 pl-0.5 text-amber-300 shadow-sm transition-colors hover:border-amber-300 hover:bg-purple-900 sm:h-9 sm:w-9" aria-label={`${label} — კალენდრის გახსნა`} aria-expanded={calendarOpen}>
+          <Calendar className="h-4 w-4 text-amber-300 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
+        </button>
+
+        {calendarOpen && (
+          <div className="absolute right-0 top-full z-[80] mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-amber-400/35 bg-[#0a0422]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.75)] ring-1 ring-purple-300/10 backdrop-blur-xl">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <button type="button" onClick={() => moveCalendarMonth(-1)} className="rounded-lg border border-slate-400/20 p-1.5 text-slate-300 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200" aria-label="წინა თვე"><ChevronLeft className="h-4 w-4" /></button>
+              <button type="button" onClick={goToToday} className="rounded-lg border border-slate-400/20 bg-slate-300/5 px-2.5 py-1 text-[0.65rem] font-bold text-slate-300 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200">ახლა</button>
+              <button type="button" onClick={() => moveCalendarMonth(1)} className="rounded-lg border border-slate-400/20 p-1.5 text-slate-300 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200" aria-label="შემდეგი თვე"><ChevronRight className="h-4 w-4" /></button>
+            </div>
+
+            <div className="mb-3 grid grid-cols-[1fr_auto] gap-2">
+              <label className="text-[0.6rem] font-bold uppercase tracking-wider text-slate-400">
+                წელი
+                <input type="text" value={calendarYearDraft} onChange={(event) => { const next = event.target.value; if (!/^-?\d*$/.test(next)) return; setCalendarYearDraft(next); if (next && next !== "-") { const numeric = Number(next); if (numeric >= MIN_WIDE_YEAR && numeric <= MAX_WIDE_YEAR) setCalendarYear(numeric); } }} onBlur={() => setCalendarYearDraft(String(calendarYear))} className="mt-1 w-full rounded-lg border border-slate-500/30 bg-[#080418] px-2 py-1.5 text-sm font-bold text-amber-200 outline-none focus:border-amber-400" inputMode="text" maxLength={6} />
+              </label>
+              <label className="text-[0.6rem] font-bold uppercase tracking-wider text-slate-400">
+                თვე
+                <select value={calendarMonth} onChange={(event) => setCalendarMonth(Number(event.target.value))} className="mt-1 rounded-lg border border-slate-500/30 bg-[#080418] px-2 py-2 text-sm font-bold text-amber-200 outline-none focus:border-amber-400">
+                  {Array.from({ length: 12 }, (_, index) => <option key={index + 1} value={index + 1}>{String(index + 1).padStart(2, "0")}</option>)}
+                </select>
+              </label>
+            </div>
+
+            <div className="mb-1 grid grid-cols-7 gap-1 text-center text-[0.6rem] font-bold text-slate-500">
+              {['კვ', 'ორშ', 'სამ', 'ოთხ', 'ხუთ', 'პარ', 'შაბ'].map((day) => <span key={day}>{day}</span>)}
+            </div>
+            <div className="grid grid-cols-7 gap-1">
+              {Array.from({ length: calendarLeadingDays }, (_, index) => <span key={`empty-${index}`} className="h-8" />)}
+              {calendarDays.map((day) => {
+                const selected = selectedDate?.year === calendarYear && selectedDate.month === calendarMonth && selectedDate.day === day;
+                return <button key={day} type="button" onClick={() => selectCalendarDate(calendarYear, calendarMonth, day)} className={`h-8 rounded-lg text-xs font-bold transition ${selected ? "bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.45)]" : "text-slate-200 hover:bg-amber-400/15 hover:text-amber-200"}`}>{String(day).padStart(2, "0")}</button>;
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

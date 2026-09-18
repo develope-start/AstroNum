@@ -133,6 +133,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const isSavedChart = sourceType === "SAVED_CHART";
   const isChartOnly = sourceType === "CHART";
   const isLegacyChart = sourceType === "LEGACY_CHART";
+  const isChartLike = isSavedChart || isChartOnly || isLegacyChart;
   const chartSnapshot = archived.chartSnapshot && typeof archived.chartSnapshot === "object" && !Array.isArray(archived.chartSnapshot)
     ? archived.chartSnapshot as Record<string, unknown>
     : null;
@@ -151,7 +152,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     user = await prisma.user.findUnique({ where: { email: archived.ownerEmail }, select: { id: true, publicId: true, email: true } });
   }
 
-  if ((isSavedChart || isChartOnly) && !user) {
+  if (isChartLike && !user) {
     return NextResponse.json({ error: "ჯერ აღადგინეთ რუკის მფლობელი მომხმარებლის ანგარიში" }, { status: 409 });
   }
 
@@ -171,6 +172,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
   calculation.mapNumber = typeof archived.mapNumber === "string" ? archived.mapNumber : await allocateMapNumber();
 
+  let archivedResult: unknown = null;
+  try {
+    archivedResult = JSON.parse(String(archived.resultJson ?? "{}"));
+  } catch {
+    archivedResult = null;
+  }
+
   await prisma.$transaction(async (tx) => {
     if (!isChartOnly) {
       await tx.calculation.create({
@@ -182,8 +190,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       });
     }
 
-    if ((isSavedChart || isChartOnly) && user) {
-      const source = isSavedChart ? chartSnapshot : archived;
+    if (isChartLike && user) {
+      const source = isSavedChart
+        ? chartSnapshot
+        : isLegacyChart
+          ? { ...archived, interpretation: buildArchivedInterpretation(archived, archivedResult) ?? "" }
+          : archived;
       if (!source) throw new Error("Saved chart snapshot is missing");
       await tx.chart.create({ data: chartData(source, user.id, typeof archived.chartId === "string" ? archived.chartId : deleted.originalId) });
     }
