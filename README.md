@@ -145,7 +145,7 @@ DATABASE_URL="postgresql://username:password@host/dbname?sslmode=require"
 ## ტექნოლოგიები
 
 Next.js 14 (App Router) · TypeScript · Tailwind CSS · Prisma · SQLite/PostgreSQL ·
-astronomy-engine · luxon · tz-lookup · bcryptjs · jsonwebtoken · zod
+@swisseph/node · astronomy-engine · luxon · tz-lookup · bcryptjs · jsonwebtoken · zod
 
 (https://console.neon.tech/ ;   https://vercel.com/ds6-2f69 ;   https://github.com/develope-start/AstroNum 
   ვერსალზე დალოგინებულია გითჰაბის ანგარიშითვე დეველოუპ სტარტის, ხოლო კონსოლზე და გითჰაბზე დალოგინებულია გულგის ანგარიში დეველოუპით)
@@ -171,5 +171,6 @@ npm run dev
 - უძველეს თარიღებზე არსებობს უსაფრთხო fallback;
 - ტრანზიტის ინტერვალი სრულ პერიოდს ამუშავებს;
 - TypeScript შეცდომები არ დარჩა.
-თუმცა „ყოველმხრივ სრულად გამართული“ ჯერ აბსოლუტურად ვერ ითქმის: სრული npm run build საჭიროებს ხელმისაწვდომ მონაცემთა ბაზას, ხოლო ავტომატური ტესტის გაშვებას ამ გარემოში Node 25-ის tsx პრობლემა უშლის ხელს.
-ანუ აპი ფუნქციურად მზადაა სამუშაოდ, მაგრამ საბოლოო production გაშვებამდე საჭიროა მონაცემთა ბაზის კავშირის შემოწმება და deployment გარემოში Swiss native მოდულის საბოლოო ტესტი.
+ამჟამინდელი მდგომარეობა: Node 25-ისთვის `test:astro`-ს აქვს თავსებადობის bootstrap და ვალიდაცია წარმატებით სრულდება. შემოწმებულია Swiss-ის ძირითადი და გაფართოებული რეჟიმები, სიდერიული ზოდიაქო, ტოპოცენტრული გამოთვლა, საშუალო/ჭეშმარიტი კვანძი, ასტეროიდები, ფართო თარიღები და ტრანზიტის ინტერვალი. Production `npm run build` ასევე წარმატებით სრულდება.
+
+ისტორიულ თარიღებზე Swiss-ის მონაცემთა ფაილების რეალური დაფარვა შეიძლება შეზღუდული იყოს; ასეთ შემთხვევაში ძრავი ავტომატურად იყენებს fallback-ს და შედეგში უთითებს გამოყენებულ წყაროსა და მიზეზს.

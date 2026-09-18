@@ -28,6 +28,20 @@ assert(swiss.houseCusps.length === 12, "Swiss house cusp count is 12");
 assert(swiss.ephemeris.source === "swiss", "Swiss metadata is present");
 assert(swiss.planets.some((planet) => planet.name === "MeanNode"), "Mean Node is explicitly identified");
 
+const advanced = computeNatalChart(
+  { ...input, calculation: { ephemeris: "swiss", zodiac: "sidereal", siderealMode: 1, nodeType: "true", topocentric: true, altitudeMeters: 120, includeAsteroids: true } },
+  "placidus",
+);
+assert(advanced.ephemeris.source === "swiss", "advanced Swiss calculation stays on Swiss Ephemeris");
+assert(advanced.ephemeris.zodiac === "sidereal", "sidereal mode is preserved in metadata");
+assert(advanced.ephemeris.nodeType === "true", "true node selection is preserved in metadata");
+assert(advanced.ephemeris.topocentric, "topocentric mode is preserved in metadata");
+assert(advanced.ephemeris.includeAsteroids, "asteroid selection is preserved in metadata");
+assert(advanced.planets.some((planet) => planet.name === "TrueNode"), "True Node is explicitly identified");
+for (const name of ["Chiron", "Ceres", "Pallas", "Juno", "Vesta"]) {
+  assert(advanced.planets.some((planet) => planet.name === name), `${name} is available when asteroids are enabled`);
+}
+
 const astronomy = computePlanetPositions(
   new Date("2000-01-01T12:00:00.000Z"),
   { ephemeris: "astronomy" },
@@ -43,6 +57,7 @@ for (const value of ["-10000-01-01", "-5400-06-15", "10000-12-31"]) {
   assert(date && Number.isFinite(date.getTime()), `wide date ${value} converts to UTC`);
   const chart = computeNatalChart({ ...input, date: value, calculation: { ephemeris: "swiss" } });
   assert(chart.planets.every((planet) => Number.isFinite(planet.longitude)), `wide date ${value} has finite positions`);
+  if (chart.ephemeris.source === "astronomy") assert(chart.ephemeris.fallbackReason, `wide date ${value} records its Swiss fallback reason`);
 }
 
 const start = new Date("2025-01-01T12:00:00.000Z");

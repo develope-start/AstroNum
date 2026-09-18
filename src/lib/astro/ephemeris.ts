@@ -65,7 +65,12 @@ export function isSwissAvailableForDate(
   const options = resolveCalculationOptions(inputOptions);
   try {
     configureSwiss(options, lon, lat);
-    swiss.calculatePosition(toJulianDay(date), 0, swissFlags(options));
+    const bodies = [
+      ...SWISS_PLANETS,
+      [options.nodeType === "true" ? 11 : 10, "Node"],
+      ...(options.includeAsteroids ? SWISS_ASTEROIDS : []),
+    ];
+    for (const entry of bodies) swiss.calculatePosition(toJulianDay(date), entry[0] as number, swissFlags(options));
     return true;
   } catch (error) {
     swissLoadError = error instanceof Error ? error.message : String(error);
