@@ -47,17 +47,24 @@ const CELESTIAL_CONSTELLATIONS = [
 ] as const;
 
 const CELESTIAL_PLANET_META = {
-  mars: { name: "მარსი", glyph: "♂", description: "ენერგიისა და მოქმედების მმართველი" },
-  venus: { name: "ვენერა", glyph: "♀", description: "მიზიდულობისა და ღირებულებების მმართველი" },
-  mercury: { name: "მერკური", glyph: "☿", description: "აზროვნებისა და კომუნიკაციის მმართველი" },
-  moon: { name: "მთვარე", glyph: "☽", description: "ემოციური რიტმისა და შინაგანი სამყაროს მმართველი მნათობი" },
-  sun: { name: "მზე", glyph: "☉", description: "სიცოცხლისა და თვითგამოხატვის მმართველი მნათობი" },
-  pluto: { name: "პლუტონი", glyph: "♇", description: "ტრანსფორმაციისა და ღრმა ცვლილებების მმართველი" },
-  jupiter: { name: "იუპიტერი", glyph: "♃", description: "ზრდისა და გაფართოების მმართველი" },
-  saturn: { name: "სატურნი", glyph: "♄", description: "სტრუქტურისა და პასუხისმგებლობის მმართველი" },
-  uranus: { name: "ურანი", glyph: "♅", description: "გარდაქმნისა და თავისუფლების მმართველი" },
-  neptune: { name: "ნეპტუნი", glyph: "♆", description: "ინტუიციისა და წარმოსახვის მმართველი" },
+  mars: { name: "მარსი", glyph: "♂", kind: "პლანეტა", description: "ენერგიისა და მოქმედების მმართველი" },
+  venus: { name: "ვენერა", glyph: "♀", kind: "პლანეტა", description: "მიზიდულობისა და ღირებულებების მმართველი" },
+  mercury: { name: "მერკური", glyph: "☿", kind: "პლანეტა", description: "აზროვნებისა და კომუნიკაციის მმართველი" },
+  moon: { name: "მთვარე", glyph: "☽", kind: "მნათობი", description: "ემოციური რიტმისა და შინაგანი სამყაროს მმართველი მნათობი" },
+  sun: { name: "მზე", glyph: "☉", kind: "მნათობი", description: "სიცოცხლისა და თვითგამოხატვის მმართველი მნათობი" },
+  pluto: { name: "პლუტონი", glyph: "♇", kind: "პლანეტა", description: "ტრანსფორმაციისა და ღრმა ცვლილებების მმართველი" },
+  jupiter: { name: "იუპიტერი", glyph: "♃", kind: "პლანეტა", description: "ზრდისა და გაფართოების მმართველი" },
+  saturn: { name: "სატურნი", glyph: "♄", kind: "პლანეტა", description: "სტრუქტურისა და პასუხისმგებლობის მმართველი" },
+  uranus: { name: "ურანი", glyph: "♅", kind: "პლანეტა", description: "გარდაქმნისა და თავისუფლების მმართველი" },
+  neptune: { name: "ნეპტუნი", glyph: "♆", kind: "პლანეტა", description: "ინტუიციისა და წარმოსახვის მმართველი" },
 } as const;
+
+const ELEMENT_GROUPS = [
+  { id: "fire", name: "ცეცხლი", symbol: "△", signs: [{ name: "ვერძი", symbol: "♈" }, { name: "ლომი", symbol: "♌" }, { name: "მშვილდოსანი", symbol: "♐" }], planets: [{ name: "მარსი", symbol: "♂" }, { name: "მზე", symbol: "☉" }, { name: "იუპიტერი", symbol: "♃" }] },
+  { id: "earth", name: "მიწა", symbol: "◇", signs: [{ name: "კურო", symbol: "♉" }, { name: "ქალწული", symbol: "♍" }, { name: "თხის რქა", symbol: "♑" }], planets: [{ name: "ვენერა", symbol: "♀" }, { name: "მერკური", symbol: "☿" }, { name: "სატურნი", symbol: "♄" }] },
+  { id: "air", name: "ჰაერი", symbol: "⌁", signs: [{ name: "ტყუპები", symbol: "♊" }, { name: "სასწორი", symbol: "♎" }, { name: "მერწყული", symbol: "♒" }], planets: [{ name: "მერკური", symbol: "☿" }, { name: "ვენერა", symbol: "♀" }, { name: "ურანი", symbol: "♅" }] },
+  { id: "water", name: "წყალი", symbol: "▽", signs: [{ name: "კირჩხიბი", symbol: "♋" }, { name: "მორიელი", symbol: "♏" }, { name: "თევზები", symbol: "♓" }], planets: [{ name: "მთვარე", symbol: "☽" }, { name: "პლუტონი", symbol: "♇" }, { name: "ნეპტუნი", symbol: "♆" }] },
+] as const;
 
 type CelestialTarget = number | "earth" | null;
 
@@ -88,6 +95,29 @@ export default function HomePage() {
         <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
           <div className="celestial-system" role="group" aria-label="12 ზოდიაქოს ასტროლოგიური სარტყელი, მმართველი მნათობები და ცენტრში დედამიწა">
             <div className="celestial-star-noise" aria-hidden="true" />
+            {ELEMENT_GROUPS.map((element) => (
+              <section key={element.id} className={`celestial-element-panel celestial-element-panel-${element.id}`} aria-label={`${element.name} სტიქია`}>
+                <div className="celestial-element-heading">
+                  <span className="celestial-element-symbol" aria-hidden="true">{element.symbol}</span>
+                  <div>
+                    <span className="celestial-element-kicker">სტიქია</span>
+                    <strong>{element.name}</strong>
+                  </div>
+                </div>
+                <div className="celestial-element-row">
+                  <span className="celestial-element-label">ზოდიაქოები</span>
+                  <div className="celestial-element-items">
+                    {element.signs.map((sign) => <span key={sign.name} title={sign.name}><b>{sign.symbol}</b></span>)}
+                  </div>
+                </div>
+                <div className="celestial-element-row">
+                  <span className="celestial-element-label">მმართველები</span>
+                  <div className="celestial-element-items">
+                    {element.planets.map((planet) => <span key={planet.name} title={planet.name}><b>{planet.symbol}</b></span>)}
+                  </div>
+                </div>
+              </section>
+            ))}
             <div className="celestial-orbit celestial-orbit-wide" aria-hidden="true" />
             <div className="celestial-orbit celestial-orbit-inner" aria-hidden="true" />
             <div className="celestial-constellation-ring" aria-hidden="true">
@@ -165,7 +195,7 @@ export default function HomePage() {
                 ) : (
                   <>
                     <span className="celestial-info-eyebrow">თანავარსკვლავედი {activeSign?.name}</span>
-                    <strong>{activeSign?.sign} · მმართველი მნათობი {activePlanet?.name}</strong>
+                    <strong>{activeSign?.sign} · მმართველი {activePlanet?.kind} {activePlanet?.name}</strong>
                     <p>{activePlanet?.description}</p>
                     <span className="celestial-info-tags">{activePlanet?.glyph} {activePlanet?.name} · {activeSign?.element}</span>
                   </>

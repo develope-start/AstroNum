@@ -1955,7 +1955,6 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   border: 0;
   cursor: pointer;
   font: inherit;
-  color: inherit;
   background: transparent;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1981,15 +1980,15 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
 }
 
 .celestial-ruler-zodiac {
-  top: -1.48rem;
+  top: calc(100% + 0.25rem);
   left: 50%;
   transform: translateX(-50%);
 }
 
 .celestial-ruler-planet-symbol {
-  right: -1.42rem;
-  top: 50%;
-  transform: translateY(-50%);
+  top: -1.48rem;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .celestial-ruler:hover,
@@ -2052,15 +2051,16 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   left: 50%;
   z-index: 9;
   display: flex;
-  width: min(16rem, 42vw);
-  min-height: clamp(8rem, 14vw, 10.5rem);
+  width: clamp(8rem, 18vw, 13rem);
+  aspect-ratio: 1;
+  min-height: 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
   border: 1px solid rgba(196, 181, 253, 0.52);
   border-radius: 50%;
-  padding: 1.1rem;
+  padding: clamp(0.75rem, 1.8vw, 1.1rem);
   text-align: center;
   background: radial-gradient(circle at 50% 35%, rgba(38, 43, 80, 0.84), rgba(8, 11, 23, 0.94) 72%);
   box-shadow: 0 0 0 1px rgba(8, 10, 22, 0.62), 0 0 32px var(--celestial-info-glow, rgba(167, 139, 250, 0.28)), inset 0 1px rgba(255, 255, 255, 0.1);
@@ -2138,12 +2138,139 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
     font-size: 0.66rem;
   }
 
-  .celestial-ruler-zodiac { top: -1.28rem; }
-  .celestial-ruler-planet-symbol { right: -1.18rem; }
+  .celestial-ruler-zodiac { top: calc(100% + 0.18rem); }
+  .celestial-ruler-planet-symbol { top: -1.28rem; }
 
   .celestial-info-card {
-    width: min(14rem, 58vw);
-    min-height: 7.5rem;
+    width: clamp(8rem, 36vw, 11rem);
+    min-height: 0;
     padding: 0.85rem;
   }
+}
+
+/* Four compact elemental legends frame the ecliptic without competing with the center. */
+.celestial-element-panel {
+  position: absolute;
+  z-index: 7;
+  display: flex;
+  width: clamp(8.5rem, 17vw, 12.5rem);
+  flex-direction: column;
+  gap: 0.55rem;
+  border: 1px solid var(--element-border);
+  border-radius: 1rem;
+  padding: 0.7rem 0.75rem;
+  color: var(--element-text);
+  background: linear-gradient(145deg, var(--element-bg), rgba(8, 11, 23, 0.76));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 0 16px 38px -30px var(--element-glow), 0 0 24px -14px var(--element-glow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.celestial-element-panel-fire { --element-border: rgba(240, 137, 112, 0.42); --element-text: #f4c0ad; --element-bg: rgba(91, 34, 35, 0.48); --element-glow: rgba(239, 111, 91, 0.55); top: 1.1rem; left: 1.1rem; }
+.celestial-element-panel-earth { --element-border: rgba(177, 209, 151, 0.4); --element-text: #d2e2c1; --element-bg: rgba(39, 70, 56, 0.42); --element-glow: rgba(153, 205, 126, 0.46); top: 1.1rem; right: 1.1rem; }
+.celestial-element-panel-air { --element-border: rgba(132, 205, 232, 0.42); --element-text: #b9e8f4; --element-bg: rgba(27, 67, 86, 0.42); --element-glow: rgba(87, 196, 236, 0.5); bottom: 1.1rem; left: 1.1rem; }
+.celestial-element-panel-water { --element-border: rgba(177, 158, 246, 0.44); --element-text: #d5caff; --element-bg: rgba(54, 39, 96, 0.44); --element-glow: rgba(154, 128, 255, 0.52); bottom: 1.1rem; right: 1.1rem; }
+
+.celestial-element-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.celestial-element-symbol {
+  display: grid;
+  width: 1.9rem;
+  height: 1.9rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 0.65rem;
+  color: var(--element-text);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  line-height: 1;
+  background: rgba(8, 11, 23, 0.4);
+  box-shadow: 0 0 12px var(--element-glow);
+}
+
+.celestial-element-kicker,
+.celestial-element-label {
+  display: block;
+  color: color-mix(in srgb, var(--element-text) 62%, white 38%);
+  font-size: 0.48rem;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.celestial-element-heading strong {
+  display: block;
+  margin-top: 0.08rem;
+  color: var(--element-text);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.celestial-element-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+}
+
+.celestial-element-items {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.celestial-element-items span {
+  display: grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--element-text) 72%, transparent);
+  border-radius: 50%;
+  background: rgba(8, 11, 23, 0.52);
+  box-shadow: 0 0 9px -3px var(--element-glow);
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.celestial-element-items span:hover {
+  background: color-mix(in srgb, var(--element-text) 18%, rgba(8, 11, 23, 0.8));
+  box-shadow: 0 0 13px var(--element-glow);
+  transform: translateY(-1px) scale(1.07);
+}
+
+.celestial-element-items b {
+  color: var(--element-text);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .celestial-element-panel {
+    width: clamp(7rem, 26vw, 8.5rem);
+    gap: 0.35rem;
+    border-radius: 0.78rem;
+    padding: 0.48rem;
+  }
+
+  .celestial-element-panel-fire,
+  .celestial-element-panel-earth { top: 0.55rem; }
+  .celestial-element-panel-air,
+  .celestial-element-panel-water { bottom: 0.55rem; }
+  .celestial-element-panel-fire,
+  .celestial-element-panel-air { left: 0.55rem; }
+  .celestial-element-panel-earth,
+  .celestial-element-panel-water { right: 0.55rem; }
+
+  .celestial-element-symbol { width: 1.5rem; height: 1.5rem; font-size: 1rem; }
+  .celestial-element-heading strong { font-size: 0.68rem; }
+  .celestial-element-items { gap: 0.16rem; }
+  .celestial-element-items span { width: 1.05rem; height: 1.05rem; }
+  .celestial-element-items b { font-size: 0.6rem; }
+  .celestial-element-label { font-size: 0.4rem; }
 }
