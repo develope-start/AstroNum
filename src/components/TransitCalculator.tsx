@@ -7,10 +7,13 @@ import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestC
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
 import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Calendar, Clock, Info } from "lucide-react";
+import { compareWideDates, formatWideDate, isWideDate, parseWideDate } from "@/lib/astro/wideDate";
 
 interface CacheShape {
   birth: BirthValue;
   transitDate: string;
+  transitStartDate?: string;
+  transitEndDate?: string;
   interpretation: string;
   mapNumber?: string | null;
 }
@@ -25,10 +28,91 @@ function offsetDays(days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+interface WideDateInputProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function WideDateInput({ label, value, onChange }: WideDateInputProps) {
+  const [rawValue, setRawValue] = useState(value);
+  const parsed = parseWideDate(value);
+  const rawParsed = parseWideDate(rawValue);
+  const nativeValue = parsed && parsed.year >= 1 && parsed.year <= 9999 ? value : "";
+
+  useEffect(() => {
+    setRawValue(value);
+  }, [value]);
+
+  function handleTextChange(next: string) {
+    if (!/^-?[\d-]*$/.test(next) || next.length > 11) return;
+    setRawValue(next);
+    const nextDate = parseWideDate(next);
+    if (nextDate) onChange(formatWideDate(nextDate));
+  }
+
+  function handleNativeChange(next: string) {
+    if (isWideDate(next)) {
+      setRawValue(next);
+      onChange(next);
+    }
+  }
+
+  return (
+    <div className="flex min-w-0 flex-1 flex-col gap-1.5 text-left">
+      <label className="px-1 text-[0.68rem] font-bold uppercase tracking-wider text-slate-300">{label}</label>
+      <div className={`flex items-center gap-1.5 rounded-xl border bg-[#080418] p-1.5 transition-all ${rawParsed ? "border-amber-500/25" : "border-rose-500/50"}`}>
+        <input
+          type="text"
+          value={rawValue}
+          onChange={(event) => handleTextChange(event.target.value)}
+          onBlur={() => {
+            const nextDate = parseWideDate(rawValue);
+            if (nextDate) {
+              const formatted = formatWideDate(nextDate);
+              setRawValue(formatted);
+              onChange(formatted);
+            }
+          }}
+          inputMode="text"
+          autoComplete="off"
+          spellCheck={false}
+          aria-label={`${label} — YYYY-MM-DD`}
+          aria-invalid={!rawParsed}
+          placeholder="YYYY-MM-DD"
+          className="min-w-0 flex-1 bg-transparent px-2 py-1.5 text-center text-xs font-semibold text-slate-100 outline-none caret-amber-300 placeholder:text-slate-600"
+        />
+        <input
+          type="date"
+          value={nativeValue}
+          min="0001-01-01"
+          max="9999-12-31"
+          onChange={(event) => handleNativeChange(event.target.value)}
+          aria-label={`${label} — კალენდრით არჩევა`}
+          title="კალენდრით არჩევა; -10000-დან 10000 წლამდე წლებისთვის გამოიყენეთ ხელით შეყვანა"
+          className="h-8 w-9 cursor-pointer rounded-lg border border-amber-500/20 bg-purple-950/50 px-1 text-amber-300 [color-scheme:dark]"
+        />
+      </div>
+      <div className="flex items-center justify-between gap-2 px-1 text-[0.65rem] text-slate-500">
+        <span>ფორმატი: YYYY-MM-DD</span>
+        <button
+          type="button"
+          onClick={() => onChange(today())}
+          className={`rounded-full px-2 py-0.5 transition-colors ${value === today() ? "bg-amber-500/25 text-amber-300" : "text-slate-400 hover:text-amber-300"}`}
+        >
+          დღეს
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function TransitCalculator() {
   const me = useMe();
   const [birth, setBirth] = useState<BirthValue>(EMPTY_BIRTH);
   const [transitDate, setTransitDate] = useState(today());
+  const [transitStartDate, setTransitStartDate] = useState(today());
+  const [transitEndDate, setTransitEndDate] = useState(offsetDays(7));
   const [interpretation, setInterpretation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,12 +126,16 @@ export default function TransitCalculator() {
       if (!active) {
         setBirth(EMPTY_BIRTH);
         setTransitDate(today());
+        setTransitStartDate(today());
+        setTransitEndDate(offsetDays(7));
         setInterpretation(null);
         setMapNumber(null);
         return;
       }
       setBirth(cached.birth);
       setTransitDate(cached.transitDate);
+      setTransitStartDate(cached.transitStartDate ?? cached.transitDate);
+      setTransitEndDate(cached.transitEndDate ?? cached.transitDate);
       setInterpretation(cached.interpretation);
       setMapNumber(cached.mapNumber ?? null);
     });
@@ -56,6 +144,18 @@ export default function TransitCalculator() {
   async function calculate(save = false) {
     if (!birth.name || !birth.date || !birth.time || birth.lat === null || birth.timezone === null) {
       setError("შეავსეთ დაბადების მონაცემები და დაადასტურეთ ადგილის მოძებნა.");
+      return;
+    }
+    if (!isWideDate(transitStartDate) || !isWideDate(transitEndDate)) {
+      setError("ტრანზიტის ინტერვალში მიუთითეთ სწორი თარიღები. გამოიყენეთ YYYY-MM-DD ან -YYYY-MM-DD.");
+      return;
+    }
+    if (compareWideDates(transitStartDate, transitEndDate) > 0) {
+      setError("ტრანზიტის ინტერვალის „დან“ თარიღი უნდა იყოს „მდე“ თარიღზე ადრე ან იგივე.");
+      return;
+    }
+    if (!isWideDate(transitDate) || compareWideDates(transitDate, transitStartDate) < 0 || compareWideDates(transitDate, transitEndDate) > 0) {
+      setError("გამოთვლის თარიღი ტრანზიტის არჩეულ ინტერვალში უნდა იყოს.");
       return;
     }
     setLoading(true);
@@ -75,6 +175,8 @@ export default function TransitCalculator() {
             timezone: birth.timezone,
           },
           transitDate,
+          transitStartDate,
+          transitEndDate,
           save,
         }),
       });
@@ -86,7 +188,7 @@ export default function TransitCalculator() {
       setInterpretation(data.interpretation);
       setMapNumber(data.mapNumber ?? null);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("transit", { birth, transitDate, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
+      else saveGuestCache<CacheShape>("transit", { birth, transitDate, transitStartDate, transitEndDate, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {
@@ -102,6 +204,23 @@ export default function TransitCalculator() {
         </div>
 
         <div className="glass-panel relative z-10 space-y-5 rounded-2xl sm:rounded-[28px] p-4 sm:p-7 border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 backdrop-blur-2xl shadow-xl text-center w-full lg:col-span-5 lg:h-full flex flex-col justify-center">
+          <div className="space-y-3 rounded-2xl border border-purple-400/20 bg-purple-950/25 p-3.5 sm:p-4 text-left">
+            <div className="flex items-center justify-center gap-2 text-center">
+              <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-purple-300/30 bg-purple-500/15 text-purple-300">
+                <Clock className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის ინტერვალი</p>
+                <p className="mt-0.5 text-[0.65rem] text-slate-400">ძველი წელთაღრიცხვის 10 000 წლიდან ახალი წელთაღრიცხვის 10 000 წლამდე</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <WideDateInput label="დან" value={transitStartDate} onChange={setTransitStartDate} />
+              <WideDateInput label="მდე" value={transitEndDate} onChange={setTransitEndDate} />
+            </div>
+            <p className="text-center text-[0.65rem] text-slate-500">შეგიძლიათ გამოიყენოთ კალენდრის ამოსქროლავი არჩევა ან პირდაპირ ჩაწეროთ თარიღი. ძველი წელთაღრიცხვისთვის გამოიყენეთ მინუსი, მაგალითად: -10000-01-01.</p>
+          </div>
+
           <div className="flex flex-col items-center justify-center gap-2.5 w-full">
             <div className="flex items-center justify-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
@@ -110,12 +229,7 @@ export default function TransitCalculator() {
               <label className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის თარიღი:</label>
             </div>
 
-            <input
-              type="date"
-              value={transitDate}
-              onChange={(e) => setTransitDate(e.target.value)}
-              className="w-full rounded-xl sm:rounded-2xl border border-amber-500/25 bg-[#080418] px-3 py-2.5 text-xs font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:border-amber-500/40 text-center cursor-pointer"
-            />
+            <WideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={setTransitDate} />
 
             <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold w-full pt-1">
               <button
@@ -220,4 +334,3 @@ export default function TransitCalculator() {
     </div>
   );
 }
-

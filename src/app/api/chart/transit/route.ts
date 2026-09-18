@@ -7,6 +7,9 @@ import { generateTransitInterpretation } from "@/lib/interpretations/natal";
 import { getRequestInfo } from "@/lib/requestInfo";
 import { tryRecordCalculation } from "@/lib/calculationHistory";
 import { allocateMapNumber } from "@/lib/publicIds";
+import { compareWideDates, isWideDate, wideDateToUtcDate } from "@/lib/astro/wideDate";
+
+const wideDateSchema = z.string().refine(isWideDate, "თარიღი უნდა იყოს -10000-დან 10000 წლამდე და ჰქონდეს სწორი თვე/დღე");
 
 const schema = z.object({
   natal: z.object({
@@ -18,7 +21,9 @@ const schema = z.object({
     lon: z.number(),
     timezone: z.string().min(1),
   }),
-  transitDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "ტრანზიტის თარიღის ფორმატია YYYY-MM-DD"),
+  transitDate: wideDateSchema,
+  transitStartDate: wideDateSchema.optional(),
+  transitEndDate: wideDateSchema.optional(),
   houseSystem: z.enum(["whole_sign", "equal", "porphyry", "placidus"]).default("placidus"),
   save: z.boolean().default(false),
   label: z.string().optional(),
@@ -31,6 +36,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "არასწორი მონაცემები" }, { status: 400 });
   }
   const { natal, transitDate, houseSystem, save, label } = parsed.data;
+  const transitStartDate = parsed.data.transitStartDate ?? transitDate;
+  const transitEndDate = parsed.data.transitEndDate ?? transitDate;
+  if (compareWideDates(transitStartDate, transitEndDate) > 0) {
+    return NextResponse.json({ error: "ტრანზიტის ინტერვალში საწყისი თარიღი საბოლოო თარიღზე გვიანია" }, { status: 400 });
+  }
+  if (compareWideDates(transitDate, transitStartDate) < 0 || compareWideDates(transitDate, transitEndDate) > 0) {
+    return NextResponse.json({ error: "ტრანზიტის თარიღი არჩეული ინტერვალის ფარგლებში უნდა იყოს" }, { status: 400 });
+  }
 
   let natalChart;
   try {
@@ -39,11 +52,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "გამოთვლის შეცდომა" }, { status: 400 });
   }
 
-  const transitUtc = new Date(`${transitDate}T12:00:00Z`); // შუადღე UTC — ტრანზიტული დღის საერთო მდგომარეობისთვის
+  const transitUtc = wideDateToUtcDate(transitDate);
+  if (!transitUtc) {
+    return NextResponse.json({ error: "ტრანზიტის თარიღის დამუშავება ვერ მოხერხდა" }, { status: 400 });
+  }
+  // შუადღე UTC — ტრანზიტული დღის საერთო მდგომარეობისთვის
   const { transitPlanets, aspects } = computeTransitAspects(natalChart, transitUtc);
   const interpretation = generateTransitInterpretation(aspects, transitDate);
 
-  const responseBody = { natalChart, transitPlanets, aspects, interpretation };
+  const responseBody = { natalChart, transitPlanets, aspects, interpretation, transitStartDate, transitEndDate };
   const session = await getActiveSessionFromRequest(req);
   if (save && !session) {
     return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
@@ -72,7 +89,7 @@ export async function POST(req: NextRequest) {
     houseSystem,
     ipAddress: requestInfo.ipAddress,
     userAgent: requestInfo.userAgent,
-    resultJson: JSON.stringify({ natalChart, transitPlanets, aspects }),
+    resultJson: JSON.stringify({ natalChart, transitPlanets, aspects, transitStartDate, transitEndDate }),
     interpretation,
   });
 
@@ -84,7 +101,7 @@ export async function POST(req: NextRequest) {
         userId: sessionUserId,
         mapNumber,
         type: "TRANSIT",
-        label: label || `ტრანზიტი — ${natal.name} (${transitDate})`,
+        label: label || `ტრანზიტი — ${natal.name} (${transitStartDate} — ${transitEndDate})`,
         name1: natal.name,
         date1: natal.date,
         time1: natal.time,
@@ -94,7 +111,7 @@ export async function POST(req: NextRequest) {
         tz1: natal.timezone,
         transitDate,
         houseSystem,
-        resultJson: JSON.stringify({ natalChart, transitPlanets, aspects }),
+        resultJson: JSON.stringify({ natalChart, transitPlanets, aspects, transitStartDate, transitEndDate }),
         interpretation,
       },
     });
