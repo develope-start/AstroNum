@@ -139,23 +139,23 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
   }
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col gap-2 text-left">
-      <div className="flex items-center justify-between px-1">
-        <label className="text-[0.72rem] sm:text-xs font-extrabold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+    <div className="flex min-w-0 w-full flex-1 flex-col gap-2 text-left">
+      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 px-1">
+        <label className="text-[0.72rem] font-extrabold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
           <span>{label}</span>
         </label>
-        <span className="text-[0.65rem] font-semibold text-slate-400/80">წელიწადი / თვე / რიცხვი</span>
+        <span className="hidden text-[0.65rem] font-semibold text-slate-400/80 sm:inline">წელიწადი / თვე / რიცხვი</span>
       </div>
 
       <div
-        className={`relative flex min-h-[76px] items-center justify-between gap-1 rounded-2xl border-2 bg-gradient-to-b from-[#130a35] via-[#09041b] to-[#0d0626] p-2.5 sm:min-h-[92px] sm:gap-2 sm:p-3.5 shadow-lg transition-all duration-300 ${
+        className={`relative grid min-h-[76px] w-full min-w-0 grid-cols-[minmax(0,1.55fr)_auto_minmax(0,0.8fr)_auto_minmax(0,0.95fr)_auto] items-center gap-1 rounded-2xl border-2 bg-gradient-to-b from-[#130a35] via-[#09041b] to-[#0d0626] p-2.5 sm:min-h-[92px] sm:gap-2 sm:p-3.5 shadow-lg transition-all duration-300 ${
           isValid
             ? "border-amber-400/50 shadow-[0_0_25px_rgba(245,158,11,0.25)] focus-within:border-amber-400 focus-within:shadow-[0_0_35px_rgba(245,158,11,0.5)] focus-within:ring-2 focus-within:ring-amber-500/30"
             : "border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.3)]"
         }`}
       >
         {/* Year segment */}
-        <div className="flex flex-col items-center">
+        <div className="flex min-w-0 w-full items-center justify-center">
           <input
             ref={yearRef}
             type="text"
@@ -174,15 +174,15 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             autoComplete="off"
             spellCheck={false}
             aria-label={`${label} — წელიწადი`}
-            className="w-24 sm:w-36 bg-transparent text-center text-lg sm:text-2xl font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.9rem,4.2vw,1.5rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
           />
         </div>
 
         {/* Separator 1 */}
-        <span className="text-amber-300/80 font-black text-2xl sm:text-3xl select-none px-0.5">/</span>
+        <span className="select-none px-0.5 text-xl font-black text-amber-300/80 sm:px-1 sm:text-3xl">/</span>
 
         {/* Month segment */}
-        <div className="flex flex-col items-center">
+        <div className="flex min-w-0 w-full items-center justify-center">
           <input
             ref={monthRef}
             type="text"
@@ -202,15 +202,15 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             autoComplete="off"
             spellCheck={false}
             aria-label={`${label} — თვე`}
-            className="w-14 sm:w-20 bg-transparent text-center text-lg sm:text-2xl font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.9rem,4.2vw,1.5rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
           />
         </div>
 
         {/* Separator 2 */}
-        <span className="text-amber-300/80 font-black text-2xl sm:text-3xl select-none px-0.5">/</span>
+        <span className="select-none px-0.5 text-xl font-black text-amber-300/80 sm:px-1 sm:text-3xl">/</span>
 
         {/* Day segment */}
-        <div className="flex flex-col items-center">
+        <div className="flex min-w-0 w-full items-center justify-center">
           <input
             ref={dayRef}
             type="text"
@@ -227,12 +227,12 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             autoComplete="off"
             spellCheck={false}
             aria-label={`${label} — რიცხვი`}
-            className="w-16 sm:w-24 bg-transparent text-center text-lg sm:text-2xl font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.9rem,4.2vw,1.5rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
           />
         </div>
 
         {/* Calendar Picker Trigger */}
-        <div className="ml-auto pl-1">
+        <div className="flex items-center justify-end pl-1">
           <input
             type="date"
             value={nativeValue}
@@ -241,7 +241,7 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             onChange={(event) => handleNativeChange(event.target.value)}
             aria-label={`${label} — კალენდრით არჩევა`}
             title="კალენდრით არჩევა / სქროლვა; ძველი წელთაღრიცხვისთვის გამოიყენეთ ხელით ჩაწერილი წელი"
-            className="h-9 w-9 sm:h-10 sm:w-10 cursor-pointer rounded-xl border border-amber-400/40 bg-purple-950/70 p-1 text-amber-300 hover:border-amber-300 hover:bg-purple-900 transition-all shadow-md [color-scheme:dark]"
+            className="h-9 w-9 cursor-pointer rounded-xl border border-amber-400/40 bg-purple-950/70 p-1 text-amber-300 shadow-md transition-all hover:border-amber-300 hover:bg-purple-900 sm:h-10 sm:w-10 [color-scheme:dark]"
           />
         </div>
       </div>
@@ -340,27 +340,27 @@ export default function TransitCalculator() {
 
   return (
     <div className="mx-auto w-full max-w-full space-y-4 sm:space-y-6 text-center overflow-x-hidden">
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-12 lg:items-start text-center w-full">
-        <div className="relative z-30 text-center w-full lg:col-span-7">
+      <div className="grid w-full min-w-0 gap-4 text-center sm:gap-6 lg:grid-cols-12 lg:items-stretch">
+        <div className="relative z-30 min-w-0 w-full text-center lg:col-span-7">
           <BirthFields value={birth} onChange={setBirth} legend="01. ნატალური მონაცემები" />
         </div>
 
-        <div className="glass-panel relative z-10 space-y-5 rounded-2xl sm:rounded-[28px] p-4 sm:p-7 border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 backdrop-blur-2xl shadow-xl text-center w-full lg:col-span-5 lg:h-full flex flex-col justify-center">
-          <div className="space-y-3 rounded-2xl border border-purple-400/20 bg-purple-950/25 p-3.5 sm:p-4 text-left">
-            <div className="flex items-center justify-center gap-2 text-center">
+        <div className="glass-panel relative z-10 flex min-w-0 w-full flex-col justify-center space-y-5 overflow-hidden rounded-2xl border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 p-4 text-center shadow-xl backdrop-blur-2xl sm:rounded-[28px] sm:p-7 lg:col-span-5 lg:h-full">
+          <div className="mx-auto w-full max-w-2xl space-y-3 rounded-2xl border border-purple-400/20 bg-purple-950/25 p-3.5 text-left sm:p-4">
+            <div className="flex items-start justify-center gap-2 text-center">
               <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-purple-300/30 bg-purple-500/15 text-purple-300">
                 <Clock className="h-4 w-4" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის ინტერვალი</p>
-                <p className="mt-0.5 text-[0.65rem] text-slate-400">ძველი წელთაღრიცხვის 10 000 წლიდან ახალი წელთაღრიცხვის 10 000 წლამდე</p>
+                <p className="mx-auto mt-0.5 max-w-[34rem] text-[0.65rem] leading-relaxed text-slate-400">ძველი წელთაღრიცხვის 10 000 წლიდან ახალი წელთაღრიცხვის 10 000 წლამდე</p>
               </div>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
               <WideDateInput label="დან" value={transitStartDate} onChange={setTransitStartDate} autoFocus />
               <WideDateInput label="მდე" value={transitEndDate} onChange={setTransitEndDate} />
             </div>
-            <p className="text-center text-[0.65rem] text-slate-500">შეგიძლიათ გამოიყენოთ კალენდრის ამოსქროლავი არჩევა ან პირდაპირ ჩაწეროთ თარიღი. ძველი წელთაღრიცხვისთვის გამოიყენეთ მინუსი, მაგალითად: -10000-01-01.</p>
+            <p className="mx-auto max-w-xl text-center text-[0.65rem] leading-relaxed text-slate-500">შეგიძლიათ გამოიყენოთ კალენდრის ამოსქროლავი არჩევა ან პირდაპირ ჩაწეროთ თარიღი. ძველი წელთაღრიცხვისთვის გამოიყენეთ მინუსი, მაგალითად: -10000-01-01.</p>
           </div>
 
           <div className="flex flex-col items-center justify-center gap-2.5 w-full">
