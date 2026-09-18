@@ -1351,3 +1351,154 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   .element-frame-air { right: 8%; bottom: 8%; }
   .element-frame-water { bottom: 8%; left: 8%; }
 }
+
+/* Admin collections are intentionally quiet on entry; details open only on demand. */
+.admin-collapsible-section,
+.admin-trash-section {
+  display: block;
+  border: 1px solid rgba(168, 178, 204, 0.16);
+  border-radius: 1.1rem;
+  background: linear-gradient(145deg, rgba(19, 23, 39, 0.62), rgba(9, 12, 22, 0.72));
+  box-shadow: 0 18px 48px -38px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.admin-collapsible-summary,
+.admin-trash-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 4.25rem;
+  padding: 1rem 1.15rem;
+  cursor: pointer;
+  list-style: none;
+  color: #d9ddec;
+}
+
+.admin-collapsible-summary::-webkit-details-marker,
+.admin-trash-summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-collapsible-summary h2,
+.admin-collapsible-summary h3 {
+  margin: 0 !important;
+  font-size: clamp(1rem, 2vw, 1.35rem) !important;
+  line-height: 1.35;
+}
+
+.admin-section-total,
+.admin-summary-count {
+  flex: 0 0 auto;
+  color: #adb8d0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.admin-summary-caret {
+  flex: 0 0 auto;
+  color: #b8acef;
+  font-size: 1rem;
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.admin-collapsible-section[open] > .admin-collapsible-summary,
+.admin-trash-section[open] > .admin-trash-summary {
+  border-bottom: 1px solid rgba(168, 178, 204, 0.12);
+  background: rgba(99, 102, 241, 0.055);
+}
+
+.admin-collapsible-section[open] .admin-summary-caret,
+.admin-trash-section[open] .admin-summary-caret {
+  color: #ddd6fe;
+  transform: rotate(180deg);
+}
+
+.admin-collapsible-content {
+  padding: 1rem 1.15rem 1.15rem;
+}
+
+.admin-page details[data-map-count] > summary::before {
+  content: "რუკები სულ [" attr(data-map-count) "]";
+  flex: 0 0 auto;
+  order: 2;
+  margin-left: auto;
+  border: 1px solid rgba(167, 139, 250, 0.22);
+  border-radius: 0.55rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(99, 102, 241, 0.08);
+  color: #b9b0e9;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-trash-section > .mb-3 {
+  padding: 1rem 1.15rem 0;
+}
+
+.admin-trash-section > .mb-3 > h2 {
+  display: none;
+}
+
+/* The old dashboard used yellow as a primary UI color. Keep it for data meaning, not chrome. */
+.admin-page .animate-pulse,
+.admin-page .animate-ping,
+.glass-panel .animate-pulse,
+.glass-panel .animate-ping {
+  animation: none !important;
+}
+
+.glass-panel .text-amber-200,
+.glass-panel .text-amber-300,
+.glass-panel .text-amber-400 {
+  color: #c8c0f2 !important;
+}
+
+.glass-panel [class*="border-amber"] {
+  border-color: rgba(167, 139, 250, 0.28) !important;
+}
+
+.glass-panel [class*="bg-amber"] {
+  background-color: rgba(99, 102, 241, 0.1) !important;
+}
+
+.admin-page .admin-header-actions > a {
+  border: 1px solid rgba(167, 139, 250, 0.32) !important;
+  border-radius: 0.78rem !important;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(26, 31, 58, 0.72)) !important;
+  color: #d8d1f6 !important;
+  box-shadow: 0 14px 28px -25px rgba(99, 102, 241, 0.9) !important;
+}
+
+.admin-page .admin-header-actions > a:hover {
+  border-color: rgba(196, 181, 253, 0.58) !important;
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.3), rgba(35, 42, 78, 0.78)) !important;
+  box-shadow: 0 18px 32px -24px rgba(129, 140, 248, 0.95) !important;
+}
+
+@media (max-width: 640px) {
+  .admin-collapsible-summary,
+  .admin-trash-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-height: 0;
+    padding: 0.9rem;
+  }
+
+  .admin-collapsible-content {
+    padding: 0.8rem;
+  }
+
+  .admin-section-total {
+    white-space: normal;
+  }
+
+  .admin-page details[data-map-count] > summary::before {
+    order: 0;
+    margin-left: 0;
+  }
+}

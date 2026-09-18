@@ -520,6 +520,10 @@ export default function AdminUsersPage() {
   const unregisteredCount = filteredData?.guestCalculationGroups.length ?? 0;
   const deletedUsersCount = filteredData?.deletedUsers.length ?? 0;
   const deletedCalculationsCount = filteredData?.deletedCalculations.length ?? 0;
+  const registeredMapCount = filteredData?.users.reduce((total, user) => total + user.calculations.length, 0) ?? 0;
+  const unregisteredMapCount = filteredData?.guestCalculationGroups.reduce((total, group) => total + group.calculations.length, 0) ?? 0;
+  const deletedUserMapCount = filteredData?.deletedUsers.reduce((total, user) => total + user.calculationCount, 0) ?? 0;
+  const deletedCalculationMapCount = filteredData?.deletedCalculations.length ?? 0;
 
   useEffect(() => {
     setSelectedDeletedUsers((current) => current.filter((id) => filteredData?.deletedUsers.some((user) => user.id === id)));
@@ -680,10 +684,14 @@ export default function AdminUsersPage() {
       </section>
 
       {showRegistered && <section className="mb-8">
+        <details className="admin-collapsible-section group/managed">
+          <summary className="admin-collapsible-summary">
         <h2 className="font-display mb-4 text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-300 to-green-400 drop-shadow-[0_0_18px_rgba(52,211,153,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(52,211,153,0.95)] hover:scale-[1.01] cursor-default">
           ✅ რეგისტრირებული მომხმარებლები
         </h2>
-        <div className="space-y-4">
+          <span className="admin-section-total">მომხმარებლები [{registeredCount}] · რუკები სულ [{registeredMapCount}]</span>
+          </summary>
+        <div className="space-y-4 admin-collapsible-content">
           {filteredData?.users.length === 0 && <p className="text-xs text-parchment-dim">ამ ფილტრებით რეგისტრირებული მომხმარებელი ვერ მოიძებნა.</p>}
           {filteredData?.users.map((user) => {
             const latestCalc = user.calculations[0];
@@ -692,7 +700,7 @@ export default function AdminUsersPage() {
             const calcTime = latestCalc ? formatDate(latestCalc.createdAt) : formatDate(user.createdAt);
 
             return (
-              <details key={user.id} className="group rounded-xl border border-line/80 bg-ink-2/60 p-4 transition-all duration-200">
+              <details key={user.id} data-map-count={user.calculations.length} className="group rounded-xl border border-line/80 bg-ink-2/60 p-4 transition-all duration-200">
                 <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">
@@ -794,13 +802,18 @@ export default function AdminUsersPage() {
             );
           })}
         </div>
+        </details>
       </section>}
 
       {showUnregistered && <section className="mb-8">
+        <details className="admin-collapsible-section group/managed">
+          <summary className="admin-collapsible-summary">
         <h2 className="font-display mb-4 text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-rose-500 drop-shadow-[0_0_18px_rgba(244,63,94,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(244,63,94,0.95)] hover:scale-[1.01] cursor-default">
           ⚠️ დაურეგისტრირებელი მომხმარებლები
         </h2>
-        <div className="space-y-3">
+          <span className="admin-section-total">მომხმარებლები [{unregisteredCount}] · რუკები სულ [{unregisteredMapCount}]</span>
+          </summary>
+        <div className="space-y-3 admin-collapsible-content">
           {filteredData?.guestCalculations.length === 0 && <p className="text-xs text-parchment-dim">ამ ფილტრებით დაურეგისტრირებელი ჩანაწერი ვერ მოიძებნა.</p>}
           {filteredData?.guestCalculationGroups.map((group) => {
             const calculation = group.calculations.find((item) => item.id === selectedGuestCalculations[group.id]) ?? group.calculations[0];
@@ -810,7 +823,7 @@ export default function AdminUsersPage() {
             const calcTime = formatDate(calculation.createdAt);
 
             return (
-              <details key={calculation.id} className="group rounded-xl border border-red-500/50 bg-red-500/5 p-4 transition-all duration-200">
+              <details key={calculation.id} data-map-count={group.calculations.length} className="group rounded-xl border border-red-500/50 bg-red-500/5 p-4 transition-all duration-200">
                 <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-2.5 py-0.5 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
@@ -856,9 +869,15 @@ export default function AdminUsersPage() {
             );
           })}
         </div>
+        </details>
       </section>}
 
       {showDeletedUsers && <section id="deleted-users-section" className="scroll-mt-6">
+        <details className="admin-trash-section">
+          <summary className="admin-trash-summary">
+            <span>🗑️ წაშლილი ანგარიშები ({deletedUsersCount}) · რუკები სულ [{deletedUserMapCount}]</span>
+            <span className="admin-summary-caret">▾</span>
+          </summary>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-display text-xl sm:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-pink-300 to-red-400 drop-shadow-[0_0_18px_rgba(244,63,94,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(244,63,94,0.95)] hover:scale-[1.01] cursor-default">
             🗑️ ურნა — წაშლილი ანგარიშები
@@ -881,7 +900,7 @@ export default function AdminUsersPage() {
         <div className="space-y-3">
           {filteredData?.deletedUsers.length === 0 && <p className="text-xs text-parchment-dim">ამ ფილტრებით წაშლილი ანგარიში ვერ მოიძებნა.</p>}
           {filteredData?.deletedUsers.map((user) => (
-            <details key={user.id} className="group rounded-xl border border-line/70 bg-ink-2/40 p-4 transition-all duration-200">
+            <details key={user.id} data-map-count={user.calculationCount} className="group rounded-xl border border-line/70 bg-ink-2/40 p-4 transition-all duration-200">
               <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
                   <input
@@ -931,9 +950,15 @@ export default function AdminUsersPage() {
             </details>
           ))}
         </div>
+        </details>
       </section>}
 
       {showDeletedCalculations && <section id="deleted-calculations-section" className="scroll-mt-6">
+        <details className="admin-trash-section">
+          <summary className="admin-trash-summary">
+            <span>🗑️ წაშლილი რუკები ({deletedCalculationsCount}) · რუკები სულ [{deletedCalculationMapCount}]</span>
+            <span className="admin-summary-caret">▾</span>
+          </summary>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-display text-xl sm:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-violet-300 to-indigo-400 drop-shadow-[0_0_18px_rgba(168,85,247,0.6)] transition-all duration-300 hover:drop-shadow-[0_0_25px_rgba(168,85,247,0.95)] hover:scale-[1.01] cursor-default">
             🗑️ ურნა — წაშლილი რუკები
@@ -956,7 +981,7 @@ export default function AdminUsersPage() {
         <div className="space-y-3">
           {filteredData?.deletedCalculations.length === 0 && <p className="text-xs text-parchment-dim">ამ ფილტრებით წაშლილი რუკა ვერ მოიძებნა.</p>}
           {filteredData?.deletedCalculations.map((calculation) => (
-            <details key={calculation.id} className="group rounded-xl border border-line/70 bg-ink-2/40 p-4 transition-all duration-200">
+            <details key={calculation.id} data-map-count="1" className="group rounded-xl border border-line/70 bg-ink-2/40 p-4 transition-all duration-200">
               <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
                   <input
@@ -1009,6 +1034,7 @@ export default function AdminUsersPage() {
             </details>
           ))}
         </div>
+        </details>
       </section>}
 
       {modal?.kind === "delete-user" && modal.user && (

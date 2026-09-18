@@ -332,7 +332,7 @@ function RegisteredUserCalculationCard({
   const calcTime = formatDateTime(calculation.createdAt);
 
   return (
-    <details className="group rounded-xl border border-line bg-ink-2/60 p-4 text-sm transition-all duration-300 hover:border-emerald-500/40 shadow-lg">
+    <details data-map-count={group.calculations.length} className="group rounded-xl border border-line bg-ink-2/60 p-4 text-sm transition-all duration-300 hover:border-emerald-500/40 shadow-lg">
       <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.4)]">
@@ -478,7 +478,7 @@ function GuestCalculationCard({
   const calcTime = formatDateTime(calculation.createdAt);
 
   return (
-    <details className="group rounded-xl border border-red-500/50 bg-red-500/5 p-4 text-sm transition-all duration-300 hover:border-rose-500/70 shadow-lg">
+    <details data-map-count={group.calculations.length} className="group rounded-xl border border-red-500/50 bg-red-500/5 p-4 text-sm transition-all duration-300 hover:border-rose-500/70 shadow-lg">
       <summary className="flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/60 px-2.5 py-0.5 text-xs font-bold text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]">
@@ -888,6 +888,8 @@ export default function AdminPage() {
     filteredGuestCalculationGroups.reduce((total, group) => total + group.calculations.length, 0);
   const totalCalculationCount =
     (calculations?.length ?? 0) + guestCalculationGroups.reduce((total, group) => total + group.calculations.length, 0);
+  const filteredRegisteredMapCount = filteredRegisteredGroups.reduce((total, group) => total + group.calculations.length, 0);
+  const filteredGuestMapCount = filteredGuestCalculationGroups.reduce((total, group) => total + group.calculations.length, 0);
 
   const stats = useMemo(() => {
     const now = Date.now();
@@ -1246,11 +1248,12 @@ export default function AdminPage() {
 
       {/* Registered Users Section */}
       <section id="registered-calculations-section" className="mb-8 scroll-mt-6">
-        <details open className="group/section rounded-2xl border border-sky-500/30 bg-sky-950/10 p-5 backdrop-blur-sm transition-all">
+         <details className="group/section rounded-2xl border border-sky-500/30 bg-sky-950/10 p-5 backdrop-blur-sm transition-all">
           <summary className="flex cursor-pointer select-none items-center justify-between gap-3">
             <h3 className="font-display text-lg sm:text-xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-blue-400 drop-shadow-[0_0_15px_rgba(56,189,248,0.55)]">
               ✅ რეგისტრირებული მომხმარებლების რუკების ისტორია ({filteredRegisteredGroups.length})
-            </h3>
+             </h3>
+             <span className="admin-section-total">რუკები სულ [{filteredRegisteredMapCount}]</span>
             <div className="flex items-center gap-3">
               {filteredGuestCalculationGroups.length > 0 && (
                 <button
@@ -1304,11 +1307,12 @@ export default function AdminPage() {
       {/* Unregistered Users Section */}
       {filteredGuestCalculationGroups.length > 0 && (
         <section id="guest-calculations-section" className="mb-8 scroll-mt-6">
-          <details open className="group/section rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5 backdrop-blur-sm transition-all">
+           <details className="group/section rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5 backdrop-blur-sm transition-all">
             <summary className="flex cursor-pointer select-none items-center justify-between gap-3">
             <h2 className="font-display text-lg sm:text-xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-rose-500 drop-shadow-[0_0_14px_rgba(244,63,94,0.45)]">
                 ⚠️ დაურეგისტრირებელი მომხმარებლების რუკების ისტორია ({filteredGuestCalculationGroups.length})
-              </h2>
+               </h2>
+               <span className="admin-section-total">რუკები სულ [{filteredGuestMapCount}]</span>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
