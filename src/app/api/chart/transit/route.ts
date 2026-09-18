@@ -2,12 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
-import { computeNatalChart, computeTransitAspects } from "@/lib/astro/chart";
-import { generateTransitInterpretation } from "@/lib/interpretations/natal";
+import { computeNatalChart, computeTransitAspects, computeTransitInterval } from "@/lib/astro/chart";
+import { generateTransitInterpretation, generateTransitIntervalInterpretation } from "@/lib/interpretations/natal";
 import { getRequestInfo } from "@/lib/requestInfo";
 import { tryRecordCalculation } from "@/lib/calculationHistory";
 import { allocateMapNumber } from "@/lib/publicIds";
 import { compareWideDates, isWideDate, wideDateToUtcDate } from "@/lib/astro/wideDate";
+import type { CalculationOptions } from "@/lib/astro/ephemeris";
+
+const calculationSchema = z.object({
+  ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
+  zodiac: z.enum(["tropical", "sidereal"]).default("tropical"),
+  siderealMode: z.number().int().min(0).max(255).default(1),
+  nodeType: z.enum(["mean", "true"]).default("mean"),
+  topocentric: z.boolean().default(false),
+  altitudeMeters: z.number().finite().min(-500).max(10000).default(0),
+  includeAsteroids: z.boolean().default(false),
+}) satisfies z.ZodType<CalculationOptions>;
 
 const wideDateSchema = z.string().refine(isWideDate, "თარიღი უნდა იყოს -10000-დან 10000 წლამდე და ჰქონდეს სწორი თვე/დღე");
 
@@ -20,6 +31,7 @@ const schema = z.object({
     lat: z.number(),
     lon: z.number(),
     timezone: z.string().min(1),
+    calculation: calculationSchema.optional(),
   }),
   transitDate: wideDateSchema,
   transitStartDate: wideDateSchema.optional(),
@@ -27,6 +39,7 @@ const schema = z.object({
   houseSystem: z.enum(["whole_sign", "equal", "porphyry", "placidus"]).default("placidus"),
   save: z.boolean().default(false),
   label: z.string().optional(),
+  calculation: calculationSchema.optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -35,7 +48,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "არასწორი მონაცემები" }, { status: 400 });
   }
-  const { natal, transitDate, houseSystem, save, label } = parsed.data;
+  const { natal, transitDate, houseSystem, save, label, calculation: calculationOptions } = parsed.data;
   const transitStartDate = parsed.data.transitStartDate ?? transitDate;
   const transitEndDate = parsed.data.transitEndDate ?? transitDate;
   if (compareWideDates(transitStartDate, transitEndDate) > 0) {
@@ -47,7 +60,7 @@ export async function POST(req: NextRequest) {
 
   let natalChart;
   try {
-    natalChart = computeNatalChart(natal, houseSystem);
+    natalChart = computeNatalChart({ ...natal, calculation: calculationOptions ?? natal.calculation }, houseSystem);
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "გამოთვლის შეცდომა" }, { status: 400 });
   }
@@ -58,9 +71,16 @@ export async function POST(req: NextRequest) {
   }
   // შუადღე UTC — ტრანზიტული დღის საერთო მდგომარეობისთვის
   const { transitPlanets, aspects } = computeTransitAspects(natalChart, transitUtc);
-  const interpretation = generateTransitInterpretation(aspects, transitDate);
+  const transitStartUtc = wideDateToUtcDate(transitStartDate);
+  const transitEndUtc = wideDateToUtcDate(transitEndDate);
+  const interval = transitStartUtc && transitEndUtc
+    ? computeTransitInterval(natalChart, transitStartUtc, transitEndUtc)
+    : null;
+  const interpretation = interval
+    ? generateTransitIntervalInterpretation(aspects, transitDate, transitStartDate, transitEndDate, interval.peakAspects)
+    : generateTransitInterpretation(aspects, transitDate);
 
-  const responseBody = { natalChart, transitPlanets, aspects, interpretation, transitStartDate, transitEndDate };
+  const responseBody = { natalChart, transitPlanets, aspects, interpretation, transitStartDate, transitEndDate, interval };
   const session = await getActiveSessionFromRequest(req);
   if (save && !session) {
     return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
@@ -89,7 +109,7 @@ export async function POST(req: NextRequest) {
     houseSystem,
     ipAddress: requestInfo.ipAddress,
     userAgent: requestInfo.userAgent,
-    resultJson: JSON.stringify({ natalChart, transitPlanets, aspects, transitStartDate, transitEndDate }),
+    resultJson: JSON.stringify({ natalChart, transitPlanets, aspects, transitStartDate, transitEndDate, interval }),
     interpretation,
   });
 
@@ -111,7 +131,7 @@ export async function POST(req: NextRequest) {
         tz1: natal.timezone,
         transitDate,
         houseSystem,
-        resultJson: JSON.stringify({ natalChart, transitPlanets, aspects, transitStartDate, transitEndDate }),
+        resultJson: JSON.stringify({ natalChart, transitPlanets, aspects, transitStartDate, transitEndDate, interval }),
         interpretation,
       },
     });

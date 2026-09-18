@@ -10,6 +10,7 @@ import {
 } from "./positions";
 import { computeAspects, AspectHit } from "./aspects";
 import { parseWideDate } from "./wideDate";
+import { CalculationOptions, metadata as ephemerisMetadata, EphemerisMetadata } from "./ephemeris";
 
 export interface BirthInput {
   date: string; // YYYY-MM-DD
@@ -17,6 +18,7 @@ export interface BirthInput {
   timezone: string; // IANA, მაგ. Asia/Tbilisi
   lat: number;
   lon: number;
+  calculation?: CalculationOptions;
 }
 
 export interface NatalResult {
@@ -30,6 +32,9 @@ export interface NatalResult {
   houseSystem: HouseSystem;
   planetHouses: Record<string, number>;
   aspects: AspectHit[];
+  latitude: number;
+  longitude: number;
+  ephemeris: EphemerisMetadata;
 }
 
 export function birthInputToUtcDate(input: BirthInput): Date {
@@ -52,13 +57,14 @@ export function birthInputToUtcDate(input: BirthInput): Date {
 
 export function computeNatalChart(input: BirthInput, houseSystem: HouseSystem = "whole_sign"): NatalResult {
   const utcDate = birthInputToUtcDate(input);
+  const calculation = input.calculation;
 
-  const planets = computePlanetPositions(utcDate);
-  const northNode = computeNorthNode(utcDate);
+  const planets = computePlanetPositions(utcDate, calculation, input.lon, input.lat);
+  const northNode = computeNorthNode(utcDate, calculation, input.lon, input.lat);
   const allPoints = [...planets, northNode];
 
-  const angles = computeAngles(utcDate, input.lon, input.lat);
-  const houses = computeHouseCusps(angles, houseSystem);
+  const angles = computeAngles(utcDate, input.lon, input.lat, calculation);
+  const houses = computeHouseCusps(angles, houseSystem, utcDate, input.lon, input.lat, calculation);
 
   const planetHouses: Record<string, number> = {};
   for (const p of allPoints) {
@@ -78,6 +84,9 @@ export function computeNatalChart(input: BirthInput, houseSystem: HouseSystem = 
     houseSystem,
     planetHouses,
     aspects,
+    latitude: input.lat,
+    longitude: input.lon,
+    ephemeris: ephemerisMetadata(calculation, utcDate),
   };
 }
 
@@ -89,9 +98,68 @@ export function computeTransitAspects(natal: NatalResult, transitDate: Date): {
   transitPlanets: PlanetPosition[];
   aspects: AspectHit[];
 } {
-  const transitPlanets = computePlanetPositions(transitDate);
-  const transitNode = computeNorthNode(transitDate);
+  const calculation = natal.ephemeris;
+  const options: CalculationOptions = {
+    ephemeris: calculation.source,
+    zodiac: calculation.zodiac,
+    nodeType: calculation.nodeType,
+    topocentric: calculation.topocentric,
+    siderealMode: calculation.siderealMode,
+  };
+  const transitPlanets = computePlanetPositions(transitDate, options, natal.longitude, natal.latitude);
+  const transitNode = computeNorthNode(transitDate, options, natal.longitude, natal.latitude);
   const allTransit = [...transitPlanets, transitNode];
   const aspects = computeAspects(allTransit, natal.planets);
   return { transitPlanets: allTransit, aspects };
+}
+
+export interface TransitIntervalSample {
+  utcIso: string;
+  aspects: AspectHit[];
+}
+
+export interface TransitIntervalResult {
+  startUtcIso: string;
+  endUtcIso: string;
+  stepHours: number;
+  samples: TransitIntervalSample[];
+  peakAspects: AspectHit[];
+}
+
+/** Scan an interval instead of silently calculating only its first date. */
+export function computeTransitInterval(natal: NatalResult, start: Date, end: Date): TransitIntervalResult {
+  const startMs = start.getTime();
+  const endMs = end.getTime();
+  if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs < startMs) {
+    throw new Error("Invalid transit interval");
+  }
+  const durationHours = Math.max(0, (endMs - startMs) / 3_600_000);
+  const maxSamples = 2_000;
+  const preferredStepHours = durationHours <= 48 ? 1 : durationHours <= 370 * 24 ? 6 : 24;
+  const stepHours = Math.max(
+    preferredStepHours,
+    Math.ceil(durationHours / maxSamples / preferredStepHours) * preferredStepHours,
+  );
+  const stepMs = stepHours * 3_600_000;
+  const samples: TransitIntervalSample[] = [];
+  for (let timestamp = startMs; timestamp <= endMs && samples.length < maxSamples; timestamp += stepMs) {
+    const date = new Date(timestamp);
+    samples.push({ utcIso: date.toISOString(), aspects: computeTransitAspects(natal, date).aspects });
+  }
+  if (!samples.length || new Date(samples[samples.length - 1].utcIso).getTime() < endMs) {
+    const date = new Date(endMs);
+    samples.push({ utcIso: date.toISOString(), aspects: computeTransitAspects(natal, date).aspects });
+  }
+  const peakAspects = samples
+    .flatMap((sample) => sample.aspects)
+    .sort((a, b) => a.orb - b.orb)
+    .filter((hit, index, all) => all.findIndex((candidate) => candidate.a === hit.a && candidate.b === hit.b && candidate.aspect === hit.aspect) === index)
+    .slice(0, 30);
+  return {
+    startUtcIso: start.toISOString(),
+    endUtcIso: end.toISOString(),
+    stepHours,
+    samples,
+    peakAspects,
+  };
 }

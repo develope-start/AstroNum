@@ -19,6 +19,7 @@ const PLANET_GLYPHS: Record<string, string> = {
   Neptune: "♆",
   Pluto: "♇",
   TrueNode: "☊",
+  MeanNode: "☊",
 };
 
 // საერთაშორისო ასტროლოგიური სტანდარტის მიხედვით აღიარებული პლანეტებისა და მნათობების ფერები
@@ -34,6 +35,7 @@ const PLANET_COLORS: Record<string, string> = {
   Neptune: "#818CF8",  // ♆ ოკეანისფერი იასამნისფერი ნეპტუნი
   Pluto: "#E879F9",    // ♇ კოსმოსური მაგენტა პლუტონი
   TrueNode: "#2DD4BF", // ☊ ტირკიზისფერი ჩრდილოეთ კვანძი
+  MeanNode: "#2DD4BF",
 };
 
 export interface WheelPlanet {

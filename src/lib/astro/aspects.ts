@@ -35,7 +35,8 @@ function angularDistance(a: number, b: number): number {
  */
 export function computeAspects(
   pointsA: { name: string; longitude: number; speed?: number }[],
-  pointsB?: { name: string; longitude: number; speed?: number }[]
+  pointsB?: { name: string; longitude: number; speed?: number }[],
+  aspectDefs: AspectDef[] = MAJOR_ASPECTS,
 ): AspectHit[] {
   const hits: AspectHit[] = [];
   const listB = pointsB ?? pointsA;
@@ -49,12 +50,17 @@ export function computeAspects(
       if (sameSet && p1.name === p2.name) continue;
 
       const dist = angularDistance(p1.longitude, p2.longitude);
-      for (const def of MAJOR_ASPECTS) {
+      for (const def of aspectDefs) {
         const delta = Math.abs(dist - def.angle);
         if (delta <= def.orb) {
           // მიახლოებადია თუ არა: სწრაფი სხეული ნელს უახლოვდება ზუსტ კუთხეს
-          const relSpeed = (p1.speed ?? 0) - (p2.speed ?? 0);
-          const applying = relSpeed !== 0 ? (dist < def.angle ? relSpeed > 0 : relSpeed < 0) : false;
+          const probeDays = 1 / 24;
+          const probeDistance = angularDistance(
+            p1.longitude + (p1.speed ?? 0) * probeDays,
+            p2.longitude + (p2.speed ?? 0) * probeDays,
+          );
+          const probeDelta = Math.abs(probeDistance - def.angle);
+          const applying = probeDelta < delta - 1e-9;
           hits.push({
             a: p1.name,
             b: p2.name,

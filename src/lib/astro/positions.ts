@@ -1,4 +1,15 @@
 import * as Astronomy from "astronomy-engine";
+import {
+  calculateSwissHouses,
+  calculateSwissNode,
+  calculateSwissPosition,
+  CalculationOptions,
+  isSwissAvailable,
+  isSwissAvailableForDate,
+  resolveCalculationOptions,
+  SWISS_ASTEROIDS,
+  SWISS_PLANETS,
+} from "./ephemeris";
 
 export type HouseSystem = "whole_sign" | "equal" | "porphyry" | "placidus";
 
@@ -25,17 +36,17 @@ export interface HouseCusps {
   cusps: number[]; // 12 მნიშვნელობა, I-დან XII-მდე, გრადუსებში
 }
 
-const BODIES: Array<{ key: Astronomy.Body; name: string }> = [
-  { key: Astronomy.Body.Sun, name: "Sun" },
-  { key: Astronomy.Body.Moon, name: "Moon" },
-  { key: Astronomy.Body.Mercury, name: "Mercury" },
-  { key: Astronomy.Body.Venus, name: "Venus" },
-  { key: Astronomy.Body.Mars, name: "Mars" },
-  { key: Astronomy.Body.Jupiter, name: "Jupiter" },
-  { key: Astronomy.Body.Saturn, name: "Saturn" },
-  { key: Astronomy.Body.Uranus, name: "Uranus" },
-  { key: Astronomy.Body.Neptune, name: "Neptune" },
-  { key: Astronomy.Body.Pluto, name: "Pluto" },
+const BODIES: Array<{ key: Astronomy.Body; swissKey: number; name: string }> = [
+  { key: Astronomy.Body.Sun, swissKey: SWISS_PLANETS[0][0], name: "Sun" },
+  { key: Astronomy.Body.Moon, swissKey: SWISS_PLANETS[1][0], name: "Moon" },
+  { key: Astronomy.Body.Mercury, swissKey: SWISS_PLANETS[2][0], name: "Mercury" },
+  { key: Astronomy.Body.Venus, swissKey: SWISS_PLANETS[3][0], name: "Venus" },
+  { key: Astronomy.Body.Mars, swissKey: SWISS_PLANETS[4][0], name: "Mars" },
+  { key: Astronomy.Body.Jupiter, swissKey: SWISS_PLANETS[5][0], name: "Jupiter" },
+  { key: Astronomy.Body.Saturn, swissKey: SWISS_PLANETS[6][0], name: "Saturn" },
+  { key: Astronomy.Body.Uranus, swissKey: SWISS_PLANETS[7][0], name: "Uranus" },
+  { key: Astronomy.Body.Neptune, swissKey: SWISS_PLANETS[8][0], name: "Neptune" },
+  { key: Astronomy.Body.Pluto, swissKey: SWISS_PLANETS[9][0], name: "Pluto" },
 ];
 
 function norm360(x: number): number {
@@ -50,8 +61,33 @@ function eclipticLongitudeOf(body: Astronomy.Body, date: Date): number {
 }
 
 /** ყველა პლანეტის გეოცენტრული პოზიცია და დღიური სიჩქარე (რეტროგრადულობის დასადგენად). */
-export function computePlanetPositions(date: Date): PlanetPosition[] {
+export function computePlanetPositions(date: Date, inputOptions?: CalculationOptions, lon = 0, lat = 0): PlanetPosition[] {
+  const options = resolveCalculationOptions(inputOptions);
   const dayMs = 24 * 60 * 60 * 1000;
+  if (options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, options, lon, lat)) {
+    const planets = BODIES.map(({ swissKey, name }) => {
+      const position = calculateSwissPosition(date, swissKey, options, lon, lat);
+      return {
+        name,
+        longitude: norm360(position.longitude),
+        speed: position.longitudeSpeed,
+        retrograde: position.longitudeSpeed < 0,
+      };
+    });
+    if (options.includeAsteroids) {
+      for (const [body, name] of SWISS_ASTEROIDS) {
+        const position = calculateSwissPosition(date, body, options, lon, lat);
+        planets.push({
+          name,
+          longitude: norm360(position.longitude),
+          speed: position.longitudeSpeed,
+          retrograde: position.longitudeSpeed < 0,
+        });
+      }
+    }
+    return planets;
+  }
+
   return BODIES.map(({ key, name }) => {
     const lon = eclipticLongitudeOf(key, date);
     const lonNext = eclipticLongitudeOf(key, new Date(date.getTime() + dayMs));
@@ -67,7 +103,17 @@ export function computePlanetPositions(date: Date): PlanetPosition[] {
  * ჩრდილო საკვანძო წერტილი (საშუალო კვანძი — Mean Node), Meeus-ის სტანდარტული ფორმულით.
  * ეს არის ყველაზე ხშირად გამოყენებული ვერსია ასტროლოგიურ პროგრამებში "North Node"-ისთვის.
  */
-export function computeNorthNode(date: Date): PlanetPosition {
+export function computeNorthNode(date: Date, inputOptions?: CalculationOptions, observerLon = 0, lat = 0): PlanetPosition {
+  const options = resolveCalculationOptions(inputOptions);
+  if (options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, options, observerLon, lat)) {
+    const position = calculateSwissNode(date, options, observerLon, lat);
+    return {
+      name: options.nodeType === "true" ? "TrueNode" : "MeanNode",
+      longitude: norm360(position.longitude),
+      speed: position.longitudeSpeed,
+      retrograde: position.longitudeSpeed < 0,
+    };
+  }
   const jd = dateToJulianDay(date);
   const T = (jd - 2451545.0) / 36525;
   const omega =
@@ -76,7 +122,7 @@ export function computeNorthNode(date: Date): PlanetPosition {
     0.0020754 * T * T +
     (T * T * T) / 467441 -
     (T * T * T * T) / 60616000;
-  const lon = norm360(omega);
+  const nodeLon = norm360(omega);
 
   const jdNext = dateToJulianDay(new Date(date.getTime() + 86400000));
   const Tn = (jdNext - 2451545.0) / 36525;
@@ -86,11 +132,11 @@ export function computeNorthNode(date: Date): PlanetPosition {
     0.0020754 * Tn * Tn +
     (Tn * Tn * Tn) / 467441 -
     (Tn * Tn * Tn * Tn) / 60616000;
-  let speed = norm360(omegaNext) - lon;
+  let speed = norm360(omegaNext) - nodeLon;
   if (speed > 180) speed -= 360;
   if (speed < -180) speed += 360;
 
-  return { name: "TrueNode", longitude: lon, speed, retrograde: speed < 0 };
+  return { name: options.nodeType === "true" ? "TrueNode" : "MeanNode", longitude: nodeLon, speed, retrograde: speed < 0 };
 }
 
 function dateToJulianDay(date: Date): number {
@@ -98,7 +144,26 @@ function dateToJulianDay(date: Date): number {
 }
 
 /** ასცენდენტი და შუასამყაროს წერტილი (MC), დადასტურებული მზის ამოსვლა/კულმინაციაზე. */
-export function computeAngles(date: Date, lonDeg: number, latDeg: number): ChartAngles {
+export function computeAngles(date: Date, lonDeg: number, latDeg: number, inputOptions?: CalculationOptions): ChartAngles {
+  const options = resolveCalculationOptions(inputOptions);
+  if (options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, options, lonDeg, latDeg)) {
+    try {
+      const houses = calculateSwissHouses(date, latDeg, lonDeg, "P", options);
+      return {
+        ascendant: norm360(houses.ascendant),
+        mc: norm360(houses.mc),
+        descendant: norm360(houses.ascendant + 180),
+        ic: norm360(houses.mc + 180),
+        ramc: norm360(houses.armc),
+        obliquity: Astronomy.e_tilt(Astronomy.MakeTime(date)).tobl,
+        latitude: latDeg,
+        placidusUnstable: false,
+      };
+    } catch {
+      // Swiss Ephemeris can reject polar Placidus charts. The deterministic
+      // mathematical fallback below keeps the chart usable in that case.
+    }
+  }
   const t = Astronomy.MakeTime(date);
   const gstHours = Astronomy.SiderealTime(t);
   const lstDeg = norm360(gstHours * 15 + lonDeg);
@@ -204,7 +269,32 @@ function computePlacidusCusps(angles: ChartAngles): number[] {
 
 /** სახლების საზღვრები არჩეული სისტემით. Whole Sign და Equal ზუსტია ნებისმიერ განედზე;
  *  Porphyry კვადრანტულია; Placidus დროში სამ თანაბარ ნაწილად ყოფს დღის/ღამის რკალებს. */
-export function computeHouseCusps(angles: ChartAngles, system: HouseSystem): HouseCusps {
+export function computeHouseCusps(
+  angles: ChartAngles,
+  system: HouseSystem,
+  date?: Date,
+  lonDeg?: number,
+  latDeg?: number,
+  inputOptions?: CalculationOptions,
+): HouseCusps {
+  const options = resolveCalculationOptions(inputOptions);
+  const swissSystem: Record<HouseSystem, string> = {
+    placidus: "P",
+    equal: "A",
+    whole_sign: "W",
+    porphyry: "O",
+  };
+  if (date && lonDeg !== undefined && latDeg !== undefined && options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, options, lonDeg, latDeg)) {
+    try {
+      const houses = calculateSwissHouses(date, latDeg, lonDeg, swissSystem[system], options);
+      return {
+        system,
+        cusps: Array.from({ length: 12 }, (_, index) => norm360(houses.cusps[index + 1] ?? angles.ascendant + index * 30)),
+      };
+    } catch {
+      // Fall back to the existing implementation for unsupported polar charts.
+    }
+  }
   const cusps = new Array(12).fill(0);
 
   if (system === "placidus") {

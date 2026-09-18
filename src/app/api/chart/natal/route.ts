@@ -9,6 +9,17 @@ import { getRequestInfo } from "@/lib/requestInfo";
 import { tryRecordCalculation } from "@/lib/calculationHistory";
 import { allocateMapNumber } from "@/lib/publicIds";
 import { isWideDate } from "@/lib/astro/wideDate";
+import type { CalculationOptions } from "@/lib/astro/ephemeris";
+
+const calculationSchema = z.object({
+  ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
+  zodiac: z.enum(["tropical", "sidereal"]).default("tropical"),
+  siderealMode: z.number().int().min(0).max(255).default(1),
+  nodeType: z.enum(["mean", "true"]).default("mean"),
+  topocentric: z.boolean().default(false),
+  altitudeMeters: z.number().finite().min(-500).max(10000).default(0),
+  includeAsteroids: z.boolean().default(false),
+}) satisfies z.ZodType<CalculationOptions>;
 
 const schema = z.object({
   name: z.string().min(1, "სახელი აუცილებელია"),
@@ -18,6 +29,7 @@ const schema = z.object({
   lat: z.number(),
   lon: z.number(),
   timezone: z.string().min(1),
+  calculation: calculationSchema.optional(),
   houseSystem: z.enum(["whole_sign", "equal", "porphyry", "placidus"]).default("placidus"),
   save: z.boolean().default(false),
   label: z.string().optional(),
@@ -34,7 +46,7 @@ export async function POST(req: NextRequest) {
   let result;
   try {
     result = computeNatalChart(
-      { date: data.date, time: data.time, timezone: data.timezone, lat: data.lat, lon: data.lon },
+      { date: data.date, time: data.time, timezone: data.timezone, lat: data.lat, lon: data.lon, calculation: data.calculation },
       data.houseSystem
     );
   } catch (e) {

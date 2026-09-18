@@ -14,6 +14,7 @@ const PLANET_MEANING_KA: Record<string, string> = {
   Neptune: "ინტუიცია და წარმოსახვითი სამყარო",
   Pluto: "სიღრმისეული გარდაქმნის ძალა",
   TrueNode: "განვითარების მთავარი მიმართულება",
+  MeanNode: "განვითარების მთავარი მიმართულება",
 };
 
 const SIGN_QUALITY_KA: Record<string, string> = {
@@ -62,7 +63,7 @@ function planetLine(p: PlanetPosition, houseNum: number): string {
   const quality = SIGN_QUALITY_KA[signName] ?? "";
   const theme = HOUSE_THEME_KA[houseNum - 1];
   // კვანძისთვის "რეტროგრადულობა" ჩვეულებრივი და მუდმივი მდგომარეობაა, ამიტომ არ აღვნიშნავთ
-  const retro = p.retrograde && p.name !== "TrueNode" ? " (რეტროგრადული — ეს თემა უფრო შინაგანად, გადამუშავებით ვლინდება)" : "";
+  const retro = p.retrograde && p.name !== "TrueNode" && p.name !== "MeanNode" ? " (რეტროგრადული — ეს თემა უფრო შინაგანად, გადამუშავებით ვლინდება)" : "";
 
   return `**${nameKa}** ${signName}-ში (${formatDegree(degreeInSign)}), ${houseNum}-ე სახლში${retro}. თქვენი ${meaning} ვლინდება ${quality}, უპირატესად ${theme}.`;
 }
@@ -100,7 +101,7 @@ const MODALITY_MEANING_KA: Record<string, string> = {
 };
 
 function chartSignature(planets: PlanetPosition[]): string {
-  const core = planets.filter((p) => p.name !== "TrueNode");
+    const core = planets.filter((p) => p.name !== "TrueNode" && p.name !== "MeanNode");
   const elementCount = [0, 0, 0, 0];
   const modalityCount = [0, 0, 0];
   for (const p of core) {
@@ -202,6 +203,26 @@ export function generateTransitInterpretation(aspects: AspectHit[], transitDate:
     const b = PLANET_NAMES_KA[hit.b] ?? hit.b;
     parts.push(`ტრანზიტული **${a}** — ${hit.aspectKa} — ნატალური **${b}** (ორბი ${hit.orb}°)`);
   }
+  return parts.join("\n\n");
+}
+
+/** Interval interpretation is deliberately separate from the astronomical scan. */
+export function generateTransitIntervalInterpretation(
+  currentAspects: AspectHit[],
+  transitDate: string,
+  startDate: string,
+  endDate: string,
+  peakAspects: AspectHit[],
+): string {
+  const relevant = peakAspects.length ? peakAspects : currentAspects;
+  const parts = [generateTransitInterpretation(relevant, transitDate)];
+  parts.push(`\n## ტრანზიტის ინტერვალის დინამიკა — ${startDate} — ${endDate}`);
+  if (!relevant.length) {
+    parts.push("მითითებულ შუალედში ძირითადი ტრანზიტული ასპექტი არ დაფიქსირდა. შედეგი ეფუძნება არჩეული პერიოდის მთელ სკანირებას.");
+    return parts.join("\n\n");
+  }
+  parts.push("ქვემოთ მოცემულია შუალედში ყველაზე მცირე ორბით დაფიქსირებული გავლენები; ისინი მიუთითებს იმ პერიოდებზე, სადაც ასპექტი ყველაზე ზუსტია.");
+  for (const hit of relevant.slice(0, 12)) parts.push(aspectLine(hit));
   return parts.join("\n\n");
 }
 

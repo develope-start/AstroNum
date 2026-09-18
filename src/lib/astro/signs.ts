@@ -25,6 +25,7 @@ export const PLANET_NAMES_KA: Record<string, string> = {
   Neptune: "ნეპტუნი",
   Pluto: "პლუტონი",
   TrueNode: "ჩრდილო კვანძი",
+  MeanNode: "ჩრდილო კვანძი (საშუალო)",
 };
 
 export const HOUSE_LABELS_KA = [
