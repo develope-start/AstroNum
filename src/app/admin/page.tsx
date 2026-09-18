@@ -1131,13 +1131,21 @@ export default function AdminPage() {
             <label className="text-xs text-parchment-dim sm:col-span-2 lg:col-span-2">
               დაბადების თარიღი
               <div className="mt-1">
-                <DateSelect value={filters.birthDate} onChange={(birthDate) => setFilters((current) => ({ ...current, birthDate }))} />
+                <DateSelect
+                  value={filters.birthDate}
+                  onChange={(birthDate) => setFilters((current) => ({ ...current, birthDate }))}
+                  onDraftChange={(birthDate) => setFilters((current) => ({ ...current, birthDate }))}
+                />
               </div>
             </label>
             <label className="text-xs text-parchment-dim sm:col-span-2 lg:col-span-2">
               დრო
               <div className="mt-1">
-                <TimeSelect value={filters.time} onChange={(time) => setFilters((current) => ({ ...current, time }))} />
+                <TimeSelect
+                  value={filters.time}
+                  onChange={(time) => setFilters((current) => ({ ...current, time }))}
+                  onDraftChange={(time) => setFilters((current) => ({ ...current, time }))}
+                />
               </div>
             </label>
             <label className="text-xs text-parchment-dim sm:col-span-2 lg:col-span-4">

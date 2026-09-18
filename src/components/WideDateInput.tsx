@@ -16,11 +16,12 @@ export interface WideDateInputProps {
   label?: string;
   value: string;
   onChange: (value: string) => void;
+  onDraftChange?: (value: string) => void;
   onActivate?: () => void;
   hideHeader?: boolean;
 }
 
-export default function WideDateInput({ label = "თარიღი", value, onChange, onActivate, hideHeader = false }: WideDateInputProps) {
+export default function WideDateInput({ label = "თარიღი", value, onChange, onDraftChange, onActivate, hideHeader = false }: WideDateInputProps) {
   const yearRef = useRef<HTMLInputElement>(null);
   const monthRef = useRef<HTMLInputElement>(null);
   const dayRef = useRef<HTMLInputElement>(null);
@@ -49,6 +50,13 @@ export default function WideDateInput({ label = "თარიღი", value, onC
     setYearStr(year);
     setMonthStr(month);
     setDayStr(day);
+  }
+
+  function notifyDraft(year: string, month: string, day: string) {
+    if (!onDraftChange) return;
+    if (year) onDraftChange(month ? `${year}-${month}${day ? `-${day}` : ""}` : year);
+    else if (month) onDraftChange(month);
+    else onDraftChange(day);
   }
 
   function commitParts() {
@@ -100,15 +108,15 @@ export default function WideDateInput({ label = "თარიღი", value, onC
           : "border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.3)]"
     }`}>
       <div className="flex min-w-0 w-full items-center justify-center">
-        <input ref={yearRef} type="text" value={yearStr} onChange={(e) => /^-?\d*$/.test(e.target.value) && updateParts(e.target.value, monthStr, dayStr)} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (["/", ".", "Enter"].includes(e.key)) { e.preventDefault(); monthRef.current?.focus(); } }} onBlur={handleBlur} placeholder="წელიწადი" inputMode="text" autoComplete="off" spellCheck={false} maxLength={6} aria-label={`${label} — წელიწადი`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
+        <input ref={yearRef} type="text" value={yearStr} onChange={(e) => { if (!/^-?\d*$/.test(e.target.value)) return; updateParts(e.target.value, monthStr, dayStr); notifyDraft(e.target.value, monthStr, dayStr); }} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (["/", ".", "Enter"].includes(e.key)) { e.preventDefault(); monthRef.current?.focus(); } }} onBlur={handleBlur} placeholder="წელიწადი" inputMode="text" autoComplete="off" spellCheck={false} maxLength={6} aria-label={`${label} — წელიწადი`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
       </div>
       <span className="select-none px-0.5 text-lg font-black text-amber-300/80 sm:px-1 sm:text-xl">/</span>
       <div className="flex min-w-0 w-full items-center justify-center">
-        <input ref={monthRef} type="text" value={monthStr} onChange={(e) => /^\d*$/.test(e.target.value) && updateParts(yearStr, e.target.value, dayStr)} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (["/", ".", "Enter"].includes(e.key)) { e.preventDefault(); dayRef.current?.focus(); } else if (e.key === "Backspace" && monthStr === "") yearRef.current?.focus(); }} onBlur={handleBlur} placeholder="თვე" inputMode="numeric" autoComplete="off" spellCheck={false} maxLength={2} aria-label={`${label} — თვე`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
+        <input ref={monthRef} type="text" value={monthStr} onChange={(e) => { if (!/^\d*$/.test(e.target.value)) return; updateParts(yearStr, e.target.value, dayStr); notifyDraft(yearStr, e.target.value, dayStr); }} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (["/", ".", "Enter"].includes(e.key)) { e.preventDefault(); dayRef.current?.focus(); } else if (e.key === "Backspace" && monthStr === "") yearRef.current?.focus(); }} onBlur={handleBlur} placeholder="თვე" inputMode="numeric" autoComplete="off" spellCheck={false} maxLength={2} aria-label={`${label} — თვე`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
       </div>
       <span className="select-none px-0.5 text-lg font-black text-amber-300/80 sm:px-1 sm:text-xl">/</span>
       <div className="flex min-w-0 w-full items-center justify-center">
-        <input ref={dayRef} type="text" value={dayStr} onChange={(e) => /^\d*$/.test(e.target.value) && updateParts(yearStr, monthStr, e.target.value)} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (e.key === "Backspace" && dayStr === "") monthRef.current?.focus(); }} onBlur={handleBlur} placeholder="რიცხვი" inputMode="numeric" autoComplete="off" spellCheck={false} maxLength={2} aria-label={`${label} — რიცხვი`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
+        <input ref={dayRef} type="text" value={dayStr} onChange={(e) => { if (!/^\d*$/.test(e.target.value)) return; updateParts(yearStr, monthStr, e.target.value); notifyDraft(yearStr, monthStr, e.target.value); }} onFocus={handleFocus} onClick={(e) => e.currentTarget.select()} onKeyDown={(e) => { if (e.key === "Backspace" && dayStr === "") monthRef.current?.focus(); }} onBlur={handleBlur} placeholder="რიცხვი" inputMode="numeric" autoComplete="off" spellCheck={false} maxLength={2} aria-label={`${label} — რიცხვი`} className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400" />
       </div>
       <div className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-amber-400/35 bg-purple-950/60 pl-0.5 text-amber-300 shadow-sm transition-colors hover:border-amber-300 hover:bg-purple-900 sm:h-9 sm:w-9">
         <Calendar className="pointer-events-none h-4 w-4 text-amber-300 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
