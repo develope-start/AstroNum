@@ -14,6 +14,7 @@ interface CacheShape {
   transitDate: string;
   transitStartDate?: string;
   transitEndDate?: string;
+  inputMode?: "date" | "interval";
   interpretation: string;
   mapNumber?: string | null;
 }
@@ -28,17 +29,22 @@ function offsetDays(days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+type TransitInputMode = "date" | "interval";
+
 interface WideDateInputProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
   autoFocus?: boolean;
+  disabled?: boolean;
+  onActivate?: () => void;
 }
 
-function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateInputProps) {
+function WideDateInput({ label, value, onChange, autoFocus = false, disabled = false, onActivate }: WideDateInputProps) {
   const yearRef = useRef<HTMLInputElement>(null);
   const monthRef = useRef<HTMLInputElement>(null);
   const dayRef = useRef<HTMLInputElement>(null);
+  const editingRef = useRef(false);
 
   const parsed = parseWideDate(value);
   const [yearStr, setYearStr] = useState(() => (parsed ? (parsed.year < 0 ? `-${String(Math.abs(parsed.year)).padStart(4, "0")}` : String(parsed.year).padStart(4, "0")) : ""));
@@ -50,6 +56,7 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
 
   // Synchronize internal segment inputs when `value` prop changes externally
   useEffect(() => {
+    if (editingRef.current) return;
     const p = parseWideDate(value);
     if (p) {
       const yStr = p.year < 0 ? `-${String(Math.abs(p.year)).padStart(4, "0")}` : String(p.year).padStart(4, "0");
@@ -91,30 +98,27 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
   }
 
   function handleYearChange(val: string) {
-    if (!/^-?\d*$/.test(val) || val.length > 6) return;
+    if (!/^-?\d*$/.test(val)) return;
     tryEmit(val, monthStr, dayStr);
-
-    if ((!val.startsWith("-") && val.length === 4) || (val.startsWith("-") && val.length >= 5)) {
-      monthRef.current?.focus();
-    }
   }
 
   function handleMonthChange(val: string) {
-    if (!/^\d*$/.test(val) || val.length > 2) return;
+    if (!/^\d*$/.test(val)) return;
     tryEmit(yearStr, val, dayStr);
-
-    if (val.length === 2 || (val.length === 1 && parseInt(val, 10) > 1)) {
-      dayRef.current?.focus();
-    }
   }
 
   function handleDayChange(val: string) {
-    if (!/^\d*$/.test(val) || val.length > 2) return;
+    if (!/^\d*$/.test(val)) return;
     tryEmit(yearStr, monthStr, val);
   }
 
   function handleNativeChange(next: string) {
-    if (isWideDate(next)) {
+    const nextParts = parseWideDate(next);
+    if (nextParts) {
+      setYearStr(String(nextParts.year));
+      setMonthStr(String(nextParts.month).padStart(2, "0"));
+      setDayStr(String(nextParts.day).padStart(2, "0"));
+      editingRef.current = false;
       onChange(next);
     }
   }
@@ -136,6 +140,17 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
         onChange(formatWideDate(p));
       }
     }
+    window.setTimeout(() => {
+      const activeElement = document.activeElement;
+      if (![yearRef.current, monthRef.current, dayRef.current].includes(activeElement as HTMLInputElement | null)) {
+        editingRef.current = false;
+      }
+    }, 0);
+  }
+
+  function handleFocus() {
+    editingRef.current = true;
+    onActivate?.();
   }
 
   return (
@@ -161,6 +176,7 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             type="text"
             value={yearStr}
             onChange={(e) => handleYearChange(e.target.value)}
+            onFocus={handleFocus}
             onKeyDown={(e) => {
               if (e.key === "/" || e.key === "." || e.key === "Enter") {
                 e.preventDefault();
@@ -173,6 +189,8 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             inputMode="text"
             autoComplete="off"
             spellCheck={false}
+            maxLength={6}
+            disabled={disabled}
             aria-label={`${label} — წელიწადი`}
             className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
           />
@@ -188,6 +206,7 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             type="text"
             value={monthStr}
             onChange={(e) => handleMonthChange(e.target.value)}
+            onFocus={handleFocus}
             onKeyDown={(e) => {
               if (e.key === "/" || e.key === "." || e.key === "Enter") {
                 e.preventDefault();
@@ -201,6 +220,8 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             inputMode="numeric"
             autoComplete="off"
             spellCheck={false}
+            maxLength={2}
+            disabled={disabled}
             aria-label={`${label} — თვე`}
             className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
           />
@@ -216,6 +237,7 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             type="text"
             value={dayStr}
             onChange={(e) => handleDayChange(e.target.value)}
+            onFocus={handleFocus}
             onKeyDown={(e) => {
               if (e.key === "Backspace" && dayStr === "") {
                 monthRef.current?.focus();
@@ -226,6 +248,8 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             inputMode="numeric"
             autoComplete="off"
             spellCheck={false}
+            maxLength={2}
+            disabled={disabled}
             aria-label={`${label} — რიცხვი`}
             className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
           />
@@ -240,6 +264,8 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             min="0001-01-01"
             max="9999-12-31"
             onChange={(event) => handleNativeChange(event.target.value)}
+            onFocus={handleFocus}
+            disabled={disabled}
             aria-label={`${label} — კალენდრით არჩევა`}
             title="კალენდრით არჩევა / სქროლვა; ძველი წელთაღრიცხვისთვის გამოიყენეთ ხელით ჩაწერილი წელი"
             className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0 [color-scheme:dark]"
@@ -256,6 +282,7 @@ export default function TransitCalculator() {
   const [transitDate, setTransitDate] = useState(today());
   const [transitStartDate, setTransitStartDate] = useState(today());
   const [transitEndDate, setTransitEndDate] = useState(offsetDays(7));
+  const [inputMode, setInputMode] = useState<TransitInputMode | null>(null);
   const [interpretation, setInterpretation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -271,6 +298,7 @@ export default function TransitCalculator() {
         setTransitDate(today());
         setTransitStartDate(today());
         setTransitEndDate(offsetDays(7));
+        setInputMode(null);
         setInterpretation(null);
         setMapNumber(null);
         return;
@@ -279,6 +307,7 @@ export default function TransitCalculator() {
       setTransitDate(cached.transitDate);
       setTransitStartDate(cached.transitStartDate ?? cached.transitDate);
       setTransitEndDate(cached.transitEndDate ?? cached.transitDate);
+      setInputMode(cached.inputMode ?? null);
       setInterpretation(cached.interpretation);
       setMapNumber(cached.mapNumber ?? null);
     });
@@ -289,16 +318,16 @@ export default function TransitCalculator() {
       setError("შეავსეთ დაბადების მონაცემები და დაადასტურეთ ადგილის მოძებნა.");
       return;
     }
-    if (!isWideDate(transitStartDate) || !isWideDate(transitEndDate)) {
-      setError("ტრანზიტის ინტერვალში მიუთითეთ სწორი თარიღები. გამოიყენეთ YYYY-MM-DD ან -YYYY-MM-DD.");
+    const selectedMode = inputMode ?? "date";
+    const calculationDate = selectedMode === "interval" ? transitStartDate : transitDate;
+    const calculationStartDate = selectedMode === "interval" ? transitStartDate : transitDate;
+    const calculationEndDate = selectedMode === "interval" ? transitEndDate : transitDate;
+    if (!isWideDate(calculationStartDate) || !isWideDate(calculationEndDate)) {
+      setError(selectedMode === "interval" ? "ინტერვალში მიუთითეთ სწორი საწყისი და საბოლოო თარიღები." : "მიუთითეთ სწორი ტრანზიტის თარიღი.");
       return;
     }
-    if (compareWideDates(transitStartDate, transitEndDate) > 0) {
+    if (compareWideDates(calculationStartDate, calculationEndDate) > 0) {
       setError("ტრანზიტის ინტერვალის „დან“ თარიღი უნდა იყოს „მდე“ თარიღზე ადრე ან იგივე.");
-      return;
-    }
-    if (!isWideDate(transitDate) || compareWideDates(transitDate, transitStartDate) < 0 || compareWideDates(transitDate, transitEndDate) > 0) {
-      setError("გამოთვლის თარიღი ტრანზიტის არჩეულ ინტერვალში უნდა იყოს.");
       return;
     }
     setLoading(true);
@@ -317,9 +346,9 @@ export default function TransitCalculator() {
             lon: birth.lon,
             timezone: birth.timezone,
           },
-          transitDate,
-          transitStartDate,
-          transitEndDate,
+          transitDate: calculationDate,
+          transitStartDate: calculationStartDate,
+          transitEndDate: calculationEndDate,
           save,
         }),
       });
@@ -331,12 +360,17 @@ export default function TransitCalculator() {
       setInterpretation(data.interpretation);
       setMapNumber(data.mapNumber ?? null);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("transit", { birth, transitDate, transitStartDate, transitEndDate, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
+      else saveGuestCache<CacheShape>("transit", { birth, transitDate: calculationDate, transitStartDate: calculationStartDate, transitEndDate: calculationEndDate, inputMode: selectedMode, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {
       setLoading(false);
     }
+  }
+
+  function activateMode(mode: TransitInputMode) {
+    setInputMode(mode);
+    setError(null);
   }
 
   return (
@@ -346,7 +380,13 @@ export default function TransitCalculator() {
           <BirthFields value={birth} onChange={setBirth} legend="01. ნატალური მონაცემები" />
         </div>
 
-        <div className="glass-panel relative z-10 flex min-w-0 w-full flex-col justify-center space-y-5 overflow-hidden rounded-2xl border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 p-4 text-center shadow-xl backdrop-blur-2xl sm:rounded-[28px] sm:p-7 lg:col-span-5 lg:h-full">
+        <div
+          className={`glass-panel relative z-10 flex min-w-0 w-full flex-col justify-center space-y-5 overflow-hidden rounded-2xl border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 p-4 text-center shadow-xl backdrop-blur-2xl transition-all sm:rounded-[28px] sm:p-7 lg:col-span-5 lg:h-full ${
+            inputMode === "interval" ? "transit-board-active" : ""
+          } ${inputMode === "date" ? "opacity-[0.45] grayscale" : ""}`}
+          onPointerDown={() => inputMode === "date" && activateMode("interval")}
+          aria-disabled={inputMode === "date"}
+        >
           <div className="mx-auto w-full max-w-2xl space-y-3 rounded-2xl border border-purple-400/20 bg-purple-950/25 p-3.5 text-left sm:p-4">
             <div className="flex items-start justify-center gap-2 text-center">
               <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-purple-300/30 bg-purple-500/15 text-purple-300">
@@ -358,13 +398,16 @@ export default function TransitCalculator() {
               </div>
             </div>
             <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-              <WideDateInput label="დან" value={transitStartDate} onChange={setTransitStartDate} autoFocus />
-              <WideDateInput label="მდე" value={transitEndDate} onChange={setTransitEndDate} />
+              <WideDateInput label="დან" value={transitStartDate} onChange={setTransitStartDate} disabled={inputMode === "date"} onActivate={() => activateMode("interval")} />
+              <WideDateInput label="მდე" value={transitEndDate} onChange={setTransitEndDate} disabled={inputMode === "date"} onActivate={() => activateMode("interval")} />
             </div>
             <p className="mx-auto max-w-xl text-center text-[0.65rem] leading-relaxed text-slate-500">შეგიძლიათ გამოიყენოთ კალენდრის ამოსქროლავი არჩევა ან პირდაპირ ჩაწეროთ თარიღი. ძველი წელთაღრიცხვისთვის გამოიყენეთ მინუსი, მაგალითად: -10000-01-01.</p>
           </div>
 
-          <div className="flex flex-col items-center justify-center gap-2.5 w-full">
+          <div
+            className={`flex w-full flex-col items-center justify-center gap-2.5 rounded-2xl p-1 transition-all ${inputMode === "date" ? "transit-board-active" : ""} ${inputMode === "interval" ? "opacity-[0.45] grayscale" : ""}`}
+            onPointerDown={() => inputMode === "interval" && activateMode("date")}
+          >
             <div className="flex items-center justify-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
                 <Calendar className="h-4 w-4 text-amber-400" />
@@ -372,38 +415,41 @@ export default function TransitCalculator() {
               <label className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის თარიღი:</label>
             </div>
 
-            <WideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={setTransitDate} />
+            <WideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={setTransitDate} disabled={inputMode === "interval"} onActivate={() => activateMode("date")} />
 
             <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold w-full pt-1">
               <button
                 type="button"
-                onClick={() => setTransitDate(today())}
+                disabled={inputMode === "interval"}
+                onClick={() => { activateMode("date"); setTransitDate(today()); }}
                 className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
                   transitDate === today()
                     ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
-                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
+                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20 disabled:cursor-not-allowed disabled:opacity-60"
                 }`}
               >
                 დღეს
               </button>
               <button
                 type="button"
-                onClick={() => setTransitDate(offsetDays(1))}
+                disabled={inputMode === "interval"}
+                onClick={() => { activateMode("date"); setTransitDate(offsetDays(1)); }}
                 className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
                   transitDate === offsetDays(1)
                     ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
-                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
+                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20 disabled:cursor-not-allowed disabled:opacity-60"
                 }`}
               >
                 ხვალ
               </button>
               <button
                 type="button"
-                onClick={() => setTransitDate(offsetDays(7))}
+                disabled={inputMode === "interval"}
+                onClick={() => { activateMode("date"); setTransitDate(offsetDays(7)); }}
                 className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
                   transitDate === offsetDays(7)
                     ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
-                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
+                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20 disabled:cursor-not-allowed disabled:opacity-60"
                 }`}
               >
                 +1 კვირა

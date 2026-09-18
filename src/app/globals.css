@@ -121,6 +121,21 @@ body {
   animation: float-slow 5s infinite ease-in-out;
 }
 
+@keyframes transit-board-focus {
+  0%, 100% {
+    border-color: rgba(134, 239, 172, 0.28);
+    box-shadow: 0 0 0 1px rgba(134, 239, 172, 0.05), 0 0 18px rgba(134, 239, 172, 0.08);
+  }
+  50% {
+    border-color: rgba(134, 239, 172, 0.72);
+    box-shadow: 0 0 0 2px rgba(134, 239, 172, 0.12), 0 0 28px rgba(134, 239, 172, 0.18);
+  }
+}
+
+.transit-board-active {
+  animation: transit-board-focus 2.4s ease-in-out infinite;
+}
+
 /* Admin workspace: keep long account values, labels and actions inside the viewport. */
 .admin-page {
   width: 100%;
