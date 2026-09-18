@@ -282,7 +282,7 @@ export default function TransitCalculator() {
   const [transitDate, setTransitDate] = useState(today());
   const [transitStartDate, setTransitStartDate] = useState(today());
   const [transitEndDate, setTransitEndDate] = useState(offsetDays(7));
-  const [inputMode, setInputMode] = useState<TransitInputMode | null>(null);
+  const [inputMode, setInputMode] = useState<TransitInputMode>("date");
   const [interpretation, setInterpretation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -298,7 +298,7 @@ export default function TransitCalculator() {
         setTransitDate(today());
         setTransitStartDate(today());
         setTransitEndDate(offsetDays(7));
-        setInputMode(null);
+        setInputMode("date");
         setInterpretation(null);
         setMapNumber(null);
         return;
@@ -307,7 +307,7 @@ export default function TransitCalculator() {
       setTransitDate(cached.transitDate);
       setTransitStartDate(cached.transitStartDate ?? cached.transitDate);
       setTransitEndDate(cached.transitEndDate ?? cached.transitDate);
-      setInputMode(cached.inputMode ?? null);
+      setInputMode("date");
       setInterpretation(cached.interpretation);
       setMapNumber(cached.mapNumber ?? null);
     });
@@ -380,14 +380,14 @@ export default function TransitCalculator() {
           <BirthFields value={birth} onChange={setBirth} legend="01. ნატალური მონაცემები" />
         </div>
 
-        <div
-          className={`glass-panel relative z-10 flex min-w-0 w-full flex-col justify-center space-y-5 overflow-hidden rounded-2xl border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 p-4 text-center shadow-xl backdrop-blur-2xl transition-all sm:rounded-[28px] sm:p-7 lg:col-span-5 lg:h-full ${
-            inputMode === "interval" ? "transit-board-active" : ""
-          } ${inputMode === "date" ? "opacity-[0.45] grayscale" : ""}`}
-          onPointerDown={() => inputMode === "date" && activateMode("interval")}
-          aria-disabled={inputMode === "date"}
-        >
-          <div className="mx-auto w-full max-w-2xl space-y-3 rounded-2xl border border-purple-400/20 bg-purple-950/25 p-3.5 text-left sm:p-4">
+        <div className="glass-panel relative z-10 flex min-w-0 w-full flex-col justify-center space-y-5 overflow-hidden rounded-2xl border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 p-4 text-center shadow-xl backdrop-blur-2xl sm:rounded-[28px] sm:p-7 lg:col-span-5 lg:h-full">
+          <div
+            className={`mx-auto w-full max-w-2xl space-y-3 rounded-2xl border border-purple-400/20 bg-purple-950/25 p-3.5 text-left transition-all sm:p-4 ${
+              inputMode === "interval" ? "transit-board-active" : "opacity-[0.45] grayscale"
+            }`}
+            onPointerDown={() => inputMode !== "interval" && activateMode("interval")}
+            aria-disabled={inputMode !== "interval"}
+          >
             <div className="flex items-start justify-center gap-2 text-center">
               <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-purple-300/30 bg-purple-500/15 text-purple-300">
                 <Clock className="h-4 w-4" />
@@ -398,15 +398,18 @@ export default function TransitCalculator() {
               </div>
             </div>
             <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-              <WideDateInput label="დან" value={transitStartDate} onChange={setTransitStartDate} disabled={inputMode === "date"} onActivate={() => activateMode("interval")} />
-              <WideDateInput label="მდე" value={transitEndDate} onChange={setTransitEndDate} disabled={inputMode === "date"} onActivate={() => activateMode("interval")} />
+              <WideDateInput label="დან" value={transitStartDate} onChange={setTransitStartDate} onActivate={() => activateMode("interval")} />
+              <WideDateInput label="მდე" value={transitEndDate} onChange={setTransitEndDate} onActivate={() => activateMode("interval")} />
             </div>
             <p className="mx-auto max-w-xl text-center text-[0.65rem] leading-relaxed text-slate-500">შეგიძლიათ გამოიყენოთ კალენდრის ამოსქროლავი არჩევა ან პირდაპირ ჩაწეროთ თარიღი. ძველი წელთაღრიცხვისთვის გამოიყენეთ მინუსი, მაგალითად: -10000-01-01.</p>
           </div>
 
           <div
-            className={`flex w-full flex-col items-center justify-center gap-2.5 rounded-2xl p-1 transition-all ${inputMode === "date" ? "transit-board-active" : ""} ${inputMode === "interval" ? "opacity-[0.45] grayscale" : ""}`}
-            onPointerDown={() => inputMode === "interval" && activateMode("date")}
+            className={`flex w-full flex-col items-center justify-center gap-2.5 rounded-2xl p-1 transition-all ${
+              inputMode === "date" ? "transit-board-active" : "opacity-[0.45] grayscale"
+            }`}
+            onPointerDown={() => inputMode !== "date" && activateMode("date")}
+            aria-disabled={inputMode !== "date"}
           >
             <div className="flex items-center justify-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
@@ -415,41 +418,38 @@ export default function TransitCalculator() {
               <label className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის თარიღი:</label>
             </div>
 
-            <WideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={setTransitDate} disabled={inputMode === "interval"} onActivate={() => activateMode("date")} />
+            <WideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={setTransitDate} onActivate={() => activateMode("date")} />
 
             <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold w-full pt-1">
               <button
                 type="button"
-                disabled={inputMode === "interval"}
                 onClick={() => { activateMode("date"); setTransitDate(today()); }}
                 className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
                   transitDate === today()
                     ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
-                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
                 }`}
               >
                 დღეს
               </button>
               <button
                 type="button"
-                disabled={inputMode === "interval"}
                 onClick={() => { activateMode("date"); setTransitDate(offsetDays(1)); }}
                 className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
                   transitDate === offsetDays(1)
                     ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
-                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
                 }`}
               >
                 ხვალ
               </button>
               <button
                 type="button"
-                disabled={inputMode === "interval"}
                 onClick={() => { activateMode("date"); setTransitDate(offsetDays(7)); }}
                 className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
                   transitDate === offsetDays(7)
                     ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
-                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
                 }`}
               >
                 +1 კვირა
