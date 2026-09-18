@@ -343,6 +343,329 @@ svg {
   }
 }
 
+/* Main-page celestial instrument: restrained dark glass, constellations and planetary rulers. */
+.hero-grid {
+  display: block;
+  min-height: auto;
+  padding: clamp(0.75rem, 3vw, 2.5rem) 0 clamp(2rem, 5vw, 4rem);
+}
+
+.hero-grid > div:first-child {
+  display: none;
+}
+
+.hero-orbit-card {
+  isolation: isolate;
+  width: min(100%, 78rem);
+  min-height: clamp(30rem, 68vw, 48rem);
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid rgba(197, 188, 255, 0.17);
+  border-radius: clamp(1.25rem, 3vw, 2.4rem);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(126, 112, 236, 0.13), transparent 25%),
+    linear-gradient(145deg, rgba(18, 20, 43, 0.92), rgba(7, 10, 22, 0.98));
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 0 70px rgba(133, 121, 255, 0.06),
+    0 32px 80px -44px rgba(5, 6, 18, 0.98);
+}
+
+.hero-orbit-card::before,
+.hero-orbit-card::after {
+  z-index: 0;
+  pointer-events: none;
+}
+
+.celestial-system {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  perspective: 1100px;
+  background:
+    radial-gradient(circle at 48% 48%, rgba(172, 161, 255, 0.08) 0 1px, transparent 2px),
+    radial-gradient(circle at 20% 28%, rgba(203, 215, 255, 0.55) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 79% 20%, rgba(255, 255, 255, 0.38) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 82% 78%, rgba(179, 200, 255, 0.34) 0 1px, transparent 1.7px),
+    linear-gradient(155deg, rgba(18, 22, 46, 0.98), rgba(5, 8, 19, 0.99));
+}
+
+.celestial-system::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: 0.52;
+  background-image:
+    radial-gradient(circle at 12% 72%, rgba(112, 146, 255, 0.6) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 29% 15%, rgba(255, 255, 255, 0.44) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 70% 35%, rgba(255, 255, 255, 0.42) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 91% 52%, rgba(164, 195, 255, 0.48) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 58% 88%, rgba(255, 255, 255, 0.34) 0 1px, transparent 1.5px);
+}
+
+.celestial-system::after {
+  position: absolute;
+  inset: 8%;
+  content: "";
+  border: 1px solid rgba(185, 180, 255, 0.08);
+  border-radius: 50%;
+  transform: rotateX(68deg) rotateZ(-14deg);
+  box-shadow: 0 0 80px rgba(102, 94, 214, 0.08);
+}
+
+.celestial-star-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.72;
+  background-image:
+    radial-gradient(circle, rgba(235, 240, 255, 0.7) 0 0.7px, transparent 0.9px),
+    radial-gradient(circle, rgba(138, 159, 255, 0.42) 0 0.7px, transparent 0.9px);
+  background-position: 3% 8%, 11% 22%;
+  background-size: 73px 67px, 107px 91px;
+}
+
+.celestial-orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(190, 180, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotateX(68deg) rotateZ(-14deg);
+  box-shadow: 0 0 26px rgba(126, 112, 236, 0.12), inset 0 0 28px rgba(126, 112, 236, 0.06);
+}
+
+.celestial-orbit::after {
+  position: absolute;
+  inset: 9%;
+  content: "";
+  border: 1px dashed rgba(180, 192, 255, 0.11);
+  border-radius: 50%;
+}
+
+.celestial-orbit-wide {
+  width: min(76%, 43rem);
+}
+
+.celestial-orbit-inner {
+  width: min(58%, 32rem);
+  border-color: rgba(148, 188, 255, 0.15);
+  transform: translate(-50%, -50%) rotateX(68deg) rotateZ(22deg);
+}
+
+.celestial-constellation-ring,
+.celestial-ruler-ring {
+  position: absolute;
+  inset: 0;
+}
+
+.celestial-constellation,
+.celestial-ruler {
+  --constellation-radius: clamp(8.5rem, 19vw, 14rem);
+  --ruler-radius: clamp(11rem, 26vw, 19rem);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: rotate(var(--celestial-angle)) translateY(calc(-1 * var(--constellation-radius))) rotate(calc(-1 * var(--celestial-angle)));
+  transform-origin: center;
+}
+
+.celestial-constellation {
+  width: clamp(7rem, 15vw, 11rem);
+  aspect-ratio: 1;
+  margin: clamp(-3.5rem, -7.5vw, -5.5rem);
+  opacity: 0.86;
+}
+
+.constellation-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.constellation-art line {
+  stroke: currentColor;
+  stroke-width: 0.65;
+  stroke-linecap: round;
+  opacity: 0.48;
+}
+
+.constellation-art circle {
+  fill: currentColor;
+  opacity: 0.82;
+}
+
+.celestial-element-fire { color: #f0c4a8; }
+.celestial-element-earth { color: #c6dabd; }
+.celestial-element-air { color: #acd9ed; }
+.celestial-element-water { color: #c4b9f2; }
+
+.celestial-ruler {
+  width: clamp(2.1rem, 4vw, 3.35rem);
+  height: clamp(2.1rem, 4vw, 3.35rem);
+  margin: clamp(-1.05rem, -2vw, -1.675rem);
+  transform: rotate(var(--celestial-angle)) translateY(calc(-1 * var(--ruler-radius))) rotate(calc(-1 * var(--celestial-angle)));
+  z-index: 3;
+}
+
+.celestial-ruler-glow,
+.celestial-ruler-body {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: 50%;
+}
+
+.celestial-ruler-glow {
+  inset: -30%;
+  opacity: 0.32;
+  filter: blur(9px);
+  background: currentColor;
+}
+
+.celestial-ruler-body {
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.9), currentColor 27%, #15162c 100%);
+  box-shadow: inset -6px -8px 11px rgba(3, 5, 15, 0.45), 0 0 15px currentColor;
+}
+
+.celestial-ruler-mercury { color: #c5c2c3; }
+.celestial-ruler-venus { color: #efc891; }
+.celestial-ruler-mars { color: #df786f; }
+.celestial-ruler-jupiter { color: #d2ae80; }
+.celestial-ruler-saturn { color: #c5ae8b; }
+.celestial-ruler-uranus { color: #93dce0; }
+.celestial-ruler-neptune { color: #718fea; }
+.celestial-ruler-pluto { color: #837d9b; }
+.celestial-ruler-sun { color: #ffd37d; }
+
+.celestial-ruler-moon { color: #e1e4f7; }
+
+.celestial-ruler-sun .celestial-ruler-body {
+  background: radial-gradient(circle at 34% 27%, #fffde7 0 8%, #ffe38c 28%, #ec9d38 68%, #6e3e36 100%);
+  box-shadow: inset -7px -8px 12px rgba(113, 50, 12, 0.42), 0 0 20px #ffc965;
+}
+
+.celestial-ruler-moon .celestial-ruler-body {
+  background: radial-gradient(circle at 35% 28%, #fff 0 7%, #dfe5fb 47%, #7783ad 100%);
+}
+
+.celestial-ruler-moon .celestial-ruler-body::after {
+  position: absolute;
+  top: -3%;
+  right: -10%;
+  width: 72%;
+  height: 98%;
+  content: "";
+  border-radius: 50%;
+  background: #10142b;
+  transform: translateX(24%);
+}
+
+.celestial-ruler-jupiter .celestial-ruler-body {
+  background: repeating-linear-gradient(0deg, #9d745e 0 9%, #e3c49b 10% 22%, #bb8f75 23% 32%, #f0d8b5 33% 43%, #8f655e 44% 50%);
+}
+
+.celestial-ruler-saturn .celestial-ruler-body::after {
+  position: absolute;
+  top: 39%;
+  left: -33%;
+  width: 166%;
+  height: 27%;
+  content: "";
+  border: 1px solid rgba(235, 211, 169, 0.82);
+  border-radius: 50%;
+  transform: rotate(-15deg);
+  box-shadow: 0 0 4px rgba(250, 220, 171, 0.45);
+}
+
+.celestial-ruler-uranus .celestial-ruler-body,
+.celestial-ruler-neptune .celestial-ruler-body,
+.celestial-ruler-pluto .celestial-ruler-body {
+  box-shadow: inset -6px -8px 11px rgba(3, 5, 15, 0.4), 0 0 13px currentColor;
+}
+
+.celestial-earth-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(8rem, 18vw, 13rem);
+  aspect-ratio: 1;
+  border: 1px solid rgba(113, 186, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 42px rgba(62, 143, 255, 0.15), inset 0 0 30px rgba(62, 143, 255, 0.08);
+}
+
+.celestial-earth {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  width: clamp(5rem, 10vw, 7.5rem);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid rgba(205, 237, 255, 0.7);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 27% 35%, rgba(201, 235, 173, 0.98) 0 7%, transparent 8%),
+    radial-gradient(ellipse at 62% 56%, rgba(143, 201, 140, 0.95) 0 13%, transparent 14%),
+    radial-gradient(ellipse at 45% 76%, rgba(193, 218, 162, 0.9) 0 8%, transparent 9%),
+    linear-gradient(140deg, #b7f3ff 0 18%, #2778ba 45%, #123365 100%);
+  box-shadow: inset -17px -13px 24px rgba(4, 15, 45, 0.68), inset 9px 4px 16px rgba(230, 255, 255, 0.26), 0 0 36px rgba(88, 174, 255, 0.35);
+  transform: translate(-50%, -50%) rotateX(6deg);
+}
+
+.celestial-earth::before,
+.celestial-earth-clouds {
+  position: absolute;
+  inset: 0;
+  display: block;
+  content: "";
+  border-radius: 50%;
+}
+
+.celestial-earth::before {
+  opacity: 0.72;
+  background: repeating-linear-gradient(168deg, transparent 0 12px, rgba(219, 250, 255, 0.16) 13px 15px, transparent 16px 26px);
+}
+
+.celestial-earth-clouds {
+  opacity: 0.56;
+  background: radial-gradient(ellipse at 35% 26%, rgba(255, 255, 255, 0.8) 0 5%, transparent 6%), radial-gradient(ellipse at 66% 38%, rgba(255, 255, 255, 0.74) 0 4%, transparent 5%), radial-gradient(ellipse at 55% 70%, rgba(255, 255, 255, 0.68) 0 5%, transparent 6%);
+  filter: blur(1px);
+}
+
+.hero-orbit-card > .zodiac-aura,
+.hero-orbit-card > .element-frame,
+.hero-orbit-card > .zodiac-wheel,
+.hero-orbit-card > .orbit-ring,
+.hero-orbit-card > .orbit-core,
+.hero-orbit-card > .orbit-dot,
+.hero-orbit-card > .hero-orbit-meta {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .hero-orbit-card {
+    min-height: clamp(24rem, 105vw, 34rem);
+    border-radius: 1.35rem;
+  }
+
+  .celestial-constellation {
+    --constellation-radius: clamp(6.4rem, 25vw, 8.5rem);
+  }
+
+  .celestial-ruler {
+    --ruler-radius: clamp(8rem, 34vw, 11rem);
+  }
+
+  .celestial-orbit-wide { width: 86%; }
+  .celestial-orbit-inner { width: 65%; }
+}
+
 /* Infographic Progress Bars */
 .infographic-bar-bg {
   background: rgba(255, 255, 255, 0.07);

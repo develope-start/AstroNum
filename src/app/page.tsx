@@ -31,6 +31,21 @@ const ZODIAC_SIGNS = [
   { sign: "♓", ruler: "♆", element: "water", name: "თევზები" },
 ] as const;
 
+const CELESTIAL_CONSTELLATIONS = [
+  { planet: "mars", element: "fire", stars: [[22, 60, 2], [38, 35, 2.4], [56, 45, 1.8], [76, 30, 2.2]], lines: [[0, 1], [1, 2], [2, 3]] },
+  { planet: "venus", element: "earth", stars: [[20, 68, 2], [32, 45, 2.4], [47, 30, 2.8], [57, 47, 2], [73, 58, 2.5], [86, 40, 1.8]], lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5]] },
+  { planet: "mercury", element: "air", stars: [[28, 75, 2], [35, 52, 2.6], [30, 30, 1.9], [48, 43, 2.4], [68, 28, 2.1], [76, 50, 2.5]], lines: [[0, 1], [1, 2], [1, 3], [3, 4], [3, 5]] },
+  { planet: "moon", element: "water", stars: [[26, 45, 2.2], [45, 28, 2.6], [58, 46, 1.9], [80, 35, 2.4], [66, 68, 2.1]], lines: [[0, 1], [1, 2], [2, 3], [2, 4]] },
+  { planet: "sun", element: "fire", stars: [[20, 58, 2], [32, 37, 2.7], [48, 28, 2.2], [62, 44, 2.8], [80, 32, 2], [72, 65, 2.5], [47, 64, 1.8]], lines: [[0, 1], [1, 2], [2, 3], [3, 4], [3, 5], [5, 6], [6, 1]] },
+  { planet: "mercury", element: "earth", stars: [[18, 65, 2], [34, 48, 2.6], [47, 28, 2.1], [55, 52, 2.4], [74, 42, 2], [87, 60, 2.5]], lines: [[0, 1], [1, 2], [1, 3], [3, 4], [4, 5]] },
+  { planet: "venus", element: "air", stars: [[23, 40, 2], [43, 30, 2.3], [60, 55, 2.8], [80, 42, 2.2]], lines: [[0, 1], [1, 2], [2, 3]] },
+  { planet: "pluto", element: "water", stars: [[18, 30, 2], [35, 43, 2.4], [46, 60, 2.8], [63, 54, 2], [74, 73, 2.5], [88, 66, 1.9]], lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5]] },
+  { planet: "jupiter", element: "fire", stars: [[20, 70, 2], [28, 50, 2.5], [48, 48, 2], [60, 30, 2.8], [72, 44, 2], [89, 28, 2.2]], lines: [[0, 1], [1, 2], [2, 3], [2, 4], [4, 5]] },
+  { planet: "saturn", element: "earth", stars: [[24, 42, 2], [42, 27, 2.5], [56, 48, 2.2], [76, 38, 2.6], [84, 64, 2], [62, 73, 2.4]], lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 2]] },
+  { planet: "uranus", element: "air", stars: [[18, 28, 2], [35, 45, 2.4], [54, 33, 2], [63, 58, 2.7], [83, 44, 2.2], [88, 70, 1.8]], lines: [[0, 1], [1, 2], [1, 3], [3, 4], [4, 5]] },
+  { planet: "neptune", element: "water", stars: [[22, 35, 2], [42, 55, 2.6], [59, 30, 2.2], [76, 44, 2.4], [86, 68, 1.9]], lines: [[0, 1], [1, 2], [2, 3], [3, 4]] },
+] as const;
+
 export default function HomePage() {
   const [tab, setTab] = useState<Tab>("natal");
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
@@ -48,6 +63,52 @@ export default function HomePage() {
           </div>
         </div>
         <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
+          <div className="celestial-system" role="img" aria-label="12 ზოდიაქოს თანავარსკვლავედი, მათი მმართველი პლანეტები და ცენტრში დედამიწა">
+            <div className="celestial-star-noise" aria-hidden="true" />
+            <div className="celestial-orbit celestial-orbit-wide" aria-hidden="true" />
+            <div className="celestial-orbit celestial-orbit-inner" aria-hidden="true" />
+            <div className="celestial-constellation-ring" aria-hidden="true">
+              {CELESTIAL_CONSTELLATIONS.map((item, index) => (
+                <div
+                  key={`constellation-${index}`}
+                  className={`celestial-constellation celestial-element-${item.element}`}
+                  style={{ "--celestial-angle": `${index * 30}deg` } as CSSProperties}
+                >
+                  <svg viewBox="0 0 100 100" className="constellation-art">
+                    {item.lines.map(([from, to]) => (
+                      <line
+                        key={`${from}-${to}`}
+                        x1={item.stars[from][0]}
+                        y1={item.stars[from][1]}
+                        x2={item.stars[to][0]}
+                        y2={item.stars[to][1]}
+                      />
+                    ))}
+                    {item.stars.map(([cx, cy, radius], starIndex) => (
+                      <circle key={starIndex} cx={cx} cy={cy} r={radius} />
+                    ))}
+                  </svg>
+                </div>
+              ))}
+            </div>
+            <div className="celestial-ruler-ring" aria-hidden="true">
+              {CELESTIAL_CONSTELLATIONS.map((item, index) => (
+                <div
+                  key={`ruler-${item.planet}-${index}`}
+                  className={`celestial-ruler celestial-ruler-${item.planet}`}
+                  style={{ "--celestial-angle": `${index * 30}deg` } as CSSProperties}
+                  title={`${ZODIAC_SIGNS[index].name} — ${item.planet}`}
+                >
+                  <span className="celestial-ruler-glow" />
+                  <span className="celestial-ruler-body" />
+                </div>
+              ))}
+            </div>
+            <div className="celestial-earth" aria-hidden="true">
+              <span className="celestial-earth-clouds" />
+            </div>
+            <div className="celestial-earth-halo" aria-hidden="true" />
+          </div>
           <div className="zodiac-aura" aria-hidden="true" />
           <div className="element-frame element-frame-fire" aria-hidden="true"><span>△</span></div>
           <div className="element-frame element-frame-earth" aria-hidden="true"><span>◇</span></div>
