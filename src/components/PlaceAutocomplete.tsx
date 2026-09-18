@@ -49,6 +49,12 @@ export default function PlaceAutocomplete({
     setMounted(true);
   }, []);
 
+  // Keep the visible text synchronized when a parent clears or restores the
+  // selected place (for example, when admin filters are reset).
+  useEffect(() => {
+    setQuery(value.place || "");
+  }, [value.place]);
+
   const updateCoords = () => {
     if (inputRef.current) {
       const rect = inputRef.current.getBoundingClientRect();

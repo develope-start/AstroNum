@@ -3,6 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminCalculationViewer, { CalculationViewData } from "@/components/AdminCalculationViewer";
+import DateSelect from "@/components/DateSelect";
+import TimeSelect from "@/components/TimeSelect";
+import PlaceAutocomplete from "@/components/PlaceAutocomplete";
 import { readApiResponse } from "@/lib/apiResponse";
 
 interface ChartRow {
@@ -843,6 +846,14 @@ export default function AdminPage() {
       .filter((group) => group.calculations.length > 0);
   }, [guestCalculationGroups, filteredRegisteredGroups, filters]);
 
+  // The filtered rows are rendered in both registered and unregistered
+  // sections. Keep the summary count aligned with those visible sections.
+  const filteredCalculationCount =
+    filteredRegisteredGroups.reduce((total, group) => total + group.calculations.length, 0) +
+    filteredGuestCalculationGroups.reduce((total, group) => total + group.calculations.length, 0);
+  const totalCalculationCount =
+    (calculations?.length ?? 0) + guestCalculationGroups.reduce((total, group) => total + group.calculations.length, 0);
+
   const stats = useMemo(() => {
     const now = Date.now();
     const h24 = 24 * 60 * 60 * 1000;
@@ -1117,22 +1128,31 @@ export default function AdminPage() {
               სახელი
               <input value={filters.name} onChange={(e) => setFilters((current) => ({ ...current, name: e.target.value }))} placeholder="ნებისმიერი პროფილი" className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
             </label>
-            <label className="text-xs text-parchment-dim">
+            <label className="text-xs text-parchment-dim sm:col-span-2 lg:col-span-2">
               დაბადების თარიღი
-              <input type="date" value={filters.birthDate} onChange={(e) => setFilters((current) => ({ ...current, birthDate: e.target.value }))} className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+              <div className="mt-1">
+                <DateSelect value={filters.birthDate} onChange={(birthDate) => setFilters((current) => ({ ...current, birthDate }))} />
+              </div>
             </label>
-            <label className="text-xs text-parchment-dim">
+            <label className="text-xs text-parchment-dim sm:col-span-2 lg:col-span-2">
               დრო
-              <input type="time" value={filters.time} onChange={(e) => setFilters((current) => ({ ...current, time: e.target.value }))} className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+              <div className="mt-1">
+                <TimeSelect value={filters.time} onChange={(time) => setFilters((current) => ({ ...current, time }))} />
+              </div>
             </label>
             <label className="text-xs text-parchment-dim sm:col-span-2 lg:col-span-4">
               ადგილი
-              <input value={filters.place} onChange={(e) => setFilters((current) => ({ ...current, place: e.target.value }))} placeholder="ქალაქი ან ქვეყანა" className="mt-1 w-full rounded-lg border border-line bg-ink px-2 py-2 text-parchment outline-none focus:border-brass" />
+              <div className="mt-1">
+                <PlaceAutocomplete
+                  value={{ place: filters.place, lat: null, lon: null, timezone: null }}
+                  onChange={(place) => setFilters((current) => ({ ...current, place: place.place }))}
+                />
+              </div>
             </label>
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line/60 pt-3 text-xs">
             <span className="text-parchment-dim">
-              ნაჩვენებია {filteredCalculations?.length ?? 0} ჩანაწერი / სულ {calculations?.length ?? 0}
+              ნაჩვენებია {filteredCalculationCount} ჩანაწერი / სულ {totalCalculationCount}
             </span>
             <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} disabled={!hasFilters} className="rounded-full border border-brass/60 px-3 py-1.5 text-brass-2 disabled:cursor-not-allowed disabled:opacity-40">
               ფილტრების გასუფთავება
@@ -1244,7 +1264,7 @@ export default function AdminPage() {
 
       {/* Account Events History Section */}
       <section id="account-events-section" className="mb-8 scroll-mt-6">
-        <details open className="group/section rounded-2xl border border-cyan-500/30 bg-cyan-950/10 p-5 backdrop-blur-sm transition-all">
+        <details className="group/section rounded-2xl border border-cyan-500/30 bg-cyan-950/10 p-5 backdrop-blur-sm transition-all">
           <summary className="flex cursor-pointer select-none items-center justify-between gap-3">
             <h2 className="font-display text-2xl sm:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-indigo-400 drop-shadow-[0_0_18px_rgba(34,211,238,0.6)]">
               🔑 კაბინეტების ცვლილებების ისტორია ({accountEvents?.length ?? 0})

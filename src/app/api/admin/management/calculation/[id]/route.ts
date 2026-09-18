@@ -136,6 +136,39 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     select: calculationWithoutInterpretationSelect,
   });
   if (!calculation) {
+    const savedChart = await prisma.chart.findUnique({
+      where: { id: params.id },
+      select: {
+        id: true, userId: true, mapNumber: true, type: true, label: true,
+        name1: true, date1: true, time1: true, place1: true, lat1: true, lon1: true, tz1: true,
+        name2: true, date2: true, time2: true, place2: true, lat2: true, lon2: true, tz2: true,
+        transitDate: true, houseSystem: true, resultJson: true, interpretation: true, createdAt: true,
+      },
+    });
+    if (savedChart) {
+      const owner = await prisma.user.findUnique({ where: { id: savedChart.userId }, select: { email: true } });
+      const ownerEmail = owner?.email ?? "unknown";
+      await prisma.$transaction(async (tx) => {
+        await tx.deletedCalculation.upsert({
+          where: { originalId: savedChart.id },
+          create: {
+            originalId: savedChart.id,
+            type: savedChart.type,
+            summary: `${savedChart.name1} · ${savedChart.date1} · ${savedChart.place1}`,
+            dataJson: JSON.stringify({ ...savedChart, ownerEmail, sourceType: "CHART" }),
+          },
+          update: {
+            type: savedChart.type,
+            summary: `${savedChart.name1} · ${savedChart.date1} · ${savedChart.place1}`,
+            dataJson: JSON.stringify({ ...savedChart, ownerEmail, sourceType: "CHART" }),
+            deletedAt: new Date(),
+          },
+        });
+        await tx.chart.delete({ where: { id: savedChart.id } });
+        await tx.accountEvent.create({ data: { userId: savedChart.userId, type: `CHART_DELETED:${savedChart.id}`, emailSnapshot: ownerEmail } });
+      });
+      return NextResponse.json({ message: "Chart moved to trash" });
+    }
     const alreadyInTrash = await prisma.deletedCalculation.findUnique({ where: { originalId: params.id }, select: { id: true } });
     if (alreadyInTrash) return NextResponse.json({ message: "Calculation is already in trash" });
     return NextResponse.json({ error: "Calculation not found" }, { status: 404 });

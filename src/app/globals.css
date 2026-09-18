@@ -759,3 +759,100 @@ svg {
   border-color: rgba(148, 163, 184, 0.2) !important;
   box-shadow: 0 20px 55px -35px rgba(0, 0, 0, 0.95) !important;
 }
+
+.chart-delete-modal {
+  background: rgba(3, 5, 12, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: modal-fade-in 0.18s ease-out both;
+}
+
+.chart-delete-dialog {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 1.25rem;
+  padding: clamp(1.15rem, 3vw, 1.65rem);
+  background: linear-gradient(145deg, rgba(22, 26, 43, 0.98), rgba(10, 13, 24, 0.99));
+  box-shadow: 0 30px 90px -30px rgba(0, 0, 0, 0.98), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  animation: modal-rise-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.chart-delete-icon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 0.8rem;
+  color: #fda4af;
+  background: rgba(127, 29, 29, 0.28);
+}
+
+.chart-dialog-close,
+.chart-dialog-secondary,
+.chart-dialog-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 750;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.chart-dialog-close {
+  min-height: 2rem;
+  padding: 0.45rem;
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.chart-dialog-close:hover,
+.chart-dialog-secondary:hover,
+.chart-dialog-danger:hover {
+  transform: translateY(-1px);
+}
+
+.chart-dialog-secondary {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #cbd5e1;
+  background: rgba(15, 23, 42, 0.52);
+}
+
+.chart-dialog-secondary:hover {
+  border-color: rgba(196, 181, 253, 0.45);
+  background: rgba(51, 65, 85, 0.55);
+}
+
+.chart-dialog-danger {
+  border: 1px solid rgba(251, 113, 133, 0.42);
+  color: #ffe4e6;
+  background: rgba(127, 29, 29, 0.62);
+}
+
+.chart-dialog-danger:hover {
+  border-color: rgba(253, 164, 175, 0.7);
+  background: rgba(159, 18, 57, 0.72);
+}
+
+.chart-dialog-close:disabled,
+.chart-dialog-secondary:disabled,
+.chart-dialog-danger:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.chart-delete-summary {
+  margin-top: 1.2rem;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 0.85rem;
+  padding: 0.8rem 0.9rem;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+@keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-rise-in { from { opacity: 0; transform: translateY(8px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }

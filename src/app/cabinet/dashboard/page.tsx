@@ -125,6 +125,8 @@ export default function DashboardPage() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingChart, setLoadingChart] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ChartSummary | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const handleSessionExpired = useCallback(() => {
     router.replace("/cabinet");
@@ -226,7 +228,7 @@ export default function DashboardPage() {
     }
   }
 
-  async function removeChart(id: string) {
+  async function removeChart(id: string): Promise<boolean> {
     setError(null);
     try {
       const response = await fetch(`/api/charts/${id}`, { method: "DELETE" });
@@ -236,8 +238,20 @@ export default function DashboardPage() {
       if (selected?.id === id) {
         setSelected(null);
       }
+      return true;
     } catch (error) {
       setError(error instanceof Error ? error.message : "რუკის წაშლა ვერ შესრულდა");
+      return false;
+    }
+  }
+
+  async function confirmRemoveChart() {
+    if (!deleteTarget || deleting) return;
+    setDeleting(true);
+    try {
+      if (await removeChart(deleteTarget.id)) setDeleteTarget(null);
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -379,7 +393,7 @@ export default function DashboardPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => removeChart(c.id)}
+                  onClick={() => setDeleteTarget(c)}
                   className="flex items-center gap-1.5 rounded-full bg-rose-950/40 border border-rose-500/30 px-4 py-1.5 text-rose-300 transition-all hover:bg-rose-900/60 cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -390,6 +404,52 @@ export default function DashboardPage() {
           );
         })}
       </div>
+
+      {deleteTarget && (
+        <div
+          className="chart-delete-modal fixed inset-0 z-[80] flex items-center justify-center p-4"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !deleting) setDeleteTarget(null);
+          }}
+        >
+          <div
+            className="chart-delete-dialog w-full max-w-md"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-chart-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <span className="chart-delete-icon" aria-hidden="true"><Trash2 className="h-5 w-5" /></span>
+                <div>
+                  <h2 id="delete-chart-title" className="font-display text-lg font-semibold text-slate-100">რუკის წაშლა</h2>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-400">ეს მოქმედება წაშლის შენახულ რუკას თქვენი კაბინეტიდან.</p>
+                </div>
+              </div>
+              <button type="button" onClick={() => setDeleteTarget(null)} disabled={deleting} className="chart-dialog-close" aria-label="ფანჯრის დახურვა">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="chart-delete-summary">
+              <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-slate-500">არჩეული რუკა</span>
+              <strong className="mt-1 block truncate text-sm text-slate-200">{deleteTarget.label}</strong>
+              <span className="mt-1 block text-xs text-slate-500">{deleteTarget.mapNumber ?? "რუკის ნომერი მიუთითებელი არ არის"}</span>
+            </div>
+
+            <p className="mt-4 text-sm leading-relaxed text-slate-300">ნამდვილად გსურთ ამ რუკის წაშლა?</p>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button type="button" onClick={() => setDeleteTarget(null)} disabled={deleting} className="chart-dialog-secondary">გაუქმება</button>
+              <button type="button" onClick={confirmRemoveChart} disabled={deleting} className="chart-dialog-danger">
+                <Trash2 className="h-4 w-4" />
+                {deleting ? "იშლება…" : "დიახ, წაშლა"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Selected Opened Chart View Modal / Card */}
       {selected && (

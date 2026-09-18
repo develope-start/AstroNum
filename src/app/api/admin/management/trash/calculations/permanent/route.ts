@@ -15,9 +15,18 @@ export async function DELETE(req: NextRequest) {
 
   const deleted = await prisma.deletedCalculation.findMany({
     where: { id: { in: parsed.data.ids } },
-    select: { originalId: true },
+    select: { originalId: true, dataJson: true },
   });
-  const deletedEventTypes = deleted.flatMap(({ originalId }) => [`CALCULATION_DELETED:${originalId}`, "CALCULATION_DELETED"]);
+  const deletedEventTypes = deleted.flatMap(({ originalId, dataJson }) => {
+    try {
+      const data = JSON.parse(dataJson) as { sourceType?: string; chartSnapshot?: { id?: string }; id?: string };
+      if (data.sourceType === "CHART" || data.sourceType === "LEGACY_CHART") return [`CHART_DELETED:${data.id ?? originalId}`, "CHART_DELETED"];
+      if (data.sourceType === "SAVED_CHART") return [`CHART_DELETED:${data.chartSnapshot?.id ?? originalId}`, "CHART_DELETED"];
+    } catch {
+      // Keep the legacy calculation event cleanup below.
+    }
+    return [`CALCULATION_DELETED:${originalId}`, "CALCULATION_DELETED"];
+  });
   const result = await prisma.$transaction(async (tx) => {
     if (deletedEventTypes.length) {
       await tx.accountEvent.deleteMany({ where: { type: { in: deletedEventTypes } } });
