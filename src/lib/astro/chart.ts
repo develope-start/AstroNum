@@ -9,6 +9,7 @@ import {
   PlanetPosition,
 } from "./positions";
 import { computeAspects, AspectHit } from "./aspects";
+import { parseWideDate } from "./wideDate";
 
 export interface BirthInput {
   date: string; // YYYY-MM-DD
@@ -32,7 +33,17 @@ export interface NatalResult {
 }
 
 export function birthInputToUtcDate(input: BirthInput): Date {
-  const dt = DateTime.fromISO(`${input.date}T${input.time}`, { zone: input.timezone });
+  const date = parseWideDate(input.date);
+  const [hourText, minuteText] = input.time.split(":");
+  const hour = Number(hourText);
+  const minute = Number(minuteText);
+  if (!date || !Number.isInteger(hour) || !Number.isInteger(minute)) {
+    throw new Error("დაბადების თარიღი ან დრო არასწორ ფორმატშია");
+  }
+  const dt = DateTime.fromObject(
+    { year: date.year, month: date.month, day: date.day, hour, minute },
+    { zone: input.timezone },
+  );
   if (!dt.isValid) {
     throw new Error(`ბადრაბადის თარიღი/დრო/დროის ზონა არასწორია: ${dt.invalidExplanation}`);
   }

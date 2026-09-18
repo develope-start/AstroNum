@@ -8,10 +8,11 @@ import { houseOfLongitude } from "@/lib/astro/positions";
 import { getRequestInfo } from "@/lib/requestInfo";
 import { tryRecordCalculation } from "@/lib/calculationHistory";
 import { allocateMapNumber } from "@/lib/publicIds";
+import { isWideDate } from "@/lib/astro/wideDate";
 
 const schema = z.object({
   name: z.string().min(1, "სახელი აუცილებელია"),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "თარიღის ფორმატია YYYY-MM-DD"),
+  date: z.string().refine(isWideDate, "თარიღი უნდა იყოს -10000-დან 10000 წლამდე და ჰქონდეს სწორი თვე/დღე"),
   time: z.string().regex(/^\d{2}:\d{2}$/, "დროის ფორმატია HH:mm"),
   place: z.string().min(1, "დაბადების ადგილი აუცილებელია"),
   lat: z.number(),

@@ -7,10 +7,11 @@ import { generateSynastryInterpretation } from "@/lib/interpretations/natal";
 import { getRequestInfo } from "@/lib/requestInfo";
 import { tryRecordCalculation } from "@/lib/calculationHistory";
 import { allocateMapNumber } from "@/lib/publicIds";
+import { isWideDate } from "@/lib/astro/wideDate";
 
 const person = z.object({
   name: z.string().min(1),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  date: z.string().refine(isWideDate, "თარიღი უნდა იყოს -10000-დან 10000 წლამდე და ჰქონდეს სწორი თვე/დღე"),
   time: z.string().regex(/^\d{2}:\d{2}$/),
   place: z.string().min(1),
   lat: z.number(),
