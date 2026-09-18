@@ -1105,3 +1105,249 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
     min-height: 2.15rem;
   }
 }
+
+/* Hero zodiac instrument: a quiet, dimensional replacement for the old orbit illustration. */
+.hero-actions {
+  display: none;
+}
+
+.hero-orbit-card {
+  min-height: clamp(24rem, 46vw, 34rem);
+  isolation: isolate;
+  border-color: rgba(168, 178, 204, 0.16);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(139, 92, 246, 0.13), transparent 34%),
+    linear-gradient(145deg, rgba(20, 24, 42, 0.78), rgba(7, 9, 18, 0.96));
+  box-shadow: 0 40px 100px -58px rgba(0, 0, 0, 0.98), inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+.hero-orbit-card::before {
+  display: none;
+}
+
+.hero-orbit-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 24%, rgba(255, 255, 255, 0.035) 42%, transparent 58%),
+    radial-gradient(circle at 12% 18%, rgba(125, 211, 252, 0.08), transparent 20%),
+    radial-gradient(circle at 86% 78%, rgba(216, 180, 254, 0.07), transparent 22%);
+}
+
+.orbit-ring,
+.orbit-core,
+.orbit-dot,
+.hero-orbit-meta {
+  display: none;
+}
+
+.zodiac-aura {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(75%, 25rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(129, 140, 248, 0.2), rgba(99, 102, 241, 0.06) 38%, transparent 70%);
+  filter: blur(18px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.zodiac-wheel {
+  --zodiac-radius: clamp(6.55rem, 14vw, 9.5rem);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--zodiac-radius) + var(--zodiac-radius) + 4.7rem);
+  aspect-ratio: 1;
+  perspective: 900px;
+  transform: translate(-50%, -50%);
+}
+
+.zodiac-wheel-shadow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.42);
+  filter: blur(18px);
+  transform: translateY(1.3rem) scale(0.9);
+}
+
+.zodiac-disc {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  border: 1px solid rgba(196, 181, 253, 0.3);
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from -15deg, rgba(196, 181, 253, 0.16) 0deg 0.6deg, transparent 0.6deg 30deg),
+    conic-gradient(from -15deg, rgba(244, 114, 182, 0.08), rgba(125, 211, 252, 0.08), rgba(134, 239, 172, 0.08), rgba(251, 191, 36, 0.08), rgba(244, 114, 182, 0.08)),
+    radial-gradient(circle at 34% 25%, rgba(255, 255, 255, 0.13), rgba(99, 102, 241, 0.1) 26%, rgba(7, 9, 18, 0.88) 72%);
+  box-shadow: 0 0 0 0.4rem rgba(196, 181, 253, 0.035), 0 0 0 0.8rem rgba(125, 211, 252, 0.018), 0 24px 65px -35px rgba(129, 140, 248, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12), inset -18px -22px 45px rgba(0, 0, 0, 0.42);
+  transform: rotateX(10deg) rotateZ(-3deg);
+  transform-style: preserve-3d;
+}
+
+.zodiac-disc::before,
+.zodiac-disc::after {
+  content: "";
+  position: absolute;
+  inset: 7%;
+  border: 1px solid rgba(196, 181, 253, 0.18);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.zodiac-disc::after {
+  inset: 16%;
+  border-color: rgba(125, 211, 252, 0.12);
+}
+
+.zodiac-sign {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  width: 2.85rem;
+  height: 2.85rem;
+  place-items: center;
+  margin: -1.425rem;
+  border: 1px solid rgba(196, 181, 253, 0.26);
+  border-radius: 0.95rem;
+  background: rgba(12, 15, 29, 0.72);
+  box-shadow: 0 10px 25px -17px rgba(0, 0, 0, 0.96), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: rotate(var(--zodiac-angle)) translateY(calc(var(--zodiac-radius) * -1)) rotate(calc(var(--zodiac-angle) * -1));
+  transform-style: preserve-3d;
+}
+
+.zodiac-sign::after {
+  content: "";
+  position: absolute;
+  inset: -0.25rem;
+  border: 1px solid currentColor;
+  border-radius: 1.1rem;
+  opacity: 0.14;
+}
+
+.zodiac-sign-fire { color: #f1b39b; border-color: rgba(244, 164, 139, 0.42); }
+.zodiac-sign-earth { color: #c6d8b4; border-color: rgba(163, 201, 151, 0.4); }
+.zodiac-sign-air { color: #b8dff0; border-color: rgba(125, 211, 252, 0.4); }
+.zodiac-sign-water { color: #c6b8ed; border-color: rgba(196, 181, 253, 0.42); }
+
+.zodiac-glyph {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.45rem;
+  line-height: 1;
+  text-shadow: 0 0 16px currentColor;
+}
+
+.zodiac-ruler {
+  position: absolute;
+  right: 0.27rem;
+  bottom: 0.17rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.66rem;
+  line-height: 1;
+  opacity: 0.78;
+}
+
+.zodiac-inner-orbit {
+  position: absolute;
+  inset: 23%;
+  border: 1px dashed rgba(196, 181, 253, 0.22);
+  border-radius: 50%;
+  animation: zodiac-spin 36s linear infinite;
+}
+
+.zodiac-crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: rgba(196, 181, 253, 0.15);
+  transform: translate(-50%, -50%);
+}
+
+.zodiac-crosshair-horizontal { width: 72%; height: 1px; }
+.zodiac-crosshair-vertical { width: 1px; height: 72%; }
+
+.zodiac-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  display: grid;
+  width: 5.25rem;
+  height: 5.25rem;
+  place-items: center;
+  border: 1px solid rgba(221, 214, 254, 0.48);
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 25%, rgba(255, 255, 255, 0.23), rgba(139, 92, 246, 0.22) 32%, rgba(8, 10, 20, 0.92) 72%);
+  box-shadow: 0 0 38px rgba(167, 139, 250, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.18), inset -12px -16px 22px rgba(0, 0, 0, 0.5);
+  transform: translate(-50%, -50%) translateZ(20px);
+}
+
+.zodiac-core-symbol {
+  color: #eeeaff;
+  font-size: 2.1rem;
+  line-height: 1;
+  text-shadow: 0 0 24px rgba(221, 214, 254, 0.9);
+}
+
+.zodiac-core-orbit {
+  position: absolute;
+  inset: -0.7rem;
+  border: 1px solid rgba(125, 211, 252, 0.24);
+  border-radius: 50%;
+  transform: rotateX(68deg) rotateZ(-22deg);
+}
+
+.element-frame {
+  position: absolute;
+  z-index: 6;
+  display: grid;
+  width: 3.7rem;
+  height: 3.7rem;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 1.15rem;
+  background: rgba(10, 13, 24, 0.44);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 28px -24px currentColor;
+  opacity: 0.78;
+  transform: rotate(45deg);
+}
+
+.element-frame::before,
+.element-frame::after {
+  content: "";
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-color: currentColor;
+  border-style: solid;
+  opacity: 0.82;
+}
+
+.element-frame::before { top: -0.2rem; left: -0.2rem; border-width: 1px 0 0 1px; }
+.element-frame::after { right: -0.2rem; bottom: -0.2rem; border-width: 0 1px 1px 0; }
+.element-frame span { transform: rotate(-45deg); font-family: Georgia, "Times New Roman", serif; font-size: 1.25rem; }
+.element-frame-fire { top: 10%; left: 10%; color: #efb09b; }
+.element-frame-earth { top: 10%; right: 10%; color: #c6d8b4; }
+.element-frame-air { right: 10%; bottom: 10%; color: #abd7e8; }
+.element-frame-water { bottom: 10%; left: 10%; color: #c4b5fd; }
+
+@keyframes zodiac-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 800px) {
+  .zodiac-wheel { --zodiac-radius: clamp(6.25rem, 24vw, 8.4rem); }
+  .element-frame { width: 3.15rem; height: 3.15rem; border-radius: 1rem; }
+  .element-frame-fire { top: 8%; left: 8%; }
+  .element-frame-earth { top: 8%; right: 8%; }
+  .element-frame-air { right: 8%; bottom: 8%; }
+  .element-frame-water { bottom: 8%; left: 8%; }
+}

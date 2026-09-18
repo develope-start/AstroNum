@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { type CSSProperties, useState } from "react";
 import { Activity, ArrowRight, Check, Compass, Heart, Orbit, Sparkles, Sun } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
@@ -14,6 +14,21 @@ const TABS = [
   { id: "synastry", label: "სინასტრია", hint: "ორი რუკის შედარება — ურთიერთქმედების ძლიერი და რთული წერტილები", icon: Heart },
   { id: "transit", label: "ტრანზიტები", hint: "მიმდინარე ციური მოძრაობა ნატალურ რუკასთან მიმართებით", icon: Activity },
   { id: "advanced", label: "გაფართოებული", hint: "პროგრესიები, Return-ები, Solar Arc, დაბნელებები და ჰარმონიკები", icon: Orbit },
+] as const;
+
+const ZODIAC_SIGNS = [
+  { sign: "♈", ruler: "♂", element: "fire", name: "ვერძი" },
+  { sign: "♉", ruler: "♀", element: "earth", name: "კურო" },
+  { sign: "♊", ruler: "☿", element: "air", name: "ტყუპები" },
+  { sign: "♋", ruler: "☽", element: "water", name: "კირჩხიბი" },
+  { sign: "♌", ruler: "☉", element: "fire", name: "ლომი" },
+  { sign: "♍", ruler: "☿", element: "earth", name: "ქალწული" },
+  { sign: "♎", ruler: "♀", element: "air", name: "სასწორი" },
+  { sign: "♏", ruler: "♇", element: "water", name: "მორიელი" },
+  { sign: "♐", ruler: "♃", element: "fire", name: "მშვილდოსანი" },
+  { sign: "♑", ruler: "♄", element: "earth", name: "თხის რქა" },
+  { sign: "♒", ruler: "♅", element: "air", name: "მერწყული" },
+  { sign: "♓", ruler: "♆", element: "water", name: "თევზები" },
 ] as const;
 
 export default function HomePage() {
@@ -33,7 +48,34 @@ export default function HomePage() {
           </div>
         </div>
         <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
-          <div className="orbit-ring orbit-ring-one" />
+          <div className="zodiac-aura" aria-hidden="true" />
+          <div className="element-frame element-frame-fire" aria-hidden="true"><span>△</span></div>
+          <div className="element-frame element-frame-earth" aria-hidden="true"><span>◇</span></div>
+          <div className="element-frame element-frame-air" aria-hidden="true"><span>⌁</span></div>
+          <div className="element-frame element-frame-water" aria-hidden="true"><span>▽</span></div>
+          <div className="zodiac-wheel" aria-hidden="true">
+            <div className="zodiac-wheel-shadow" />
+            <div className="zodiac-disc">
+              {ZODIAC_SIGNS.map((item, index) => (
+                <div
+                  key={item.sign}
+                  className={`zodiac-sign zodiac-sign-${item.element}`}
+                  style={{ "--zodiac-angle": `${index * 30}deg` } as CSSProperties}
+                  title={`${item.name} — ${item.ruler}`}
+                >
+                  <span className="zodiac-glyph">{item.sign}</span>
+                  <span className="zodiac-ruler">{item.ruler}</span>
+                </div>
+              ))}
+              <div className="zodiac-inner-orbit" />
+              <div className="zodiac-crosshair zodiac-crosshair-horizontal" />
+              <div className="zodiac-crosshair zodiac-crosshair-vertical" />
+              <div className="zodiac-core">
+                <span className="zodiac-core-symbol">✦</span>
+                <span className="zodiac-core-orbit" />
+              </div>
+            </div>
+          </div>
           <div className="orbit-ring orbit-ring-two" />
           <div className="orbit-core" />
           <span className="orbit-dot orbit-dot-one" /><span className="orbit-dot orbit-dot-two" /><span className="orbit-dot orbit-dot-three" />
