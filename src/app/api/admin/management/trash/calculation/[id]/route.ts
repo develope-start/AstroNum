@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
 import { allocateMapNumber, allocatePublicId, ensureUserPublicId, numberFromPublicId } from "@/lib/publicIds";
+import { generateNatalInterpretation, generateSynastryInterpretation, generateTransitInterpretation } from "@/lib/interpretations/natal";
+import { houseOfLongitude } from "@/lib/astro/positions";
 
 function parseJsonObject(value: string): Record<string, unknown> | null {
   try {
@@ -41,6 +43,78 @@ function chartData(source: Record<string, unknown>, userId: string, fallbackId: 
     interpretation: typeof source.interpretation === "string" ? source.interpretation : "",
     createdAt: new Date(String(source.createdAt ?? new Date().toISOString())),
   };
+}
+
+function buildArchivedInterpretation(archived: Record<string, unknown>, result: unknown): string | null {
+  const chartSnapshot = archived.chartSnapshot && typeof archived.chartSnapshot === "object" && !Array.isArray(archived.chartSnapshot)
+    ? archived.chartSnapshot as Record<string, any>
+    : null;
+  const stored = typeof archived.interpretation === "string"
+    ? archived.interpretation
+    : typeof chartSnapshot?.interpretation === "string"
+      ? chartSnapshot.interpretation
+      : null;
+  if (stored) return stored;
+  if (!result || typeof result !== "object") return null;
+
+  const value = result as Record<string, any>;
+  try {
+    if (archived.type === "NATAL" && Array.isArray(value.planets) && Array.isArray(value.houseCusps)) {
+      return generateNatalInterpretation({
+        planets: value.planets,
+        houseCusps: value.houseCusps,
+        ascendant: value.ascendant,
+        mc: value.mc,
+        aspects: value.aspects ?? [],
+        houseOfFn: (longitude: number) => houseOfLongitude(longitude, value.houseCusps),
+      });
+    }
+    if (archived.type === "SYNASTRY") {
+      return generateSynastryInterpretation(String(archived.name1 ?? ""), String(archived.name2 ?? ""), value.aspects ?? []);
+    }
+    if (archived.type === "TRANSIT") {
+      return generateTransitInterpretation(value.aspects ?? [], String(archived.transitDate ?? ""));
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const session = await getActiveSessionFromRequest(req);
+  if (!session || session.role !== "ADMIN") {
+    return NextResponse.json({ error: "ბѓ¬бѓ•бѓ“бѓќбѓ›бѓђ бѓђбѓ™бѓ бѓ«бѓђбѓљбѓЈбѓљбѓбѓђ" }, { status: 403 });
+  }
+
+  const deleted = await prisma.deletedCalculation.findUnique({ where: { id: params.id } });
+  if (!deleted) return NextResponse.json({ error: "бѓЈбѓ бѓњбѓђбѓЁбѓ бѓ”бѓЎ бѓ бѓЈбѓ™бѓђ бѓђбѓ¦бѓђбѓ  бѓђбѓ бѓЎбѓ”бѓ‘бѓќбѓ‘бѓЎ" }, { status: 404 });
+
+  const archived = parseJsonObject(deleted.dataJson);
+  if (!archived) return NextResponse.json({ error: "бѓђбѓ бѓҐбѓбѓ•бѓбѓЎ бѓ›бѓќбѓњбѓђбѓЄбѓ”бѓ›бѓ”бѓ‘бѓ бѓ“бѓђбѓ–бѓбѓђбѓњбѓ”бѓ‘бѓЈбѓљбѓбѓђ" }, { status: 422 });
+
+  const chartSnapshot = archived.chartSnapshot && typeof archived.chartSnapshot === "object" && !Array.isArray(archived.chartSnapshot)
+    ? archived.chartSnapshot as Record<string, unknown>
+    : null;
+  const resultJson = typeof archived.resultJson === "string"
+    ? archived.resultJson
+    : typeof chartSnapshot?.resultJson === "string"
+      ? chartSnapshot.resultJson
+      : null;
+  if (!resultJson) return NextResponse.json({ error: "бѓ бѓЈбѓ™бѓбѓЎ бѓ›бѓќбѓњбѓђбѓЄбѓ”бѓ›бѓ бѓђбѓ  бѓђбѓ бѓбѓЎ" }, { status: 422 });
+
+  let result: unknown;
+  try {
+    result = JSON.parse(resultJson);
+  } catch {
+    return NextResponse.json({ error: "ბѓ бѓЈбѓ™бѓбѓЎ бѓ›бѓќбѓњбѓђбѓЄбѓ”бѓ›бѓ бѓ“бѓђбѓ–бѓбѓђбѓњбѓ”бѓ‘бѓЈбѓљбѓбѓђ" }, { status: 422 });
+  }
+
+  return NextResponse.json({
+    ...archived,
+    result,
+    interpretation: buildArchivedInterpretation(archived, result),
+  });
 }
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {

@@ -92,11 +92,12 @@ interface ManagementData {
   deletedCalculations: DeletedCalculation[];
 }
 
-type ModalKind = "delete-user" | "edit-user" | "edit-user-form" | "save-user" | "delete-calculation" | "edit-calculation" | "edit-calculation-form" | "save-calculation" | "cancel-edit" | "permanent-delete-users" | "permanent-delete-calculations";
+type ModalKind = "delete-user" | "edit-user" | "edit-user-form" | "save-user" | "delete-calculation" | "edit-calculation" | "edit-calculation-form" | "save-calculation" | "restore-calculation" | "cancel-edit" | "permanent-delete-users" | "permanent-delete-calculations";
 interface ModalState {
   kind: ModalKind;
   user?: ManagedUser;
   calculation?: CalculationData;
+  deletedCalculation?: DeletedCalculation;
 }
 
 type CalculationDraft = Omit<CalculationData, "id" | "createdAt" | "updatedAt" | "publicId" | "mapNumber" | "saved">;
@@ -405,6 +406,28 @@ export default function AdminUsersPage() {
       setViewingCalculation({ ...calculation, result: body.result, interpretation: body.interpretation ?? null });
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "რუკის გახსნა ვერ მოხერხდა");
+    } finally {
+      setViewLoading(false);
+    }
+  }
+
+  async function openDeletedCalculationView(deletedCalculation: DeletedCalculation) {
+    setViewLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/admin/management/trash/calculation/${deletedCalculation.id}`, { cache: "no-store" });
+      const rawBody = await response.text();
+      let body: { error?: string; result?: unknown; interpretation?: string | null } = {};
+      try {
+        body = rawBody ? JSON.parse(rawBody) : {};
+      } catch {
+        body = {};
+      }
+      if (!response.ok) throw new Error(body.error || `ბѓ бѓЈбѓ™бѓбѓЎ бѓ’бѓђбѓ®бѓЎбѓњбѓђ бѓ•бѓ”бѓ  бѓ›бѓќбѓ®бѓ”бѓ бѓ®бѓ“бѓђ (${response.status})`);
+      if (!body.result) throw new Error(body.error || "ბѓ бѓЈбѓ™бѓбѓЎ бѓ›бѓќбѓњбѓђбѓЄбѓ”бѓ›бѓ бѓ•бѓ”бѓ  бѓ›бѓќбѓбѓ«бѓ”бѓ‘бѓњбѓђ");
+      setViewingCalculation({ ...deletedCalculation.data, result: body.result, interpretation: body.interpretation ?? null });
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "ბѓ бѓЈбѓ™бѓбѓЎ бѓ’бѓђбѓ®бѓЎбѓњбѓђ бѓ•бѓ”бѓ  бѓ›бѓќбѓ®бѓ”бѓ бѓ®бѓ“бѓђ");
     } finally {
       setViewLoading(false);
     }
@@ -956,10 +979,10 @@ export default function AdminUsersPage() {
               <div className="mt-4 border-t border-line/60 pt-4 flex flex-wrap items-center justify-between gap-3">
                 <div className="space-y-2 w-full sm:w-auto">
                   <p className="text-xs text-parchment-dim">{calculation.summary} · წაშლილია: {formatDate(calculation.deletedAt)}</p>
-                  <CalculationDetails calculation={calculation.data} onView={openCalculationView} />
+                  <CalculationDetails calculation={calculation.data} onView={() => openDeletedCalculationView(calculation)} />
                 </div>
                 <div className="flex justify-end w-full sm:w-auto mt-2 sm:mt-0">
-                  <button className={button} onClick={() => action(`/api/admin/management/trash/calculation/${calculation.id}`, { method: "POST" })}>აღდგენა</button>
+                  <button className={button} onClick={() => setModal({ kind: "restore-calculation", deletedCalculation: calculation })}>აღდგენა</button>
                 </div>
               </div>
             </details>
@@ -1016,6 +1039,22 @@ export default function AdminUsersPage() {
           <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ ამ მომხმარებლის რუკის ჩანაწერის წაშლა? ის ურნაში გადავა.</p>
           <div className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim"><CalculationDetails calculation={modal.calculation} /></div>
           <div className="flex justify-end gap-3"><button className={button} onClick={() => setModal(null)}>უარყოფა</button><button className={dangerButton} onClick={() => action(`/api/admin/management/calculation/${modal.calculation!.id}`, { method: "DELETE" })}>თანხმობა, წაშლა</button></div>
+        </Modal>
+      )}
+
+      {modal?.kind === "restore-calculation" && modal.deletedCalculation && (
+        <Modal onClose={() => setModal(null)}>
+          <h2 className="font-display text-xl text-brass-2">რუკის აღდგენის დადასტურება</h2>
+          <p className="mt-2 text-sm text-parchment-dim">ნამდვილად გსურთ ამ წაშლილი რუკის აღდგენა? თანხმობის შემდეგ ჩანაწერი ურნიდან დაბრუნდება აქტიურ რუკებში.</p>
+          <div className="my-4 rounded-lg bg-ink-2/70 p-4 text-sm text-parchment-dim">
+            <p><span className="text-parchment-dim">რუკის ნომერი:</span> {modal.deletedCalculation.data.mapNumber ?? modal.deletedCalculation.data.publicId ?? "—"}</p>
+            <p><span className="text-parchment-dim">სახელი:</span> {modal.deletedCalculation.data.name1}</p>
+            <p><span className="text-parchment-dim">ტიპი:</span> {TYPE_LABEL[modal.deletedCalculation.data.type] ?? modal.deletedCalculation.data.type}</p>
+          </div>
+          <div className="flex justify-end gap-3">
+            <button className={button} onClick={() => setModal(null)}>უარყოფა</button>
+            <button className={button} onClick={() => action(`/api/admin/management/trash/calculation/${modal.deletedCalculation!.id}`, { method: "POST" }, "calculations")}>თანხმობა, აღდგენა</button>
+          </div>
         </Modal>
       )}
 
