@@ -148,7 +148,7 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
       </div>
 
       <div
-        className={`relative grid min-h-[76px] w-full min-w-0 grid-cols-[minmax(0,1.55fr)_auto_minmax(0,0.8fr)_auto_minmax(0,0.95fr)_auto] items-center gap-1 rounded-2xl border-2 bg-gradient-to-b from-[#130a35] via-[#09041b] to-[#0d0626] p-2.5 sm:min-h-[92px] sm:gap-2 sm:p-3.5 shadow-lg transition-all duration-300 ${
+        className={`relative grid min-h-[54px] w-full min-w-0 grid-cols-[minmax(0,1.55fr)_auto_minmax(0,0.8fr)_auto_minmax(0,0.95fr)_auto] items-center gap-1 rounded-xl border bg-gradient-to-b from-[#130a35] via-[#09041b] to-[#0d0626] p-1.5 shadow-lg transition-all duration-300 sm:min-h-[62px] sm:gap-2 sm:rounded-2xl sm:p-2.5 ${
           isValid
             ? "border-amber-400/50 shadow-[0_0_25px_rgba(245,158,11,0.25)] focus-within:border-amber-400 focus-within:shadow-[0_0_35px_rgba(245,158,11,0.5)] focus-within:ring-2 focus-within:ring-amber-500/30"
             : "border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.3)]"
@@ -174,12 +174,12 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             autoComplete="off"
             spellCheck={false}
             aria-label={`${label} — წელიწადი`}
-            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.9rem,4.2vw,1.5rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
           />
         </div>
 
         {/* Separator 1 */}
-        <span className="select-none px-0.5 text-xl font-black text-amber-300/80 sm:px-1 sm:text-3xl">/</span>
+        <span className="select-none px-0.5 text-lg font-black text-amber-300/80 sm:px-1 sm:text-xl">/</span>
 
         {/* Month segment */}
         <div className="flex min-w-0 w-full items-center justify-center">
@@ -202,12 +202,12 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             autoComplete="off"
             spellCheck={false}
             aria-label={`${label} — თვე`}
-            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.9rem,4.2vw,1.5rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
           />
         </div>
 
         {/* Separator 2 */}
-        <span className="select-none px-0.5 text-xl font-black text-amber-300/80 sm:px-1 sm:text-3xl">/</span>
+        <span className="select-none px-0.5 text-lg font-black text-amber-300/80 sm:px-1 sm:text-xl">/</span>
 
         {/* Day segment */}
         <div className="flex min-w-0 w-full items-center justify-center">
@@ -227,12 +227,13 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             autoComplete="off"
             spellCheck={false}
             aria-label={`${label} — რიცხვი`}
-            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.9rem,4.2vw,1.5rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
           />
         </div>
 
         {/* Calendar Picker Trigger */}
-        <div className="flex items-center justify-end pl-1">
+        <div className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-amber-400/35 bg-purple-950/60 pl-0.5 text-amber-300 shadow-sm transition-colors hover:border-amber-300 hover:bg-purple-900 sm:h-9 sm:w-9">
+          <Calendar className="pointer-events-none h-4 w-4 text-amber-300 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
           <input
             type="date"
             value={nativeValue}
@@ -241,7 +242,7 @@ function WideDateInput({ label, value, onChange, autoFocus = false }: WideDateIn
             onChange={(event) => handleNativeChange(event.target.value)}
             aria-label={`${label} — კალენდრით არჩევა`}
             title="კალენდრით არჩევა / სქროლვა; ძველი წელთაღრიცხვისთვის გამოიყენეთ ხელით ჩაწერილი წელი"
-            className="h-9 w-9 cursor-pointer rounded-xl border border-amber-400/40 bg-purple-950/70 p-1 text-amber-300 shadow-md transition-all hover:border-amber-300 hover:bg-purple-900 sm:h-10 sm:w-10 [color-scheme:dark]"
+            className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0 [color-scheme:dark]"
           />
         </div>
       </div>
