@@ -46,9 +46,32 @@ const CELESTIAL_CONSTELLATIONS = [
   { planet: "neptune", element: "water", stars: [[22, 35, 2], [42, 55, 2.6], [59, 30, 2.2], [76, 44, 2.4], [86, 68, 1.9]], lines: [[0, 1], [1, 2], [2, 3], [3, 4]] },
 ] as const;
 
+const CELESTIAL_PLANET_META = {
+  mars: { name: "მარსი", glyph: "♂", description: "ენერგიისა და მოქმედების მმართველი" },
+  venus: { name: "ვენერა", glyph: "♀", description: "მიზიდულობისა და ღირებულებების მმართველი" },
+  mercury: { name: "მერკური", glyph: "☿", description: "აზროვნებისა და კომუნიკაციის მმართველი" },
+  moon: { name: "მთვარე", glyph: "☽", description: "ემოციური რიტმისა და შინაგანი სამყაროს მმართველი მნათობი" },
+  sun: { name: "მზე", glyph: "☉", description: "სიცოცხლისა და თვითგამოხატვის მმართველი მნათობი" },
+  pluto: { name: "პლუტონი", glyph: "♇", description: "ტრანსფორმაციისა და ღრმა ცვლილებების მმართველი" },
+  jupiter: { name: "იუპიტერი", glyph: "♃", description: "ზრდისა და გაფართოების მმართველი" },
+  saturn: { name: "სატურნი", glyph: "♄", description: "სტრუქტურისა და პასუხისმგებლობის მმართველი" },
+  uranus: { name: "ურანი", glyph: "♅", description: "გარდაქმნისა და თავისუფლების მმართველი" },
+  neptune: { name: "ნეპტუნი", glyph: "♆", description: "ინტუიციისა და წარმოსახვის მმართველი" },
+} as const;
+
+type CelestialTarget = number | "earth" | null;
+
 export default function HomePage() {
   const [tab, setTab] = useState<Tab>("natal");
+  const [hoveredCelestial, setHoveredCelestial] = useState<CelestialTarget>(null);
+  const [selectedCelestial, setSelectedCelestial] = useState<CelestialTarget>(null);
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
+  const activeCelestial = selectedCelestial ?? hoveredCelestial;
+  const activePlanetIndex = typeof activeCelestial === "number" ? activeCelestial : null;
+  const activePlanet = activePlanetIndex === null
+    ? null
+    : CELESTIAL_PLANET_META[CELESTIAL_CONSTELLATIONS[activePlanetIndex].planet as keyof typeof CELESTIAL_PLANET_META];
+  const activeSign = activePlanetIndex === null ? null : ZODIAC_SIGNS[activePlanetIndex];
 
   return (
     <div className="app-home">
@@ -63,7 +86,7 @@ export default function HomePage() {
           </div>
         </div>
         <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
-          <div className="celestial-system" role="img" aria-label="12 ზოდიაქოს თანავარსკვლავედი, მათი მმართველი პლანეტები და ცენტრში დედამიწა">
+          <div className="celestial-system" role="group" aria-label="12 ზოდიაქოს ასტროლოგიური სარტყელი, მმართველი მნათობები და ცენტრში დედამიწა">
             <div className="celestial-star-noise" aria-hidden="true" />
             <div className="celestial-orbit celestial-orbit-wide" aria-hidden="true" />
             <div className="celestial-orbit celestial-orbit-inner" aria-hidden="true" />
@@ -91,23 +114,64 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-            <div className="celestial-ruler-ring" aria-hidden="true">
+            <div className="celestial-ruler-ring">
               {CELESTIAL_CONSTELLATIONS.map((item, index) => (
-                <div
+                <button
+                  type="button"
                   key={`ruler-${item.planet}-${index}`}
-                  className={`celestial-ruler celestial-ruler-${item.planet}`}
+                  className={`celestial-ruler celestial-ruler-${item.planet}${selectedCelestial === index ? " is-active" : ""}`}
                   style={{ "--celestial-angle": `${index * 30}deg` } as CSSProperties}
-                  title={`${ZODIAC_SIGNS[index].name} — ${item.planet}`}
+                  aria-label={`${ZODIAC_SIGNS[index].name} — ${CELESTIAL_PLANET_META[item.planet as keyof typeof CELESTIAL_PLANET_META].name}`}
+                  aria-pressed={selectedCelestial === index}
+                  onMouseEnter={() => setHoveredCelestial(index)}
+                  onMouseLeave={() => setHoveredCelestial(null)}
+                  onFocus={() => setHoveredCelestial(index)}
+                  onBlur={() => setHoveredCelestial(null)}
+                  onClick={() => setSelectedCelestial((current) => current === index ? null : index)}
                 >
+                  <span className="celestial-ruler-zodiac" aria-hidden="true">{ZODIAC_SIGNS[index].sign}</span>
+                  <span className="celestial-ruler-planet-symbol" aria-hidden="true">{ZODIAC_SIGNS[index].ruler}</span>
                   <span className="celestial-ruler-glow" />
                   <span className="celestial-ruler-body" />
-                </div>
+                </button>
               ))}
             </div>
-            <div className="celestial-earth" aria-hidden="true">
+            <button
+              type="button"
+              className={`celestial-earth${selectedCelestial === "earth" ? " is-active" : ""}`}
+              aria-label="დედამიწა — ციური დაკვირვების ცენტრი"
+              aria-pressed={selectedCelestial === "earth"}
+              onMouseEnter={() => setHoveredCelestial("earth")}
+              onMouseLeave={() => setHoveredCelestial(null)}
+              onFocus={() => setHoveredCelestial("earth")}
+              onBlur={() => setHoveredCelestial(null)}
+              onClick={() => setSelectedCelestial((current) => current === "earth" ? null : "earth")}
+            >
               <span className="celestial-earth-clouds" />
-            </div>
+            </button>
             <div className="celestial-earth-halo" aria-hidden="true" />
+            {activeCelestial !== null && (
+              <div
+                className={`celestial-info-card ${activeCelestial === "earth" ? "celestial-info-earth" : `celestial-info-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
+                aria-live="polite"
+              >
+                {activeCelestial === "earth" ? (
+                  <>
+                    <span className="celestial-info-eyebrow">ციური დაკვირვების ცენტრი</span>
+                    <strong>დედამიწა</strong>
+                    <p>ციური სფეროსა და ეკლიპტიკური სარტყლის დამკვირვებლის ცენტრალური წერტილი.</p>
+                    <span className="celestial-info-tags">12 ნიშანი · ეკლიპტიკური სარტყელი · Swiss Ephemeris</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="celestial-info-eyebrow">თანავარსკვლავედი {activeSign?.name}</span>
+                    <strong>{activeSign?.sign} · მმართველი მნათობი {activePlanet?.name}</strong>
+                    <p>{activePlanet?.description}</p>
+                    <span className="celestial-info-tags">{activePlanet?.glyph} {activePlanet?.name} · {activeSign?.element}</span>
+                  </>
+                )}
+              </div>
+            )}
           </div>
           <div className="zodiac-aura" aria-hidden="true" />
           <div className="element-frame element-frame-fire" aria-hidden="true"><span>△</span></div>

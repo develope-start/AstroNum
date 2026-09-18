@@ -172,7 +172,7 @@ function CalculationDetails({ calculation, onView }: { calculation: CalculationD
         {calculation.saved ? "მონაცემები შენახულია" : "შენახვის გარეშე"}
       </p>
       {calculation.updatedAt && <p className="mb-3 text-xs text-parchment-dim/70">განახლებული: {formatDate(calculation.updatedAt)}</p>}
-      {onView && <button type="button" onClick={() => onView(calculation)} className="mb-3 rounded-full border border-slate-400/70 bg-slate-500/10 px-4 py-1.5 text-xs font-bold text-slate-200 shadow-[0_0_14px_rgba(148,163,184,0.18)] transition hover:border-slate-200 hover:bg-slate-400/20">რუკის ნახვა</button>}
+      {onView && <button type="button" onClick={() => onView(calculation)} className="admin-control-button admin-control-button-secondary mb-3 rounded-full border border-slate-400/70 bg-slate-500/10 px-4 py-1.5 text-xs font-bold text-slate-200 shadow-[0_0_14px_rgba(148,163,184,0.18)] transition hover:border-slate-200 hover:bg-slate-400/20">რუკის ნახვა</button>}
       <div className="grid gap-x-6 gap-y-1 text-xs sm:grid-cols-2">
       <p><span className="text-parchment-dim">რუკის ნომერი:</span> <strong className="text-amber-300">{value(calculation.mapNumber)}</strong></p>
       <p><span className="text-parchment-dim">ტიპი:</span> {TYPE_LABEL[calculation.type] ?? calculation.type}</p>
@@ -445,8 +445,8 @@ export default function AdminUsersPage() {
     setter(list.includes(id) ? list.filter((item) => item !== id) : [...list, id]);
   }
 
-  const button = "rounded-full border border-brass/60 px-3 py-1.5 text-xs text-brass-2 hover:bg-brass/10 disabled:opacity-40";
-  const dangerButton = "rounded-full border border-ember px-3 py-1.5 text-xs text-ember hover:bg-ember/10";
+  const button = "admin-control-button rounded-full border border-brass/60 px-3 py-1.5 text-xs text-brass-2 hover:bg-brass/10 disabled:opacity-40";
+  const dangerButton = "admin-control-button admin-control-button-danger rounded-full border border-ember px-3 py-1.5 text-xs text-ember hover:bg-ember/10";
   const input = "w-full rounded-lg border border-line bg-ink-2 px-3 py-2 text-sm text-parchment outline-none focus:border-brass";
   const includes = (values: Array<string | null | undefined>, query: string) => {
     if (!query.trim()) return true;
