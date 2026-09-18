@@ -5,24 +5,25 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#0E1524",        // ღრმა ცის ფერი — ფონი
-        "ink-2": "#141D33",
-        brass: "#C9A24B",      // ძველი ვარსკვლავური რუკის ბრინჯაო
-        "brass-2": "#E4C878",
-        parchment: "#F3EEE1",  // ტექსტი / სინათლის ზედაპირი
-        "parchment-dim": "#CFC6AE",
-        line: "#2A3550",
-        ember: "#B5563C",      // მითითებები, ცდომილება, აქცენტი
+        ink: "#0B0F1A",
+        "ink-2": "#111827",
+        brass: "#A78BFA",
+        "brass-2": "#C4B5FD",
+        parchment: "#E5E7EB",
+        "parchment-dim": "#94A3B8",
+        line: "#263247",
+        ember: "#E06B61",
       },
       fontFamily: {
         display: ["var(--font-display)"],
         body: ["var(--font-body)"],
       },
       backgroundImage: {
-        "radial-stars": "radial-gradient(circle at 50% 0%, rgba(201,162,75,0.10), transparent 60%)",
+        "radial-stars": "radial-gradient(circle at 50% 0%, rgba(99,102,241,0.12), transparent 60%)",
       },
     },
   },
   plugins: [],
 };
+
 export default config;

@@ -223,7 +223,7 @@ export default function PlaceAutocomplete({
         <button
           type="button"
           onClick={() => setMapOpen((v) => !v)}
-          className="flex shrink-0 items-center gap-1 sm:gap-1.5 rounded-xl sm:rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 px-3 py-2.5 sm:px-4 sm:py-3 text-[0.72rem] sm:text-xs font-bold text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all hover:scale-105 hover:border-amber-400 cursor-pointer"
+          className="place-map-button flex shrink-0 items-center gap-1 sm:gap-1.5 rounded-xl sm:rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 px-3 py-2.5 sm:px-4 sm:py-3 text-[0.72rem] sm:text-xs font-bold text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all hover:scale-105 hover:border-amber-400 cursor-pointer"
         >
           <MapIcon className="h-4 w-4 text-amber-400 shrink-0" />
           <span>{mapOpen ? "დახურვა" : "რუკაზე"}</span>
@@ -250,7 +250,7 @@ export default function PlaceAutocomplete({
             maxHeight: "260px",
             zIndex: 999999,
           }}
-          className="overflow-y-auto rounded-2xl border-2 border-amber-400 bg-[#0a0422] p-2 shadow-[0_25px_90px_rgba(0,0,0,1)] ring-4 ring-amber-500/30 backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150"
+          className="place-suggestions overflow-y-auto rounded-2xl border-2 border-amber-400 bg-[#0a0422] p-2 shadow-[0_25px_90px_rgba(0,0,0,1)] ring-4 ring-amber-500/30 backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150"
         >
           {localHits.length > 0 && (
             <div className="flex items-center justify-center gap-1.5 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 border-b border-amber-500/30 bg-purple-950/60 rounded-xl mb-1">
@@ -297,7 +297,7 @@ export default function PlaceAutocomplete({
       )}
 
       {mapOpen && (
-        <div className="mt-3 overflow-hidden rounded-2xl border border-amber-500/40 shadow-2xl">
+        <div className="place-map-panel mt-3 overflow-hidden rounded-2xl border border-amber-500/40 shadow-2xl">
           <div ref={mapDivRef} style={{ height: 260, width: "100%" }} />
           <div className="bg-slate-900/90 px-3 py-2 text-[0.7rem] text-slate-300">
             💡 დააწკაპუნეთ რუკაზე ზუსტ წერტილზე — კოორდინატები ავტომატურად ჩაიწერება.

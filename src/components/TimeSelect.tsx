@@ -76,7 +76,7 @@ export default function TimeSelect({
       : "border-rose-500/50";
 
   return (
-    <div className={`grid min-h-[54px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto] items-center gap-1 rounded-xl border bg-[#080418] p-1.5 transition-all sm:min-h-[62px] sm:gap-2 sm:rounded-2xl sm:p-2.5 ${border}`}>
+    <div className={`time-editor grid min-h-[54px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto] items-center gap-1 rounded-xl border bg-[#080418] p-1.5 transition-all sm:min-h-[62px] sm:gap-2 sm:rounded-2xl sm:p-2.5 ${border}`}>
       <input
         ref={hourRef}
         type="text"
