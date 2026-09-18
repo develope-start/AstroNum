@@ -52,7 +52,8 @@ function WideDateInput({ label, value, onChange, autoFocus = false, disabled = f
   const [dayStr, setDayStr] = useState(() => (parsed ? String(parsed.day).padStart(2, "0") : ""));
 
   const nativeValue = parsed && parsed.year >= 1 && parsed.year <= 9999 ? value : "";
-  const isValid = isWideDate(`${yearStr}-${monthStr}-${dayStr}`) && isWideDate(value);
+  const isValid = isWideDate(`${yearStr}-${monthStr}-${dayStr}`);
+  const isPartial = yearStr === "" || yearStr === "-" || monthStr === "" || monthStr === "0" || dayStr === "" || dayStr === "0";
 
   // Synchronize internal segment inputs when `value` prop changes externally
   useEffect(() => {
@@ -104,6 +105,10 @@ function WideDateInput({ label, value, onChange, autoFocus = false, disabled = f
     }
   }
 
+  function handleCalendarClick() {
+    handleNativeChange(today());
+  }
+
   function handleBlur() {
     const yearNum = parseInt(yearStr, 10);
     const monthNum = parseInt(monthStr, 10);
@@ -148,7 +153,9 @@ function WideDateInput({ label, value, onChange, autoFocus = false, disabled = f
         className={`relative grid min-h-[54px] w-full min-w-0 grid-cols-[minmax(0,1.55fr)_auto_minmax(0,0.8fr)_auto_minmax(0,0.95fr)_auto] items-center gap-1 rounded-xl border bg-gradient-to-b from-[#130a35] via-[#09041b] to-[#0d0626] p-1.5 shadow-lg transition-all duration-300 sm:min-h-[62px] sm:gap-2 sm:rounded-2xl sm:p-2.5 ${
           isValid
             ? "border-amber-400/50 shadow-[0_0_25px_rgba(245,158,11,0.25)] focus-within:border-amber-400 focus-within:shadow-[0_0_35px_rgba(245,158,11,0.5)] focus-within:ring-2 focus-within:ring-amber-500/30"
-            : "border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.3)]"
+            : isPartial
+              ? "border-slate-500/50 shadow-[0_0_16px_rgba(148,163,184,0.12)] focus-within:border-emerald-300/70 focus-within:ring-2 focus-within:ring-emerald-300/20"
+              : "border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.3)]"
         }`}
       >
         {/* Year segment */}
@@ -249,6 +256,7 @@ function WideDateInput({ label, value, onChange, autoFocus = false, disabled = f
             min="0001-01-01"
             max="9999-12-31"
             onChange={(event) => handleNativeChange(event.target.value)}
+            onClick={handleCalendarClick}
             onFocus={handleFocus}
             disabled={disabled}
             aria-label={`${label} — კალენდრით არჩევა`}
