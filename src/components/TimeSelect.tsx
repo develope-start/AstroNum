@@ -86,8 +86,18 @@ export default function TimeSelect({
   function openPicker() {
     const currentHour = Number(hour);
     const currentMinute = Number(minute);
-    setPickerHour(Number.isInteger(currentHour) && currentHour >= 0 && currentHour <= 23 ? currentHour : new Date().getHours());
-    setPickerMinute(Number.isInteger(currentMinute) && currentMinute >= 0 && currentMinute <= 59 ? currentMinute : new Date().getMinutes());
+    const nextHour = Number.isInteger(currentHour) && currentHour >= 0 && currentHour <= 23 ? currentHour : new Date().getHours();
+    const nextMinute = Number.isInteger(currentMinute) && currentMinute >= 0 && currentMinute <= 59 ? currentMinute : new Date().getMinutes();
+    const nextHourText = String(nextHour).padStart(2, "0");
+    const nextMinuteText = String(nextMinute).padStart(2, "0");
+    setPickerHour(nextHour);
+    setPickerMinute(nextMinute);
+    if (!isCompleteTime(hour, minute)) {
+      setHour(nextHourText);
+      setMinute(nextMinuteText);
+      editingRef.current = false;
+      onChange(`${nextHourText}:${nextMinuteText}`);
+    }
     setPickerOpen(true);
   }
 
