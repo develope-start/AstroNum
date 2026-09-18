@@ -7,7 +7,7 @@ import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestC
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
 import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Calendar, Clock, Info } from "lucide-react";
-import { compareWideDates, formatWideDate, isWideDate, parseWideDate, MIN_WIDE_YEAR, MAX_WIDE_YEAR, daysInWideMonth } from "@/lib/astro/wideDate";
+import { compareWideDates, formatWideDate, isWideDate, parseWideDate } from "@/lib/astro/wideDate";
 
 interface CacheShape {
   birth: BirthValue;
@@ -76,25 +76,6 @@ function WideDateInput({ label, value, onChange, autoFocus = false, disabled = f
     setYearStr(y);
     setMonthStr(m);
     setDayStr(d);
-
-    const yearNum = parseInt(y, 10);
-    const monthNum = parseInt(m, 10);
-    const dayNum = parseInt(d, 10);
-
-    if (
-      !isNaN(yearNum) &&
-      yearNum >= MIN_WIDE_YEAR &&
-      yearNum <= MAX_WIDE_YEAR &&
-      !isNaN(monthNum) &&
-      monthNum >= 1 &&
-      monthNum <= 12 &&
-      !isNaN(dayNum) &&
-      dayNum >= 1 &&
-      dayNum <= daysInWideMonth(yearNum, monthNum)
-    ) {
-      const formatted = formatWideDate({ year: yearNum, month: monthNum, day: dayNum });
-      onChange(formatted);
-    }
   }
 
   function handleYearChange(val: string) {
@@ -148,9 +129,10 @@ function WideDateInput({ label, value, onChange, autoFocus = false, disabled = f
     }, 0);
   }
 
-  function handleFocus() {
+  function handleFocus(event: React.FocusEvent<HTMLInputElement>) {
     editingRef.current = true;
     onActivate?.();
+    event.currentTarget.select();
   }
 
   return (
@@ -177,6 +159,7 @@ function WideDateInput({ label, value, onChange, autoFocus = false, disabled = f
             value={yearStr}
             onChange={(e) => handleYearChange(e.target.value)}
             onFocus={handleFocus}
+            onClick={(event) => event.currentTarget.select()}
             onKeyDown={(e) => {
               if (e.key === "/" || e.key === "." || e.key === "Enter") {
                 e.preventDefault();
@@ -207,6 +190,7 @@ function WideDateInput({ label, value, onChange, autoFocus = false, disabled = f
             value={monthStr}
             onChange={(e) => handleMonthChange(e.target.value)}
             onFocus={handleFocus}
+            onClick={(event) => event.currentTarget.select()}
             onKeyDown={(e) => {
               if (e.key === "/" || e.key === "." || e.key === "Enter") {
                 e.preventDefault();
@@ -238,6 +222,7 @@ function WideDateInput({ label, value, onChange, autoFocus = false, disabled = f
             value={dayStr}
             onChange={(e) => handleDayChange(e.target.value)}
             onFocus={handleFocus}
+            onClick={(event) => event.currentTarget.select()}
             onKeyDown={(e) => {
               if (e.key === "Backspace" && dayStr === "") {
                 monthRef.current?.focus();
