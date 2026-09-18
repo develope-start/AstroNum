@@ -2,6 +2,8 @@ import { PlanetPosition } from "@/lib/astro/positions";
 import { AspectHit } from "@/lib/astro/aspects";
 import { eclipticToSign, formatDegree, HOUSE_LABELS_KA, PLANET_NAMES_KA } from "@/lib/astro/signs";
 import { aspectLibraryInsight, dedupeInsights, natalLibraryInsights } from "./library";
+import type { SecondaryProgressionResult } from "@/lib/astro/progressions";
+import type { AngularityResult, DeclinationContact, DignityResult, FixedStarContact } from "@/lib/astro/advanced";
 
 const PLANET_MEANING_KA: Record<string, string> = {
   Sun: "იდენტობა და ნებისყოფა",
@@ -55,6 +57,12 @@ interface PlacementInput {
   mc: number;
   aspects: AspectHit[];
   houseOfFn: (lon: number) => number;
+  advanced?: {
+    dignities: DignityResult[];
+    angularity: AngularityResult[];
+    declinationContacts: DeclinationContact[];
+    fixedStarContacts: FixedStarContact[];
+  };
 }
 
 function planetLine(p: PlanetPosition, houseNum: number): string {
@@ -88,6 +96,48 @@ function aspectLine(hit: AspectHit): string {
 
 function methodNote(): string {
   return "ეს ტექსტი აგებულია გამოთვლილი პოზიციების, სახლებისა და ასპექტების მიხედვით. ორბი მიუთითებს ასპექტის სიზუსტეს, ხოლო applying/separating — მოძრაობის ფაზას. ინტერპრეტაცია არის სიმბოლური, შემოწმებადი წესების მიხედვით შედგენილი ანალიზი და არა გარანტირებული წინასწარმეტყველება ან სამედიცინო/ფინანსური დიაგნოზი.";
+}
+
+const DIGNITY_LABELS: Record<string, string> = {
+  domicile: "საკუთარ მმართველობაში",
+  exaltation: "ეგზალტაციაში",
+  detriment: "დეტრიმენტში",
+  fall: "დაცემაში",
+  peregrine: "პერეგრინული მდგომარეობა",
+  not_classified: "კლასიკური ღირსებით არ ფასდება",
+};
+
+const ANGLE_LABELS: Record<string, string> = { ASC: "ასცენდენტთან", MC: "MC-სთან", DSC: "დაღმავალთან", IC: "IC-სთან" };
+
+function advancedAnalysisLines(advanced: PlacementInput["advanced"]): string[] {
+  if (!advanced) return [];
+  const lines: string[] = ["## ტექნიკური სინთეზი — ღირსებები, კუთხეები და დეკლინაციები"];
+  const dignityLines = advanced.dignities
+    .filter((item) => item.status !== "not_classified")
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 12)
+    .map((item) => {
+      const name = PLANET_NAMES_KA[item.planet] ?? item.planet;
+      const chain = item.dispositorChain.map((planet) => PLANET_NAMES_KA[planet] ?? planet).join(" → ");
+      return `**${name}** — ${DIGNITY_LABELS[item.status]} (ქულა ${item.score}); დისპოზიტორთა ჯაჭვი: ${chain}${item.dispositorCycle ? " — ციკლი" : ""}.`;
+    });
+  if (dignityLines.length) lines.push("### ტრადიციული ღირსებები და დისპოზიტორები", ...dignityLines);
+
+  const angularLines = advanced.angularity
+    .filter((item) => item.angle)
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, 8)
+    .map((item) => `${PLANET_NAMES_KA[item.planet] ?? item.planet} ${ANGLE_LABELS[item.angle ?? ""] ?? item.angle} — ${item.distance}° (${item.strength === "exact" ? "ზუსტი კუთხურობა" : "კუთხური მდებარეობა"}).`);
+  if (angularLines.length) lines.push("### კუთხური პლანეტები", ...angularLines);
+
+  if (advanced.declinationContacts.length) {
+    lines.push("### დეკლინაციები", ...advanced.declinationContacts.slice(0, 12).map((item) => `${PLANET_NAMES_KA[item.a] ?? item.a} და ${PLANET_NAMES_KA[item.b] ?? item.b} — ${item.type === "parallel" ? "პარალელი" : "კონტრაპარალელი"} (${item.orb}° ორბი).`));
+  }
+
+  if (advanced.fixedStarContacts.length) {
+    lines.push("### ფიქსირებული ვარსკვლავები", ...advanced.fixedStarContacts.slice(0, 12).map((item) => `${item.star} — ${PLANET_NAMES_KA[item.planet] ?? item.planet} (${item.orb}° ორბი, ეკლიპტიკური გრძედი ${item.longitude.toFixed(2)}°).`));
+  }
+  return lines.length > 1 ? lines : [];
 }
 
 const ELEMENTS_KA = ["ცეცხლი", "მიწა", "ჰაერი", "წყალი"];
@@ -172,6 +222,8 @@ export function generateNatalInterpretation(input: PlacementInput): string {
     }
   }
 
+  parts.push(...advancedAnalysisLines(input.advanced));
+
   const libraryEntries = dedupeInsights(natalLibraryInsights(planets, aspects, houseOfFn));
   if (libraryEntries.length) {
     parts.push(`\n## დამატებითი ბიბლიოთეკური განმარტებები`);
@@ -239,6 +291,24 @@ export function generateTransitIntervalInterpretation(
   }
   parts.push("ქვემოთ მოცემულია შუალედში ყველაზე მცირე ორბით დაფიქსირებული გავლენები; ისინი მიუთითებს იმ პერიოდებზე, სადაც ასპექტი ყველაზე ზუსტია.");
   for (const hit of relevant.slice(0, 12)) parts.push(aspectLine(hit));
+  return parts.join("\n\n");
+}
+
+export function generateSecondaryProgressionInterpretation(result: SecondaryProgressionResult): string {
+  const parts: string[] = [];
+  parts.push("## მეორეული პროგრესია");
+  parts.push(`სამიზნე თარიღი: ${result.targetDate}. გამოთვლილი ასაკი: ${result.ageYears} წელი. პროგრესირებული მომენტი: ${result.progressedUtcIso}.`);
+  parts.push("მეთოდი იყენებს კლასიკურ day-for-a-year პრინციპს: დაბადებიდან ერთი ასტრონომიული დღე პროგრესირებულ რუკაში ერთ წელს შეესაბამება. ეს არის დროითი სიმბოლური ტექნიკა და არა ფიზიკური პროგნოზის მტკიცება.");
+  parts.push("### პროგრესირებული ძირითადი განლაგებები");
+  for (const planet of result.progressed.planets.filter((item) => ["Sun", "Moon", "Mercury", "Venus", "Mars"].includes(item.name))) {
+    parts.push(planetLine(planet, result.progressed.planetHouses[planet.name] ?? 0));
+  }
+  if (result.aspects.length) {
+    parts.push("### პროგრესირებული და ნატალური კავშირები");
+    for (const aspect of [...result.aspects].sort((a, b) => a.orb - b.orb).slice(0, 12)) parts.push(aspectLine(aspect));
+  } else {
+    parts.push("პროგრესირებულ და ნატალურ პლანეტებს შორის არჩეულ მაჟორულ ორბებში კავშირი არ დაფიქსირდა.");
+  }
   return parts.join("\n\n");
 }
 

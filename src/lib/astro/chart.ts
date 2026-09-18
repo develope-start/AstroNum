@@ -57,14 +57,23 @@ export function birthInputToUtcDate(input: BirthInput): Date {
 
 export function computeNatalChart(input: BirthInput, houseSystem: HouseSystem = "whole_sign"): NatalResult {
   const utcDate = birthInputToUtcDate(input);
-  const calculation = input.calculation;
+  return computeNatalChartAtUtc(utcDate, input.lat, input.lon, input.calculation, houseSystem);
+}
 
-  const planets = computePlanetPositions(utcDate, calculation, input.lon, input.lat);
-  const northNode = computeNorthNode(utcDate, calculation, input.lon, input.lat);
+/** Compute the same chart pipeline for a derived UTC moment (progressions/returns). */
+export function computeNatalChartAtUtc(
+  utcDate: Date,
+  latitude: number,
+  longitude: number,
+  calculation?: CalculationOptions,
+  houseSystem: HouseSystem = "whole_sign",
+): NatalResult {
+  const planets = computePlanetPositions(utcDate, calculation, longitude, latitude);
+  const northNode = computeNorthNode(utcDate, calculation, longitude, latitude);
   const allPoints = [...planets, northNode];
 
-  const angles = computeAngles(utcDate, input.lon, input.lat, calculation);
-  const houses = computeHouseCusps(angles, houseSystem, utcDate, input.lon, input.lat, calculation);
+  const angles = computeAngles(utcDate, longitude, latitude, calculation);
+  const houses = computeHouseCusps(angles, houseSystem, utcDate, longitude, latitude, calculation);
 
   const planetHouses: Record<string, number> = {};
   for (const p of allPoints) {
@@ -84,8 +93,8 @@ export function computeNatalChart(input: BirthInput, houseSystem: HouseSystem = 
     houseSystem,
     planetHouses,
     aspects,
-    latitude: input.lat,
-    longitude: input.lon,
+    latitude,
+    longitude,
     ephemeris: ephemerisMetadata(calculation, utcDate),
   };
 }

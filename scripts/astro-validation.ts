@@ -1,6 +1,12 @@
 import { computeNatalChart, computeTransitInterval } from "../src/lib/astro/chart";
 import { computePlanetPositions } from "../src/lib/astro/positions";
 import { wideDateToUtcDate } from "../src/lib/astro/wideDate";
+import { calculateAngularity, calculateDeclinationContacts, calculateFixedStarContacts, calculateTraditionalDignities } from "../src/lib/astro/advanced";
+import { computeSecondaryProgression } from "../src/lib/astro/progressions";
+import { findPlanetaryReturn } from "../src/lib/astro/returns";
+import { computeSolarArcDirections } from "../src/lib/astro/directions";
+import { calculateHarmonicAspects, calculateHarmonicPlanets, calculateMidpoints } from "../src/lib/astro/midpoints";
+import { dateToJulianDay, findNextSolarEclipse } from "@swisseph/node";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(`Astro validation failed: ${message}`);
@@ -41,6 +47,32 @@ assert(advanced.planets.some((planet) => planet.name === "TrueNode"), "True Node
 for (const name of ["Chiron", "Ceres", "Pallas", "Juno", "Vesta"]) {
   assert(advanced.planets.some((planet) => planet.name === name), `${name} is available when asteroids are enabled`);
 }
+
+const dignities = calculateTraditionalDignities(swiss.planets);
+assert(dignities.length === swiss.planets.length, "traditional dignity output covers every chart point");
+const dignityReference = calculateTraditionalDignities([{ name: "Sun", longitude: 130, speed: 1, retrograde: false }]);
+assert(dignityReference[0]?.status === "domicile", "traditional domicile rule is active");
+const angularity = calculateAngularity(swiss.planets, { ascendant: swiss.ascendant, mc: swiss.mc });
+assert(angularity.length === swiss.planets.length, "angularity output covers every chart point");
+const declinationContacts = calculateDeclinationContacts(swiss.planets);
+assert(declinationContacts.every((item) => item.orb <= 1), "declination contacts respect the configured orb");
+const fixedStarContacts = calculateFixedStarContacts(new Date(swiss.utcIso), swiss.planets);
+assert(fixedStarContacts.every((item) => item.orb <= 1 && Number.isFinite(item.longitude)), "fixed-star contacts have finite coordinates and valid orbs");
+
+const progression = computeSecondaryProgression({ ...input, calculation: { ephemeris: "swiss" } }, "2025-01-01", "placidus");
+assert(progression.method === "secondary", "secondary progression method is explicit");
+assert(progression.ageYears > 24 && progression.ageYears < 26, "secondary progression age is calculated from the target date");
+assert(progression.progressed.planets.length === progression.natal.planets.length, "progressed chart preserves the natal point set");
+const midpoints = calculateMidpoints(swiss.planets);
+assert(midpoints.length === (swiss.planets.length * (swiss.planets.length - 1)) / 2, "midpoint matrix is complete");
+assert(calculateHarmonicPlanets(swiss.planets, 5).every((planet) => planet.longitude >= 0 && planet.longitude < 360), "harmonic longitudes are normalized");
+assert(calculateHarmonicAspects(swiss.planets, 5).every((aspect) => Number.isFinite(aspect.orb)), "harmonic aspects are finite");
+const solarReturn = findPlanetaryReturn({ ...input, calculation: { ephemeris: "swiss" } }, "Sun", wideDateToUtcDate("2025-01-01")!, wideDateToUtcDate("2026-01-01")!, "placidus");
+assert(solarReturn.orb < 0.001, "solar return root finder reaches sub-arcminute precision");
+const solarArc = computeSolarArcDirections({ ...input, calculation: { ephemeris: "swiss" } }, "2025-01-01", "placidus");
+assert(solarArc.directedPlanets.length === swiss.planets.length, "solar arc directs every natal point");
+const eclipse = findNextSolarEclipse(dateToJulianDay(new Date("2025-01-01T12:00:00.000Z")));
+assert(Number.isFinite(eclipse.maximum), "Swiss eclipse search returns a finite maximum time");
 
 const astronomy = computePlanetPositions(
   new Date("2000-01-01T12:00:00.000Z"),

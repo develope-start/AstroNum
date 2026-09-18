@@ -18,6 +18,12 @@ export interface PlanetPosition {
   longitude: number; // გეოცენტრული ეკლიპტიკური გრძედი, გრადუსებში, 0-360
   speed: number; // გრადუსი/დღეში (უარყოფითი = რეტროგრადი)
   retrograde: boolean;
+  /** Tropical ecliptic latitude, retained for declination calculations. */
+  eclipticLatitude?: number;
+  /** Geocentric declination in degrees of date. */
+  declination?: number;
+  /** Geocentric right ascension in degrees of date. */
+  rightAscension?: number;
 }
 
 export interface ChartAngles {
@@ -54,6 +60,27 @@ function norm360(x: number): number {
   return r < 0 ? r + 360 : r;
 }
 
+function equatorialFromEcliptic(longitude: number, latitude: number, obliquity: number): { rightAscension: number; declination: number } {
+  const lambda = (longitude * Math.PI) / 180;
+  const beta = (latitude * Math.PI) / 180;
+  const epsilon = (obliquity * Math.PI) / 180;
+  const rightAscension = norm360((Math.atan2(
+    Math.sin(lambda) * Math.cos(epsilon) - Math.tan(beta) * Math.sin(epsilon),
+    Math.cos(lambda),
+  ) * 180) / Math.PI);
+  const declination = (Math.asin(
+    Math.sin(beta) * Math.cos(epsilon) + Math.cos(beta) * Math.sin(epsilon) * Math.sin(lambda),
+  ) * 180) / Math.PI;
+  return { rightAscension, declination };
+}
+
+function positionMetadata(date: Date, longitude: number, latitude: number) {
+  return {
+    eclipticLatitude: latitude,
+    ...equatorialFromEcliptic(longitude, latitude, Astronomy.e_tilt(Astronomy.MakeTime(date)).tobl),
+  };
+}
+
 function eclipticLongitudeOf(body: Astronomy.Body, date: Date): number {
   const vec = Astronomy.GeoVector(body, date, true);
   const ecl = Astronomy.Ecliptic(vec);
@@ -67,21 +94,29 @@ export function computePlanetPositions(date: Date, inputOptions?: CalculationOpt
   if (options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, options, lon, lat)) {
     const planets = BODIES.map(({ swissKey, name }) => {
       const position = calculateSwissPosition(date, swissKey, options, lon, lat);
+      const tropicalPosition = options.zodiac === "sidereal"
+        ? calculateSwissPosition(date, swissKey, { ...options, zodiac: "tropical" }, lon, lat)
+        : position;
       return {
         name,
         longitude: norm360(position.longitude),
         speed: position.longitudeSpeed,
         retrograde: position.longitudeSpeed < 0,
+        ...positionMetadata(date, tropicalPosition.longitude, tropicalPosition.latitude),
       };
     });
     if (options.includeAsteroids) {
       for (const [body, name] of SWISS_ASTEROIDS) {
         const position = calculateSwissPosition(date, body, options, lon, lat);
+        const tropicalPosition = options.zodiac === "sidereal"
+          ? calculateSwissPosition(date, body, { ...options, zodiac: "tropical" }, lon, lat)
+          : position;
         planets.push({
           name,
           longitude: norm360(position.longitude),
           speed: position.longitudeSpeed,
           retrograde: position.longitudeSpeed < 0,
+          ...positionMetadata(date, tropicalPosition.longitude, tropicalPosition.latitude),
         });
       }
     }
@@ -89,13 +124,15 @@ export function computePlanetPositions(date: Date, inputOptions?: CalculationOpt
   }
 
   return BODIES.map(({ key, name }) => {
-    const lon = eclipticLongitudeOf(key, date);
+    const vector = Astronomy.GeoVector(key, date, true);
+    const ecliptic = Astronomy.Ecliptic(vector);
+    const lon = norm360(ecliptic.elon);
     const lonNext = eclipticLongitudeOf(key, new Date(date.getTime() + dayMs));
     let speed = lonNext - lon;
     // 360°-ის ხაზზე გადასვლის კორექცია
     if (speed > 180) speed -= 360;
     if (speed < -180) speed += 360;
-    return { name, longitude: lon, speed, retrograde: speed < 0 };
+    return { name, longitude: lon, speed, retrograde: speed < 0, ...positionMetadata(date, lon, ecliptic.elat) };
   });
 }
 
@@ -107,11 +144,15 @@ export function computeNorthNode(date: Date, inputOptions?: CalculationOptions, 
   const options = resolveCalculationOptions(inputOptions);
   if (options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, options, observerLon, lat)) {
     const position = calculateSwissNode(date, options, observerLon, lat);
+    const tropicalPosition = options.zodiac === "sidereal"
+      ? calculateSwissNode(date, { ...options, zodiac: "tropical" }, observerLon, lat)
+      : position;
     return {
       name: options.nodeType === "true" ? "TrueNode" : "MeanNode",
       longitude: norm360(position.longitude),
       speed: position.longitudeSpeed,
       retrograde: position.longitudeSpeed < 0,
+      ...positionMetadata(date, tropicalPosition.longitude, tropicalPosition.latitude),
     };
   }
   const jd = dateToJulianDay(date);
@@ -136,7 +177,13 @@ export function computeNorthNode(date: Date, inputOptions?: CalculationOptions, 
   if (speed > 180) speed -= 360;
   if (speed < -180) speed += 360;
 
-  return { name: options.nodeType === "true" ? "TrueNode" : "MeanNode", longitude: nodeLon, speed, retrograde: speed < 0 };
+  return {
+    name: options.nodeType === "true" ? "TrueNode" : "MeanNode",
+    longitude: nodeLon,
+    speed,
+    retrograde: speed < 0,
+    ...positionMetadata(date, nodeLon, 0),
+  };
 }
 
 function dateToJulianDay(date: Date): number {

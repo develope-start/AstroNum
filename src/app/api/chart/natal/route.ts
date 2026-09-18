@@ -13,6 +13,7 @@ import type { CalculationOptions } from "@/lib/astro/ephemeris";
 import { natalLibraryInsights } from "@/lib/interpretations/library";
 import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/interpretations/libraryStore";
 import { eclipticToSign } from "@/lib/astro/signs";
+import { calculateAngularity, calculateDeclinationContacts, calculateFixedStarContacts, calculateTraditionalDignities } from "@/lib/astro/advanced";
 
 const calculationSchema = z.object({
   ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
@@ -56,6 +57,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "გამოთვლის შეცდომა" }, { status: 400 });
   }
 
+  const advanced = {
+    dignities: calculateTraditionalDignities(result.planets),
+    angularity: calculateAngularity(result.planets, { ascendant: result.ascendant, mc: result.mc }),
+    declinationContacts: calculateDeclinationContacts(result.planets),
+    fixedStarContacts: result.ephemeris.zodiac === "tropical" ? calculateFixedStarContacts(new Date(result.utcIso), result.planets) : [],
+  };
   const baseInterpretation = generateNatalInterpretation({
     planets: result.planets,
     houseCusps: result.houseCusps,
@@ -63,6 +70,7 @@ export async function POST(req: NextRequest) {
     mc: result.mc,
     aspects: result.aspects,
     houseOfFn: (lon: number) => houseOfLongitude(lon, result.houseCusps),
+    advanced,
   });
   const builtInEntries = natalLibraryInsights(result.planets, result.aspects, (lon: number) => houseOfLongitude(lon, result.houseCusps));
   void persistLibraryEntries(builtInEntries);
@@ -73,7 +81,7 @@ export async function POST(req: NextRequest) {
   });
   const interpretation = [baseInterpretation, ...externalEntries].join("\n\n");
 
-  const responseBody = { result, interpretation };
+  const responseBody = { result: { ...result, advanced }, interpretation };
   const session = await getActiveSessionFromRequest(req);
   if (data.save && !session) {
     return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
@@ -102,7 +110,7 @@ export async function POST(req: NextRequest) {
     houseSystem: data.houseSystem,
     ipAddress: requestInfo.ipAddress,
     userAgent: requestInfo.userAgent,
-    resultJson: JSON.stringify(result),
+    resultJson: JSON.stringify({ ...result, advanced }),
     interpretation,
   });
 
@@ -123,7 +131,7 @@ export async function POST(req: NextRequest) {
         lon1: data.lon,
         tz1: data.timezone,
         houseSystem: data.houseSystem,
-        resultJson: JSON.stringify(result),
+        resultJson: JSON.stringify({ ...result, advanced }),
         interpretation,
       },
     });

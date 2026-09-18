@@ -119,7 +119,7 @@ export default function CabinetSettingsPage() {
     "w-full rounded-2xl border border-amber-500/25 bg-[#080418] px-4 py-3 text-sm font-semibold text-slate-100 outline-none transition-all placeholder:text-slate-500 focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)]";
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 w-full max-w-full overflow-x-hidden">
+    <div className="cabinet-page mx-auto max-w-2xl space-y-6 w-full max-w-full overflow-x-hidden">
       <div className="glass-panel flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl sm:rounded-[28px] p-5 sm:p-7 border-amber-500/25 bg-gradient-to-r from-[#130a35]/90 via-[#0e0728]/95 to-[#130a35]/90 backdrop-blur-2xl shadow-xl">
         <div>
           <h1 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">კაბინეტის პარამეტრები</h1>

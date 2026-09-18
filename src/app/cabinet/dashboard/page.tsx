@@ -255,7 +255,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 w-full max-w-full overflow-x-hidden px-1">
+    <div className="cabinet-page mx-auto max-w-5xl space-y-6 w-full max-w-full overflow-x-hidden px-1">
       {/* Dashboard Top Navigation & Status Bar */}
       <div className="glass-panel flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl sm:rounded-[28px] p-5 sm:p-7 border-amber-500/25 bg-gradient-to-r from-[#130a35]/90 via-[#0e0728]/95 to-[#130a35]/90 backdrop-blur-2xl shadow-xl">
         <div>

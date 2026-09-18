@@ -3,8 +3,8 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 
 export const metadata: Metadata = {
-  title: "AstroNum° — პროფესიონალური ასტროლოგიური & ეფემერიდული გამოთვლები",
-  description: "შვეიცარიული ეფემერიდის სიზუსტით ნატალური, სინასტრიული და ტრანზიტული ცის რუკების გაშიფვრა.",
+  title: "AstroNum° — პროფესიონალური ასტროლოგიური გამოთვლები",
+  description: "შვეიცარული ეფემერიდის სიზუსტით ნატალური, სინასტრიული და ტრანზიტული ცის რუკების შექმნა.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -26,17 +26,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           h1, h2, h3, .font-display { font-family: var(--font-display); }
         `}</style>
       </head>
-      <body className="relative min-h-screen overflow-x-hidden star-field bg-[#06040e] text-slate-100 selection:bg-amber-500 selection:text-slate-950">
-        {/* Ambient cosmic violet & gold glowing backdrops */}
-        <div className="pointer-events-none fixed -top-40 left-1/2 -z-10 h-[650px] w-[1000px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-purple-900/35 via-violet-600/20 to-amber-500/15 blur-[150px]" />
-        <div className="pointer-events-none fixed top-1/4 -right-40 -z-10 h-[550px] w-[550px] rounded-full bg-purple-600/20 blur-[140px]" />
-        <div className="pointer-events-none fixed top-2/3 -left-40 -z-10 h-[550px] w-[550px] rounded-full bg-amber-500/15 blur-[140px]" />
-
+      <body className="app-body relative min-h-screen overflow-x-hidden star-field text-slate-100 selection:bg-violet-300 selection:text-slate-950">
+        <div className="pointer-events-none fixed -top-48 left-1/2 -z-10 h-[620px] w-[920px] -translate-x-1/2 rounded-full bg-indigo-500/10 blur-[150px]" />
+        <div className="pointer-events-none fixed bottom-0 -right-48 -z-10 h-[520px] w-[520px] rounded-full bg-sky-500/5 blur-[130px]" />
         <Nav />
-        <main className="relative mx-auto w-full max-w-full px-3 sm:px-8 lg:px-12 xl:px-16 pb-20 pt-4 sm:pb-24 sm:pt-6 overflow-x-hidden">{children}</main>
+        <main className="relative mx-auto w-full max-w-full overflow-x-hidden px-4 pb-20 pt-2 sm:px-8 sm:pb-24 sm:pt-4 lg:px-12 xl:px-16">{children}</main>
       </body>
     </html>
   );
 }
-
-

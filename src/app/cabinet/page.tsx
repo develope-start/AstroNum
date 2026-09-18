@@ -41,7 +41,7 @@ export default function CabinetPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md pt-3 sm:pt-8 w-full max-w-full sm:max-w-md">
+    <div className="cabinet-page mx-auto max-w-md pt-3 sm:pt-8 w-full max-w-full sm:max-w-md">
       <div className="glass-panel rounded-2xl sm:rounded-[32px] p-5 sm:p-9 border-amber-500/25 bg-gradient-to-b from-[#130a35]/90 via-[#0e0728]/95 to-[#080417]/95 backdrop-blur-2xl shadow-2xl w-full">
         <div className="mb-6 sm:mb-7 text-center">
           <div className="mx-auto mb-3 flex h-11 w-11 sm:h-13 sm:w-13 items-center justify-center rounded-2xl border border-amber-400/40 bg-gradient-to-br from-amber-500/20 to-purple-600/20 text-amber-300 shadow-[0_0_24px_rgba(245,158,11,0.3)]">
