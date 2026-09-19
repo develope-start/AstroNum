@@ -140,7 +140,11 @@ export default function TimeSelect({
     }, 0);
   }
 
-  function openPicker() {
+  function togglePicker() {
+    if (pickerOpen) {
+      setPickerOpen(false);
+      return;
+    }
     const currentHour = Number(hour);
     const currentMinute = Number(minute);
     const nextHour = Number.isInteger(currentHour) && currentHour >= 0 && currentHour <= 23 ? currentHour : new Date().getHours();
@@ -236,7 +240,7 @@ export default function TimeSelect({
         className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono text-amber-300 outline-none transition-colors placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 focus:border-violet-300/25 focus:bg-white/[0.025]"
       />
       <div ref={pickerRef} className="time-picker-trigger relative flex shrink-0 items-center justify-center">
-        <button type="button" onClick={openPicker} className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-400/35 bg-purple-950/60 text-amber-300 shadow-sm transition-colors hover:border-amber-300 hover:bg-purple-900 sm:h-9 sm:w-9" aria-label="დროის არჩევა" aria-expanded={pickerOpen}>
+        <button type="button" onClick={togglePicker} className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-400/35 bg-purple-950/60 text-amber-300 shadow-sm transition-colors hover:border-amber-300 hover:bg-purple-900 sm:h-9 sm:w-9" aria-label="დროის არჩევა" aria-expanded={pickerOpen}>
           <Clock className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
         </button>
 

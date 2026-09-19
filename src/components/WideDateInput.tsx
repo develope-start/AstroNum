@@ -273,7 +273,7 @@ export default function WideDateInput({ label = "თარიღი", value, onC
         <button type="button" onClick={goToToday} className="rounded-md border border-slate-400/20 bg-slate-300/5 px-1.5 py-1 text-[0.55rem] font-bold text-slate-400 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200" aria-label="ახლა-ზე გადასვლა">
           ახლა
         </button>
-        <button type="button" onClick={openCalendar} className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-400/35 bg-purple-950/60 pl-0.5 text-amber-300 shadow-sm transition-colors hover:border-amber-300 hover:bg-purple-900 sm:h-9 sm:w-9" aria-label={`${label} — კალენდრის გახსნა`} aria-expanded={calendarOpen}>
+        <button type="button" onClick={toggleCalendar} className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-400/35 bg-purple-950/60 pl-0.5 text-amber-300 shadow-sm transition-colors hover:border-amber-300 hover:bg-purple-900 sm:h-9 sm:w-9" aria-label={`${label} — კალენდრის გახსნა`} aria-expanded={calendarOpen}>
           <Calendar className="h-4 w-4 text-amber-300 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
         </button>
 
