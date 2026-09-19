@@ -3233,7 +3233,8 @@ canvas {
 
 .app-home .celestial-temperament-card.is-visible,
 .app-home .celestial-temperament-card.is-pinned {
-  display: block !important;
+  display: flex !important;
+  flex-direction: column !important;
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;

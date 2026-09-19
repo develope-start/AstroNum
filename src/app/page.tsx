@@ -203,7 +203,12 @@ export default function HomePage() {
                     {element.planets.map((planet) => <span key={planet.name} title={planet.name}><b>{planet.symbol}</b></span>)}
                   </div>
                 </div>
-                <div className={`celestial-temperament-card celestial-temperament-card-${element.id} celestial-temperament-card-${element.id === "fire" || element.id === "earth" ? "below" : "above"}${selectedElementInfo === element.id ? " is-visible is-pinned" : ""}`} onClick={(event) => event.stopPropagation()}>
+                <div
+                  className={`celestial-temperament-card celestial-temperament-card-${element.id} celestial-temperament-card-${element.id === "fire" || element.id === "earth" ? "below" : "above"}${selectedElementInfo === element.id ? " is-visible is-pinned" : ""}`}
+                  onClick={(event) => event.stopPropagation()}
+                  onWheel={(event) => event.stopPropagation()}
+                  onPointerDown={(event) => event.stopPropagation()}
+                >
                     <button
                       type="button"
                       className="celestial-temperament-close"
