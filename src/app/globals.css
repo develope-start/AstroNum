@@ -4254,14 +4254,14 @@ canvas {
   /* Closed state: fire/earth are above; air/water are below. */
   .app-home .celestial-element-panel-fire,
   .app-home .celestial-element-panel-earth {
-    top: -8.75rem !important;
+    top: -13.25rem !important;
     bottom: auto !important;
   }
 
   .app-home .celestial-element-panel-air,
   .app-home .celestial-element-panel-water {
     top: auto !important;
-    bottom: -8.75rem !important;
+    bottom: -13.25rem !important;
   }
 
   .app-home .celestial-element-panel-fire,
@@ -4279,14 +4279,14 @@ canvas {
   /* Reserve only the side that needs room when a temperament card is open. */
   .app-home .hero-orbit-card:has(.celestial-element-panel-fire.is-info-open),
   .app-home .hero-orbit-card:has(.celestial-element-panel-earth.is-info-open) {
-    margin-top: 14rem !important;
+    margin-top: 18.5rem !important;
     margin-bottom: 8.75rem !important;
   }
 
   .app-home .hero-orbit-card:has(.celestial-element-panel-air.is-info-open),
   .app-home .hero-orbit-card:has(.celestial-element-panel-water.is-info-open) {
     margin-top: 8.75rem !important;
-    margin-bottom: 14rem !important;
+    margin-bottom: 18.5rem !important;
   }
 
   /* Every temperament card spans the wheel width and remains edge-aligned. */
