@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, useState } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import { Activity, ArrowRight, Check, Compass, Heart, Orbit, Sparkles, Sun } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
@@ -97,7 +97,28 @@ export default function HomePage() {
   const [selectedCelestial, setSelectedCelestial] = useState<CelestialTarget>(null);
   const [hoveredElementInfo, setHoveredElementInfo] = useState<keyof typeof TEMPERAMENT_INFO | null>(null);
   const [selectedElementInfo, setSelectedElementInfo] = useState<keyof typeof TEMPERAMENT_INFO | null>(null);
+  const [temperamentInfo, setTemperamentInfo] = useState(TEMPERAMENT_INFO);
   const activeElementInfo = selectedElementInfo ?? hoveredElementInfo;
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/interpretations/temperaments", { cache: "no-store" })
+      .then(async (response) => (response.ok ? response.json() : null))
+      .then((payload: { entries?: Partial<typeof TEMPERAMENT_INFO> } | null) => {
+        if (cancelled || !payload?.entries) return;
+        setTemperamentInfo((current) => ({
+          fire: { ...current.fire, ...(payload.entries?.fire ?? {}) },
+          earth: { ...current.earth, ...(payload.entries?.earth ?? {}) },
+          air: { ...current.air, ...(payload.entries?.air ?? {}) },
+          water: { ...current.water, ...(payload.entries?.water ?? {}) },
+        }));
+      })
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
   const activeCelestial = selectedCelestial ?? hoveredCelestial;
   const activePlanetIndex = typeof activeCelestial === "number" ? activeCelestial : null;
@@ -200,9 +221,9 @@ export default function HomePage() {
                       ×
                     </button>
                     <span className="celestial-temperament-kicker">კლასიკური ტემპერამენტების მოდელი</span>
-                    <strong>{TEMPERAMENT_INFO[element.id].temperament}</strong>
-                    <span className="celestial-temperament-lede">{TEMPERAMENT_INFO[element.id].short}</span>
-                    <p>{TEMPERAMENT_INFO[element.id].description}</p>
+                    <strong>{temperamentInfo[element.id].temperament}</strong>
+                    <span className="celestial-temperament-lede">{temperamentInfo[element.id].short}</span>
+                    <p>{temperamentInfo[element.id].description}</p>
                     <span className="celestial-temperament-note">ისტორიული ფსიქოლოგიური მოდელი — არა კლინიკური დიაგნოზი.</span>
                   </div>
                 )}

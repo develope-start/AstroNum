@@ -1,0 +1,62 @@
+[
+  {
+    "entryKey": "temperament.element.fire.v1",
+    "chartType": "ELEMENT_TEMPERAMENT",
+    "language": "ka",
+    "sourceText": "ქოლერიკული ტიპი ხშირად მოქმედებაზეა ორიენტირებული: სწრაფად იღებს გადაწყვეტილებას, ინიციატივას იღებს და მაღალი დინამიკით მოძრაობს. მისი ძლიერი მხარეებია გამბედაობა, ლიდერობა და შედეგზე კონცენტრაცია; გადაჭარბებისას შეიძლება მოუთმენლობა ან რეაქციის სიმწვავე გამოვლინდეს.",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11049776/",
+    "license": "Original Georgian synthesis for Astro App; historical model mapping checked against the cited source.",
+    "tags": {
+      "element": "fire",
+      "temperament": "ქოლერიკული ტემპერამენტი",
+      "short": "ენერგიული, მიზანმიმართული და სწრაფი რეაქციის მქონე ხასიათი.",
+      "model": "classical-four-temperaments",
+      "version": 1
+    }
+  },
+  {
+    "entryKey": "temperament.element.earth.v1",
+    "chartType": "ELEMENT_TEMPERAMENT",
+    "language": "ka",
+    "sourceText": "მელანქოლიური ტიპი ამჩნევს ნიუანსებს, აფასებს სიღრმესა და სტაბილურობას და გადაწყვეტილებამდე ფიქრს ამჯობინებს. მისი ძლიერი მხარეებია პასუხისმგებლობა, სიფრთხილე და ხარისხზე ზრუნვა; გადაჭარბებისას შეიძლება ზედმეტი თვითკრიტიკა ან ჩაკეტილობა გამოვლინდეს.",
+    "sourceUrl": "https://www.frontiersin.org/journals/psychiatry/articles/10.3389/fpsyt.2019.00256/full",
+    "license": "Original Georgian synthesis for Astro App; historical model mapping checked against the cited source.",
+    "tags": {
+      "element": "earth",
+      "temperament": "მელანქოლიური ტემპერამენტი",
+      "short": "ღრმა, დაკვირვებული და დეტალებზე ორიენტირებული ხასიათი.",
+      "model": "classical-four-temperaments",
+      "version": 1
+    }
+  },
+  {
+    "entryKey": "temperament.element.air.v1",
+    "chartType": "ELEMENT_TEMPERAMENT",
+    "language": "ka",
+    "sourceText": "სანგვინური ტიპი ადამიანებთან მარტივად ერთვება, სწრაფად ითვისებს ახალ შთაბეჭდილებებს და ხშირად ენთუზიაზმით მოქმედებს. მისი ძლიერი მხარეებია კომუნიკაცია, მოქნილობა და შემოქმედებითი იმპულსი; სირთულედ შეიძლება იქცეს ყურადღების სწრაფად გადატანა.",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11049776/",
+    "license": "Original Georgian synthesis for Astro App; historical model mapping checked against the cited source.",
+    "tags": {
+      "element": "air",
+      "temperament": "სანგვინური ტემპერამენტი",
+      "short": "სოციალური, ცოცხალი და ოპტიმისტური ხასიათი.",
+      "model": "classical-four-temperaments",
+      "version": 1
+    }
+  },
+  {
+    "entryKey": "temperament.element.water.v1",
+    "chartType": "ELEMENT_TEMPERAMENT",
+    "language": "ka",
+    "sourceText": "ფლეგმატური ტიპი სიმშვიდეს, თანმიმდევრობასა და უსაფრთხო რიტმს აფასებს. მას ხშირად შეუძლია მოთმინებით მოსმენა, სტაბილური მხარდაჭერა და კონფლიქტის დამშვიდება; გადაჭარბებისას შესაძლოა ინერცია ან ცვლილებისადმი ნელი რეაქცია გამოჩნდეს.",
+    "sourceUrl": "https://www.frontiersin.org/journals/psychiatry/articles/10.3389/fpsyt.2019.00256/full",
+    "license": "Original Georgian synthesis for Astro App; historical model mapping checked against the cited source.",
+    "tags": {
+      "element": "water",
+      "temperament": "ფლეგმატური ტემპერამენტი",
+      "short": "მშვიდი, თანმიმდევრული და ემოციურად გაწონასწორებული ხასიათი.",
+      "model": "classical-four-temperaments",
+      "version": 1
+    }
+  }
+]
