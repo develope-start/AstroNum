@@ -3499,11 +3499,11 @@ canvas {
 @media (max-width: 640px) {
   .app-home .hero-orbit-card {
     min-height: clamp(38rem, 135vw, 48rem) !important;
-    margin: 8.5rem auto 8.5rem !important;
+    margin: 12.8rem auto 12.8rem !important;
   }
 
   .app-home .hero-orbit-card:has(.celestial-temperament-card.is-pinned) {
-    min-height: clamp(48rem, 160vw, 58rem) !important;
+    min-height: clamp(52rem, 170vw, 62rem) !important;
   }
 
   .app-home .celestial-element-panel {
@@ -3511,14 +3511,16 @@ canvas {
     padding: 0.65rem !important;
   }
 
+  /* Shift Fire & Earth UPWARDS by 1.5x panel height (-12.75rem) */
   .app-home .celestial-element-panel-fire,
   .app-home .celestial-element-panel-earth {
-    top: -8.5rem !important;
+    top: -12.75rem !important;
   }
 
+  /* Shift Air & Water DOWNWARDS by 1.5x panel height (-12.75rem) */
   .app-home .celestial-element-panel-air,
   .app-home .celestial-element-panel-water {
-    bottom: -8.5rem !important;
+    bottom: -12.75rem !important;
   }
 
   /*
@@ -4116,5 +4118,51 @@ canvas {
 
   .app-home .celestial-element-panel {
     transition: top 260ms ease, bottom 260ms ease, transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+  }
+
+  /* Mobile-only temperament geometry: edge-anchored to its element panel,
+     with the same visual span as the zodiac/planetary instrument. */
+  .app-home .celestial-element-panel-fire > .celestial-temperament-card,
+  .app-home .celestial-element-panel-air > .celestial-temperament-card {
+    left: 0 !important;
+    right: auto !important;
+    top: auto !important;
+    width: calc(100vw - 1.4rem) !important;
+    max-width: none !important;
+    height: clamp(13.4rem, 38vh, 14rem) !important;
+    min-height: 0 !important;
+    transform: none !important;
+  }
+
+  .app-home .celestial-element-panel-earth > .celestial-temperament-card,
+  .app-home .celestial-element-panel-water > .celestial-temperament-card {
+    right: 0 !important;
+    left: auto !important;
+    top: auto !important;
+    width: calc(100vw - 1.4rem) !important;
+    max-width: none !important;
+    height: clamp(13.4rem, 38vh, 14rem) !important;
+    min-height: 0 !important;
+    transform: none !important;
+  }
+
+  /* The upper pair overlaps the upper half of the element panel and opens up. */
+  .app-home .celestial-element-panel-fire > .celestial-temperament-card,
+  .app-home .celestial-element-panel-earth > .celestial-temperament-card {
+    bottom: 50% !important;
+  }
+
+  /* The lower pair overlaps the lower half of the element panel and drops down. */
+  .app-home .celestial-element-panel-air > .celestial-temperament-card,
+  .app-home .celestial-element-panel-water > .celestial-temperament-card {
+    bottom: auto !important;
+    top: 50% !important;
+  }
+
+  .app-home .celestial-temperament-content {
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-align: center !important;
+    padding: 1.25rem 1rem 0.85rem !important;
   }
 }
