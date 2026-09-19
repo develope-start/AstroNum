@@ -3491,6 +3491,15 @@ canvas {
   overflow-wrap: break-word;
 }
 
+.celestial-temperament-element-icon {
+  display: inline-block;
+  margin-right: 0.35rem;
+  font-size: 1.08em;
+  line-height: 1;
+  vertical-align: -0.08em;
+  filter: drop-shadow(0 0 0.35rem color-mix(in srgb, var(--element-glow, rgba(245, 158, 11, 0.55)) 70%, transparent));
+}
+
 .app-home .celestial-temperament-content .celestial-temperament-kicker {
   display: block;
   font-size: clamp(0.58rem, 0.9vw, 0.68rem);
