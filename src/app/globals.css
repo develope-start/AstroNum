@@ -1463,6 +1463,38 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   }
 }
 
+/* Mobile elemental order: earth/fire above, air/water below. */
+@media (max-width: 640px) {
+  .app-home .celestial-element-panel-earth {
+    top: -4.05rem;
+    right: auto;
+    left: 0.45rem;
+  }
+
+  .app-home .celestial-element-panel-fire {
+    top: -4.05rem;
+    right: 0.45rem;
+    left: auto;
+  }
+
+  .app-home .celestial-element-panel-air {
+    right: auto;
+    left: 0.45rem;
+  }
+
+  .app-home .celestial-element-panel-water {
+    right: 0.45rem;
+    left: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-home .celestial-element-panel-earth,
+  .app-home .celestial-element-panel-fire {
+    top: -3.9rem;
+  }
+}
+
 /* Hero zodiac instrument: a quiet, dimensional replacement for the old orbit illustration. */
 .hero-actions {
   display: none;
@@ -2417,4 +2449,314 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   .celestial-element-items { gap: 0.2rem; }
   .celestial-element-items span { width: 1.2rem; height: 1.2rem; }
   .celestial-element-items b { font-size: 0.68rem; }
+}
+
+/* Responsive system pass: stable geometry from wide desktop to narrow phones. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+.app-home,
+.cabinet-page,
+.admin-page {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+.app-home > *,
+.cabinet-page > *,
+.admin-page > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.app-home .app-section,
+.app-home .section-heading,
+.app-home .mode-switcher,
+.cabinet-page .glass-panel,
+.admin-page section,
+.admin-page article,
+.admin-page details {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.wide-date-editor,
+.time-editor {
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
+}
+
+.wide-date-editor input,
+.time-editor input {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.place-suggestions,
+.wide-date-editor [class*="absolute"],
+.time-editor [class*="absolute"] {
+  max-width: calc(100vw - 1rem);
+}
+
+.admin-page .admin-page-header,
+.admin-page .admin-header-actions,
+.admin-page .admin-header-actions > a,
+.admin-page .admin-header-actions > button {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 900px) {
+  .app-home .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .app-home .section-heading p {
+    max-width: 48rem;
+    text-align: left;
+  }
+
+  .admin-page .admin-page-header {
+    align-items: stretch;
+  }
+
+  .admin-page .admin-header-actions {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-home .hero-orbit-card {
+    min-height: clamp(34rem, 125vw, 42rem);
+    padding: 4.65rem 0;
+  }
+
+  .app-home .celestial-system {
+    inset: 4.65rem 0;
+    overflow: visible;
+    border: 1px solid rgba(197, 188, 255, 0.14);
+    border-radius: 1.35rem;
+  }
+
+  .app-home .celestial-element-panel-fire,
+  .app-home .celestial-element-panel-earth {
+    top: -4.05rem;
+  }
+
+  .app-home .celestial-element-panel-air,
+  .app-home .celestial-element-panel-water {
+    bottom: -4.05rem;
+  }
+
+  .app-home .celestial-element-panel-fire,
+  .app-home .celestial-element-panel-air {
+    left: 0.45rem;
+  }
+
+  .app-home .celestial-element-panel-earth,
+  .app-home .celestial-element-panel-water {
+    right: 0.45rem;
+  }
+
+  .app-home .mode-switcher {
+    gap: 0.25rem;
+  }
+
+  .app-home .mode-switcher button {
+    min-height: 2.9rem;
+    padding: 0.6rem 0.35rem;
+    font-size: 0.68rem;
+    line-height: 1.25;
+  }
+
+  .cabinet-page,
+  .admin-page {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+  }
+
+  .cabinet-page .glass-panel,
+  .admin-page section,
+  .admin-page article,
+  .admin-page details {
+    border-radius: 1rem !important;
+  }
+
+  .admin-page .admin-header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-page .admin-header-actions > a,
+  .admin-page .admin-header-actions > button {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .admin-page .admin-live-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-page .admin-stat-item {
+    justify-content: flex-start;
+    font-size: 0.68rem;
+  }
+
+  .admin-page .admin-stat-item:last-child {
+    grid-column: auto;
+    justify-content: center;
+  }
+
+  .admin-page .admin-collapsible-summary,
+  .admin-page .admin-trash-summary,
+  .admin-page #registered-calculations-section > details > summary,
+  .admin-page #guest-calculations-section > details > summary,
+  .admin-page #account-events-section > details > summary {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    min-height: 0;
+    padding: 0.8rem;
+  }
+
+  .admin-page .admin-section-total,
+  .admin-page .admin-summary-count {
+    white-space: normal;
+  }
+
+  .admin-page details[data-map-count] > summary {
+    align-items: flex-start;
+  }
+
+  .admin-page details[data-map-count] > summary::before {
+    width: fit-content;
+    margin-left: 0;
+    white-space: normal;
+  }
+
+  .admin-page .admin-collapsible-content,
+  .admin-page .admin-trash-section > .mb-3 {
+    padding-right: 0.8rem;
+    padding-left: 0.8rem;
+  }
+
+  .chart-delete-dialog {
+    max-height: calc(100dvh - 1rem);
+    overflow-y: auto;
+    border-radius: 1rem;
+  }
+
+  .wide-date-editor {
+    grid-template-columns: minmax(0, 1.25fr) auto minmax(2.2rem, 0.65fr) auto minmax(2.45rem, 0.72fr) auto !important;
+    min-height: 3.2rem;
+    gap: 0.15rem !important;
+    padding: 0.4rem !important;
+    border-radius: 0.85rem !important;
+  }
+
+  .time-editor {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto !important;
+    min-height: 3.2rem;
+    gap: 0.15rem !important;
+    padding: 0.4rem !important;
+    border-radius: 0.85rem !important;
+  }
+
+  .wide-date-editor input,
+  .time-editor input {
+    font-size: 0.86rem !important;
+    line-height: 1.2;
+  }
+
+  .wide-date-editor > span,
+  .time-editor > span {
+    font-size: 1rem !important;
+  }
+
+  .wide-date-editor > div:last-child,
+  .time-editor .time-picker-trigger {
+    gap: 0.15rem;
+  }
+
+  .wide-date-editor > div:last-child > button:first-child {
+    display: none;
+  }
+
+  .wide-date-editor > div:last-child > button:last-child,
+  .time-editor .time-picker-trigger > button {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .wide-date-editor .absolute,
+  .time-editor .absolute {
+    right: -0.35rem;
+    width: min(19rem, calc(100vw - 1rem));
+  }
+}
+
+@media (max-width: 380px) {
+  .cabinet-page,
+  .admin-page {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+
+  .app-home .hero-orbit-card {
+    min-height: 36rem;
+  }
+
+  .app-home .celestial-element-panel {
+    width: 7.35rem;
+  }
+
+  .app-home .celestial-element-panel-fire,
+  .app-home .celestial-element-panel-earth {
+    top: -3.9rem;
+  }
+
+  .app-home .celestial-element-panel-air,
+  .app-home .celestial-element-panel-water {
+    bottom: -3.9rem;
+  }
+
+  .wide-date-editor input,
+  .time-editor input {
+    font-size: 0.78rem !important;
+  }
+
+  .wide-date-editor > div:last-child > button:last-child,
+  .time-editor .time-picker-trigger > button {
+    width: 2.05rem;
+    height: 2.05rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celestial-element-panel,
+  .celestial-element-panel::before,
+  .celestial-info-card,
+  .admin-page *,
+  .cabinet-page * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
 }
