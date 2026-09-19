@@ -3126,3 +3126,63 @@ canvas {
     flex: 0 0 auto;
   }
 }
+
+/* Mobile has its own three-zone composition: panels outside, details in the gap, zodiac in the center. */
+@media (max-width: 640px) {
+  .app-home .hero-orbit-card {
+    min-height: clamp(42rem, 145vw, 52rem);
+    padding: 10rem 0;
+  }
+
+  .app-home .hero-orbit-card:has(.celestial-temperament-card) {
+    min-height: clamp(49rem, 168vw, 60rem);
+  }
+
+  .app-home .celestial-system {
+    inset: 10rem 0;
+    overflow: visible;
+    border-radius: 1.35rem;
+  }
+
+  .app-home .celestial-system.element-info-fire,
+  .app-home .celestial-system.element-info-earth {
+    inset: 25rem 0 10rem;
+  }
+
+  .app-home .celestial-system.element-info-air,
+  .app-home .celestial-system.element-info-water {
+    inset: 10rem 0 25rem;
+  }
+
+  .app-home .celestial-element-panel-fire,
+  .app-home .celestial-element-panel-earth {
+    top: -10rem;
+  }
+
+  .app-home .celestial-element-panel-air,
+  .app-home .celestial-element-panel-water {
+    bottom: -10rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-home .hero-orbit-card:has(.celestial-temperament-card) {
+    min-height: 51rem;
+  }
+
+  .app-home .celestial-system.element-info-fire,
+  .app-home .celestial-system.element-info-earth {
+    inset: 24.5rem 0 9.5rem;
+  }
+
+  .app-home .celestial-system.element-info-air,
+  .app-home .celestial-system.element-info-water {
+    inset: 9.5rem 0 24.5rem;
+  }
+
+  .app-home .celestial-element-panel-fire,
+  .app-home .celestial-element-panel-earth { top: -9.5rem; }
+
+  .app-home .celestial-element-panel-air,
+  .app-home .celestial-element-panel-water { bottom: -9.5rem; }
+}

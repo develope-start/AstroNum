@@ -120,7 +120,7 @@ export default function HomePage() {
         </div>
         <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
           <div
-            className={`celestial-system${activeElementInfo ? " has-element-info" : ""}`}
+            className={`celestial-system${activeElementInfo ? ` has-element-info element-info-${activeElementInfo}` : ""}`}
             role="group"
             aria-label="12 ზოდიაქოს ასტროლოგიური სარტყელი, მმართველი მნათობები და ცენტრში დედამიწა"
             onClick={(event) => {
