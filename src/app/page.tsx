@@ -179,25 +179,11 @@ export default function HomePage() {
                     setHoveredElementInfo(null);
                   }
                 }}
-                onClick={() => toggleElementInfo(element.id)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  toggleElementInfo(element.id);
+                }}
               >
-                <button
-                  type="button"
-                  className="celestial-element-hit-area"
-                  aria-label={`${element.name} სტიქიის ტემპერამენტის განმარტების ნახვა`}
-                  aria-expanded={selectedElementInfo === element.id}
-                  onPointerDown={(event) => {
-                    if (event.pointerType === "mouse" && event.button !== 0) return;
-                    event.preventDefault();
-                    event.stopPropagation();
-                    toggleElementInfo(element.id);
-                  }}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    // Keyboard activation has no pointerdown event; mouse/touch was handled above.
-                    if (event.detail === 0) toggleElementInfo(element.id);
-                  }}
-                />
                 <div className="celestial-element-heading">
                   <span className="celestial-element-symbol" aria-hidden="true">{element.symbol}</span>
                   <div>
@@ -205,13 +191,13 @@ export default function HomePage() {
                     <strong>{element.name}</strong>
                   </div>
                 </div>
-                <div className="celestial-element-row">
+                <div className="celestial-element-row celestial-element-zodiacs">
                   <span className="celestial-element-label">ზოდიაქოები</span>
                   <div className="celestial-element-items">
                     {element.signs.map((sign) => <span key={sign.name} title={sign.name}><b>{sign.symbol}</b></span>)}
                   </div>
                 </div>
-                <div className="celestial-element-row">
+                <div className="celestial-element-row celestial-element-rulers">
                   <span className="celestial-element-label">მმართველები</span>
                   <div className="celestial-element-items">
                     {element.planets.map((planet) => <span key={planet.name} title={planet.name}><b>{planet.symbol}</b></span>)}
