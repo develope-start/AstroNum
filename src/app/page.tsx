@@ -66,12 +66,36 @@ const ELEMENT_GROUPS = [
   { id: "water", name: "წყალი", symbol: "▽", signs: [{ name: "კირჩხიბი", symbol: "♋" }, { name: "მორიელი", symbol: "♏" }, { name: "თევზები", symbol: "♓" }], planets: [{ name: "მთვარე", symbol: "☽" }, { name: "პლუტონი", symbol: "♇" }, { name: "ნეპტუნი", symbol: "♆" }] },
 ] as const;
 
+const TEMPERAMENT_INFO = {
+  fire: {
+    temperament: "ქოლერიკული ტემპერამენტი",
+    short: "ენერგიული, მიზანმიმართული და სწრაფი რეაქციის მქონე ხასიათი.",
+    description: "ქოლერიკული ტიპი ხშირად მოქმედებაზეა ორიენტირებული: სწრაფად იღებს გადაწყვეტილებას, ინიციატივას იღებს და მაღალი დინამიკით მოძრაობს. მისი ძლიერი მხარეებია გამბედაობა, ლიდერობა და შედეგზე კონცენტრაცია; გადაჭარბებისას შეიძლება მოუთმენლობა ან რეაქციის სიმწვავე გამოვლინდეს.",
+  },
+  earth: {
+    temperament: "მელანქოლიური ტემპერამენტი",
+    short: "ღრმა, დაკვირვებული და დეტალებზე ორიენტირებული ხასიათი.",
+    description: "მელანქოლიური ტიპი ამჩნევს ნიუანსებს, აფასებს სიღრმესა და სტაბილურობას და გადაწყვეტილებამდე ფიქრს ამჯობინებს. მისი ძლიერი მხარეებია პასუხისმგებლობა, სიფრთხილე და ხარისხზე ზრუნვა; გადაჭარბებისას შეიძლება ზედმეტი თვითკრიტიკა ან ჩაკეტილობა გამოვლინდეს.",
+  },
+  air: {
+    temperament: "სანგვინური ტემპერამენტი",
+    short: "სოციალური, ცოცხალი და ოპტიმისტური ხასიათი.",
+    description: "სანგვინური ტიპი ადამიანებთან მარტივად ერთვება, სწრაფად ითვისებს ახალ შთაბეჭდილებებს და ხშირად ენთუზიაზმით მოქმედებს. მისი ძლიერი მხარეებია კომუნიკაცია, მოქნილობა და შემოქმედებითი იმპულსი; სირთულედ შეიძლება იქცეს ყურადღების სწრაფად გადატანა.",
+  },
+  water: {
+    temperament: "ფლეგმატური ტემპერამენტი",
+    short: "მშვიდი, თანმიმდევრული და ემოციურად გაწონასწორებული ხასიათი.",
+    description: "ფლეგმატური ტიპი სიმშვიდეს, თანმიმდევრობასა და უსაფრთხო რიტმს აფასებს. მას ხშირად შეუძლია მოთმინებით მოსმენა, სტაბილური მხარდაჭერა და კონფლიქტის დამშვიდება; გადაჭარბებისას შესაძლოა ინერცია ან ცვლილებისადმი ნელი რეაქცია გამოჩნდეს.",
+  },
+} as const;
+
 type CelestialTarget = number | "earth" | null;
 
 export default function HomePage() {
   const [tab, setTab] = useState<Tab>("natal");
   const [hoveredCelestial, setHoveredCelestial] = useState<CelestialTarget>(null);
   const [selectedCelestial, setSelectedCelestial] = useState<CelestialTarget>(null);
+  const [activeElementInfo, setActiveElementInfo] = useState<keyof typeof TEMPERAMENT_INFO | null>(null);
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
   const activeCelestial = selectedCelestial ?? hoveredCelestial;
   const activePlanetIndex = typeof activeCelestial === "number" ? activeCelestial : null;
@@ -93,10 +117,30 @@ export default function HomePage() {
           </div>
         </div>
         <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
-          <div className="celestial-system" role="group" aria-label="12 ზოდიაქოს ასტროლოგიური სარტყელი, მმართველი მნათობები და ცენტრში დედამიწა">
+          <div className={`celestial-system${activeElementInfo ? " has-element-info" : ""}`} role="group" aria-label="12 ზოდიაქოს ასტროლოგიური სარტყელი, მმართველი მნათობები და ცენტრში დედამიწა">
             <div className="celestial-star-noise" aria-hidden="true" />
             {ELEMENT_GROUPS.map((element) => (
-              <section key={element.id} className={`celestial-element-panel celestial-element-panel-${element.id}`} aria-label={`${element.name} სტიქია`}>
+              <section
+                key={element.id}
+                className={`celestial-element-panel celestial-element-panel-${element.id}${activeElementInfo === element.id ? " is-info-open" : ""}`}
+                aria-label={`${element.name} სტიქია`}
+                tabIndex={0}
+                onMouseEnter={() => setActiveElementInfo(element.id)}
+                onMouseLeave={() => setActiveElementInfo(null)}
+                onFocus={() => setActiveElementInfo(element.id)}
+                onBlur={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                    setActiveElementInfo(null);
+                  }
+                }}
+                onClick={() => setActiveElementInfo((current) => current === element.id ? null : element.id)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setActiveElementInfo((current) => current === element.id ? null : element.id);
+                  }
+                }}
+              >
                 <div className="celestial-element-heading">
                   <span className="celestial-element-symbol" aria-hidden="true">{element.symbol}</span>
                   <div>
@@ -116,6 +160,26 @@ export default function HomePage() {
                     {element.planets.map((planet) => <span key={planet.name} title={planet.name}><b>{planet.symbol}</b></span>)}
                   </div>
                 </div>
+                {activeElementInfo === element.id && (
+                  <div className={`celestial-temperament-card celestial-temperament-card-${element.id}`} onClick={(event) => event.stopPropagation()}>
+                    <button
+                      type="button"
+                      className="celestial-temperament-close"
+                      aria-label="ინფორმაციის დახურვა"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setActiveElementInfo(null);
+                      }}
+                    >
+                      ×
+                    </button>
+                    <span className="celestial-temperament-kicker">კლასიკური ტემპერამენტების მოდელი</span>
+                    <strong>{TEMPERAMENT_INFO[element.id].temperament}</strong>
+                    <span className="celestial-temperament-lede">{TEMPERAMENT_INFO[element.id].short}</span>
+                    <p>{TEMPERAMENT_INFO[element.id].description}</p>
+                    <span className="celestial-temperament-note">ისტორიული ფსიქოლოგიური მოდელი — არა კლინიკური დიაგნოზი.</span>
+                  </div>
+                )}
               </section>
             ))}
             <div className="celestial-orbit celestial-orbit-wide" aria-hidden="true" />

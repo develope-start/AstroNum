@@ -1463,6 +1463,237 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   }
 }
 
+/* Element temperament cards: square glass panels with directional, readable detail overlays. */
+.celestial-element-panel {
+  width: clamp(10.5rem, 18vw, 14.5rem);
+  min-height: clamp(9.8rem, 13vw, 12.5rem);
+  overflow: visible;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+}
+
+.celestial-element-panel:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--element-text) 82%, white 18%);
+  outline-offset: 0.25rem;
+}
+
+.celestial-element-panel.is-info-open {
+  z-index: 35;
+  border-color: color-mix(in srgb, var(--element-text) 88%, white 12%);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.14), 0 20px 46px -24px var(--element-glow), 0 0 38px -10px var(--element-glow);
+}
+
+.celestial-element-panel-fire {
+  --element-border: rgba(255, 82, 78, 0.78);
+  --element-text: #ffd5d2;
+  --element-bg: rgba(125, 24, 31, 0.6);
+  --element-glow: rgba(255, 54, 48, 0.78);
+}
+
+.celestial-element-panel-earth {
+  --element-border: rgba(224, 185, 139, 0.68);
+  --element-text: #f0d0aa;
+  --element-bg: rgba(94, 65, 43, 0.58);
+  --element-glow: rgba(213, 154, 94, 0.6);
+}
+
+.celestial-element-panel-air {
+  --element-border: rgba(204, 246, 255, 0.78);
+  --element-text: #effcff;
+  --element-bg: rgba(94, 174, 201, 0.42);
+  --element-glow: rgba(154, 235, 255, 0.72);
+}
+
+.celestial-element-panel-water {
+  --element-border: rgba(91, 145, 224, 0.76);
+  --element-text: #b9d1fa;
+  --element-bg: rgba(20, 55, 117, 0.64);
+  --element-glow: rgba(49, 117, 230, 0.72);
+}
+
+.celestial-temperament-card {
+  position: absolute;
+  z-index: 50;
+  left: 50%;
+  width: clamp(16rem, 25vw, 22rem);
+  max-height: min(20rem, 36vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1rem 2.55rem 1rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--element-text) 72%, white 28%);
+  border-radius: 1.05rem;
+  color: rgba(244, 247, 255, 0.9);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--element-bg) 86%, white 14%), rgba(8, 12, 25, 0.94)),
+    radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--element-glow) 34%, transparent), transparent 55%);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.13), 0 24px 58px -28px rgba(0, 0, 0, 0.92), 0 0 34px -12px var(--element-glow);
+  backdrop-filter: blur(18px) saturate(1.18);
+  -webkit-backdrop-filter: blur(18px) saturate(1.18);
+  scrollbar-color: color-mix(in srgb, var(--element-text) 54%, transparent) transparent;
+}
+
+.celestial-element-panel-fire .celestial-temperament-card,
+.celestial-element-panel-earth .celestial-temperament-card {
+  top: calc(100% + 0.75rem);
+  transform: translateX(-50%);
+  animation: elemental-card-drop 220ms ease-out both;
+}
+
+.celestial-element-panel-air .celestial-temperament-card,
+.celestial-element-panel-water .celestial-temperament-card {
+  bottom: calc(100% + 0.75rem);
+  transform: translateX(-50%);
+  animation: elemental-card-rise 220ms ease-out both;
+}
+
+.celestial-temperament-card::-webkit-scrollbar { width: 0.35rem; }
+.celestial-temperament-card::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--element-text) 48%, transparent);
+}
+
+.celestial-temperament-card strong {
+  display: block;
+  margin-top: 0.24rem;
+  color: var(--element-text);
+  font-size: clamp(0.92rem, 1.35vw, 1.1rem);
+  font-weight: 760;
+  line-height: 1.25;
+}
+
+.celestial-temperament-lede {
+  display: block;
+  margin-top: 0.38rem;
+  color: rgba(240, 245, 255, 0.74);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.celestial-temperament-card p {
+  margin: 0.65rem 0 0;
+  color: rgba(230, 236, 248, 0.84);
+  font-size: clamp(0.7rem, 1vw, 0.8rem);
+  line-height: 1.58;
+}
+
+.celestial-temperament-kicker,
+.celestial-temperament-note {
+  display: block;
+  color: color-mix(in srgb, var(--element-text) 66%, white 34%);
+  font-size: 0.57rem;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.celestial-temperament-note {
+  margin-top: 0.8rem;
+  color: rgba(226, 232, 240, 0.58);
+  font-size: 0.62rem;
+  font-weight: 520;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.celestial-temperament-close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  display: grid;
+  width: 1.7rem;
+  height: 1.7rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--element-text) 40%, transparent);
+  border-radius: 50%;
+  color: color-mix(in srgb, var(--element-text) 78%, white 22%);
+  background: rgba(5, 8, 18, 0.36);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.celestial-temperament-close:hover,
+.celestial-temperament-close:focus-visible {
+  border-color: var(--element-text);
+  background: color-mix(in srgb, var(--element-text) 18%, rgba(5, 8, 18, 0.7));
+  transform: scale(1.06);
+}
+
+@keyframes elemental-card-drop {
+  from { opacity: 0; transform: translate(-50%, -0.55rem) scale(0.97); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes elemental-card-rise {
+  from { opacity: 0; transform: translate(-50%, 0.55rem) scale(0.97); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@media (max-width: 640px) {
+  .app-home .hero-orbit-card:has(.celestial-temperament-card) {
+    min-height: clamp(43rem, 160vw, 52rem);
+  }
+
+  .app-home .celestial-system:has(.celestial-temperament-card) {
+    inset: 7.8rem 0;
+  }
+
+  .app-home .celestial-element-panel {
+    width: clamp(8.6rem, 30vw, 10.2rem);
+    min-height: 9.2rem;
+    padding: 0.72rem;
+  }
+
+  .app-home .celestial-element-panel-earth {
+    top: -4.05rem;
+    right: auto;
+    left: 0.45rem;
+  }
+
+  .app-home .celestial-element-panel-fire {
+    top: -4.05rem;
+    right: 0.45rem;
+    left: auto;
+  }
+
+  .app-home .celestial-element-panel-air {
+    right: auto;
+    bottom: -4.05rem;
+    left: 0.45rem;
+  }
+
+  .app-home .celestial-element-panel-water {
+    right: 0.45rem;
+    bottom: -4.05rem;
+  }
+
+  .celestial-temperament-card {
+    width: min(calc(100vw - 1rem), 23rem);
+    max-height: min(14rem, 34vh);
+    padding: 0.9rem 2.45rem 0.9rem 0.95rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-home .hero-orbit-card:has(.celestial-temperament-card) { min-height: 45rem; }
+  .app-home .celestial-element-panel { width: 8.2rem; min-height: 8.9rem; padding: 0.62rem; }
+  .app-home .celestial-element-panel-earth,
+  .app-home .celestial-element-panel-fire { top: -3.9rem; }
+  .app-home .celestial-element-panel-air,
+  .app-home .celestial-element-panel-water { bottom: -3.9rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celestial-temperament-card,
+  .celestial-temperament-close {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Mobile elemental order: earth/fire above, air/water below. */
 @media (max-width: 640px) {
   .app-home .celestial-element-panel-earth {
