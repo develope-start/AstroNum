@@ -2652,22 +2652,22 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   opacity: 1;
 }
 
-.celestial-element-panel-fire { --element-border: rgba(255, 59, 48, 0.88); --element-text: #ffe5e3; --element-bg: rgba(150, 20, 25, 0.76); --element-glow: rgba(255, 45, 35, 0.98); }
-.celestial-element-panel-earth { --element-border: rgba(217, 119, 6, 0.85); --element-text: #fef3c7; --element-bg: rgba(110, 52, 12, 0.74); --element-glow: rgba(217, 119, 6, 0.94); }
-.celestial-element-panel-air { --element-border: rgba(56, 189, 248, 0.85); --element-text: #e0f2fe; --element-bg: rgba(14, 80, 115, 0.72); --element-glow: rgba(56, 189, 248, 0.94); }
-.celestial-element-panel-water { --element-border: rgba(37, 99, 235, 0.88); --element-text: #dbeafe; --element-bg: rgba(15, 38, 105, 0.78); --element-glow: rgba(37, 99, 235, 0.98); }
+.celestial-element-panel-fire { --element-border: rgba(255, 60, 50, 0.55); --element-text: #ffe0dd; --element-bg: rgba(95, 20, 25, 0.45); --element-glow: rgba(255, 50, 40, 0.55); }
+.celestial-element-panel-earth { --element-border: rgba(217, 119, 6, 0.55); --element-text: #fef3c7; --element-bg: rgba(75, 40, 15, 0.45); --element-glow: rgba(217, 119, 6, 0.55); }
+.celestial-element-panel-air { --element-border: rgba(56, 189, 248, 0.55); --element-text: #e0f2fe; --element-bg: rgba(14, 65, 95, 0.45); --element-glow: rgba(56, 189, 248, 0.55); }
+.celestial-element-panel-water { --element-border: rgba(37, 99, 235, 0.6); --element-text: #dbeafe; --element-bg: rgba(15, 32, 85, 0.5); --element-glow: rgba(37, 99, 235, 0.6); }
 
 .celestial-element-panel-fire .celestial-element-symbol {
-  color: #ff3b30;
-  border-color: rgba(255, 60, 50, 0.95);
-  background: radial-gradient(circle, rgba(255, 60, 50, 0.4) 0%, rgba(140, 18, 22, 0.85) 100%);
-  box-shadow: 0 0 20px rgba(255, 50, 35, 0.95), inset 0 0 12px rgba(255, 90, 70, 0.85);
+  color: #ff4d4d;
+  border-color: rgba(255, 77, 77, 0.7);
+  background: rgba(120, 20, 25, 0.55);
+  box-shadow: inset 0 0 10px rgba(255, 60, 50, 0.4);
 }
 
 .celestial-element-symbol,
 .celestial-element-items span {
-  border-color: color-mix(in srgb, var(--element-text) 82%, transparent);
-  box-shadow: inset 0 0 16px -2px var(--element-glow), 0 0 12px -2px var(--element-glow);
+  border-color: color-mix(in srgb, var(--element-text) 60%, transparent);
+  box-shadow: inset 0 0 10px -2px var(--element-glow);
 }
 
 .celestial-element-symbol { width: 2.1rem; height: 2.1rem; font-size: 1.5rem; }
@@ -3318,14 +3318,13 @@ canvas {
 .app-home .celestial-element-panel:hover,
 .app-home .celestial-element-panel:focus-within,
 .app-home .celestial-element-panel.is-info-open {
-  border-color: color-mix(in srgb, var(--element-text) 95%, white 5%);
-  background: linear-gradient(145deg, color-mix(in srgb, var(--element-bg) 96%, var(--element-glow) 15%), rgba(6, 9, 20, 0.88));
+  border-color: color-mix(in srgb, var(--element-text) 82%, white 18%);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--element-bg) 88%, var(--element-text) 12%), rgba(9, 12, 25, 0.85));
   box-shadow:
-    0 0 28px -2px var(--element-glow),
-    inset 0 1px 1px rgba(255, 255, 255, 0.3),
-    inset 0 0 38px -4px var(--element-glow),
-    inset 0 0 0 1px color-mix(in srgb, var(--element-glow) 60%, transparent);
-  transform: translateY(-3px) scale(1.02);
+    inset 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 0 22px -6px var(--element-glow),
+    0 4px 18px -4px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
 }
 
 .app-home .celestial-element-panel:hover .celestial-element-symbol,
@@ -3334,9 +3333,9 @@ canvas {
 .app-home .celestial-element-panel:hover .celestial-element-items span,
 .app-home .celestial-element-panel:focus-within .celestial-element-items span,
 .app-home .celestial-element-panel.is-info-open .celestial-element-items span {
-  border-color: color-mix(in srgb, var(--element-text) 96%, white 4%);
-  background: color-mix(in srgb, var(--element-bg) 65%, var(--element-text) 35%);
-  box-shadow: 0 0 16px var(--element-glow), inset 0 0 1.2rem -0.2rem var(--element-glow);
+  border-color: color-mix(in srgb, var(--element-text) 85%, white 15%);
+  background: color-mix(in srgb, var(--element-bg) 75%, var(--element-text) 25%);
+  box-shadow: inset 0 0 12px -3px var(--element-glow);
 }
 
 .app-home .celestial-element-panel:hover .celestial-element-heading strong,
@@ -3345,7 +3344,7 @@ canvas {
 .app-home .celestial-element-panel:hover .celestial-element-items b,
 .app-home .celestial-element-panel:focus-within .celestial-element-items b,
 .app-home .celestial-element-panel.is-info-open .celestial-element-items b {
-  text-shadow: 0 0 0.8rem color-mix(in srgb, var(--element-glow) 88%, transparent);
+  text-shadow: 0 0 0.5rem color-mix(in srgb, var(--element-glow) 65%, transparent);
 }
 
 .app-home .celestial-element-panel,
