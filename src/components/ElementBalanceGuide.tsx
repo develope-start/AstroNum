@@ -101,10 +101,10 @@ function calculateElementBalance(planets: WheelPlanet[]) {
 export default function ElementBalanceGuide({ planets, ascendant }: { planets: WheelPlanet[]; ascendant: number }) {
   const elements = calculateElementBalance(planets);
   const bars = [
-    { id: "fire", label: "ცეცხლი", value: elements.fire, icon: Flame, iconClass: "text-rose-400", textClass: "text-rose-300", borderClass: "border-rose-500/20", bgClass: "bg-rose-950/20", gradient: "from-rose-500 to-amber-500" },
-    { id: "earth", label: "მიწა", value: elements.earth, icon: Mountain, iconClass: "text-emerald-400", textClass: "text-emerald-300", borderClass: "border-emerald-500/20", bgClass: "bg-emerald-950/20", gradient: "from-emerald-500 to-teal-400" },
-    { id: "air", label: "ჰაერი", value: elements.air, icon: Wind, iconClass: "text-amber-400", textClass: "text-amber-300", borderClass: "border-amber-500/20", bgClass: "bg-amber-950/20", gradient: "from-amber-400 to-yellow-300" },
-    { id: "water", label: "წყალი", value: elements.water, icon: Droplets, iconClass: "text-sky-400", textClass: "text-sky-300", borderClass: "border-sky-500/20", bgClass: "bg-sky-950/20", gradient: "from-sky-500 to-indigo-400" },
+    { id: "fire", label: "ცეცხლი", value: elements.fire, icon: Flame, iconClass: "text-rose-400", textClass: "text-rose-300", borderClass: "border-rose-500/30", bgClass: "bg-rose-950/30", gradient: "from-rose-500 to-red-600" },
+    { id: "earth", label: "მიწა", value: elements.earth, icon: Mountain, iconClass: "text-amber-500", textClass: "text-amber-300", borderClass: "border-amber-600/30", bgClass: "bg-amber-950/35", gradient: "from-amber-600 to-yellow-800" },
+    { id: "air", label: "ჰაერი", value: elements.air, icon: Wind, iconClass: "text-sky-300", textClass: "text-sky-200", borderClass: "border-sky-400/30", bgClass: "bg-sky-950/30", gradient: "from-sky-400 to-cyan-300" },
+    { id: "water", label: "წყალი", value: elements.water, icon: Droplets, iconClass: "text-blue-400", textClass: "text-blue-300", borderClass: "border-blue-600/30", bgClass: "bg-blue-950/40", gradient: "from-blue-600 to-indigo-900" },
   ];
 
   return (

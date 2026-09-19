@@ -303,43 +303,43 @@ export default function NatalCalculator() {
           </div>
 
           <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4 text-xs">
-            <div className="rounded-xl border border-rose-500/20 bg-rose-950/20 p-2.5 sm:p-3 space-y-1.5 text-center">
+            <div className="rounded-xl border border-rose-500/30 bg-rose-950/30 p-2.5 sm:p-3 space-y-1.5 text-center">
               <div className="flex justify-between font-bold text-rose-300 text-[0.7rem] sm:text-xs">
                 <span className="flex items-center gap-1"><Flame className="h-3 w-3 text-rose-400" /> ცეცხლი</span>
                 <span>{elements.fire}%</span>
               </div>
               <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-rose-500 to-amber-500" style={{ width: `${elements.fire}%` }} />
+                <div className="infographic-bar-fill bg-gradient-to-r from-rose-500 to-red-600" style={{ width: `${elements.fire}%` }} />
               </div>
             </div>
 
-            <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-2.5 sm:p-3 space-y-1.5 text-center">
-              <div className="flex justify-between font-bold text-emerald-300 text-[0.7rem] sm:text-xs">
-                <span className="flex items-center gap-1"><Mountain className="h-3 w-3 text-emerald-400" /> მიწა</span>
+            <div className="rounded-xl border border-amber-600/30 bg-amber-950/35 p-2.5 sm:p-3 space-y-1.5 text-center">
+              <div className="flex justify-between font-bold text-amber-300 text-[0.7rem] sm:text-xs">
+                <span className="flex items-center gap-1"><Mountain className="h-3 w-3 text-amber-500" /> მიწა</span>
                 <span>{elements.earth}%</span>
               </div>
               <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-emerald-500 to-teal-400" style={{ width: `${elements.earth}%` }} />
+                <div className="infographic-bar-fill bg-gradient-to-r from-amber-600 to-yellow-800" style={{ width: `${elements.earth}%` }} />
               </div>
             </div>
 
-            <div className="rounded-xl border border-amber-500/20 bg-amber-950/20 p-2.5 sm:p-3 space-y-1.5 text-center">
-              <div className="flex justify-between font-bold text-amber-300 text-[0.7rem] sm:text-xs">
-                <span className="flex items-center gap-1"><Wind className="h-3 w-3 text-amber-400" /> ჰაერი</span>
+            <div className="rounded-xl border border-sky-400/30 bg-sky-950/30 p-2.5 sm:p-3 space-y-1.5 text-center">
+              <div className="flex justify-between font-bold text-sky-200 text-[0.7rem] sm:text-xs">
+                <span className="flex items-center gap-1"><Wind className="h-3 w-3 text-sky-300" /> ჰაერი</span>
                 <span>{elements.air}%</span>
               </div>
               <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-amber-400 to-yellow-300" style={{ width: `${elements.air}%` }} />
+                <div className="infographic-bar-fill bg-gradient-to-r from-sky-400 to-cyan-300" style={{ width: `${elements.air}%` }} />
               </div>
             </div>
 
-            <div className="rounded-xl border border-sky-500/20 bg-sky-950/20 p-2.5 sm:p-3 space-y-1.5 text-center">
-              <div className="flex justify-between font-bold text-sky-300 text-[0.7rem] sm:text-xs">
-                <span className="flex items-center gap-1"><Droplets className="h-3 w-3 text-sky-400" /> წყალი</span>
+            <div className="rounded-xl border border-blue-600/30 bg-blue-950/40 p-2.5 sm:p-3 space-y-1.5 text-center">
+              <div className="flex justify-between font-bold text-blue-300 text-[0.7rem] sm:text-xs">
+                <span className="flex items-center gap-1"><Droplets className="h-3 w-3 text-blue-400" /> წყალი</span>
                 <span>{elements.water}%</span>
               </div>
               <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-sky-500 to-indigo-400" style={{ width: `${elements.water}%` }} />
+                <div className="infographic-bar-fill bg-gradient-to-r from-blue-600 to-indigo-900" style={{ width: `${elements.water}%` }} />
               </div>
             </div>
           </div>
