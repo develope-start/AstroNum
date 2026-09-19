@@ -3166,7 +3166,7 @@ canvas {
   overflow: visible !important;
 }
 
-/* Modal centering, 2/3 overlap on card (1/3 exposed), extending outwards */
+/* Modal centering, 2/3 overlap on card (1/3 exposed), extending outwards with smooth adaptive height */
 .app-home .celestial-element-panel[data-info-placement="below"] > .celestial-temperament-card,
 .app-home .celestial-temperament-card-below {
   top: 33.333% !important;
@@ -3174,9 +3174,9 @@ canvas {
   left: 50% !important;
   right: auto !important;
   transform: translateX(-50%) !important;
-  height: clamp(15.5rem, 24vw, 20rem) !important;
-  min-height: clamp(15.5rem, 24vw, 20rem) !important;
-  width: clamp(14.5rem, 22vw, 18.5rem) !important;
+  height: clamp(16rem, 30vh, 22rem) !important;
+  max-height: clamp(16rem, 65vh, 25rem) !important;
+  width: clamp(14.8rem, 24vw, 19.5rem) !important;
 }
 
 .app-home .celestial-element-panel[data-info-placement="above"] > .celestial-temperament-card,
@@ -3186,9 +3186,9 @@ canvas {
   left: 50% !important;
   right: auto !important;
   transform: translateX(-50%) !important;
-  height: clamp(15.5rem, 24vw, 20rem) !important;
-  min-height: clamp(15.5rem, 24vw, 20rem) !important;
-  width: clamp(14.5rem, 22vw, 18.5rem) !important;
+  height: clamp(16rem, 30vh, 22rem) !important;
+  max-height: clamp(16rem, 65vh, 25rem) !important;
+  width: clamp(14.8rem, 24vw, 19.5rem) !important;
 }
 
 /* Exposed 1/3 Header morph animation when active (.is-info-open) */
@@ -3391,9 +3391,10 @@ canvas {
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  overflow-wrap: anywhere;
   overscroll-behavior: contain;
-  padding: 1.35rem 0.85rem 0.85rem !important;
+  padding: 1.2rem 0.65rem 0.65rem !important;
+  word-break: break-word;
+  overflow-wrap: break-word;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
@@ -3412,7 +3413,7 @@ canvas {
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Pinned close button at absolute top-right of modal frame - never scrolls away */
@@ -3448,21 +3449,22 @@ canvas {
 
 .app-home .celestial-temperament-content strong {
   display: block;
-  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  font-size: clamp(0.9rem, 1.35vw, 1.05rem);
   font-weight: 800;
   color: color-mix(in srgb, var(--element-text) 95%, white 5%);
   text-shadow:
     0 0 14px color-mix(in srgb, var(--element-glow) 85%, transparent),
     0 0 2px rgba(255, 255, 255, 0.9);
-  margin-block: 0.25rem 0.35rem;
+  margin-block: 0.2rem 0.3rem;
   text-align: center;
-  text-wrap: pretty;
-  overflow-wrap: anywhere;
+  text-wrap: balance;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .app-home .celestial-temperament-content .celestial-temperament-kicker {
   display: block;
-  font-size: clamp(0.62rem, 1vw, 0.72rem);
+  font-size: clamp(0.58rem, 0.9vw, 0.68rem);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 700;
@@ -3473,37 +3475,40 @@ canvas {
 
 .app-home .celestial-temperament-content .celestial-temperament-lede {
   display: block;
-  font-size: clamp(0.72rem, 1.2vw, 0.82rem);
+  font-size: clamp(0.68rem, 1.05vw, 0.78rem);
   font-weight: 600;
   color: var(--element-text);
   text-shadow: 0 0 10px color-mix(in srgb, var(--element-glow) 50%, transparent);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
   text-align: center;
-  text-wrap: pretty;
-  overflow-wrap: anywhere;
+  text-wrap: balance;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .app-home .celestial-temperament-content p {
   display: block;
-  font-size: clamp(0.7rem, 1.15vw, 0.8rem);
-  line-height: 1.48;
+  font-size: clamp(0.68rem, 1vw, 0.76rem);
+  line-height: 1.45;
   color: rgba(241, 245, 249, 0.94);
   text-shadow: 0 0 8px color-mix(in srgb, var(--element-glow) 35%, transparent);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.45rem;
   text-align: center;
-  text-wrap: pretty;
-  overflow-wrap: anywhere;
+  text-wrap: balance;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .app-home .celestial-temperament-content .celestial-temperament-note {
   display: block;
-  font-size: clamp(0.6rem, 0.95vw, 0.68rem);
+  font-size: clamp(0.56rem, 0.85vw, 0.64rem);
   color: rgba(203, 213, 225, 0.75);
   font-style: italic;
   text-shadow: 0 0 5px color-mix(in srgb, var(--element-glow) 25%, transparent);
   text-align: center;
-  text-wrap: pretty;
-  overflow-wrap: anywhere;
+  text-wrap: balance;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Keep the modal's flex content shrinkable, so long text always scrolls inside instead of being clipped. */
