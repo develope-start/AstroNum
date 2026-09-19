@@ -99,6 +99,7 @@ export default function HomePage() {
   const [selectedElementInfo, setSelectedElementInfo] = useState<keyof typeof TEMPERAMENT_INFO | null>(null);
   const [temperamentInfo, setTemperamentInfo] = useState(TEMPERAMENT_INFO);
   const activeElementInfo = selectedElementInfo ?? hoveredElementInfo;
+  const layoutElementInfo = selectedElementInfo;
 
   useEffect(() => {
     let cancelled = false;
@@ -149,7 +150,7 @@ export default function HomePage() {
         </div>
         <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
           <div
-            className={`celestial-system${activeElementInfo ? ` has-element-info element-info-${activeElementInfo}` : ""}`}
+            className={`celestial-system${layoutElementInfo ? ` has-element-info element-info-${layoutElementInfo}` : ""}`}
             role="group"
             aria-label="12 ზოდიაქოს ასტროლოგიური სარტყელი, მმართველი მნათობები და ცენტრში დედამიწა"
             onClick={(event) => {
@@ -178,15 +179,23 @@ export default function HomePage() {
                     setHoveredElementInfo(null);
                   }
                 }}
+                onClick={() => toggleElementInfo(element.id)}
               >
                 <button
                   type="button"
                   className="celestial-element-hit-area"
                   aria-label={`${element.name} სტიქიის ტემპერამენტის განმარტების ნახვა`}
                   aria-expanded={activeElementInfo === element.id}
-                  onClick={(event) => {
+                  onPointerDown={(event) => {
+                    if (event.pointerType === "mouse" && event.button !== 0) return;
+                    event.preventDefault();
                     event.stopPropagation();
                     toggleElementInfo(element.id);
+                  }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    // Keyboard activation has no pointerdown event; mouse/touch was handled above.
+                    if (event.detail === 0) toggleElementInfo(element.id);
                   }}
                 />
                 <div className="celestial-element-heading">
@@ -208,8 +217,7 @@ export default function HomePage() {
                     {element.planets.map((planet) => <span key={planet.name} title={planet.name}><b>{planet.symbol}</b></span>)}
                   </div>
                 </div>
-                {activeElementInfo === element.id && (
-                  <div className={`celestial-temperament-card celestial-temperament-card-${element.id} celestial-temperament-card-${element.id === "fire" || element.id === "earth" ? "below" : "above"}`} onClick={(event) => event.stopPropagation()}>
+                <div className={`celestial-temperament-card celestial-temperament-card-${element.id} celestial-temperament-card-${element.id === "fire" || element.id === "earth" ? "below" : "above"}${activeElementInfo === element.id ? " is-visible" : ""}${selectedElementInfo === element.id ? " is-pinned" : ""}`} onClick={(event) => event.stopPropagation()}>
                     <button
                       type="button"
                       className="celestial-temperament-close"
@@ -227,8 +235,7 @@ export default function HomePage() {
                     <span className="celestial-temperament-lede">{temperamentInfo[element.id].short}</span>
                     <p>{temperamentInfo[element.id].description}</p>
                     <span className="celestial-temperament-note">ისტორიული ფსიქოლოგიური მოდელი — არა კლინიკური დიაგნოზი.</span>
-                  </div>
-                )}
+                </div>
               </section>
             ))}
             <div className="celestial-orbit celestial-orbit-wide" aria-hidden="true" />

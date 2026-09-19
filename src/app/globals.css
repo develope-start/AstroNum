@@ -3233,3 +3233,63 @@ canvas {
   left: 50% !important;
   transform: translateX(-50%);
 }
+
+/* Hover is the primary interaction. The panel is always mounted, so the browser can reveal it immediately. */
+.app-home .celestial-temperament-card {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  animation: none;
+  transition: opacity 160ms ease, visibility 160ms ease;
+}
+
+.app-home .celestial-element-panel:hover > .celestial-temperament-card,
+.app-home .celestial-element-panel:focus-within > .celestial-temperament-card,
+.app-home .celestial-temperament-card.is-visible {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.app-home .celestial-element-panel:hover > .celestial-temperament-card-below,
+.app-home .celestial-element-panel:focus-within > .celestial-temperament-card-below,
+.app-home .celestial-temperament-card-below.is-visible {
+  animation: elemental-card-drop 220ms ease-out both;
+}
+
+.app-home .celestial-element-panel:hover > .celestial-temperament-card-above,
+.app-home .celestial-element-panel:focus-within > .celestial-temperament-card-above,
+.app-home .celestial-temperament-card-above.is-visible {
+  animation: elemental-card-rise 220ms ease-out both;
+}
+
+@media (max-width: 640px) {
+  /* Hidden cards still exist for instant hover, but must not trigger the expanded mobile layout. */
+  .app-home .hero-orbit-card:has(.celestial-temperament-card) {
+    min-height: clamp(42rem, 145vw, 52rem) !important;
+  }
+
+  .app-home .hero-orbit-card:has(.celestial-temperament-card.is-pinned) {
+    min-height: clamp(49rem, 168vw, 60rem) !important;
+  }
+
+  .app-home .celestial-system:has(.celestial-temperament-card) {
+    inset: 10rem 0 !important;
+  }
+
+  .app-home .celestial-system.element-info-fire,
+  .app-home .celestial-system.element-info-earth {
+    inset: 25rem 0 10rem !important;
+  }
+
+  .app-home .celestial-system.element-info-air,
+  .app-home .celestial-system.element-info-water {
+    inset: 10rem 0 25rem !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-home .hero-orbit-card:has(.celestial-temperament-card.is-pinned) {
+    min-height: 51rem !important;
+  }
+}
