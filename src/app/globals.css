@@ -26,6 +26,31 @@ html {
   color-scheme: dark;
 }
 
+/* Universal Ultra-Thin Transparent Scrollbar System */
+* {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent !important;
+}
+
+::-webkit-scrollbar {
+  width: 2px !important;
+  height: 2px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: none !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+
 body {
   background-color: var(--bg-main);
   color: var(--text-primary);
@@ -3398,26 +3423,26 @@ canvas {
   word-break: break-word;
   overflow-wrap: break-word;
   scrollbar-width: thin !important;
-  scrollbar-color: color-mix(in srgb, var(--element-text) 50%, rgba(255, 255, 255, 0.25)) rgba(0, 0, 0, 0.15) !important;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent !important;
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar {
-  width: 4px !important;
+  width: 2px !important;
+  height: 2px !important;
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.15) !important;
-  border-radius: 999px !important;
+  background: transparent !important;
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar-thumb {
-  border-radius: 999px !important;
-  background: color-mix(in srgb, var(--element-text) 50%, rgba(255, 255, 255, 0.25)) !important;
-  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: none !important;
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--element-text) 80%, white) !important;
+  background: rgba(255, 255, 255, 0.25) !important;
 }
 
 /* Pinned close button at absolute top-right of modal frame - never scrolls away */
@@ -3518,4 +3543,76 @@ canvas {
 /* Keep the modal's flex content shrinkable, so long text always scrolls inside instead of being clipped. */
 .app-home .celestial-temperament-card {
   min-height: 0 !important;
+}
+
+.element-temperament-facts,
+.element-temperament-section,
+.element-temperament-sources {
+  width: 100%;
+  min-width: 0;
+}
+
+.element-temperament-facts p,
+.element-temperament-section p {
+  margin: 0.5rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.element-temperament-facts p:first-child {
+  margin-top: 0;
+}
+
+.element-temperament-section h6,
+.element-temperament-sources h6 {
+  margin: 0.85rem 0 0;
+  color: var(--element-text, #fcd34d);
+  font-size: clamp(0.7rem, 1vw, 0.82rem);
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+  text-shadow: 0 0 0.55rem color-mix(in srgb, var(--element-glow, rgba(245, 158, 11, 0.4)) 42%, transparent);
+}
+
+.element-temperament-sources {
+  margin-top: 0.9rem;
+  border-top: 1px solid color-mix(in srgb, var(--element-text, #fcd34d) 20%, transparent);
+  padding-top: 0.2rem;
+}
+
+.element-temperament-sources ul {
+  display: grid;
+  gap: 0.28rem;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.element-temperament-sources li {
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.element-temperament-sources a {
+  color: color-mix(in srgb, var(--element-text, #fcd34d) 86%, white 14%);
+  font-size: clamp(0.62rem, 0.9vw, 0.74rem);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--element-text, #fcd34d) 42%, transparent);
+  text-underline-offset: 0.12rem;
+  overflow-wrap: anywhere;
+  text-shadow: 0 0 0.35rem color-mix(in srgb, var(--element-glow, rgba(245, 158, 11, 0.35)) 28%, transparent);
+}
+
+.element-temperament-sources a:hover,
+.element-temperament-sources a:focus-visible {
+  color: #ffffff;
+  text-decoration-color: currentColor;
+}
+
+.app-home .celestial-temperament-content strong,
+.app-home .celestial-temperament-content .celestial-temperament-lede,
+.app-home .celestial-temperament-content p,
+.app-home .celestial-temperament-content .celestial-temperament-note {
+  text-wrap: pretty;
+  word-break: normal;
+  overflow-wrap: anywhere;
 }

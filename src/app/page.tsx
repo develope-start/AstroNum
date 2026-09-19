@@ -1,11 +1,13 @@
 "use client";
 
-import { type CSSProperties, useEffect, useState } from "react";
+import { type CSSProperties, useState } from "react";
 import { Activity, ArrowRight, Check, Compass, Heart, Orbit, Sparkles, Sun } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
 import SynastryCalculator from "@/components/SynastryCalculator";
 import TransitCalculator from "@/components/TransitCalculator";
+import ElementTemperamentDetails from "@/components/ElementTemperamentDetails";
+import type { ElementTemperamentId } from "@/lib/elementTemperaments";
 
 type Tab = "natal" | "synastry" | "transit" | "advanced";
 
@@ -66,60 +68,16 @@ const ELEMENT_GROUPS = [
   { id: "water", name: "წყალი", symbol: "▽", signs: [{ name: "კირჩხიბი", symbol: "♋" }, { name: "მორიელი", symbol: "♏" }, { name: "თევზები", symbol: "♓" }], planets: [{ name: "მთვარე", symbol: "☽" }, { name: "პლუტონი", symbol: "♇" }, { name: "ნეპტუნი", symbol: "♆" }] },
 ] as const;
 
-const TEMPERAMENT_INFO = {
-  fire: {
-    temperament: "ქოლერიკული ტემპერამენტი",
-    short: "ენერგიული, მიზანმიმართული და სწრაფი რეაქციის მქონე ხასიათი.",
-    description: "ქოლერიკული ტიპი ხშირად მოქმედებაზეა ორიენტირებული: სწრაფად იღებს გადაწყვეტილებას, ინიციატივას იღებს და მაღალი დინამიკით მოძრაობს. მისი ძლიერი მხარეებია გამბედაობა, ლიდერობა და შედეგზე კონცენტრაცია; გადაჭარბებისას შეიძლება მოუთმენლობა ან რეაქციის სიმწვავე გამოვლინდეს.",
-  },
-  earth: {
-    temperament: "მელანქოლიური ტემპერამენტი",
-    short: "ღრმა, დაკვირვებული და დეტალებზე ორიენტირებული ხასიათი.",
-    description: "მელანქოლიური ტიპი ამჩნევს ნიუანსებს, აფასებს სიღრმესა და სტაბილურობას და გადაწყვეტილებამდე ფიქრს ამჯობინებს. მისი ძლიერი მხარეებია პასუხისმგებლობა, სიფრთხილე და ხარისხზე ზრუნვა; გადაჭარბებისას შეიძლება ზედმეტი თვითკრიტიკა ან ჩაკეტილობა გამოვლინდეს.",
-  },
-  air: {
-    temperament: "სანგვინური ტემპერამენტი",
-    short: "სოციალური, ცოცხალი და ოპტიმისტური ხასიათი.",
-    description: "სანგვინური ტიპი ადამიანებთან მარტივად ერთვება, სწრაფად ითვისებს ახალ შთაბეჭდილებებს და ხშირად ენთუზიაზმით მოქმედებს. მისი ძლიერი მხარეებია კომუნიკაცია, მოქნილობა და შემოქმედებითი იმპულსი; სირთულედ შეიძლება იქცეს ყურადღების სწრაფად გადატანა.",
-  },
-  water: {
-    temperament: "ფლეგმატური ტემპერამენტი",
-    short: "მშვიდი, თანმიმდევრული და ემოციურად გაწონასწორებული ხასიათი.",
-    description: "ფლეგმატური ტიპი სიმშვიდეს, თანმიმდევრობასა და უსაფრთხო რიტმს აფასებს. მას ხშირად შეუძლია მოთმინებით მოსმენა, სტაბილური მხარდაჭერა და კონფლიქტის დამშვიდება; გადაჭარბებისას შესაძლოა ინერცია ან ცვლილებისადმი ნელი რეაქცია გამოჩნდეს.",
-  },
-} as const;
-
 type CelestialTarget = number | "earth" | null;
 
 export default function HomePage() {
   const [tab, setTab] = useState<Tab>("natal");
   const [hoveredCelestial, setHoveredCelestial] = useState<CelestialTarget>(null);
   const [selectedCelestial, setSelectedCelestial] = useState<CelestialTarget>(null);
-  const [hoveredElementInfo, setHoveredElementInfo] = useState<keyof typeof TEMPERAMENT_INFO | null>(null);
-  const [selectedElementInfo, setSelectedElementInfo] = useState<keyof typeof TEMPERAMENT_INFO | null>(null);
-  const [temperamentInfo, setTemperamentInfo] = useState(TEMPERAMENT_INFO);
+  const [hoveredElementInfo, setHoveredElementInfo] = useState<ElementTemperamentId | null>(null);
+  const [selectedElementInfo, setSelectedElementInfo] = useState<ElementTemperamentId | null>(null);
   const activeElementInfo = selectedElementInfo ?? hoveredElementInfo;
   const layoutElementInfo = selectedElementInfo;
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/interpretations/temperaments", { cache: "no-store" })
-      .then(async (response) => (response.ok ? response.json() : null))
-      .then((payload: { entries?: Partial<typeof TEMPERAMENT_INFO> } | null) => {
-        if (cancelled || !payload?.entries) return;
-        setTemperamentInfo((current) => ({
-          fire: { ...current.fire, ...(payload.entries?.fire ?? {}) },
-          earth: { ...current.earth, ...(payload.entries?.earth ?? {}) },
-          air: { ...current.air, ...(payload.entries?.air ?? {}) },
-          water: { ...current.water, ...(payload.entries?.water ?? {}) },
-        }));
-      })
-      .catch(() => undefined);
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
   const activeCelestial = selectedCelestial ?? hoveredCelestial;
   const activePlanetIndex = typeof activeCelestial === "number" ? activeCelestial : null;
@@ -128,7 +86,7 @@ export default function HomePage() {
     : CELESTIAL_PLANET_META[CELESTIAL_CONSTELLATIONS[activePlanetIndex].planet as keyof typeof CELESTIAL_PLANET_META];
   const activeSign = activePlanetIndex === null ? null : ZODIAC_SIGNS[activePlanetIndex];
 
-  const toggleElementInfo = (elementId: keyof typeof TEMPERAMENT_INFO) => {
+  const toggleElementInfo = (elementId: ElementTemperamentId) => {
     setSelectedElementInfo((current) => {
       const isSameElement = current === elementId;
       if (isSameElement) setHoveredElementInfo(null);
@@ -222,11 +180,7 @@ export default function HomePage() {
                       ×
                     </button>
                     <div className="celestial-temperament-content">
-                      <span className="celestial-temperament-kicker">კლასიკური ტემპერამენტების მოდელი</span>
-                      <strong>{temperamentInfo[element.id].temperament}</strong>
-                      <span className="celestial-temperament-lede">{temperamentInfo[element.id].short}</span>
-                      <p>{temperamentInfo[element.id].description}</p>
-                      <span className="celestial-temperament-note">ისტორიული ფსიქოლოგიური მოდელი — არა კლინიკური დიაგნოზი.</span>
+                      <ElementTemperamentDetails element={element.id} />
                     </div>
                 </div>
               </section>
