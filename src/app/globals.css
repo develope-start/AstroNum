@@ -4077,19 +4077,32 @@ canvas {
 
   .app-home .hero-orbit-card {
     min-height: clamp(24rem, 105vw, 34rem) !important;
-    margin: 0.75rem auto 0.75rem !important;
+    margin: 4.6rem auto 4.6rem !important;
     transition: min-height 260ms ease, margin 260ms ease;
   }
 
-  /* Closed state: keep all four elemental frames inside the main instrument. */
+  /* Closed state: each elemental frame sits in its own outer corner and
+     overlaps the main instrument by roughly half its height. */
   .app-home .celestial-element-panel-fire,
   .app-home .celestial-element-panel-earth {
-    top: 0.7rem !important;
+    top: -4.6rem !important;
   }
 
   .app-home .celestial-element-panel-air,
   .app-home .celestial-element-panel-water {
-    bottom: 0.7rem !important;
+    bottom: -4.6rem !important;
+  }
+
+  .app-home .celestial-element-panel-fire,
+  .app-home .celestial-element-panel-air {
+    right: auto !important;
+    left: 0.7rem !important;
+  }
+
+  .app-home .celestial-element-panel-earth,
+  .app-home .celestial-element-panel-water {
+    right: 0.7rem !important;
+    left: auto !important;
   }
 
   /* Top elements open upward and get only the upper breathing room they need. */
