@@ -2,6 +2,7 @@ import { Flame, Mountain, Wind, Droplets, Compass } from "lucide-react";
 import type { WheelPlanet } from "@/components/ChartWheel";
 import ElementTemperamentDetails from "@/components/ElementTemperamentDetails";
 import ElementSynthesisTable from "@/components/ElementSynthesisTable";
+import ElementSources from "@/components/ElementSources";
 import { ELEMENT_TEMPERAMENTS } from "@/lib/elementTemperaments";
 
 const ZODIAC_NAMES = [
@@ -84,6 +85,7 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
       </div>
 
       <ElementSynthesisTable />
+      <ElementSources />
     </div>
   );
 }

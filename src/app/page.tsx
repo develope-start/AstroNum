@@ -6,7 +6,7 @@ import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
 import SynastryCalculator from "@/components/SynastryCalculator";
 import TransitCalculator from "@/components/TransitCalculator";
-import ElementTemperamentDetails from "@/components/ElementTemperamentDetails";
+import ElementTemperamentSummary from "@/components/ElementTemperamentSummary";
 import type { ElementTemperamentId } from "@/lib/elementTemperaments";
 
 type Tab = "natal" | "synastry" | "transit" | "advanced";
@@ -180,7 +180,7 @@ export default function HomePage() {
                       ×
                     </button>
                     <div className="celestial-temperament-content">
-                      <ElementTemperamentDetails element={element.id} />
+                      <ElementTemperamentSummary element={element.id} />
                     </div>
                 </div>
               </section>

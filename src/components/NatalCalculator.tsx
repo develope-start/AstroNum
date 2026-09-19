@@ -6,6 +6,7 @@ import InterpretationText from "./InterpretationText";
 import ChartWheel, { WheelPlanet } from "./ChartWheel";
 import ElementTemperamentDetails from "./ElementTemperamentDetails";
 import ElementSynthesisTable from "./ElementSynthesisTable";
+import ElementSources from "./ElementSources";
 import { ELEMENT_TEMPERAMENTS } from "@/lib/elementTemperaments";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
@@ -300,6 +301,7 @@ export default function NatalCalculator() {
             </div>
           </div>
           <ElementSynthesisTable />
+          <ElementSources />
         </div>
       )}
 

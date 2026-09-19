@@ -1,5 +1,5 @@
 import type { ElementTemperamentId } from "@/lib/elementTemperaments";
-import { ELEMENT_TEMPERAMENTS, TEMPERAMENT_SOURCES } from "@/lib/elementTemperaments";
+import { ELEMENT_TEMPERAMENTS } from "@/lib/elementTemperaments";
 
 export default function ElementTemperamentDetails({
   element,
@@ -39,18 +39,6 @@ export default function ElementTemperamentDetails({
         <p>{guide.negativeAspect}</p>
       </section>
 
-      <section className="element-temperament-sources">
-        <h6>ზოგადი სტიქიების განმარტებები და წყაროები</h6>
-        <ul>
-          {TEMPERAMENT_SOURCES.map((source, index) => (
-            <li key={source.url}>
-              <a href={source.url} target="_blank" rel="noreferrer">
-                {index + 1}. {source.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
     </>
   );
 }
