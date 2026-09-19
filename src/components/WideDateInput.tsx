@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { daysInWideMonth, formatWideDate, isWideDate, MAX_WIDE_YEAR, MIN_WIDE_YEAR, parseWideDate } from "@/lib/astro/wideDate";
 
@@ -25,6 +26,13 @@ function weekdayOf(year: number, month: number, day: number): number {
   return (zeller + 6) % 7;
 }
 
+interface PopupPosition {
+  top: number;
+  left: number;
+  width: number;
+  maxHeight: number;
+}
+
 export interface WideDateInputProps {
   label?: string;
   value: string;
@@ -39,6 +47,7 @@ export default function WideDateInput({ label = "თარიღი", value, onC
   const monthRef = useRef<HTMLInputElement>(null);
   const dayRef = useRef<HTMLInputElement>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
+  const calendarPopupRef = useRef<HTMLDivElement>(null);
   const editingRef = useRef(false);
   const parsed = parseWideDate(value);
   const [yearStr, setYearStr] = useState(() => (parsed ? displayYear(parsed.year) : ""));
@@ -49,6 +58,7 @@ export default function WideDateInput({ label = "თარიღი", value, onC
   const [calendarYear, setCalendarYear] = useState(initialCalendarDate.year);
   const [calendarYearDraft, setCalendarYearDraft] = useState(String(initialCalendarDate.year));
   const [calendarMonth, setCalendarMonth] = useState(initialCalendarDate.month);
+  const [calendarPosition, setCalendarPosition] = useState<PopupPosition | null>(null);
   const isValid = isWideDate(`${yearStr}-${monthStr}-${dayStr}`);
   const isPartial = yearStr === "" || yearStr === "-" || monthStr === "" || monthStr === "0" || dayStr === "" || dayStr === "0";
 
@@ -67,10 +77,57 @@ export default function WideDateInput({ label = "თარიღი", value, onC
   useEffect(() => {
     if (!calendarOpen) return;
     const onPointerDown = (event: PointerEvent) => {
-      if (!calendarRef.current?.contains(event.target as Node)) setCalendarOpen(false);
+      const target = event.target as Node;
+      if (!calendarRef.current?.contains(target) && !calendarPopupRef.current?.contains(target)) setCalendarOpen(false);
     };
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [calendarOpen]);
+
+  useEffect(() => {
+    if (!calendarOpen) {
+      setCalendarPosition(null);
+      return;
+    }
+
+    const updatePosition = () => {
+      const trigger = calendarRef.current;
+      if (!trigger) return;
+      const rect = trigger.getBoundingClientRect();
+      const viewportPadding = 8;
+      const width = Math.min(320, Math.max(0, window.innerWidth - viewportPadding * 2));
+      const popupHeight = calendarPopupRef.current?.getBoundingClientRect().height ?? 390;
+      const spaceBelow = window.innerHeight - rect.bottom - viewportPadding;
+      const spaceAbove = rect.top - viewportPadding;
+      const placeAbove = popupHeight > spaceBelow && spaceAbove > spaceBelow;
+      const top = placeAbove
+        ? Math.max(viewportPadding, rect.top - popupHeight - 8)
+        : Math.min(rect.bottom + 8, Math.max(viewportPadding, window.innerHeight - viewportPadding - 180));
+      const left = Math.min(
+        Math.max(viewportPadding, rect.right - width),
+        Math.max(viewportPadding, window.innerWidth - width - viewportPadding),
+      );
+      const availableHeight = placeAbove
+        ? Math.max(180, rect.top - top - 8)
+        : Math.max(180, window.innerHeight - top - viewportPadding);
+      setCalendarPosition({ top, left, width, maxHeight: availableHeight });
+    };
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      if (window.matchMedia("(max-width: 640px)").matches) {
+        calendarRef.current?.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+      }
+      updatePosition();
+    });
+    const delayedUpdate = window.setTimeout(updatePosition, 220);
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.clearTimeout(delayedUpdate);
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
   }, [calendarOpen]);
 
   function updateParts(year: string, month: string, day: string) {
@@ -216,8 +273,8 @@ export default function WideDateInput({ label = "თარიღი", value, onC
           <Calendar className="h-4 w-4 text-amber-300 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
         </button>
 
-        {calendarOpen && (
-          <div className="absolute right-0 top-full z-[80] mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-amber-400/35 bg-[#0a0422]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.75)] ring-1 ring-purple-300/10 backdrop-blur-xl">
+        {calendarOpen && calendarPosition && typeof document !== "undefined" && createPortal(
+          <div ref={calendarPopupRef} style={{ position: "fixed", top: calendarPosition.top, left: calendarPosition.left, width: calendarPosition.width, maxHeight: calendarPosition.maxHeight, overflowY: "auto", zIndex: 1000 }} className="rounded-2xl border border-amber-400/35 bg-[#0a0422]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.75)] ring-1 ring-purple-300/10 backdrop-blur-xl">
             <div className="mb-3 flex items-center justify-between gap-2">
               <button type="button" onClick={() => moveCalendarMonth(-1)} className="rounded-lg border border-slate-400/20 p-1.5 text-slate-300 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200" aria-label="წინა თვე"><ChevronLeft className="h-4 w-4" /></button>
               <button type="button" onClick={goToToday} className="rounded-lg border border-slate-400/20 bg-slate-300/5 px-2.5 py-1 text-[0.65rem] font-bold text-slate-300 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200">ახლა</button>
@@ -247,7 +304,8 @@ export default function WideDateInput({ label = "თარიღი", value, onC
                 return <button key={day} type="button" onClick={() => selectCalendarDate(calendarYear, calendarMonth, day)} className={`h-8 rounded-lg text-xs font-bold transition ${selected ? "bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.45)]" : "text-slate-200 hover:bg-amber-400/15 hover:text-amber-200"}`}>{String(day).padStart(2, "0")}</button>;
               })}
             </div>
-          </div>
+          </div>,
+          document.body,
         )}
       </div>
     </div>

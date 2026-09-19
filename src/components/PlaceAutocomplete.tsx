@@ -35,7 +35,7 @@ export default function PlaceAutocomplete({
   const [status, setStatus] = useState<"idle" | "ok" | "error">("idle");
   const [mapOpen, setMapOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [coords, setCoords] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [coords, setCoords] = useState<{ top: number; left: number; width: number; maxHeight: number } | null>(null);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -58,10 +58,26 @@ export default function PlaceAutocomplete({
   const updateCoords = () => {
     if (inputRef.current) {
       const rect = inputRef.current.getBoundingClientRect();
+      const viewportPadding = 8;
+      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+      const width = Math.min(rect.width, Math.max(0, window.innerWidth - viewportPadding * 2));
+      const preferredHeight = 260;
+      const spaceBelow = viewportHeight - rect.bottom - viewportPadding;
+      const spaceAbove = rect.top - viewportPadding;
+      const placeAbove = preferredHeight > spaceBelow && spaceAbove > spaceBelow;
+      const maxHeight = Math.max(120, Math.min(preferredHeight, placeAbove ? spaceAbove - 8 : spaceBelow));
+      const top = placeAbove
+        ? Math.max(viewportPadding, rect.top - maxHeight - 6)
+        : Math.min(rect.bottom + 6, Math.max(viewportPadding, viewportHeight - viewportPadding - maxHeight));
+      const left = Math.min(
+        Math.max(viewportPadding, rect.left),
+        Math.max(viewportPadding, window.innerWidth - width - viewportPadding),
+      );
       setCoords({
-        top: rect.bottom + 6,
-        left: rect.left,
-        width: rect.width,
+        top,
+        left,
+        width,
+        maxHeight,
       });
     }
   };
@@ -71,11 +87,21 @@ export default function PlaceAutocomplete({
     updateCoords();
     window.addEventListener("scroll", updateCoords, true);
     window.addEventListener("resize", updateCoords);
+    window.visualViewport?.addEventListener("resize", updateCoords);
     return () => {
       window.removeEventListener("scroll", updateCoords, true);
       window.removeEventListener("resize", updateCoords);
+      window.visualViewport?.removeEventListener("resize", updateCoords);
     };
   }, [open]);
+
+  function keepInputVisible() {
+    if (!window.matchMedia("(max-width: 640px)").matches) return;
+    window.requestAnimationFrame(() => {
+      inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+      window.setTimeout(updateCoords, 220);
+    });
+  }
 
   const localHits: SearchHit[] = GEORGIAN_CITIES.filter((c) =>
     query.trim() ? c.name.toLowerCase().includes(query.trim().toLowerCase()) : true
@@ -212,6 +238,7 @@ export default function PlaceAutocomplete({
             onFocus={() => {
               setOpen(true);
               updateCoords();
+              keepInputVisible();
             }}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -253,7 +280,7 @@ export default function PlaceAutocomplete({
             top: coords.top,
             left: coords.left,
             width: coords.width,
-            maxHeight: "260px",
+            maxHeight: coords.maxHeight,
             zIndex: 999999,
           }}
           className="place-suggestions overflow-y-auto rounded-2xl border-2 border-amber-400 bg-[#0a0422] p-2 shadow-[0_25px_90px_rgba(0,0,0,1)] ring-4 ring-amber-500/30 backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150"

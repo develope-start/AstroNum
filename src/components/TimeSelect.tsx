@@ -1,11 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Clock } from "lucide-react";
 
 interface TimeParts {
   hour: string;
   minute: string;
+}
+
+interface PopupPosition {
+  top: number;
+  left: number;
+  width: number;
+  maxHeight: number;
 }
 
 function parseTime(value: string): TimeParts {
@@ -31,11 +39,13 @@ export default function TimeSelect({
   const hourRef = useRef<HTMLInputElement>(null);
   const minuteRef = useRef<HTMLInputElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
+  const pickerPopupRef = useRef<HTMLDivElement>(null);
   const editingRef = useRef(false);
   const parsed = parseTime(value);
   const [hour, setHour] = useState(parsed.hour);
   const [minute, setMinute] = useState(parsed.minute);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerPosition, setPickerPosition] = useState<PopupPosition | null>(null);
   const [pickerHour, setPickerHour] = useState(() => Number.isInteger(Number(parsed.hour)) && Number(parsed.hour) >= 0 && Number(parsed.hour) <= 23 ? Number(parsed.hour) : new Date().getHours());
   const [pickerMinute, setPickerMinute] = useState(() => Number.isInteger(Number(parsed.minute)) && Number(parsed.minute) >= 0 && Number(parsed.minute) <= 59 ? Number(parsed.minute) : new Date().getMinutes());
 
@@ -49,10 +59,57 @@ export default function TimeSelect({
   useEffect(() => {
     if (!pickerOpen) return;
     const handlePointerDown = (event: PointerEvent) => {
-      if (!pickerRef.current?.contains(event.target as Node)) setPickerOpen(false);
+      const target = event.target as Node;
+      if (!pickerRef.current?.contains(target) && !pickerPopupRef.current?.contains(target)) setPickerOpen(false);
     };
     document.addEventListener("pointerdown", handlePointerDown);
     return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [pickerOpen]);
+
+  useEffect(() => {
+    if (!pickerOpen) {
+      setPickerPosition(null);
+      return;
+    }
+
+    const updatePosition = () => {
+      const trigger = pickerRef.current;
+      if (!trigger) return;
+      const rect = trigger.getBoundingClientRect();
+      const viewportPadding = 8;
+      const width = Math.min(288, Math.max(0, window.innerWidth - viewportPadding * 2));
+      const popupHeight = pickerPopupRef.current?.getBoundingClientRect().height ?? 310;
+      const spaceBelow = window.innerHeight - rect.bottom - viewportPadding;
+      const spaceAbove = rect.top - viewportPadding;
+      const placeAbove = popupHeight > spaceBelow && spaceAbove > spaceBelow;
+      const top = placeAbove
+        ? Math.max(viewportPadding, rect.top - popupHeight - 8)
+        : Math.min(rect.bottom + 8, Math.max(viewportPadding, window.innerHeight - viewportPadding - 180));
+      const left = Math.min(
+        Math.max(viewportPadding, rect.right - width),
+        Math.max(viewportPadding, window.innerWidth - width - viewportPadding),
+      );
+      const availableHeight = placeAbove
+        ? Math.max(180, rect.top - top - 8)
+        : Math.max(180, window.innerHeight - top - viewportPadding);
+      setPickerPosition({ top, left, width, maxHeight: availableHeight });
+    };
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      if (window.matchMedia("(max-width: 640px)").matches) {
+        pickerRef.current?.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+      }
+      updatePosition();
+    });
+    const delayedUpdate = window.setTimeout(updatePosition, 220);
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.clearTimeout(delayedUpdate);
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
   }, [pickerOpen]);
 
   function focusField(event: React.FocusEvent<HTMLInputElement>) {
@@ -183,8 +240,8 @@ export default function TimeSelect({
           <Clock className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
         </button>
 
-        {pickerOpen && (
-          <div className="absolute right-0 top-full z-[80] mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-2xl border border-amber-400/35 bg-[#0a0422]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.75)] ring-1 ring-purple-300/10 backdrop-blur-xl">
+        {pickerOpen && pickerPosition && typeof document !== "undefined" && createPortal(
+          <div ref={pickerPopupRef} style={{ position: "fixed", top: pickerPosition.top, left: pickerPosition.left, width: pickerPosition.width, maxHeight: pickerPosition.maxHeight, overflowY: "auto", zIndex: 1000 }} className="rounded-2xl border border-amber-400/35 bg-[#0a0422]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.75)] ring-1 ring-purple-300/10 backdrop-blur-xl">
             <div className="mb-3 flex items-center justify-between gap-2">
               <span className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-slate-400">24-საათიანი დრო</span>
               <button type="button" onClick={selectCurrentTime} className="rounded-lg border border-slate-400/20 bg-slate-300/5 px-2.5 py-1 text-[0.65rem] font-bold text-slate-300 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200">ახლა</button>
@@ -203,7 +260,8 @@ export default function TimeSelect({
                 </div>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body,
         )}
       </div>
     </div>
