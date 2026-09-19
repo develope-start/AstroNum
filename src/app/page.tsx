@@ -167,7 +167,7 @@ export default function HomePage() {
             {ELEMENT_GROUPS.map((element) => (
               <section
                 key={element.id}
-                className={`celestial-element-panel celestial-element-panel-${element.id}${activeElementInfo === element.id ? " is-info-open" : ""}`}
+                className={`celestial-element-panel celestial-element-panel-${element.id}${selectedElementInfo === element.id ? " is-info-open" : ""}`}
                 aria-label={`${element.name} სტიქია`}
                 data-info-placement={element.id === "fire" || element.id === "earth" ? "below" : "above"}
                 tabIndex={0}
@@ -185,7 +185,7 @@ export default function HomePage() {
                   type="button"
                   className="celestial-element-hit-area"
                   aria-label={`${element.name} სტიქიის ტემპერამენტის განმარტების ნახვა`}
-                  aria-expanded={activeElementInfo === element.id}
+                  aria-expanded={selectedElementInfo === element.id}
                   onPointerDown={(event) => {
                     if (event.pointerType === "mouse" && event.button !== 0) return;
                     event.preventDefault();
@@ -217,7 +217,7 @@ export default function HomePage() {
                     {element.planets.map((planet) => <span key={planet.name} title={planet.name}><b>{planet.symbol}</b></span>)}
                   </div>
                 </div>
-                <div className={`celestial-temperament-card celestial-temperament-card-${element.id} celestial-temperament-card-${element.id === "fire" || element.id === "earth" ? "below" : "above"}${activeElementInfo === element.id ? " is-visible" : ""}${selectedElementInfo === element.id ? " is-pinned" : ""}`} onClick={(event) => event.stopPropagation()}>
+                <div className={`celestial-temperament-card celestial-temperament-card-${element.id} celestial-temperament-card-${element.id === "fire" || element.id === "earth" ? "below" : "above"}${selectedElementInfo === element.id ? " is-visible is-pinned" : ""}`} onClick={(event) => event.stopPropagation()}>
                     <button
                       type="button"
                       className="celestial-temperament-close"

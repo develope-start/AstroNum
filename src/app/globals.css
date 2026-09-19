@@ -1485,66 +1485,51 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
 }
 
 .celestial-element-panel-fire {
-  --element-border: rgba(255, 82, 78, 0.78);
-  --element-text: #ffd5d2;
-  --element-bg: rgba(125, 24, 31, 0.6);
-  --element-glow: rgba(255, 54, 48, 0.78);
+  --element-border: rgba(255, 65, 54, 0.88);
+  --element-text: #ffe5e3;
+  --element-bg: rgba(145, 18, 25, 0.78);
+  --element-glow: rgba(255, 45, 45, 0.88);
 }
 
 .celestial-element-panel-earth {
-  --element-border: rgba(224, 185, 139, 0.68);
-  --element-text: #f0d0aa;
-  --element-bg: rgba(94, 65, 43, 0.58);
-  --element-glow: rgba(213, 154, 94, 0.6);
+  --element-border: rgba(215, 145, 80, 0.85);
+  --element-text: #fdf2e4;
+  --element-bg: rgba(92, 54, 28, 0.76);
+  --element-glow: rgba(210, 130, 55, 0.82);
 }
 
 .celestial-element-panel-air {
-  --element-border: rgba(204, 246, 255, 0.78);
-  --element-text: #effcff;
-  --element-bg: rgba(94, 174, 201, 0.42);
-  --element-glow: rgba(154, 235, 255, 0.72);
+  --element-border: rgba(100, 225, 255, 0.88);
+  --element-text: #e8f9ff;
+  --element-bg: rgba(18, 85, 118, 0.72);
+  --element-glow: rgba(70, 220, 255, 0.88);
 }
 
 .celestial-element-panel-water {
-  --element-border: rgba(91, 145, 224, 0.76);
-  --element-text: #b9d1fa;
-  --element-bg: rgba(20, 55, 117, 0.64);
-  --element-glow: rgba(49, 117, 230, 0.72);
+  --element-border: rgba(60, 125, 245, 0.88);
+  --element-text: #dae7ff;
+  --element-bg: rgba(12, 35, 95, 0.82);
+  --element-glow: rgba(40, 110, 255, 0.88);
 }
 
 .celestial-temperament-card {
   position: absolute;
-  z-index: 50;
-  left: 50%;
-  width: clamp(16rem, 25vw, 22rem);
-  max-height: min(20rem, 36vh);
+  z-index: 1000;
+  width: clamp(15rem, 24vw, 20.5rem);
+  max-height: min(22rem, 38vh);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 1rem 2.55rem 1rem 1rem;
-  border: 1px solid color-mix(in srgb, var(--element-text) 72%, white 28%);
-  border-radius: 1.05rem;
-  color: rgba(244, 247, 255, 0.9);
+  padding: 1.1rem 2.6rem 1.1rem 1.1rem;
+  border: 1.5px solid color-mix(in srgb, var(--element-border) 82%, white 18%);
+  border-radius: 1.15rem;
+  color: rgba(245, 248, 255, 0.95);
   background:
-    linear-gradient(145deg, color-mix(in srgb, var(--element-bg) 86%, white 14%), rgba(8, 12, 25, 0.94)),
-    radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--element-glow) 34%, transparent), transparent 55%);
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.13), 0 24px 58px -28px rgba(0, 0, 0, 0.92), 0 0 34px -12px var(--element-glow);
-  backdrop-filter: blur(18px) saturate(1.18);
-  -webkit-backdrop-filter: blur(18px) saturate(1.18);
-  scrollbar-color: color-mix(in srgb, var(--element-text) 54%, transparent) transparent;
-}
-
-.celestial-element-panel-fire .celestial-temperament-card,
-.celestial-element-panel-earth .celestial-temperament-card {
-  top: calc(100% + 0.75rem);
-  transform: translateX(-50%);
-  animation: elemental-card-drop 220ms ease-out both;
-}
-
-.celestial-element-panel-air .celestial-temperament-card,
-.celestial-element-panel-water .celestial-temperament-card {
-  bottom: calc(100% + 0.75rem);
-  transform: translateX(-50%);
-  animation: elemental-card-rise 220ms ease-out both;
+    linear-gradient(145deg, color-mix(in srgb, var(--element-bg) 94%, black 6%), rgba(6, 9, 20, 0.96)),
+    radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--element-glow) 35%, transparent), transparent 60%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.22), 0 24px 60px -20px rgba(0, 0, 0, 0.95), 0 0 38px -6px var(--element-glow);
+  backdrop-filter: blur(20px) saturate(1.25);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+  scrollbar-color: color-mix(in srgb, var(--element-text) 55%, transparent) transparent;
 }
 
 .celestial-temperament-card::-webkit-scrollbar { width: 0.35rem; }
@@ -2429,10 +2414,10 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   -webkit-backdrop-filter: blur(12px);
 }
 
-.celestial-element-panel-fire { --element-border: rgba(240, 137, 112, 0.42); --element-text: #f4c0ad; --element-bg: rgba(91, 34, 35, 0.48); --element-glow: rgba(239, 111, 91, 0.55); top: 1.1rem; left: 1.1rem; }
-.celestial-element-panel-earth { --element-border: rgba(177, 209, 151, 0.4); --element-text: #d2e2c1; --element-bg: rgba(39, 70, 56, 0.42); --element-glow: rgba(153, 205, 126, 0.46); top: 1.1rem; right: 1.1rem; }
-.celestial-element-panel-air { --element-border: rgba(132, 205, 232, 0.42); --element-text: #b9e8f4; --element-bg: rgba(27, 67, 86, 0.42); --element-glow: rgba(87, 196, 236, 0.5); bottom: 1.1rem; left: 1.1rem; }
-.celestial-element-panel-water { --element-border: rgba(177, 158, 246, 0.44); --element-text: #d5caff; --element-bg: rgba(54, 39, 96, 0.44); --element-glow: rgba(154, 128, 255, 0.52); bottom: 1.1rem; right: 1.1rem; }
+.celestial-element-panel-fire { --element-border: rgba(255, 65, 54, 0.88); --element-text: #ffe5e3; --element-bg: rgba(145, 18, 25, 0.78); --element-glow: rgba(255, 45, 45, 0.88); top: 1.1rem; left: 1.1rem; }
+.celestial-element-panel-earth { --element-border: rgba(215, 145, 80, 0.85); --element-text: #fdf2e4; --element-bg: rgba(92, 54, 28, 0.76); --element-glow: rgba(210, 130, 55, 0.82); top: 1.1rem; right: 1.1rem; }
+.celestial-element-panel-air { --element-border: rgba(100, 225, 255, 0.88); --element-text: #e8f9ff; --element-bg: rgba(18, 85, 118, 0.72); --element-glow: rgba(70, 220, 255, 0.88); bottom: 1.1rem; left: 1.1rem; }
+.celestial-element-panel-water { --element-border: rgba(60, 125, 245, 0.88); --element-text: #dae7ff; --element-bg: rgba(12, 35, 95, 0.82); --element-glow: rgba(40, 110, 255, 0.88); bottom: 1.1rem; right: 1.1rem; }
 
 .celestial-element-heading {
   display: flex;
@@ -3215,56 +3200,66 @@ canvas {
   .app-home .celestial-element-panel-water { bottom: -9.5rem; }
 }
 
-/* Direction is intentional: upper elements open toward the zodiac; lower elements open upward. */
+/* Alignment & Direction: upper elements open downward; lower elements open upward; aligned flush to panel bounds. */
 .app-home .celestial-element-panel[data-info-placement="below"] > .celestial-temperament-card,
 .app-home .celestial-temperament-card-below {
-  top: calc(100% + 0.75rem) !important;
-  right: auto !important;
+  top: calc(100% + 0.6rem) !important;
   bottom: auto !important;
-  left: 50% !important;
-  transform: translateX(-50%);
+  left: 0 !important;
+  right: auto !important;
+  transform: none !important;
+}
+
+.app-home .celestial-element-panel-earth > .celestial-temperament-card,
+.app-home .celestial-element-panel-earth .celestial-temperament-card-below {
+  left: auto !important;
+  right: 0 !important;
 }
 
 .app-home .celestial-element-panel[data-info-placement="above"] > .celestial-temperament-card,
 .app-home .celestial-temperament-card-above {
   top: auto !important;
+  bottom: calc(100% + 0.6rem) !important;
+  left: 0 !important;
   right: auto !important;
-  bottom: calc(100% + 0.75rem) !important;
-  left: 50% !important;
-  transform: translateX(-50%);
+  transform: none !important;
 }
 
-/* Hover is the primary interaction. The panel is always mounted, so the browser can reveal it immediately. */
+.app-home .celestial-element-panel-water > .celestial-temperament-card,
+.app-home .celestial-element-panel-water .celestial-temperament-card-above {
+  left: auto !important;
+  right: 0 !important;
+}
+
+/* Card visibility is governed strictly by CLICK (.is-visible / .is-pinned). HOVER ONLY GLOWS THE PANEL. */
 .app-home .celestial-temperament-card {
-  visibility: hidden;
-  opacity: 0;
-  pointer-events: none;
-  animation: none;
-  transition: opacity 160ms ease, visibility 160ms ease;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: 1000 !important;
 }
 
-.app-home .celestial-element-panel:hover > .celestial-temperament-card,
-.app-home .celestial-element-panel:focus-within > .celestial-temperament-card,
-.app-home .celestial-temperament-card.is-visible {
-  visibility: visible;
-  opacity: 1;
-  pointer-events: auto;
+.app-home .celestial-temperament-card.is-visible,
+.app-home .celestial-temperament-card.is-pinned {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
-.app-home .celestial-element-panel:hover > .celestial-temperament-card-below,
-.app-home .celestial-element-panel:focus-within > .celestial-temperament-card-below,
-.app-home .celestial-temperament-card-below.is-visible {
-  animation: elemental-card-drop 220ms ease-out both;
+.app-home .celestial-element-panel-fire > .celestial-temperament-card.is-visible,
+.app-home .celestial-element-panel-earth > .celestial-temperament-card.is-visible {
+  animation: elemental-card-drop 240ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
 }
 
-.app-home .celestial-element-panel:hover > .celestial-temperament-card-above,
-.app-home .celestial-element-panel:focus-within > .celestial-temperament-card-above,
-.app-home .celestial-temperament-card-above.is-visible {
-  animation: elemental-card-rise 220ms ease-out both;
+.app-home .celestial-element-panel-air > .celestial-temperament-card.is-visible,
+.app-home .celestial-element-panel-water > .celestial-temperament-card.is-visible {
+  animation: elemental-card-rise 240ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
 }
 
 @media (max-width: 640px) {
-  /* Hidden cards still exist for instant hover, but must not trigger the expanded mobile layout. */
+  /* Mobile retains its clean structured flow when pinned. */
   .app-home .hero-orbit-card:has(.celestial-temperament-card) {
     min-height: clamp(42rem, 145vw, 52rem) !important;
   }
@@ -3294,26 +3289,7 @@ canvas {
   }
 }
 
-/* Hard guarantee for the primary interaction: hover/focus reveals the mounted card immediately. */
-.app-home .celestial-temperament-card {
-  display: none !important;
-}
-
-.app-home .celestial-element-panel:hover > .celestial-temperament-card,
-.app-home .celestial-element-panel:focus-within > .celestial-temperament-card,
-.app-home .celestial-temperament-card.is-visible,
-.app-home .celestial-temperament-card.is-pinned {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-}
-
-/* The card opens outside its elemental panel; never clip that content. */
+/* Ensure elemental panel never clips modal and topmost z-index layering */
 .app-home .celestial-element-panel {
   overflow: visible !important;
-}
-
-.app-home .celestial-temperament-card {
-  z-index: 1000 !important;
 }
