@@ -104,6 +104,15 @@ export default function InterpretationText({ text }: { text: string }) {
 
   const { preface, sections } = splitInterpretation(text);
   const orderedSections = [...sections];
+
+  // Keep the percentage synthesis directly below the separate balance/axes
+  // guide that is rendered above this interpretation block.
+  const synthesisIndex = orderedSections.findIndex((section) => section.heading.toLowerCase().includes("სტიქიების პროცენტული სინთეზი"));
+  if (synthesisIndex > 0) {
+    const [synthesisSection] = orderedSections.splice(synthesisIndex, 1);
+    orderedSections.unshift(synthesisSection!);
+  }
+
   const ascendantIndex = orderedSections.findIndex((section) => section.heading.toLowerCase().includes("ასცენდენტი"));
   const characterIndex = orderedSections.findIndex((section) => section.heading.toLowerCase().includes("რუკის ხასიათი"));
 
@@ -113,6 +122,9 @@ export default function InterpretationText({ text }: { text: string }) {
     const [characterSection] = orderedSections.splice(characterIndex, 1);
     orderedSections.splice(ascendantIndex, 0, characterSection!);
   }
+
+  const isFoundationSection = (heading: string) => heading.toLowerCase().includes("გამოთვლისა და ინტერპრეტაციის საფუძველი");
+  const defaultOpenIndex = orderedSections.findIndex((section) => !isFoundationSection(section.heading));
 
   return (
     <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-hidden">
@@ -160,10 +172,9 @@ export default function InterpretationText({ text }: { text: string }) {
           </p>
         ))}
         {orderedSections.map((section, index) => (
-          <InterpretationSectionView key={`${section.heading}-${index}`} section={section} openByDefault={index === 0} />
+          <InterpretationSectionView key={`${section.heading}-${index}`} section={section} openByDefault={index === defaultOpenIndex && !isFoundationSection(section.heading)} />
         ))}
       </div>
     </div>
   );
 }
-
