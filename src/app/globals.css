@@ -4064,7 +4064,9 @@ canvas {
   font-size: clamp(0.82rem, 1.4vw, 1.12rem);
   font-weight: 800;
   line-height: 1.35;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
 }
 
 .interpretation-accordion-chevron {
@@ -4089,6 +4091,209 @@ canvas {
 @media (max-width: 640px) {
   .interpretation-accordion-body {
     padding-left: 0.95rem;
+  }
+}
+
+/* Interpretation reading surface: preserve whole words, keep every column
+   inside its parent, and give mobile text enough size and line-height. */
+.interpretation-content,
+.interpretation-content * {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.interpretation-content {
+  width: 100%;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.interpretation-content .interpretation-paragraph {
+  max-width: 100%;
+  margin: 0;
+  font-size: clamp(0.875rem, 2.2vw, 1rem);
+  line-height: 1.78;
+  overflow-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
+  text-wrap: pretty;
+}
+
+.interpretation-content .interpretation-paragraph strong,
+.interpretation-content .interpretation-accordion-title {
+  overflow-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
+}
+
+.interpretation-content .interpretation-accordion-body {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.interpretation-content .interpretation-accordion-body > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* The element synthesis header has three competing controls on a phone.
+   Give the heading the full readable row, then place ASC below it instead of
+   squeezing every word into a narrow vertical strip. */
+.element-balance-summary {
+  min-width: 0;
+}
+
+.element-balance-heading,
+.element-balance-title,
+.element-balance-actions {
+  min-width: 0;
+}
+
+.element-balance-title {
+  overflow-wrap: normal;
+  word-break: normal;
+  white-space: normal;
+  text-wrap: balance;
+}
+
+.chart-view-panel,
+.admin-calculation-dialog,
+.chart-view-details,
+.admin-calculation-details,
+.chart-view-interpretation,
+.admin-calculation-interpretation,
+.chart-view-wheel,
+.admin-calculation-wheel {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.chart-view-details > p,
+.admin-calculation-details > p {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
+  line-height: 1.55;
+}
+
+.chart-view-details > p > span,
+.admin-calculation-details > p > span {
+  flex: 0 1 auto;
+}
+
+/* The admin workspace has a broad anywhere-wrap rule for IDs and controls.
+   Override it for readable chart content so Georgian words are not split. */
+.admin-calculation-dialog span,
+.admin-calculation-dialog p,
+.admin-calculation-dialog h2,
+.admin-calculation-dialog h3,
+.admin-calculation-dialog button,
+.admin-calculation-dialog .interpretation-accordion-title,
+.chart-view-panel span,
+.chart-view-panel p,
+.chart-view-panel h2,
+.chart-view-panel h3,
+.chart-view-panel button,
+.chart-view-panel .interpretation-accordion-title {
+  overflow-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
+}
+
+@media (max-width: 640px) {
+  .interpretation-content .interpretation-toolbar {
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+
+  .interpretation-content .interpretation-meta {
+    width: 100%;
+    gap: 0.45rem 0.7rem;
+  }
+
+  .interpretation-content .interpretation-copy {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .interpretation-content .interpretation-accordion-summary {
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.75rem 0.8rem;
+  }
+
+  .interpretation-content .interpretation-accordion-title {
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .interpretation-content .interpretation-accordion-chevron {
+    margin-top: 0.2rem;
+  }
+
+  .interpretation-content .interpretation-accordion-body {
+    gap: 0.75rem;
+    padding: 0.7rem 0.85rem 1rem;
+  }
+
+  .element-balance-summary {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "heading chevron"
+      "actions actions";
+    align-items: start;
+    gap: 0.6rem 0.7rem;
+  }
+
+  .element-balance-heading {
+    grid-area: heading;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .element-balance-actions {
+    display: contents !important;
+  }
+
+  .element-balance-ascendant {
+    grid-area: actions;
+    justify-self: start;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+
+  .element-balance-chevron {
+    grid-area: chevron;
+    margin-top: 0.25rem;
+  }
+
+  .element-balance-title {
+    font-size: clamp(0.9rem, 4vw, 1rem);
+    line-height: 1.4;
+  }
+
+  .chart-view-panel {
+    overflow-x: hidden;
+  }
+
+  .admin-calculation-viewer {
+    align-items: flex-start;
+  }
+
+  .admin-calculation-dialog {
+    margin-block: 0.5rem;
+  }
+
+  .chart-view-wheel,
+  .admin-calculation-wheel {
+    padding: 0.55rem;
   }
 }
 

@@ -75,7 +75,7 @@ function InterpretationSectionView({ section, openByDefault }: { section: Interp
       </summary>
       <div className="interpretation-accordion-body">
         {section.blocks.map((block, index) => (
-          <p key={index} className="text-xs sm:text-base leading-relaxed text-slate-200 break-words">
+          <p key={index} className="interpretation-paragraph text-sm sm:text-base leading-relaxed text-slate-200">
             {renderInline(block)}
           </p>
         ))}
@@ -127,10 +127,10 @@ export default function InterpretationText({ text }: { text: string }) {
   const defaultOpenIndex = orderedSections.findIndex((section) => !isFoundationSection(section.heading));
 
   return (
-    <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-hidden">
+    <div className="interpretation-content space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden">
       {/* Header bar with reading metadata & quick actions */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3 border-b border-amber-500/20 pb-3 sm:pb-4 text-xs font-semibold text-slate-300 w-full">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-4 max-w-full">
+      <div className="interpretation-toolbar flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3 border-b border-amber-500/20 pb-3 sm:pb-4 text-xs font-semibold text-slate-300 w-full">
+        <div className="interpretation-meta flex flex-wrap items-center gap-2 sm:gap-4 max-w-full">
           <div className="flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/15 via-purple-500/20 to-amber-500/15 px-3 py-1 sm:px-4 sm:py-1.5 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] max-w-full">
             <BookOpen className="h-3.5 w-3.5 text-amber-400 shrink-0" />
             <span className="text-[0.7rem] sm:text-xs">ასტროლოგიური ინტერპრეტაცია</span>
@@ -148,7 +148,7 @@ export default function InterpretationText({ text }: { text: string }) {
         <button
           onClick={handleCopy}
           type="button"
-          className="flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-[#080418] px-3.5 py-1 sm:px-4 sm:py-1.5 text-[0.7rem] sm:text-xs font-bold text-amber-300 transition-all hover:scale-105 hover:border-amber-400 shrink-0"
+          className="interpretation-copy flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-[#080418] px-3.5 py-1 sm:px-4 sm:py-1.5 text-[0.7rem] sm:text-xs font-bold text-amber-300 transition-all hover:scale-105 hover:border-amber-400 shrink-0"
         >
           {copied ? (
             <>
@@ -165,9 +165,9 @@ export default function InterpretationText({ text }: { text: string }) {
       </div>
 
       {/* Main interpretation blocks */}
-      <div className="space-y-4 sm:space-y-6 leading-relaxed text-slate-100 w-full max-w-full overflow-hidden">
+      <div className="interpretation-body space-y-4 sm:space-y-6 leading-relaxed text-slate-100 w-full max-w-full overflow-x-hidden">
         {preface.map((block, index) => (
-          <p key={`preface-${index}`} className="text-xs sm:text-base leading-relaxed text-slate-200 pl-0.5 sm:pl-1 break-words">
+          <p key={`preface-${index}`} className="interpretation-paragraph text-sm sm:text-base leading-relaxed text-slate-200 pl-0.5 sm:pl-1">
             {renderInline(block)}
           </p>
         ))}

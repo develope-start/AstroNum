@@ -32,28 +32,28 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
       
       {/* 1. Element Percentages & Synthesis Progress Bars: VERY TOP, OPEN BY DEFAULT WITH TOGGLE */}
       <details className="interpretation-accordion border-amber-500/30 bg-purple-950/20" open>
-        <summary className="interpretation-accordion-summary flex-wrap sm:flex-nowrap gap-2 sm:gap-3 p-3 sm:p-4">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
+        <summary className="element-balance-summary interpretation-accordion-summary flex-nowrap gap-2 sm:gap-3 p-3 sm:p-4">
+          <div className="element-balance-heading flex items-center gap-2 min-w-0 flex-1">
             <span className="interpretation-accordion-icon">
               <Compass className="h-4 w-4 text-amber-300 shrink-0" />
             </span>
-            <span className="interpretation-accordion-title text-amber-200 text-xs sm:text-base font-bold text-left">
+            <span className="element-balance-title interpretation-accordion-title text-amber-200 text-xs sm:text-base font-bold text-left">
               სტიქიების პროცენტული სინთეზი & ცის ღერძები
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="element-balance-actions flex items-center gap-2">
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 scrollToAscendantSection();
               }}
-              className="rounded-full border border-purple-400/40 bg-purple-500/20 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[0.7rem] sm:text-xs font-bold text-purple-200 hover:bg-purple-500/40 hover:border-purple-300 hover:scale-105 transition-all cursor-pointer shrink-0"
+              className="element-balance-ascendant rounded-full border border-purple-400/40 bg-purple-500/20 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[0.7rem] sm:text-xs font-bold text-purple-200 hover:bg-purple-500/40 hover:border-purple-300 hover:scale-105 transition-all cursor-pointer shrink-0"
               title="გადადი ასცენდენტის ინტერპრეტაციაზე"
             >
               ASC: {getSignName(ascendant)} ({Math.floor(ascendant % 30)}°)
             </button>
-            <ChevronDown className="interpretation-accordion-chevron h-4 w-4 shrink-0" />
+            <ChevronDown className="element-balance-chevron interpretation-accordion-chevron h-4 w-4 shrink-0" />
           </div>
         </summary>
         <div className="interpretation-accordion-body pt-1 pb-3 px-3 sm:px-4">

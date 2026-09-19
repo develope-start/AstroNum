@@ -66,11 +66,11 @@ export default function AdminCalculationViewer({
 }) {
   const wheel = wheelFromResult(calculation.result);
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-      <div className="relative max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-400/50 bg-[#0d0a18] p-5 shadow-[0_0_35px_rgba(148,163,184,0.28)] sm:p-8">
+    <div className="admin-calculation-viewer fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overscroll-contain bg-black/80 p-2 sm:p-4">
+      <div className="admin-calculation-dialog relative min-w-0 max-h-[calc(100dvh-1rem)] w-full max-w-5xl overflow-y-auto overscroll-contain rounded-2xl border border-slate-400/50 bg-[#0d0a18] p-3 shadow-[0_0_35px_rgba(148,163,184,0.28)] sm:max-h-[92vh] sm:p-8">
         
         {/* Premium Fixed Top-Right Close Button */}
-        <div className="sticky top-0 z-50 flex justify-end float-right -mt-2 -mr-2 sm:-mt-4 sm:-mr-4 mb-2 pointer-events-none">
+        <div className="sticky top-0 z-50 flex justify-end -mt-1 -mr-1 sm:-mt-4 sm:-mr-4 mb-2 pointer-events-none">
           <button
             type="button"
             onClick={onClose}
@@ -92,7 +92,7 @@ export default function AdminCalculationViewer({
           </div>
         </div>
 
-        <div className="mt-5 grid gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-4 text-sm text-slate-200 sm:grid-cols-2">
+        <div className="admin-calculation-details mt-5 grid min-w-0 gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-3 text-sm text-slate-200 sm:grid-cols-2 sm:p-4">
           <p><span className="text-slate-400">რუკის ნომერი:</span> {calculation.mapNumber ?? "—"}</p>
           <p><span className="text-slate-400">პირველი პროფილი:</span> {calculation.name1}</p>
           <p><span className="text-slate-400">დაბადება:</span> {formatWideDateDisplay(calculation.date1)} {calculation.time1}</p>
@@ -105,7 +105,7 @@ export default function AdminCalculationViewer({
         </div>
 
         {wheel && (
-          <div className="mx-auto my-6 max-w-3xl rounded-2xl border border-slate-500/30 bg-slate-500/5 p-3 sm:p-6">
+          <div className="admin-calculation-wheel mx-auto my-6 min-w-0 w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-500/30 bg-slate-500/5 p-2 sm:p-6">
             <ChartWheel ascendant={wheel.ascendant} mc={wheel.mc} cusps={wheel.houseCusps} planets={wheel.planets} size={500} />
           </div>
         )}
@@ -117,7 +117,7 @@ export default function AdminCalculationViewer({
           />
         )}
 
-        <div className="mt-6 border-t border-slate-500/30 pt-5">
+        <div className="admin-calculation-interpretation mt-6 min-w-0 border-t border-slate-500/30 pt-5">
           <h3 className="mb-4 text-lg font-bold text-slate-200">ასტროლოგიური ინტერპრეტაცია</h3>
           {calculation.interpretation ? <InterpretationText text={calculation.interpretation} /> : <p className="text-sm text-slate-400">ამ ჩანაწერისთვის ინტერპრეტაცია ვერ მოიძებნა.</p>}
         </div>

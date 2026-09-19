@@ -455,7 +455,7 @@ export default function DashboardPage() {
 
       {/* Selected Opened Chart View Modal / Card */}
       {selected && (
-        <div id="chart-view" className="glass-panel relative mt-8 rounded-2xl sm:rounded-[28px] p-5 sm:p-8 border-amber-500/30 bg-[#120833]/95 backdrop-blur-2xl shadow-2xl space-y-5 transition-all">
+        <div id="chart-view" className="chart-view-panel glass-panel relative mt-8 min-w-0 rounded-2xl sm:rounded-[28px] p-3.5 sm:p-8 border-amber-500/30 bg-[#120833]/95 backdrop-blur-2xl shadow-2xl space-y-5 transition-all">
           
           {/* Premium Fixed Top-Right Close Button */}
           <div className="sticky top-2 sm:top-4 z-50 flex justify-end float-right -mt-2 -mr-2 sm:-mt-4 sm:-mr-4 mb-2 pointer-events-none">
@@ -473,8 +473,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Header Row */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/20 pb-4">
-            <div>
+          <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 border-b border-amber-500/20 pb-4">
+            <div className="min-w-0">
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 {TYPE_LABEL_KA[selected.type] ?? selected.type}
               </p>
@@ -486,7 +486,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Full chart input details, matching the administrator's chart view */}
-          <div className="grid gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-4 text-sm text-slate-200 sm:grid-cols-2">
+          <div className="chart-view-details grid min-w-0 gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-3 text-sm text-slate-200 sm:grid-cols-2 sm:p-4">
             <p><span className="text-slate-400">რუკის ნომერი:</span> {selected.mapNumber ?? "—"}</p>
             <p><span className="text-slate-400">პირველი პროფილი:</span> {selected.name1}</p>
             <p><span className="text-slate-400">დაბადება:</span> {formatWideDateDisplay(selected.date1)} {selected.time1}</p>
@@ -500,12 +500,12 @@ export default function DashboardPage() {
           </div>
 
           {/* Action Toolbar: Light Moss Green Glow Button (ღია ჭაობისფერი გლოუ) & Copy Button */}
-          <div className="flex flex-wrap items-center gap-3 bg-purple-950/40 p-3 rounded-2xl border border-amber-500/20">
+          <div className="chart-view-actions flex flex-col items-stretch gap-2.5 bg-purple-950/40 p-3 rounded-2xl border border-amber-500/20 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             {/* Light Moss Green Glow Zodiac Wheel Toggle Button */}
             <button
               type="button"
               onClick={() => setShowWheel(!showWheel)}
-              className="group flex items-center gap-2 rounded-full border border-emerald-400/60 bg-gradient-to-r from-emerald-950/80 via-teal-950/60 to-emerald-950/80 px-4 py-2 text-xs sm:text-sm font-bold text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.35)] transition-all hover:scale-105 hover:border-emerald-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] cursor-pointer"
+              className="group flex w-full items-center justify-center gap-2 rounded-full border border-emerald-400/60 bg-gradient-to-r from-emerald-950/80 via-teal-950/60 to-emerald-950/80 px-4 py-2 text-center text-xs sm:w-auto sm:text-sm font-bold text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.35)] transition-all hover:scale-105 hover:border-emerald-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] cursor-pointer"
             >
               <Compass className="h-4 w-4 text-emerald-400 shrink-0 group-hover:rotate-90 transition-transform duration-500" />
               <span className="tracking-wide">✦ ზოდიაქალური წრის ჩვენება</span>
@@ -518,7 +518,7 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={handleCopy}
-              className="flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-purple-950/60 px-4 py-2 text-xs sm:text-sm font-bold text-amber-300 hover:bg-amber-400 hover:text-slate-950 transition-all cursor-pointer"
+              className="flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/40 bg-purple-950/60 px-4 py-2 text-center text-xs sm:w-auto sm:text-sm font-bold text-amber-300 hover:bg-amber-400 hover:text-slate-950 transition-all cursor-pointer"
             >
               {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
               <span>{copied ? "კოპირებულია!" : "ტექსტის კოპირება"}</span>
@@ -527,7 +527,7 @@ export default function DashboardPage() {
 
           {/* Large Zodiac Chart Wheel Display (Visible right before interpretations when toggled) */}
           {showWheel && selected.result && (
-            <div className="glass-panel relative overflow-hidden rounded-2xl sm:rounded-[28px] p-4 sm:p-8 border-amber-500/30 bg-[#0d0626]/95 backdrop-blur-3xl shadow-2xl text-center w-full max-w-2xl sm:max-w-3xl mx-auto my-4 transition-all">
+            <div className="chart-view-wheel glass-panel relative min-w-0 w-full max-w-2xl overflow-hidden rounded-2xl sm:rounded-[28px] p-2.5 sm:max-w-3xl sm:p-8 border-amber-500/30 bg-[#0d0626]/95 backdrop-blur-3xl shadow-2xl text-center mx-auto my-4 transition-all">
               <div className="mb-3 text-center">
                 <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-950/50 px-3 py-1 text-xs font-bold text-emerald-300 mb-1">
                   <Sparkles className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
@@ -555,7 +555,7 @@ export default function DashboardPage() {
           )}
 
           {/* Full Interpretation Text Section */}
-          <div className="pt-2">
+          <div className="chart-view-interpretation min-w-0 pt-2">
             <h3 className="font-display text-lg sm:text-xl font-bold text-amber-300 mb-3 border-b border-amber-500/20 pb-2">
               ასტროლოგიური ინტერპრეტაცია & ანალიზი
             </h3>
