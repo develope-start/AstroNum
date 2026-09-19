@@ -382,8 +382,8 @@ export default function TransitCalculator() {
 
         <div className="glass-panel relative z-10 flex min-w-0 w-full flex-col justify-center space-y-5 overflow-hidden rounded-2xl border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 p-4 text-center shadow-xl backdrop-blur-2xl sm:rounded-[28px] sm:p-7 lg:col-span-5 lg:h-full">
           <div
-            className={`mx-auto w-full max-w-2xl space-y-3 rounded-2xl border border-purple-400/20 bg-purple-950/25 p-3.5 text-left transition-all sm:p-4 ${
-              inputMode === "interval" ? "transit-board-active" : "opacity-[0.45] grayscale"
+            className={`transit-interval-panel mx-auto w-full max-w-2xl space-y-3 rounded-2xl border border-purple-400/20 bg-purple-950/25 p-3.5 text-left transition-all sm:p-4 ${
+              inputMode === "interval" ? "transit-interval-selected" : ""
             }`}
             onPointerDown={() => inputMode !== "interval" && activateMode("interval")}
             aria-disabled={inputMode !== "interval"}
@@ -405,9 +405,7 @@ export default function TransitCalculator() {
           </div>
 
           <div
-            className={`flex w-full flex-col items-center justify-center gap-2.5 rounded-2xl p-1 transition-all ${
-              inputMode === "date" ? "transit-board-active" : "opacity-[0.45] grayscale"
-            }`}
+            className={`transit-date-panel flex w-full flex-col items-center justify-center gap-2.5 rounded-2xl p-3 transition-all sm:p-4 ${inputMode === "date" ? "transit-date-active" : "transit-date-inactive"}`}
             onPointerDown={() => inputMode !== "date" && activateMode("date")}
             aria-disabled={inputMode !== "date"}
           >

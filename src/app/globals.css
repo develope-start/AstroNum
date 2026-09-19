@@ -158,6 +158,44 @@ body {
   animation: transit-board-focus 2.4s ease-in-out infinite;
 }
 
+@keyframes transit-date-focus {
+  0%, 100% {
+    border-color: rgba(245, 158, 11, 0.42);
+    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.06), 0 0 20px rgba(245, 158, 11, 0.1), inset 0 1px rgba(255, 255, 255, 0.045);
+  }
+  50% {
+    border-color: rgba(245, 158, 11, 0.82);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.12), 0 0 32px rgba(245, 158, 11, 0.2), inset 0 1px rgba(255, 255, 255, 0.1);
+  }
+}
+
+.transit-interval-panel {
+  border-color: rgba(167, 139, 250, 0.2) !important;
+  background: rgba(49, 25, 105, 0.16) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.025) !important;
+  filter: saturate(0.82);
+}
+
+.transit-interval-panel.transit-interval-selected {
+  border-color: rgba(167, 139, 250, 0.34) !important;
+  background: rgba(49, 25, 105, 0.22) !important;
+}
+
+.transit-date-panel {
+  border: 1px solid transparent;
+  background: rgba(18, 12, 43, 0.28);
+}
+
+.transit-date-panel.transit-date-active {
+  border-color: rgba(245, 158, 11, 0.58);
+  background: linear-gradient(145deg, rgba(120, 72, 12, 0.22), rgba(45, 22, 78, 0.36));
+  animation: transit-date-focus 2.4s ease-in-out infinite;
+}
+
+.transit-date-panel.transit-date-inactive {
+  opacity: 0.62;
+}
+
 /* Admin workspace: keep long account values, labels and actions inside the viewport. */
 .admin-page {
   width: 100%;
@@ -3499,11 +3537,12 @@ canvas {
 @media (max-width: 640px) {
   .app-home .hero-orbit-card {
     min-height: clamp(38rem, 135vw, 48rem) !important;
-    margin: 12.8rem auto 12.8rem !important;
+    margin: 17rem auto 17rem !important;
   }
 
   .app-home .hero-orbit-card:has(.celestial-temperament-card.is-pinned) {
     min-height: clamp(52rem, 170vw, 62rem) !important;
+    margin: 18.5rem auto 18.5rem !important;
   }
 
   .app-home .celestial-element-panel {
@@ -3511,16 +3550,16 @@ canvas {
     padding: 0.65rem !important;
   }
 
-  /* Shift Fire & Earth UPWARDS by 1.5x panel height (-12.75rem) */
+  /* TOP PANELS (Fire & Earth): Strictly positioned in the clear gap between Nav Header and Hero Orbit Card. Zero intersection! */
   .app-home .celestial-element-panel-fire,
   .app-home .celestial-element-panel-earth {
-    top: -12.75rem !important;
+    top: -8.5rem !important;
   }
 
-  /* Shift Air & Water DOWNWARDS by 1.5x panel height (-12.75rem) */
+  /* BOTTOM PANELS (Air & Water): Strictly positioned in the clear gap between Hero Orbit Card and Workspace Section below. Zero intersection! */
   .app-home .celestial-element-panel-air,
   .app-home .celestial-element-panel-water {
-    bottom: -12.75rem !important;
+    bottom: -8.5rem !important;
   }
 
   /*
