@@ -55,7 +55,7 @@ export default function BirthFields({
             className="w-full rounded-xl sm:rounded-2xl border border-amber-500/25 bg-[#080418] px-3 py-2.5 sm:px-4 sm:py-3 text-center text-xs sm:text-sm font-semibold text-slate-100 outline-none transition-all placeholder:text-slate-500 focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)] focus:ring-2 focus:ring-amber-500/20"
             value={value.name}
             onChange={(e) => onChange({ ...value, name: e.target.value })}
-            placeholder="მაგ. ნინო"
+            placeholder="შეიყვანეთ თქვენი სახელი და გვარი"
           />
         </div>
       </div>
