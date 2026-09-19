@@ -1515,8 +1515,11 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
 .celestial-temperament-card {
   position: absolute;
   z-index: 1000;
-  width: clamp(15rem, 24vw, 20.5rem);
-  max-height: min(22rem, 38vh);
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(14.5rem, 22vw, 18.5rem);
+  height: 150%;
+  min-height: 150%;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 1.1rem 2.6rem 1.1rem 1.1rem;
@@ -3200,35 +3203,27 @@ canvas {
   .app-home .celestial-element-panel-water { bottom: -9.5rem; }
 }
 
-/* Alignment & Direction: upper elements open downward; lower elements open upward; aligned flush to panel bounds. */
+/* Alignment & Direction: centered horizontally on parent panel, covering card + 1.5x height */
 .app-home .celestial-element-panel[data-info-placement="below"] > .celestial-temperament-card,
 .app-home .celestial-temperament-card-below {
-  top: calc(100% + 0.6rem) !important;
+  top: 0 !important;
   bottom: auto !important;
-  left: 0 !important;
+  left: 50% !important;
   right: auto !important;
-  transform: none !important;
-}
-
-.app-home .celestial-element-panel-earth > .celestial-temperament-card,
-.app-home .celestial-element-panel-earth .celestial-temperament-card-below {
-  left: auto !important;
-  right: 0 !important;
+  transform: translateX(-50%) !important;
+  height: 150% !important;
+  min-height: 150% !important;
 }
 
 .app-home .celestial-element-panel[data-info-placement="above"] > .celestial-temperament-card,
 .app-home .celestial-temperament-card-above {
   top: auto !important;
-  bottom: calc(100% + 0.6rem) !important;
-  left: 0 !important;
+  bottom: 0 !important;
+  left: 50% !important;
   right: auto !important;
-  transform: none !important;
-}
-
-.app-home .celestial-element-panel-water > .celestial-temperament-card,
-.app-home .celestial-element-panel-water .celestial-temperament-card-above {
-  left: auto !important;
-  right: 0 !important;
+  transform: translateX(-50%) !important;
+  height: 150% !important;
+  min-height: 150% !important;
 }
 
 /* Card visibility is governed strictly by CLICK (.is-visible / .is-pinned). HOVER ONLY GLOWS THE PANEL. */
