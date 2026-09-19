@@ -4231,7 +4231,7 @@ canvas {
   .app-home .hero-orbit-card {
     box-sizing: border-box !important;
     min-height: clamp(24rem, 105vw, 34rem) !important;
-    margin: 0.5rem auto !important;
+    margin: 8.75rem auto !important;
     padding: 4.5rem 0 !important;
     overflow: visible !important;
     transition: margin 260ms ease, min-height 260ms ease;
@@ -4254,14 +4254,14 @@ canvas {
   /* Closed state: fire/earth are above; air/water are below. */
   .app-home .celestial-element-panel-fire,
   .app-home .celestial-element-panel-earth {
-    top: -5rem !important;
+    top: -13.25rem !important;
     bottom: auto !important;
   }
 
   .app-home .celestial-element-panel-air,
   .app-home .celestial-element-panel-water {
     top: auto !important;
-    bottom: -5rem !important;
+    bottom: -13.25rem !important;
   }
 
   .app-home .celestial-element-panel-fire,
@@ -4279,12 +4279,27 @@ canvas {
   /* Reserve only the side that needs room when a temperament card is open. */
   .app-home .hero-orbit-card:has(.celestial-element-panel-fire.is-info-open),
   .app-home .hero-orbit-card:has(.celestial-element-panel-earth.is-info-open) {
-    margin: 0.5rem auto !important;
+    min-height: clamp(24rem, 105vw, 34rem) !important;
+    margin: 8.75rem auto !important;
   }
 
   .app-home .hero-orbit-card:has(.celestial-element-panel-air.is-info-open),
   .app-home .hero-orbit-card:has(.celestial-element-panel-water.is-info-open) {
-    margin: 0.5rem auto !important;
+    min-height: clamp(24rem, 105vw, 34rem) !important;
+    margin: 8.75rem auto !important;
+  }
+
+  /* Opening a card never moves the element panel itself. */
+  .app-home .hero-orbit-card:has(.celestial-element-panel-fire.is-info-open) .celestial-element-panel-fire,
+  .app-home .hero-orbit-card:has(.celestial-element-panel-earth.is-info-open) .celestial-element-panel-earth {
+    top: -13.25rem !important;
+    bottom: auto !important;
+  }
+
+  .app-home .hero-orbit-card:has(.celestial-element-panel-air.is-info-open) .celestial-element-panel-air,
+  .app-home .hero-orbit-card:has(.celestial-element-panel-water.is-info-open) .celestial-element-panel-water {
+    top: auto !important;
+    bottom: -13.25rem !important;
   }
 
   /* Every temperament card spans the wheel width and remains edge-aligned. */
