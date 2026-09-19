@@ -3293,3 +3293,18 @@ canvas {
     min-height: 51rem !important;
   }
 }
+
+/* Hard guarantee for the primary interaction: hover/focus reveals the mounted card immediately. */
+.app-home .celestial-temperament-card {
+  display: none !important;
+}
+
+.app-home .celestial-element-panel:hover > .celestial-temperament-card,
+.app-home .celestial-element-panel:focus-within > .celestial-temperament-card,
+.app-home .celestial-temperament-card.is-visible,
+.app-home .celestial-temperament-card.is-pinned {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
