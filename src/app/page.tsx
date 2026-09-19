@@ -117,7 +117,18 @@ export default function HomePage() {
           </div>
         </div>
         <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
-          <div className={`celestial-system${activeElementInfo ? " has-element-info" : ""}`} role="group" aria-label="12 ზოდიაქოს ასტროლოგიური სარტყელი, მმართველი მნათობები და ცენტრში დედამიწა">
+          <div
+            className={`celestial-system${activeElementInfo ? " has-element-info" : ""}`}
+            role="group"
+            aria-label="12 ზოდიაქოს ასტროლოგიური სარტყელი, მმართველი მნათობები და ცენტრში დედამიწა"
+            onClick={(event) => {
+              const target = event.target as Element;
+              if (!target.closest("button, .celestial-element-panel, .celestial-info-card")) {
+                setSelectedCelestial(null);
+                setHoveredCelestial(null);
+              }
+            }}
+          >
             <div className="celestial-star-noise" aria-hidden="true" />
             {ELEMENT_GROUPS.map((element) => (
               <section
@@ -221,7 +232,14 @@ export default function HomePage() {
                   onMouseLeave={() => setHoveredCelestial(null)}
                   onFocus={() => setHoveredCelestial(index)}
                   onBlur={() => setHoveredCelestial(null)}
-                  onClick={() => setSelectedCelestial((current) => current === index ? null : index)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setSelectedCelestial((current) => {
+                      const isSamePlanet = current === index;
+                      if (isSamePlanet) setHoveredCelestial(null);
+                      return isSamePlanet ? null : index;
+                    });
+                  }}
                 >
                   <span className="celestial-ruler-zodiac" aria-hidden="true">{ZODIAC_SIGNS[index].sign}</span>
                   <span className="celestial-ruler-planet-symbol" aria-hidden="true">{ZODIAC_SIGNS[index].ruler}</span>
@@ -239,7 +257,14 @@ export default function HomePage() {
               onMouseLeave={() => setHoveredCelestial(null)}
               onFocus={() => setHoveredCelestial("earth")}
               onBlur={() => setHoveredCelestial(null)}
-              onClick={() => setSelectedCelestial((current) => current === "earth" ? null : "earth")}
+              onClick={(event) => {
+                event.stopPropagation();
+                setSelectedCelestial((current) => {
+                  const isSameEarth = current === "earth";
+                  if (isSameEarth) setHoveredCelestial(null);
+                  return isSameEarth ? null : "earth";
+                });
+              }}
             >
               <span className="celestial-earth-clouds" />
             </button>
