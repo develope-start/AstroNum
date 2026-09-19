@@ -181,6 +181,25 @@ model TranslationCache {
   @@index([sourceLanguage, targetLanguage])
 }
 
+// Cached percentage-based synthesis for recurring element distributions.
+// The cache key is deterministic, so identical balances reuse the same text.
+model ElementBalanceInterpretation {
+  id                 String   @id @default(cuid())
+  cacheKey           String   @unique
+  distributionKey    String
+  countsJson         String
+  percentagesJson    String
+  sourceText         String
+  interpretationText String
+  sourceUrl          String?
+  provider           String
+  providerVersion    String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([distributionKey])
+}
+
 // ადმინისტრატორის ურნა — წაშლილი რეგისტრირებული ანგარიშის სრული სნეპშოტი.
 // ელფოსტა უნიკალურია, ამიტომ წაშლილი ანგარიშის იგივე ელფოსტით ხელახლა
 // რეგისტრაცია აღდგენამდე შეუძლებელია.

@@ -4,6 +4,7 @@ import { getActiveSessionFromRequest } from "@/lib/auth";
 import { allocateMapNumber, allocatePublicId, ensureUserPublicId, numberFromPublicId } from "@/lib/publicIds";
 import { generateNatalInterpretation, generateSynastryInterpretation, generateTransitInterpretation } from "@/lib/interpretations/natal";
 import { houseOfLongitude } from "@/lib/astro/positions";
+import { appendElementBalanceInterpretation } from "@/lib/interpretations/elementBalance";
 
 function parseJsonObject(value: string): Record<string, unknown> | null {
   try {
@@ -45,7 +46,7 @@ function chartData(source: Record<string, unknown>, userId: string, fallbackId: 
   };
 }
 
-function buildArchivedInterpretation(archived: Record<string, unknown>, result: unknown): string | null {
+async function buildArchivedInterpretation(archived: Record<string, unknown>, result: unknown): Promise<string | null> {
   const chartSnapshot = archived.chartSnapshot && typeof archived.chartSnapshot === "object" && !Array.isArray(archived.chartSnapshot)
     ? archived.chartSnapshot as Record<string, any>
     : null;
@@ -54,13 +55,13 @@ function buildArchivedInterpretation(archived: Record<string, unknown>, result: 
     : typeof chartSnapshot?.interpretation === "string"
       ? chartSnapshot.interpretation
       : null;
-  if (stored) return stored;
+  if (stored) return archived.type === "NATAL" ? appendElementBalanceInterpretation(stored, result) : stored;
   if (!result || typeof result !== "object") return null;
 
   const value = result as Record<string, any>;
   try {
     if (archived.type === "NATAL" && Array.isArray(value.planets) && Array.isArray(value.houseCusps)) {
-      return generateNatalInterpretation({
+      const interpretation = generateNatalInterpretation({
         planets: value.planets,
         houseCusps: value.houseCusps,
         ascendant: value.ascendant,
@@ -68,6 +69,7 @@ function buildArchivedInterpretation(archived: Record<string, unknown>, result: 
         aspects: value.aspects ?? [],
         houseOfFn: (longitude: number) => houseOfLongitude(longitude, value.houseCusps),
       });
+      return appendElementBalanceInterpretation(interpretation, result);
     }
     if (archived.type === "SYNASTRY") {
       return generateSynastryInterpretation(String(archived.name1 ?? ""), String(archived.name2 ?? ""), value.aspects ?? []);
@@ -113,7 +115,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json({
     ...archived,
     result,
-    interpretation: buildArchivedInterpretation(archived, result),
+    interpretation: await buildArchivedInterpretation(archived, result),
   });
 }
 
@@ -178,6 +180,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   } catch {
     archivedResult = null;
   }
+  const archivedInterpretation = await buildArchivedInterpretation(archived, archivedResult);
 
   await prisma.$transaction(async (tx) => {
     if (!isChartOnly) {
@@ -194,7 +197,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       const source = isSavedChart
         ? chartSnapshot
         : isLegacyChart
-          ? { ...archived, interpretation: buildArchivedInterpretation(archived, archivedResult) ?? "" }
+          ? { ...archived, interpretation: archivedInterpretation ?? "" }
           : archived;
       if (!source) throw new Error("Saved chart snapshot is missing");
       await tx.chart.create({ data: chartData(source, user.id, typeof archived.chartId === "string" ? archived.chartId : deleted.originalId) });

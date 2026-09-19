@@ -4,6 +4,7 @@ import ElementTemperamentDetails from "@/components/ElementTemperamentDetails";
 import ElementSynthesisTable from "@/components/ElementSynthesisTable";
 import ElementSources from "@/components/ElementSources";
 import { ELEMENT_TEMPERAMENTS } from "@/lib/elementTemperaments";
+import { calculateElementBalance as calculateSharedElementBalance } from "@/lib/elementBalance";
 
 const ZODIAC_NAMES = [
   "ვერძი", "კურო", "ტყუპები", "კირჩხიბი", "ლომი", "ქალწული",
@@ -15,31 +16,13 @@ function getSignName(deg: number): string {
   return ZODIAC_NAMES[Math.floor(norm / 30)] || "ვერძი";
 }
 
-function calculateElementBalance(planets: WheelPlanet[]) {
-  let fire = 0, earth = 0, air = 0, water = 0;
-  planets.forEach((p) => {
-    const elem = Math.floor((Math.floor(((p.longitude % 360) + 360) % 360 / 30)) % 4);
-    if (elem === 0) fire++;
-    else if (elem === 1) earth++;
-    else if (elem === 2) air++;
-    else water++;
-  });
-  const total = planets.length || 1;
-  return {
-    fire: Math.round((fire / total) * 100),
-    earth: Math.round((earth / total) * 100),
-    air: Math.round((air / total) * 100),
-    water: Math.round((water / total) * 100),
-  };
-}
-
 export default function ElementBalanceGuide({ planets, ascendant }: { planets: WheelPlanet[]; ascendant: number }) {
-  const elements = calculateElementBalance(planets);
+  const elements = calculateSharedElementBalance(planets);
   const bars = [
-    { id: "fire", label: "ცეცხლი", value: elements.fire, icon: Flame, iconClass: "text-rose-400", textClass: "text-rose-300", borderClass: "border-rose-500/30", bgClass: "bg-rose-950/30", gradient: "from-rose-500 to-red-600" },
-    { id: "earth", label: "მიწა", value: elements.earth, icon: Mountain, iconClass: "text-amber-500", textClass: "text-amber-300", borderClass: "border-amber-600/30", bgClass: "bg-amber-950/35", gradient: "from-amber-600 to-yellow-800" },
-    { id: "air", label: "ჰაერი", value: elements.air, icon: Wind, iconClass: "text-sky-300", textClass: "text-sky-200", borderClass: "border-sky-400/30", bgClass: "bg-sky-950/30", gradient: "from-sky-400 to-cyan-300" },
-    { id: "water", label: "წყალი", value: elements.water, icon: Droplets, iconClass: "text-blue-400", textClass: "text-blue-300", borderClass: "border-blue-600/30", bgClass: "bg-blue-950/40", gradient: "from-blue-600 to-indigo-900" },
+    { id: "fire", label: "ცეცხლი", value: elements.percentages.fire, icon: Flame, iconClass: "text-rose-400", textClass: "text-rose-300", borderClass: "border-rose-500/30", bgClass: "bg-rose-950/30", gradient: "from-rose-500 to-red-600" },
+    { id: "earth", label: "მიწა", value: elements.percentages.earth, icon: Mountain, iconClass: "text-amber-500", textClass: "text-amber-300", borderClass: "border-amber-600/30", bgClass: "bg-amber-950/35", gradient: "from-amber-600 to-yellow-800" },
+    { id: "air", label: "ჰაერი", value: elements.percentages.air, icon: Wind, iconClass: "text-sky-300", textClass: "text-sky-200", borderClass: "border-sky-400/30", bgClass: "bg-sky-950/30", gradient: "from-sky-400 to-cyan-300" },
+    { id: "water", label: "წყალი", value: elements.percentages.water, icon: Droplets, iconClass: "text-blue-400", textClass: "text-blue-300", borderClass: "border-blue-600/30", bgClass: "bg-blue-950/40", gradient: "from-blue-600 to-indigo-900" },
   ];
 
   return (

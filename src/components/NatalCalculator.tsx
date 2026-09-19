@@ -8,6 +8,7 @@ import ElementTemperamentDetails from "./ElementTemperamentDetails";
 import ElementSynthesisTable from "./ElementSynthesisTable";
 import ElementSources from "./ElementSources";
 import { ELEMENT_TEMPERAMENTS } from "@/lib/elementTemperaments";
+import { calculateElementBalance as calculateSharedElementBalance } from "@/lib/elementBalance";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
 import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
@@ -40,25 +41,6 @@ const ZODIAC_SIGNS = [
 function getSignName(deg: number): string {
   const idx = Math.floor(((deg % 360) + 360) % 360 / 30);
   return ZODIAC_SIGNS[idx] || "";
-}
-
-function calculateElementBalance(planets: WheelPlanet[]) {
-  let fire = 0, earth = 0, air = 0, water = 0;
-  planets.forEach((p) => {
-    const signIdx = Math.floor(((p.longitude % 360) + 360) % 360 / 30);
-    const elem = signIdx % 4;
-    if (elem === 0) fire++;
-    else if (elem === 1) earth++;
-    else if (elem === 2) air++;
-    else if (elem === 3) water++;
-  });
-  const total = planets.length || 1;
-  return {
-    fire: Math.round((fire / total) * 100),
-    earth: Math.round((earth / total) * 100),
-    air: Math.round((air / total) * 100),
-    water: Math.round((water / total) * 100),
-  };
 }
 
 const ELEMENT_GUIDES = Object.values(ELEMENT_TEMPERAMENTS);
@@ -146,7 +128,7 @@ export default function NatalCalculator() {
     }
   }
 
-  const elements = wheel ? calculateElementBalance(wheel.planets) : null;
+  const elements = wheel ? calculateSharedElementBalance(wheel.planets) : null;
   const sunPlanet = wheel?.planets.find(p => p.name === "Sun");
   const moonPlanet = wheel?.planets.find(p => p.name === "Moon");
 
@@ -247,40 +229,40 @@ export default function NatalCalculator() {
             <div className="rounded-xl border border-rose-500/30 bg-rose-950/30 p-2.5 sm:p-3 space-y-1.5 text-center">
               <div className="flex justify-between font-bold text-rose-300 text-[0.7rem] sm:text-xs">
                 <span className="flex items-center gap-1"><Flame className="h-3 w-3 text-rose-400" /> ცეცხლი</span>
-                <span>{elements.fire}%</span>
+                <span>{elements.percentages.fire}%</span>
               </div>
               <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-rose-500 to-red-600" style={{ width: `${elements.fire}%` }} />
+                <div className="infographic-bar-fill bg-gradient-to-r from-rose-500 to-red-600" style={{ width: `${elements.percentages.fire}%` }} />
               </div>
             </div>
 
             <div className="rounded-xl border border-amber-600/30 bg-amber-950/35 p-2.5 sm:p-3 space-y-1.5 text-center">
               <div className="flex justify-between font-bold text-amber-300 text-[0.7rem] sm:text-xs">
                 <span className="flex items-center gap-1"><Mountain className="h-3 w-3 text-amber-500" /> მიწა</span>
-                <span>{elements.earth}%</span>
+                <span>{elements.percentages.earth}%</span>
               </div>
               <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-amber-600 to-yellow-800" style={{ width: `${elements.earth}%` }} />
+                <div className="infographic-bar-fill bg-gradient-to-r from-amber-600 to-yellow-800" style={{ width: `${elements.percentages.earth}%` }} />
               </div>
             </div>
 
             <div className="rounded-xl border border-sky-400/30 bg-sky-950/30 p-2.5 sm:p-3 space-y-1.5 text-center">
               <div className="flex justify-between font-bold text-sky-200 text-[0.7rem] sm:text-xs">
                 <span className="flex items-center gap-1"><Wind className="h-3 w-3 text-sky-300" /> ჰაერი</span>
-                <span>{elements.air}%</span>
+                <span>{elements.percentages.air}%</span>
               </div>
               <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-sky-400 to-cyan-300" style={{ width: `${elements.air}%` }} />
+                <div className="infographic-bar-fill bg-gradient-to-r from-sky-400 to-cyan-300" style={{ width: `${elements.percentages.air}%` }} />
               </div>
             </div>
 
             <div className="rounded-xl border border-blue-600/30 bg-blue-950/40 p-2.5 sm:p-3 space-y-1.5 text-center">
               <div className="flex justify-between font-bold text-blue-300 text-[0.7rem] sm:text-xs">
                 <span className="flex items-center gap-1"><Droplets className="h-3 w-3 text-blue-400" /> წყალი</span>
-                <span>{elements.water}%</span>
+                <span>{elements.percentages.water}%</span>
               </div>
               <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-blue-600 to-indigo-900" style={{ width: `${elements.water}%` }} />
+                <div className="infographic-bar-fill bg-gradient-to-r from-blue-600 to-indigo-900" style={{ width: `${elements.percentages.water}%` }} />
               </div>
             </div>
           </div>

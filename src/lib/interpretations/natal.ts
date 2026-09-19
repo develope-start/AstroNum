@@ -5,6 +5,7 @@ import { aspectLibraryInsight, dedupeInsights, natalLibraryInsights } from "./li
 import type { SecondaryProgressionResult } from "@/lib/astro/progressions";
 import type { AngularityResult, DeclinationContact, DignityResult, FixedStarContact } from "@/lib/astro/advanced";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
+import { calculateElementBalance, ELEMENT_IDS } from "@/lib/elementBalance";
 
 const PLANET_MEANING_KA: Record<string, string> = {
   Sun: "იდენტობა და ნებისყოფა",
@@ -159,8 +160,9 @@ const MODALITY_MEANING_KA: Record<string, string> = {
 };
 
 function chartSignature(planets: PlanetPosition[]): string {
-    const core = planets.filter((p) => p.name !== "TrueNode" && p.name !== "MeanNode");
-  const elementCount = [0, 0, 0, 0];
+  const core = planets.filter((p) => p.name !== "TrueNode" && p.name !== "MeanNode");
+  const balance = calculateElementBalance(core);
+  const elementCount = ELEMENT_IDS.map((id) => balance.counts[id]);
   const modalityCount = [0, 0, 0];
   for (const p of core) {
     const { signIndex } = eclipticToSign(p.longitude);
@@ -172,7 +174,7 @@ function chartSignature(planets: PlanetPosition[]): string {
   const topElement = ELEMENTS_KA[topElementIdx];
   const topModality = MODALITIES_KA[topModalityIdx];
 
-  const elementLine = ELEMENTS_KA.map((e, i) => `${e} — ${elementCount[i]}`).join(", ");
+  const elementLine = ELEMENTS_KA.map((e, i) => `${e} — ${elementCount[i]} (${balance.percentages[ELEMENT_IDS[i]]}%)`).join(", ");
   const modalityLine = MODALITIES_KA.map((m, i) => `${m} — ${modalityCount[i]}`).join(", ");
 
   return [

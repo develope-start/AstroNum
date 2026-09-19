@@ -7,7 +7,7 @@ import NatalCalculator from "@/components/NatalCalculator";
 import SynastryCalculator from "@/components/SynastryCalculator";
 import TransitCalculator from "@/components/TransitCalculator";
 import ElementTemperamentSummary from "@/components/ElementTemperamentSummary";
-import type { ElementTemperamentId } from "@/lib/elementTemperaments";
+import { ELEMENT_TEMPERAMENTS, type ElementTemperamentId } from "@/lib/elementTemperaments";
 
 type Tab = "natal" | "synastry" | "transit" | "advanced";
 
@@ -62,10 +62,10 @@ const CELESTIAL_PLANET_META = {
 } as const;
 
 const ELEMENT_GROUPS = [
-  { id: "fire", name: "ცეცხლი", symbol: "△", signs: [{ name: "ვერძი", symbol: "♈" }, { name: "ლომი", symbol: "♌" }, { name: "მშვილდოსანი", symbol: "♐" }], planets: [{ name: "მარსი", symbol: "♂" }, { name: "მზე", symbol: "☉" }, { name: "იუპიტერი", symbol: "♃" }] },
-  { id: "earth", name: "მიწა", symbol: "◇", signs: [{ name: "კურო", symbol: "♉" }, { name: "ქალწული", symbol: "♍" }, { name: "თხის რქა", symbol: "♑" }], planets: [{ name: "ვენერა", symbol: "♀" }, { name: "მერკური", symbol: "☿" }, { name: "სატურნი", symbol: "♄" }] },
-  { id: "air", name: "ჰაერი", symbol: "⌁", signs: [{ name: "ტყუპები", symbol: "♊" }, { name: "სასწორი", symbol: "♎" }, { name: "მერწყული", symbol: "♒" }], planets: [{ name: "მერკური", symbol: "☿" }, { name: "ვენერა", symbol: "♀" }, { name: "ურანი", symbol: "♅" }] },
-  { id: "water", name: "წყალი", symbol: "▽", signs: [{ name: "კირჩხიბი", symbol: "♋" }, { name: "მორიელი", symbol: "♏" }, { name: "თევზები", symbol: "♓" }], planets: [{ name: "მთვარე", symbol: "☽" }, { name: "პლუტონი", symbol: "♇" }, { name: "ნეპტუნი", symbol: "♆" }] },
+  { id: "fire", name: "ცეცხლი", symbol: ELEMENT_TEMPERAMENTS.fire.symbol, signs: [{ name: "ვერძი", symbol: "♈" }, { name: "ლომი", symbol: "♌" }, { name: "მშვილდოსანი", symbol: "♐" }], planets: [{ name: "მარსი", symbol: "♂" }, { name: "მზე", symbol: "☉" }, { name: "იუპიტერი", symbol: "♃" }] },
+  { id: "earth", name: "მიწა", symbol: ELEMENT_TEMPERAMENTS.earth.symbol, signs: [{ name: "კურო", symbol: "♉" }, { name: "ქალწული", symbol: "♍" }, { name: "თხის რქა", symbol: "♑" }], planets: [{ name: "ვენერა", symbol: "♀" }, { name: "მერკური", symbol: "☿" }, { name: "სატურნი", symbol: "♄" }] },
+  { id: "air", name: "ჰაერი", symbol: ELEMENT_TEMPERAMENTS.air.symbol, signs: [{ name: "ტყუპები", symbol: "♊" }, { name: "სასწორი", symbol: "♎" }, { name: "მერწყული", symbol: "♒" }], planets: [{ name: "მერკური", symbol: "☿" }, { name: "ვენერა", symbol: "♀" }, { name: "ურანი", symbol: "♅" }] },
+  { id: "water", name: "წყალი", symbol: ELEMENT_TEMPERAMENTS.water.symbol, signs: [{ name: "კირჩხიბი", symbol: "♋" }, { name: "მორიელი", symbol: "♏" }, { name: "თევზები", symbol: "♓" }], planets: [{ name: "მთვარე", symbol: "☽" }, { name: "პლუტონი", symbol: "♇" }, { name: "ნეპტუნი", symbol: "♆" }] },
 ] as const;
 
 type CelestialTarget = number | "earth" | null;

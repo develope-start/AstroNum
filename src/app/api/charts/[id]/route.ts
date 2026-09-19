@@ -5,6 +5,7 @@ import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect"
 import { generateNatalInterpretation, generateSynastryInterpretation, generateTransitInterpretation } from "@/lib/interpretations/natal";
 import { houseOfLongitude } from "@/lib/astro/positions";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
+import { appendElementBalanceInterpretation } from "@/lib/interpretations/elementBalance";
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getActiveSessionFromRequest(req);
@@ -44,6 +45,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     } catch {
       interpretation = null;
     }
+  }
+  if (chart.type === "NATAL") {
+    interpretation = await appendElementBalanceInterpretation(interpretation, result);
   }
 
   return NextResponse.json({ ...chart, result, interpretation });

@@ -3,9 +3,12 @@ import type { LibraryInsight } from "./library";
 import { localizeInterpretation } from "./translation";
 
 export interface LibraryMatchContext {
-  chartType: "NATAL" | "SYNASTRY" | "TRANSIT";
+  chartType: "NATAL" | "SYNASTRY" | "TRANSIT" | "ELEMENT_TEMPERAMENT";
   planets?: Array<{ name: string; sign?: string; house?: number }>;
   aspects?: Array<{ a: string; b: string; aspect: string }>;
+  elements?: Record<string, number>;
+  requireElementTag?: boolean;
+  includeNativeLanguage?: boolean;
 }
 
 /** Persist only curated/original entries; failure must never block a chart. */
@@ -39,6 +42,8 @@ export async function persistLibraryEntries(entries: LibraryInsight[]): Promise<
 }
 
 function matchesTags(tags: Record<string, unknown>, context: LibraryMatchContext): boolean {
+  if (context.requireElementTag && typeof tags.element !== "string") return false;
+  if (typeof tags.element === "string" && (!context.elements || !(tags.element in context.elements))) return false;
   if (typeof tags.planet === "string" && !context.planets?.some((planet) => planet.name === tags.planet)) return false;
   if (typeof tags.sign === "string" && !context.planets?.some((planet) => planet.sign === tags.sign)) return false;
   if (typeof tags.house === "number" && !context.planets?.some((planet) => planet.house === tags.house)) return false;
@@ -52,7 +57,7 @@ function matchesTags(tags: Record<string, unknown>, context: LibraryMatchContext
 export async function translatedExternalLibraryEntries(context: LibraryMatchContext): Promise<string[]> {
   try {
     const rows = await prisma.interpretationLibraryEntry.findMany({
-      where: { chartType: context.chartType, active: true, language: { not: "ka" } },
+      where: { chartType: context.chartType, active: true, language: context.includeNativeLanguage ? undefined : { not: "ka" } },
       orderBy: { entryKey: "asc" },
       take: 80,
     });

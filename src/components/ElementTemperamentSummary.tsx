@@ -7,7 +7,7 @@ export default function ElementTemperamentSummary({ element }: { element: Elemen
   return (
     <>
       <span className="celestial-temperament-kicker">კლასიკური ტემპერამენტების მოდელი</span>
-      <strong>{guide.temperament}</strong>
+      <strong>{guide.icon} {guide.temperament}</strong>
       <span className="celestial-temperament-lede">{guide.short}</span>
       <p>{guide.description}</p>
       <span className="celestial-temperament-note">ისტორიული ფსიქოლოგიური მოდელი — არა კლინიკური დიაგნოზი.</span>

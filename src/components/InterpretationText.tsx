@@ -17,6 +17,52 @@ function renderInline(text: string) {
   });
 }
 
+type InterpretationSection = {
+  heading: string;
+  blocks: string[];
+};
+
+function splitInterpretation(text: string) {
+  const sections: InterpretationSection[] = [];
+  const preface: string[] = [];
+  let current: InterpretationSection | null = null;
+
+  for (const block of text.split(/\n\n+/).map((item) => item.trim()).filter(Boolean)) {
+    const heading = block.match(/^#{2,3}\s+(.+)$/)?.[1];
+    if (heading) {
+      current = { heading, blocks: [] };
+      sections.push(current);
+    } else if (current) {
+      current.blocks.push(block);
+    } else {
+      preface.push(block);
+    }
+  }
+
+  return { preface, sections };
+}
+
+function InterpretationSectionView({ section, openByDefault }: { section: InterpretationSection; openByDefault: boolean }) {
+  const [open, setOpen] = useState(openByDefault);
+
+  return (
+    <details open={open} onToggle={(event) => setOpen(event.currentTarget.open)} className="interpretation-accordion">
+      <summary className="interpretation-accordion-summary">
+        <span className="interpretation-accordion-icon"><Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-300" /></span>
+        <span className="interpretation-accordion-title">{section.heading}</span>
+        <span className="interpretation-accordion-chevron" aria-hidden="true">⌄</span>
+      </summary>
+      <div className="interpretation-accordion-body">
+        {section.blocks.map((block, index) => (
+          <p key={index} className="text-xs sm:text-base leading-relaxed text-slate-200 break-words">
+            {renderInline(block)}
+          </p>
+        ))}
+      </div>
+    </details>
+  );
+}
+
 export default function InterpretationText({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -35,7 +81,7 @@ export default function InterpretationText({ text }: { text: string }) {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const blocks = text.split(/\n\n+/);
+  const { preface, sections } = splitInterpretation(text);
 
   return (
     <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-hidden">
@@ -77,31 +123,17 @@ export default function InterpretationText({ text }: { text: string }) {
 
       {/* Main interpretation blocks */}
       <div className="space-y-4 sm:space-y-6 leading-relaxed text-slate-100 w-full max-w-full overflow-hidden">
-        {blocks.map((block, i) => {
-          if (block.startsWith("## ")) {
-            return (
-              <div key={i} className="pt-2 sm:pt-3 w-full">
-                <div className="flex items-center gap-2.5 sm:gap-3 rounded-xl sm:rounded-2xl border border-amber-400/30 bg-gradient-to-r from-purple-950/60 via-amber-950/40 to-purple-950/60 px-3.5 py-2.5 sm:px-5 sm:py-3.5 shadow-md w-full max-w-full">
-                  <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl border border-amber-400/40 bg-amber-500/20 text-amber-300 shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-                    <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-300 animate-pulse" />
-                  </div>
-                  <h3 className="font-display text-base sm:text-xl font-bold text-amber-300 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)] break-words">
-                    {block.replace(/^##\s*/, "")}
-                  </h3>
-                </div>
-              </div>
-            );
-          }
-          return (
-            <p key={i} className="text-xs sm:text-base leading-relaxed text-slate-200 pl-0.5 sm:pl-1 break-words">
-              {renderInline(block)}
-            </p>
-          );
-        })}
+        {preface.map((block, index) => (
+          <p key={`preface-${index}`} className="text-xs sm:text-base leading-relaxed text-slate-200 pl-0.5 sm:pl-1 break-words">
+            {renderInline(block)}
+          </p>
+        ))}
+        {sections.map((section, index) => (
+          <InterpretationSectionView key={`${section.heading}-${index}`} section={section} openByDefault={index === 0} />
+        ))}
       </div>
     </div>
   );
 }
-
 
 
