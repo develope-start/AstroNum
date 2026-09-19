@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { readApiResponse } from "@/lib/apiResponse";
+import { X } from "lucide-react";
 import PasswordField from "@/components/PasswordField";
 
 export default function CabinetSettingsPage() {
@@ -211,11 +212,11 @@ export default function CabinetSettingsPage() {
             <button
               onClick={() => setShowDeleteModal(false)}
               type="button"
-              className="sticky top-1 right-1 z-50 float-right mb-2 flex items-center gap-1.5 rounded-full border border-rose-500/70 bg-gradient-to-r from-rose-950/95 via-red-950/95 to-rose-950/95 px-3 py-1.5 text-xs font-black text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.6)] transition-all hover:scale-105 hover:border-rose-400 hover:text-white hover:shadow-[0_0_20px_rgba(244,63,94,0.9)] active:scale-95"
+              className="sticky top-1 right-1 z-50 float-right mb-2 group inline-flex items-center gap-1.5 rounded-full border border-violet-400/30 bg-gradient-to-r from-slate-900/95 via-[#181c38]/95 to-slate-900/95 px-3.5 py-1.5 text-xs font-bold text-slate-200 shadow-[0_8px_20px_-6px_rgba(99,102,241,0.35)] backdrop-blur-xl transition-all hover:scale-105 hover:border-violet-300/70 hover:text-white hover:shadow-[0_0_24px_rgba(129,140,248,0.55)] active:scale-95 cursor-pointer"
               title="დახურვა"
             >
-              <span className="text-sm leading-none text-red-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.9)]">✕</span>
-              <span className="tracking-tight">დახურვა</span>
+              <X className="h-3.5 w-3.5 text-violet-300 group-hover:text-white transition-colors shrink-0" />
+              <span className="font-bold tracking-wider text-slate-200 group-hover:text-white transition-colors">დახურვა</span>
             </button>
             <div className="flex items-center gap-3 text-rose-400 border-b border-rose-500/30 pb-3">
               <span className="text-2xl">⚠️</span>

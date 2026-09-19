@@ -2,6 +2,7 @@
 
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import AdminCalculationViewer, { CalculationViewData } from "@/components/AdminCalculationViewer";
 import DateSelect from "@/components/DateSelect";
 import TimeSelect from "@/components/TimeSelect";
@@ -383,11 +384,11 @@ function RegisteredUserCalculationCard({
               <button
                 type="button"
                 onClick={onResetToLatest}
-                className="flex items-center gap-1.5 rounded-lg border border-rose-400/60 bg-rose-950/60 px-2.5 py-1 text-xs font-bold text-rose-200 shadow-[0_0_12px_rgba(244,63,94,0.4)] transition-all hover:bg-rose-900 hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
+                className="group inline-flex items-center gap-1.5 rounded-full border border-violet-400/30 bg-gradient-to-r from-slate-900/90 via-[#181c38]/90 to-slate-900/90 px-3 py-1 text-xs font-bold text-slate-200 shadow-[0_4px_16px_-4px_rgba(99,102,241,0.3)] backdrop-blur-md transition-all hover:scale-105 hover:border-violet-300/70 hover:text-white hover:shadow-[0_0_20px_rgba(129,140,248,0.5)] active:scale-95 cursor-pointer"
                 title="დახურვა და ბოლო შეყვანილ მონაცემებზე დაბრუნება"
               >
-                <span className="text-sm font-black">✕</span>
-                <span>ბოლო რუკაზე დაბრუნება</span>
+                <X className="h-3.5 w-3.5 text-violet-300 group-hover:text-white transition-colors shrink-0" />
+                <span className="font-bold tracking-wider text-slate-200 group-hover:text-white transition-colors">ბოლო რუკაზე დაბრუნება</span>
               </button>
             )}
           </div>
@@ -532,11 +533,11 @@ function GuestCalculationCard({
               <button
                 type="button"
                 onClick={onResetToLatest}
-                className="flex items-center gap-1.5 rounded-lg border border-rose-400/60 bg-rose-950/60 px-2.5 py-1 text-xs font-bold text-rose-200 shadow-[0_0_12px_rgba(244,63,94,0.4)] transition-all hover:bg-rose-900 hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
+                className="group inline-flex items-center gap-1.5 rounded-full border border-violet-400/30 bg-gradient-to-r from-slate-900/90 via-[#181c38]/90 to-slate-900/90 px-3 py-1 text-xs font-bold text-slate-200 shadow-[0_4px_16px_-4px_rgba(99,102,241,0.3)] backdrop-blur-md transition-all hover:scale-105 hover:border-violet-300/70 hover:text-white hover:shadow-[0_0_20px_rgba(129,140,248,0.5)] active:scale-95 cursor-pointer"
                 title="დახურვა და ბოლო შეყვანილ მონაცემებზე დაბრუნება"
               >
-                <span className="text-sm font-black">✕</span>
-                <span>ბოლო რუკაზე დაბრუნება</span>
+                <X className="h-3.5 w-3.5 text-violet-300 group-hover:text-white transition-colors shrink-0" />
+                <span className="font-bold tracking-wider text-slate-200 group-hover:text-white transition-colors">ბოლო რუკაზე დაბრუნება</span>
               </button>
             )}
           </div>
@@ -1445,11 +1446,11 @@ export default function AdminPage() {
             <button
               onClick={() => setShowDeleteEventsModal(false)}
               type="button"
-              className="sticky top-1 right-1 z-50 float-right mb-2 flex items-center gap-1.5 rounded-full border border-rose-500/70 bg-gradient-to-r from-rose-950/95 via-red-950/95 to-rose-950/95 px-3 py-1.5 text-xs font-black text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.6)] transition-all hover:scale-105 hover:border-rose-400 hover:text-white hover:shadow-[0_0_20px_rgba(244,63,94,0.9)] active:scale-95"
+              className="sticky top-1 right-1 z-50 float-right mb-2 group inline-flex items-center gap-1.5 rounded-full border border-violet-400/30 bg-gradient-to-r from-slate-900/95 via-[#181c38]/95 to-slate-900/95 px-3.5 py-1.5 text-xs font-bold text-slate-200 shadow-[0_8px_20px_-6px_rgba(99,102,241,0.35)] backdrop-blur-xl transition-all hover:scale-105 hover:border-violet-300/70 hover:text-white hover:shadow-[0_0_24px_rgba(129,140,248,0.55)] active:scale-95 cursor-pointer"
               title="დახურვა"
             >
-              <span className="text-sm leading-none text-red-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.9)]">✕</span>
-              <span className="tracking-tight">დახურვა</span>
+              <X className="h-3.5 w-3.5 text-violet-300 group-hover:text-white transition-colors shrink-0" />
+              <span className="font-bold tracking-wider text-slate-200 group-hover:text-white transition-colors">დახურვა</span>
             </button>
             <h3 className="font-display text-xl font-bold text-rose-300">ისტორიის სამუდამოდ წაშლა</h3>
             <p className="text-sm leading-relaxed text-slate-200">

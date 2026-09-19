@@ -5,6 +5,8 @@ import ChartWheel, { WheelPlanet } from "@/components/ChartWheel";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
+import { X } from "lucide-react";
+
 export type CalculationViewData = {
   mapNumber?: string | null;
   type: string;
@@ -67,16 +69,16 @@ export default function AdminCalculationViewer({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
       <div className="relative max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-400/50 bg-[#0d0a18] p-5 shadow-[0_0_35px_rgba(148,163,184,0.28)] sm:p-8">
         
-        {/* Sticky Fixed Top-Right Red Glowing Close Button */}
+        {/* Premium Fixed Top-Right Close Button */}
         <div className="sticky top-0 z-50 flex justify-end float-right -mt-2 -mr-2 sm:-mt-4 sm:-mr-4 mb-2 pointer-events-none">
           <button
             type="button"
             onClick={onClose}
-            className="pointer-events-auto group inline-flex items-center gap-2 rounded-full border border-rose-500/70 bg-gradient-to-r from-rose-950/90 via-red-950/90 to-rose-950/90 px-4 py-2 text-xs sm:text-sm font-black text-rose-300 shadow-[0_0_18px_rgba(244,63,94,0.55)] ring-1 ring-rose-500/40 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-rose-400 hover:bg-gradient-to-r hover:from-rose-900 hover:via-red-800 hover:to-rose-900 hover:shadow-[0_0_30px_rgba(244,63,94,0.95)] active:scale-95 cursor-pointer"
+            className="pointer-events-auto group inline-flex items-center gap-2 rounded-full border border-violet-400/30 bg-gradient-to-r from-slate-900/95 via-[#181c38]/95 to-slate-900/95 px-4 py-2 text-xs font-bold text-slate-200 shadow-[0_8px_24px_-6px_rgba(99,102,241,0.35)] backdrop-blur-xl ring-1 ring-white/10 transition-all duration-250 hover:scale-105 hover:border-violet-300/70 hover:text-white hover:shadow-[0_0_28px_rgba(129,140,248,0.55)] active:scale-95 cursor-pointer"
             title="ფანჯრის დახურვა"
           >
-            <span className="text-base font-black text-rose-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.85)] group-hover:text-white transition-colors">✕</span>
-            <span className="font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-red-200 to-rose-400 group-hover:from-white group-hover:to-rose-100 transition-colors">
+            <X className="h-4 w-4 text-violet-300 group-hover:text-white transition-colors shrink-0" />
+            <span className="font-bold tracking-wider text-slate-200 group-hover:text-white transition-colors">
               დახურვა
             </span>
           </button>

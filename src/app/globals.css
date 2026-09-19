@@ -1587,27 +1587,32 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
 
 .celestial-temperament-close {
   position: absolute;
-  top: 0.55rem;
-  right: 0.55rem;
+  top: 0.65rem;
+  right: 0.65rem;
   display: grid;
-  width: 1.7rem;
-  height: 1.7rem;
+  width: 1.85rem;
+  height: 1.85rem;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--element-text) 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--element-text) 50%, transparent);
   border-radius: 50%;
-  color: color-mix(in srgb, var(--element-text) 78%, white 22%);
-  background: rgba(5, 8, 18, 0.36);
+  color: color-mix(in srgb, var(--element-text) 88%, white 12%);
+  background: rgba(6, 9, 20, 0.65);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 0 12px -2px var(--element-glow);
+  backdrop-filter: blur(8px);
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
   line-height: 1;
-  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .celestial-temperament-close:hover,
 .celestial-temperament-close:focus-visible {
   border-color: var(--element-text);
-  background: color-mix(in srgb, var(--element-text) 18%, rgba(5, 8, 18, 0.7));
-  transform: scale(1.06);
+  color: #ffffff;
+  background: color-mix(in srgb, var(--element-text) 25%, rgba(6, 9, 20, 0.85));
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 0 18px var(--element-glow);
+  transform: scale(1.1);
 }
 
 @keyframes elemental-card-drop {
@@ -3291,4 +3296,118 @@ canvas {
 /* Ensure elemental panel never clips modal and topmost z-index layering */
 .app-home .celestial-element-panel {
   overflow: visible !important;
+}
+
+/* Final elemental interaction pass: concentrated colour, centered type and a quiet scrollbar. */
+.app-home .celestial-element-panel:hover,
+.app-home .celestial-element-panel:focus-within,
+.app-home .celestial-element-panel.is-info-open {
+  border-color: color-mix(in srgb, var(--element-text) 92%, white 8%);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--element-bg) 96%, var(--element-text) 4%), rgba(8, 11, 23, 0.82));
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.18),
+    inset 0 0 2.8rem -0.75rem var(--element-glow),
+    inset 0 0 0 1px color-mix(in srgb, var(--element-glow) 34%, transparent);
+}
+
+.app-home .celestial-element-panel:hover .celestial-element-symbol,
+.app-home .celestial-element-panel:focus-within .celestial-element-symbol,
+.app-home .celestial-element-panel.is-info-open .celestial-element-symbol,
+.app-home .celestial-element-panel:hover .celestial-element-items span,
+.app-home .celestial-element-panel:focus-within .celestial-element-items span,
+.app-home .celestial-element-panel.is-info-open .celestial-element-items span {
+  border-color: color-mix(in srgb, var(--element-text) 94%, white 6%);
+  background: color-mix(in srgb, var(--element-bg) 72%, var(--element-text) 28%);
+  box-shadow: inset 0 0 1.1rem -0.25rem var(--element-glow);
+}
+
+.app-home .celestial-element-panel:hover .celestial-element-heading strong,
+.app-home .celestial-element-panel:focus-within .celestial-element-heading strong,
+.app-home .celestial-element-panel.is-info-open .celestial-element-heading strong,
+.app-home .celestial-element-panel:hover .celestial-element-items b,
+.app-home .celestial-element-panel:focus-within .celestial-element-items b,
+.app-home .celestial-element-panel.is-info-open .celestial-element-items b {
+  text-shadow: 0 0 0.6rem color-mix(in srgb, var(--element-glow) 72%, transparent);
+}
+
+.app-home .celestial-element-panel,
+.app-home .celestial-element-heading,
+.app-home .celestial-element-row,
+.app-home .celestial-element-items {
+  box-sizing: border-box;
+}
+
+.app-home .celestial-element-heading,
+.app-home .celestial-element-row {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.app-home .celestial-element-heading > div {
+  min-width: 0;
+}
+
+.app-home .celestial-element-heading strong,
+.app-home .celestial-element-kicker,
+.app-home .celestial-element-label,
+.app-home .celestial-element-items b {
+  text-shadow: 0 0 0.45rem color-mix(in srgb, var(--element-glow) 34%, transparent);
+}
+
+.app-home .celestial-element-items {
+  flex-wrap: nowrap;
+}
+
+.app-home .celestial-temperament-card {
+  box-sizing: border-box;
+  padding: 1.35rem 1rem 1.05rem !important;
+  text-align: center;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(226, 232, 240, 0.16) transparent;
+}
+
+.app-home .celestial-temperament-card::-webkit-scrollbar {
+  width: 0.22rem;
+}
+
+.app-home .celestial-temperament-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-home .celestial-temperament-card::-webkit-scrollbar-thumb {
+  border: 0;
+  border-radius: 999px;
+  background: rgba(226, 232, 240, 0.16);
+}
+
+.app-home .celestial-temperament-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(226, 232, 240, 0.25);
+}
+
+.app-home .celestial-temperament-card .celestial-temperament-close {
+  top: 0.38rem !important;
+  right: 0.38rem !important;
+  z-index: 5;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-color: color-mix(in srgb, var(--element-text) 58%, transparent);
+  box-shadow: inset 0 0 0.6rem -0.25rem var(--element-glow);
+}
+
+.app-home .celestial-temperament-card .celestial-temperament-kicker,
+.app-home .celestial-temperament-card strong,
+.app-home .celestial-temperament-card .celestial-temperament-lede,
+.app-home .celestial-temperament-card p,
+.app-home .celestial-temperament-card .celestial-temperament-note {
+  display: block;
+  max-width: 100%;
+  padding-inline: 0.35rem;
+  text-align: center;
+  text-wrap: balance;
+  text-shadow: 0 0 0.5rem color-mix(in srgb, var(--element-glow) 22%, transparent);
+}
+
+.app-home .celestial-temperament-card strong {
+  text-shadow: 0 0 0.7rem color-mix(in srgb, var(--element-glow) 58%, transparent);
 }
