@@ -201,7 +201,11 @@ export default function WideDateInput({ label = "თარიღი", value, onC
     }
   }
 
-  function openCalendar() {
+  function toggleCalendar() {
+    if (calendarOpen) {
+      setCalendarOpen(false);
+      return;
+    }
     const current = parseWideDate(value) ?? parseWideDate(today())!;
     setCalendarYear(current.year);
     setCalendarYearDraft(String(current.year));
