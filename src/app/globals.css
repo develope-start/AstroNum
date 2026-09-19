@@ -3084,9 +3084,30 @@ canvas {
   text-align: center;
 }
 
+.app-home .celestial-element-hit-area {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.app-home .celestial-element-hit-area:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--element-text) 82%, white 18%);
+  outline-offset: 0.22rem;
+}
+
 .app-home .celestial-element-heading {
+  position: relative;
+  z-index: 2;
   width: 100%;
   justify-content: center;
+  pointer-events: none;
 }
 
 .app-home .celestial-element-heading > div {
@@ -3094,10 +3115,13 @@ canvas {
 }
 
 .app-home .celestial-element-row {
+  position: relative;
+  z-index: 2;
   width: 100%;
   flex-direction: column;
   justify-content: center;
   gap: 0.28rem;
+  pointer-events: none;
 }
 
 .app-home .celestial-element-label {
@@ -3106,6 +3130,10 @@ canvas {
 
 .app-home .celestial-element-items {
   justify-content: center;
+}
+
+.app-home .celestial-element-panel > .celestial-temperament-card {
+  pointer-events: auto;
 }
 
 @media (max-width: 640px) {

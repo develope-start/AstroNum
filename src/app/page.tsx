@@ -127,6 +127,14 @@ export default function HomePage() {
     : CELESTIAL_PLANET_META[CELESTIAL_CONSTELLATIONS[activePlanetIndex].planet as keyof typeof CELESTIAL_PLANET_META];
   const activeSign = activePlanetIndex === null ? null : ZODIAC_SIGNS[activePlanetIndex];
 
+  const toggleElementInfo = (elementId: keyof typeof TEMPERAMENT_INFO) => {
+    setSelectedElementInfo((current) => {
+      const isSameElement = current === elementId;
+      if (isSameElement) setHoveredElementInfo(null);
+      return isSameElement ? null : elementId;
+    });
+  };
+
   return (
     <div className="app-home">
       <section className="hero-grid">
@@ -169,24 +177,17 @@ export default function HomePage() {
                     setHoveredElementInfo(null);
                   }
                 }}
-                onClick={() => {
-                  setSelectedElementInfo((current) => {
-                    const isSameElement = current === element.id;
-                    if (isSameElement) setHoveredElementInfo(null);
-                    return isSameElement ? null : element.id;
-                  });
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    setSelectedElementInfo((current) => {
-                      const isSameElement = current === element.id;
-                      if (isSameElement) setHoveredElementInfo(null);
-                      return isSameElement ? null : element.id;
-                    });
-                  }
-                }}
               >
+                <button
+                  type="button"
+                  className="celestial-element-hit-area"
+                  aria-label={`${element.name} სტიქიის ტემპერამენტის განმარტების ნახვა`}
+                  aria-expanded={activeElementInfo === element.id}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    toggleElementInfo(element.id);
+                  }}
+                />
                 <div className="celestial-element-heading">
                   <span className="celestial-element-symbol" aria-hidden="true">{element.symbol}</span>
                   <div>
