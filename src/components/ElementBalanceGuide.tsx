@@ -20,11 +20,16 @@ function getSignName(deg: number): string {
 
 export default function ElementBalanceGuide({ planets, ascendant }: { planets: WheelPlanet[]; ascendant: number }) {
   const elements = calculateSharedElementBalance(planets);
+  function focusElementInterpretation(element: string) {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(new CustomEvent("focus-element-interpretation", { detail: { element } }));
+  }
+
   const bars = [
-    { id: "fire", label: "ცეცხლი", value: elements.percentages.fire, icon: Flame, iconClass: "text-rose-400", textClass: "text-rose-300", borderClass: "border-rose-500/30", bgClass: "bg-rose-950/30", gradient: "from-rose-500 to-red-600" },
-    { id: "earth", label: "მიწა", value: elements.percentages.earth, icon: Mountain, iconClass: "text-amber-500", textClass: "text-amber-300", borderClass: "border-amber-600/30", bgClass: "bg-amber-950/35", gradient: "from-amber-600 to-yellow-800" },
-    { id: "air", label: "ჰაერი", value: elements.percentages.air, icon: Wind, iconClass: "text-sky-300", textClass: "text-sky-200", borderClass: "border-sky-400/30", bgClass: "bg-sky-950/30", gradient: "from-sky-400 to-cyan-300" },
-    { id: "water", label: "წყალი", value: elements.percentages.water, icon: Droplets, iconClass: "text-blue-400", textClass: "text-blue-300", borderClass: "border-blue-600/30", bgClass: "bg-blue-950/40", gradient: "from-blue-600 to-indigo-900" },
+    { id: "fire", label: "ცეცხლი", value: elements.percentages.fire, icon: Flame, iconClass: "text-rose-300", gradient: "from-rose-400/80 to-red-500/80" },
+    { id: "earth", label: "მიწა", value: elements.percentages.earth, icon: Mountain, iconClass: "text-amber-300", gradient: "from-amber-400/80 to-yellow-600/80" },
+    { id: "air", label: "ჰაერი", value: elements.percentages.air, icon: Wind, iconClass: "text-sky-200", gradient: "from-sky-300/80 to-cyan-400/80" },
+    { id: "water", label: "წყალი", value: elements.percentages.water, icon: Droplets, iconClass: "text-blue-300", gradient: "from-blue-400/80 to-indigo-500/80" },
   ];
 
   return (
@@ -61,15 +66,21 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
             {bars.map((bar) => {
               const Icon = bar.icon;
               return (
-                <div key={bar.id} className={`rounded-xl border ${bar.borderClass} ${bar.bgClass} p-2.5 sm:p-3 space-y-1.5 text-center`}>
-                  <div className={`flex justify-between font-bold ${bar.textClass} text-[0.7rem] sm:text-xs`}>
-                    <span className="flex items-center gap-1"><Icon className={`h-3 w-3 ${bar.iconClass}`} /> {bar.label}</span>
-                    <span>{bar.value}%</span>
+                <button
+                  key={bar.id}
+                  type="button"
+                  onClick={() => focusElementInterpretation(bar.id)}
+                  className="element-balance-indicator rounded-xl border border-white/10 bg-white/[0.035] p-2.5 text-left shadow-[inset_0_1px_rgba(255,255,255,0.04)] transition-all duration-200 hover:border-white/25 hover:bg-white/[0.075] hover:shadow-[0_8px_20px_-16px_rgba(148,163,184,0.8)] focus-visible:border-slate-300/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/20 sm:p-3"
+                  aria-label={`გადადით ${bar.label} სტიქიის ინტერპრეტაციაზე`}
+                >
+                  <div className="flex items-center justify-between gap-2 font-semibold text-slate-200 text-[0.7rem] sm:text-xs">
+                    <span className="flex min-w-0 items-center gap-1.5 truncate"><Icon className={`h-3 w-3 shrink-0 ${bar.iconClass}`} /> <span className="truncate">{bar.label}</span></span>
+                    <span className="shrink-0 tabular-nums text-slate-100">{bar.value}%</span>
                   </div>
                   <div className="infographic-bar-bg h-1.5">
                     <div className={`infographic-bar-fill bg-gradient-to-r ${bar.gradient}`} style={{ width: `${bar.value}%` }} />
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>

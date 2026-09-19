@@ -22,6 +22,21 @@ type InterpretationSection = {
   blocks: string[];
 };
 
+type ElementId = "fire" | "earth" | "air" | "water";
+
+const ELEMENT_NAMES: Record<ElementId, string> = {
+  fire: "ცეცხლი",
+  earth: "მიწა",
+  air: "ჰაერი",
+  water: "წყალი",
+};
+
+function elementIdForBlock(block: string): ElementId | null {
+  const match = block.match(/^\*\*[^*]*?(ცეცხლი|მიწა|ჰაერი|წყალი)\s+—/);
+  if (!match) return null;
+  return (Object.entries(ELEMENT_NAMES).find(([, name]) => name === match[1])?.[0] as ElementId | undefined) ?? null;
+}
+
 function splitInterpretation(text: string) {
   const sections: InterpretationSection[] = [];
   const preface: string[] = [];
@@ -42,9 +57,25 @@ function splitInterpretation(text: string) {
   return { preface, sections };
 }
 
-function InterpretationSectionView({ section, openByDefault }: { section: InterpretationSection; openByDefault: boolean }) {
+function InterpretationSectionView({
+  section,
+  openByDefault,
+  focusedElement,
+  onClearElementFocus,
+}: {
+  section: InterpretationSection;
+  openByDefault: boolean;
+  focusedElement: ElementId | null;
+  onClearElementFocus: () => void;
+}) {
   const [open, setOpen] = useState(openByDefault);
   const isAscendant = section.heading.toLowerCase().includes("ასცენდენტი");
+  const isElementSynthesis = section.heading.toLowerCase().includes("სტიქიების პროცენტული სინთეზი");
+  const focusedBlockInSection = isElementSynthesis && section.blocks.some((block) => elementIdForBlock(block) === focusedElement);
+
+  useEffect(() => {
+    if (focusedBlockInSection) setOpen(true);
+  }, [focusedBlockInSection]);
 
   useEffect(() => {
     if (!isAscendant) return;
@@ -74,11 +105,29 @@ function InterpretationSectionView({ section, openByDefault }: { section: Interp
         <span className="interpretation-accordion-chevron" aria-hidden="true">⌄</span>
       </summary>
       <div className="interpretation-accordion-body">
-        {section.blocks.map((block, index) => (
-          <p key={index} className="interpretation-paragraph text-sm sm:text-base leading-relaxed text-slate-200">
+        {section.blocks.map((block, index) => {
+          const blockElement = isElementSynthesis ? elementIdForBlock(block) : null;
+          const isFocused = blockElement !== null && blockElement === focusedElement;
+          return (
+          <p
+            key={index}
+            id={isFocused ? `element-interpretation-${blockElement}` : undefined}
+            className={`interpretation-paragraph text-sm sm:text-base leading-relaxed text-slate-200 ${isFocused ? "interpretation-element-highlight" : ""}`}
+            onClick={isFocused ? onClearElementFocus : undefined}
+            onKeyDown={isFocused ? (event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onClearElementFocus();
+              }
+            } : undefined}
+            role={isFocused ? "button" : undefined}
+            tabIndex={isFocused ? 0 : undefined}
+            title={isFocused ? "დააჭირე მონიშვნის გასაუქმებლად" : undefined}
+          >
             {renderInline(block)}
           </p>
-        ))}
+          );
+        })}
       </div>
     </details>
   );
@@ -86,6 +135,7 @@ function InterpretationSectionView({ section, openByDefault }: { section: Interp
 
 export default function InterpretationText({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
+  const [focusedElement, setFocusedElement] = useState<ElementId | null>(null);
 
   const wordCount = text.trim().split(/\s+/).length;
   const readingMinutes = Math.max(1, Math.ceil(wordCount / 180));
@@ -125,6 +175,22 @@ export default function InterpretationText({ text }: { text: string }) {
 
   const isFoundationSection = (heading: string) => heading.toLowerCase().includes("გამოთვლისა და ინტერპრეტაციის საფუძველი");
   const defaultOpenIndex = orderedSections.findIndex((section) => !isFoundationSection(section.heading));
+
+  useEffect(() => {
+    const handleElementFocus = (event: Event) => {
+      const detail = (event as CustomEvent<{ element?: string }>).detail;
+      const element = detail?.element;
+      if (!element || !(element in ELEMENT_NAMES)) return;
+      const elementId = element as ElementId;
+      setFocusedElement(elementId);
+      window.setTimeout(() => {
+        document.getElementById(`element-interpretation-${elementId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 60);
+    };
+
+    window.addEventListener("focus-element-interpretation", handleElementFocus);
+    return () => window.removeEventListener("focus-element-interpretation", handleElementFocus);
+  }, []);
 
   return (
     <div className="interpretation-content space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden">
@@ -172,7 +238,13 @@ export default function InterpretationText({ text }: { text: string }) {
           </p>
         ))}
         {orderedSections.map((section, index) => (
-          <InterpretationSectionView key={`${section.heading}-${index}`} section={section} openByDefault={index === defaultOpenIndex && !isFoundationSection(section.heading)} />
+          <InterpretationSectionView
+            key={`${section.heading}-${index}`}
+            section={section}
+            openByDefault={index === defaultOpenIndex && !isFoundationSection(section.heading)}
+            focusedElement={focusedElement}
+            onClearElementFocus={() => setFocusedElement(null)}
+          />
         ))}
       </div>
     </div>
