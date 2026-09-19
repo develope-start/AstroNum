@@ -3186,3 +3186,22 @@ canvas {
   .app-home .celestial-element-panel-air,
   .app-home .celestial-element-panel-water { bottom: -9.5rem; }
 }
+
+/* Direction is intentional: upper elements open toward the zodiac; lower elements open upward. */
+.app-home .celestial-element-panel-fire > .celestial-temperament-card,
+.app-home .celestial-element-panel-earth > .celestial-temperament-card {
+  top: calc(100% + 0.75rem) !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+}
+
+.app-home .celestial-element-panel-air > .celestial-temperament-card,
+.app-home .celestial-element-panel-water > .celestial-temperament-card {
+  top: auto !important;
+  right: auto !important;
+  bottom: calc(100% + 0.75rem) !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+}
