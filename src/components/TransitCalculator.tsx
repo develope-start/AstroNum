@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
 import SharedWideDateInput from "./WideDateInput";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
@@ -10,7 +10,7 @@ import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestC
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
 import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Calendar, Clock, Info } from "lucide-react";
-import { compareWideDates, formatWideDate, isWideDate, parseWideDate } from "@/lib/astro/wideDate";
+import { compareWideDates, isWideDate } from "@/lib/astro/wideDate";
 
 interface CacheShape {
   birth: BirthValue;
@@ -34,244 +34,6 @@ function offsetDays(days: number): string {
 }
 
 type TransitInputMode = "date" | "interval";
-
-interface WideDateInputProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  autoFocus?: boolean;
-  disabled?: boolean;
-  onActivate?: () => void;
-}
-
-function WideDateInput({ label, value, onChange, autoFocus = false, disabled = false, onActivate }: WideDateInputProps) {
-  const yearRef = useRef<HTMLInputElement>(null);
-  const monthRef = useRef<HTMLInputElement>(null);
-  const dayRef = useRef<HTMLInputElement>(null);
-  const editingRef = useRef(false);
-
-  const parsed = parseWideDate(value);
-  const [yearStr, setYearStr] = useState(() => (parsed ? (parsed.year < 0 ? `-${String(Math.abs(parsed.year)).padStart(4, "0")}` : String(parsed.year).padStart(4, "0")) : ""));
-  const [monthStr, setMonthStr] = useState(() => (parsed ? String(parsed.month).padStart(2, "0") : ""));
-  const [dayStr, setDayStr] = useState(() => (parsed ? String(parsed.day).padStart(2, "0") : ""));
-
-  const nativeValue = parsed && parsed.year >= 1 && parsed.year <= 9999 ? value : "";
-  const isValid = isWideDate(`${yearStr}-${monthStr}-${dayStr}`);
-  const isPartial = yearStr === "" || yearStr === "-" || monthStr === "" || monthStr === "0" || dayStr === "" || dayStr === "0";
-
-  // Synchronize internal segment inputs when `value` prop changes externally
-  useEffect(() => {
-    if (editingRef.current) return;
-    const p = parseWideDate(value);
-    if (p) {
-      const yStr = p.year < 0 ? `-${String(Math.abs(p.year)).padStart(4, "0")}` : String(p.year).padStart(4, "0");
-      const mStr = String(p.month).padStart(2, "0");
-      const dStr = String(p.day).padStart(2, "0");
-      setYearStr(yStr);
-      setMonthStr(mStr);
-      setDayStr(dStr);
-    } else if (!value) {
-      setYearStr("");
-      setMonthStr("");
-      setDayStr("");
-    }
-  }, [value]);
-
-  function tryEmit(y: string, m: string, d: string) {
-    setYearStr(y);
-    setMonthStr(m);
-    setDayStr(d);
-  }
-
-  function handleYearChange(val: string) {
-    if (!/^-?\d*$/.test(val)) return;
-    tryEmit(val, monthStr, dayStr);
-  }
-
-  function handleMonthChange(val: string) {
-    if (!/^\d*$/.test(val)) return;
-    tryEmit(yearStr, val, dayStr);
-  }
-
-  function handleDayChange(val: string) {
-    if (!/^\d*$/.test(val)) return;
-    tryEmit(yearStr, monthStr, val);
-  }
-
-  function handleNativeChange(next: string) {
-    const nextParts = parseWideDate(next);
-    if (nextParts) {
-      setYearStr(String(nextParts.year));
-      setMonthStr(String(nextParts.month).padStart(2, "0"));
-      setDayStr(String(nextParts.day).padStart(2, "0"));
-      editingRef.current = false;
-      onChange(next);
-    }
-  }
-
-  function handleCalendarClick() {
-    handleNativeChange(today());
-  }
-
-  function handleBlur() {
-    const yearNum = parseInt(yearStr, 10);
-    const monthNum = parseInt(monthStr, 10);
-    const dayNum = parseInt(dayStr, 10);
-
-    if (!isNaN(yearNum) && !isNaN(monthNum) && !isNaN(dayNum)) {
-      const p = parseWideDate(formatWideDate({ year: yearNum, month: monthNum, day: dayNum }));
-      if (p) {
-        const normY = p.year < 0 ? `-${String(Math.abs(p.year)).padStart(4, "0")}` : String(p.year).padStart(4, "0");
-        const normM = String(p.month).padStart(2, "0");
-        const normD = String(p.day).padStart(2, "0");
-        setYearStr(normY);
-        setMonthStr(normM);
-        setDayStr(normD);
-        onChange(formatWideDate(p));
-      }
-    }
-    window.setTimeout(() => {
-      const activeElement = document.activeElement;
-      if (![yearRef.current, monthRef.current, dayRef.current].includes(activeElement as HTMLInputElement | null)) {
-        editingRef.current = false;
-      }
-    }, 0);
-  }
-
-  function handleFocus(event: React.FocusEvent<HTMLInputElement>) {
-    editingRef.current = true;
-    onActivate?.();
-    event.currentTarget.select();
-  }
-
-  return (
-    <div className="flex min-w-0 w-full flex-1 flex-col gap-2 text-left">
-      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 px-1">
-        <label className="text-[0.72rem] font-extrabold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
-          <span>{label}</span>
-        </label>
-        <span className="hidden text-[0.65rem] font-semibold text-slate-400/80 sm:inline">წელიწადი / თვე / რიცხვი</span>
-      </div>
-
-      <div
-        className={`relative grid min-h-[54px] w-full min-w-0 grid-cols-[minmax(0,1.55fr)_auto_minmax(0,0.8fr)_auto_minmax(0,0.95fr)_auto] items-center gap-1 rounded-xl border bg-gradient-to-b from-[#130a35] via-[#09041b] to-[#0d0626] p-1.5 shadow-lg transition-all duration-300 sm:min-h-[62px] sm:gap-2 sm:rounded-2xl sm:p-2.5 ${
-          isValid
-            ? "border-amber-400/50 shadow-[0_0_25px_rgba(245,158,11,0.25)] focus-within:border-amber-400 focus-within:shadow-[0_0_35px_rgba(245,158,11,0.5)] focus-within:ring-2 focus-within:ring-amber-500/30"
-            : isPartial
-              ? "border-slate-500/50 shadow-[0_0_16px_rgba(148,163,184,0.12)] focus-within:border-emerald-300/70 focus-within:ring-2 focus-within:ring-emerald-300/20"
-              : "border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.3)]"
-        }`}
-      >
-        {/* Year segment */}
-        <div className="flex min-w-0 w-full items-center justify-center">
-          <input
-            ref={yearRef}
-            type="text"
-            value={yearStr}
-            onChange={(e) => handleYearChange(e.target.value)}
-            onFocus={handleFocus}
-            onClick={(event) => event.currentTarget.select()}
-            onKeyDown={(e) => {
-              if (e.key === "/" || e.key === "." || e.key === "Enter") {
-                e.preventDefault();
-                monthRef.current?.focus();
-              }
-            }}
-            onBlur={handleBlur}
-            placeholder="წელიწადი"
-            autoFocus={autoFocus}
-            inputMode="text"
-            autoComplete="off"
-            spellCheck={false}
-            maxLength={6}
-            disabled={disabled}
-            aria-label={`${label} — წელიწადი`}
-            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
-          />
-        </div>
-
-        {/* Separator 1 */}
-        <span className="select-none px-0.5 text-lg font-black text-amber-300/80 sm:px-1 sm:text-xl">/</span>
-
-        {/* Month segment */}
-        <div className="flex min-w-0 w-full items-center justify-center">
-          <input
-            ref={monthRef}
-            type="text"
-            value={monthStr}
-            onChange={(e) => handleMonthChange(e.target.value)}
-            onFocus={handleFocus}
-            onClick={(event) => event.currentTarget.select()}
-            onKeyDown={(e) => {
-              if (e.key === "/" || e.key === "." || e.key === "Enter") {
-                e.preventDefault();
-                dayRef.current?.focus();
-              } else if (e.key === "Backspace" && monthStr === "") {
-                yearRef.current?.focus();
-              }
-            }}
-            onBlur={handleBlur}
-            placeholder="თვე"
-            inputMode="numeric"
-            autoComplete="off"
-            spellCheck={false}
-            maxLength={2}
-            disabled={disabled}
-            aria-label={`${label} — თვე`}
-            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
-          />
-        </div>
-
-        {/* Separator 2 */}
-        <span className="select-none px-0.5 text-lg font-black text-amber-300/80 sm:px-1 sm:text-xl">/</span>
-
-        {/* Day segment */}
-        <div className="flex min-w-0 w-full items-center justify-center">
-          <input
-            ref={dayRef}
-            type="text"
-            value={dayStr}
-            onChange={(e) => handleDayChange(e.target.value)}
-            onFocus={handleFocus}
-            onClick={(event) => event.currentTarget.select()}
-            onKeyDown={(e) => {
-              if (e.key === "Backspace" && dayStr === "") {
-                monthRef.current?.focus();
-              }
-            }}
-            onBlur={handleBlur}
-            placeholder="რიცხვი"
-            inputMode="numeric"
-            autoComplete="off"
-            spellCheck={false}
-            maxLength={2}
-            disabled={disabled}
-            aria-label={`${label} — რიცხვი`}
-            className="w-full min-w-0 bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono tracking-tight text-amber-300 outline-none placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
-          />
-        </div>
-
-        {/* Calendar Picker Trigger */}
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-amber-400/35 bg-purple-950/60 pl-0.5 text-amber-300 shadow-sm transition-colors hover:border-amber-300 hover:bg-purple-900 sm:h-9 sm:w-9">
-          <Calendar className="pointer-events-none h-4 w-4 text-amber-300 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
-          <input
-            type="date"
-            value={nativeValue}
-            min="0001-01-01"
-            max="9999-12-31"
-            onChange={(event) => handleNativeChange(event.target.value)}
-            onClick={handleCalendarClick}
-            onFocus={handleFocus}
-            disabled={disabled}
-            aria-label={`${label} — კალენდრით არჩევა`}
-            title="კალენდრით არჩევა / სქროლვა; ძველი წელთაღრიცხვისთვის გამოიყენეთ ხელით ჩაწერილი წელი"
-            className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0 [color-scheme:dark]"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function TransitCalculator() {
   const me = useMe();
@@ -305,7 +67,7 @@ export default function TransitCalculator() {
       setTransitDate(cached.transitDate);
       setTransitStartDate(cached.transitStartDate ?? cached.transitDate);
       setTransitEndDate(cached.transitEndDate ?? cached.transitDate);
-      setInputMode("date");
+      setInputMode(cached.inputMode ?? "date");
       setCalculation({ ...DEFAULT_UI_CALCULATION, ...(cached.calculation ?? {}) });
       setInterpretation(cached.interpretation);
       setMapNumber(cached.mapNumber ?? null);

@@ -4,7 +4,14 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 
 const COOKIE_NAME = "astro_session";
-const SECRET = process.env.JWT_SECRET || "dev-only-insecure-secret-change-me";
+const SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === "production" ? "" : "dev-only-insecure-secret-change-me");
+
+function getSessionSecret(): string {
+  if (!SECRET) {
+    throw new Error("JWT_SECRET must be configured in production.");
+  }
+  return SECRET;
+}
 
 export interface SessionPayload {
   userId: string;
@@ -50,12 +57,12 @@ export async function syncConfiguredPrimaryAdmin<T extends { id: string; email: 
 }
 
 export function signSession(payload: SessionPayload): string {
-  return jwt.sign(payload, SECRET, { expiresIn: "30d" });
+  return jwt.sign(payload, getSessionSecret(), { expiresIn: "30d" });
 }
 
 export function verifySession(token: string): (SessionPayload & { exp?: number }) | null {
   try {
-    return jwt.verify(token, SECRET) as SessionPayload;
+    return jwt.verify(token, getSessionSecret()) as SessionPayload;
   } catch {
     return null;
   }

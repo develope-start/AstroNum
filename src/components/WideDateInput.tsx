@@ -193,14 +193,6 @@ export default function WideDateInput({ label = "თარიღი", value, onC
     }
   }
 
-  function normalizeDayDraft() {
-    if (/^\d$/.test(dayStr)) {
-      const next = `0${dayStr}`;
-      updateParts(yearStr, monthStr, next);
-      notifyDraft(yearStr, monthStr, next);
-    }
-  }
-
   function toggleCalendar() {
     if (calendarOpen) {
       setCalendarOpen(false);

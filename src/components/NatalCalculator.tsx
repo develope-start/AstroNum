@@ -4,18 +4,13 @@ import { useEffect, useState } from "react";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
 import InterpretationText from "./InterpretationText";
 import ChartWheel, { WheelPlanet } from "./ChartWheel";
-import ElementTemperamentDetails from "./ElementTemperamentDetails";
-import ElementSynthesisTable from "./ElementSynthesisTable";
-import ElementSources from "./ElementSources";
 import ElementBalanceGuide from "./ElementBalanceGuide";
-import { ELEMENT_TEMPERAMENTS } from "@/lib/elementTemperaments";
-import { calculateElementBalance as calculateSharedElementBalance } from "@/lib/elementBalance";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
 import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
-import { Sparkles, Bookmark, Sliders, Loader2, CheckCircle2, AlertCircle, Info, Flame, Mountain, Wind, Droplets, Compass } from "lucide-react";
+import { Sparkles, Bookmark, Sliders, Loader2, CheckCircle2, AlertCircle, Info } from "lucide-react";
 
 interface WheelData {
   ascendant: number;
@@ -32,19 +27,6 @@ interface CacheShape {
   mapNumber?: string | null;
   calculation?: CalculationOptions;
 }
-
-const ZODIAC_SIGNS = [
-  "ვერძი ♈", "კურო ♉", "ტყუპები ♊", "კირჩხიბი ♋",
-  "ლომი ♌", "ქალწული ♍", "სასწორი ♎", "მორიელი ♏",
-  "მშვილდოსანი ♐", "თხის რქა ♑", "მერწყული ♒", "თევზები ♓"
-];
-
-function getSignName(deg: number): string {
-  const idx = Math.floor(((deg % 360) + 360) % 360 / 30);
-  return ZODIAC_SIGNS[idx] || "";
-}
-
-const ELEMENT_GUIDES = Object.values(ELEMENT_TEMPERAMENTS);
 
 export default function NatalCalculator() {
   const me = useMe();
@@ -128,10 +110,6 @@ export default function NatalCalculator() {
       setLoading(false);
     }
   }
-
-  const elements = wheel ? calculateSharedElementBalance(wheel.planets) : null;
-  const sunPlanet = wheel?.planets.find(p => p.name === "Sun");
-  const moonPlanet = wheel?.planets.find(p => p.name === "Moon");
 
   return (
     <div className="mx-auto w-full max-w-full space-y-4 sm:space-y-6 text-center overflow-x-hidden">

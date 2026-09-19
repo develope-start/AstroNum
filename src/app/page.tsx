@@ -74,9 +74,7 @@ export default function HomePage() {
   const [tab, setTab] = useState<Tab>("natal");
   const [hoveredCelestial, setHoveredCelestial] = useState<CelestialTarget>(null);
   const [selectedCelestial, setSelectedCelestial] = useState<CelestialTarget>(null);
-  const [hoveredElementInfo, setHoveredElementInfo] = useState<ElementTemperamentId | null>(null);
   const [selectedElementInfo, setSelectedElementInfo] = useState<ElementTemperamentId | null>(null);
-  const activeElementInfo = selectedElementInfo ?? hoveredElementInfo;
   const layoutElementInfo = selectedElementInfo;
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
   const activeCelestial = selectedCelestial ?? hoveredCelestial;
@@ -89,7 +87,6 @@ export default function HomePage() {
   const toggleElementInfo = (elementId: ElementTemperamentId) => {
     setSelectedElementInfo((current) => {
       const isSameElement = current === elementId;
-      if (isSameElement) setHoveredElementInfo(null);
       return isSameElement ? null : elementId;
     });
   };
@@ -117,7 +114,6 @@ export default function HomePage() {
                 setSelectedCelestial(null);
                 setHoveredCelestial(null);
                 setSelectedElementInfo(null);
-                setHoveredElementInfo(null);
               }
             }}
           >
@@ -129,14 +125,6 @@ export default function HomePage() {
                 aria-label={`${element.name} სტიქია`}
                 data-info-placement={element.id === "fire" || element.id === "earth" ? "below" : "above"}
                 tabIndex={0}
-                onMouseEnter={() => setHoveredElementInfo(element.id)}
-                onMouseLeave={() => setHoveredElementInfo(null)}
-                onFocus={() => setHoveredElementInfo(element.id)}
-                onBlur={(event) => {
-                  if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                    setHoveredElementInfo(null);
-                  }
-                }}
                 onClick={(event) => {
                   event.stopPropagation();
                   toggleElementInfo(element.id);
@@ -174,7 +162,6 @@ export default function HomePage() {
                       onClick={(event) => {
                         event.stopPropagation();
                         setSelectedElementInfo(null);
-                        setHoveredElementInfo(null);
                       }}
                     >
                       ×

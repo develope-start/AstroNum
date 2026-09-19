@@ -1010,7 +1010,6 @@ export default function AdminPage() {
     PRIMARY_ADMIN_RECOVERED: "მთავარი ადმინი შეიქმნა/აღდგა",
   };
 
-  const show = (value: string | number | null | undefined) => value ?? "—";
   const showDateTime = (value: string) =>
     new Date(value).toLocaleString("ka-GE", { dateStyle: "medium", timeStyle: "short" });
   const eventStatusLabel: Record<string, string> = {
