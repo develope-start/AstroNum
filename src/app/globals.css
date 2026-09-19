@@ -3216,8 +3216,8 @@ canvas {
 }
 
 /* Direction is intentional: upper elements open toward the zodiac; lower elements open upward. */
-.app-home .celestial-element-panel-fire > .celestial-temperament-card,
-.app-home .celestial-element-panel-earth > .celestial-temperament-card {
+.app-home .celestial-element-panel[data-info-placement="below"] > .celestial-temperament-card,
+.app-home .celestial-temperament-card-below {
   top: calc(100% + 0.75rem) !important;
   right: auto !important;
   bottom: auto !important;
@@ -3225,8 +3225,8 @@ canvas {
   transform: translateX(-50%);
 }
 
-.app-home .celestial-element-panel-air > .celestial-temperament-card,
-.app-home .celestial-element-panel-water > .celestial-temperament-card {
+.app-home .celestial-element-panel[data-info-placement="above"] > .celestial-temperament-card,
+.app-home .celestial-temperament-card-above {
   top: auto !important;
   right: auto !important;
   bottom: calc(100% + 0.75rem) !important;

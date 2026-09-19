@@ -168,6 +168,7 @@ export default function HomePage() {
                 key={element.id}
                 className={`celestial-element-panel celestial-element-panel-${element.id}${activeElementInfo === element.id ? " is-info-open" : ""}`}
                 aria-label={`${element.name} სტიქია`}
+                data-info-placement={element.id === "fire" || element.id === "earth" ? "below" : "above"}
                 tabIndex={0}
                 onMouseEnter={() => setHoveredElementInfo(element.id)}
                 onMouseLeave={() => setHoveredElementInfo(null)}
@@ -208,7 +209,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 {activeElementInfo === element.id && (
-                  <div className={`celestial-temperament-card celestial-temperament-card-${element.id}`} onClick={(event) => event.stopPropagation()}>
+                  <div className={`celestial-temperament-card celestial-temperament-card-${element.id} celestial-temperament-card-${element.id === "fire" || element.id === "earth" ? "below" : "above"}`} onClick={(event) => event.stopPropagation()}>
                     <button
                       type="button"
                       className="celestial-temperament-close"
