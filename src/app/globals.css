@@ -3386,15 +3386,20 @@ canvas {
 }
 
 .app-home .celestial-temperament-content {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
+  overflow-wrap: anywhere;
+  overscroll-behavior: contain;
   padding: 1.35rem 0.85rem 0.85rem !important;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar {
-  width: 0.18rem;
+  width: 0.12rem;
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar-track {
@@ -3403,11 +3408,11 @@ canvas {
 
 .app-home .celestial-temperament-content::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 /* Pinned close button at absolute top-right of modal frame - never scrolls away */
@@ -3451,7 +3456,8 @@ canvas {
     0 0 2px rgba(255, 255, 255, 0.9);
   margin-block: 0.25rem 0.35rem;
   text-align: center;
-  text-wrap: balance;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
 }
 
 .app-home .celestial-temperament-content .celestial-temperament-kicker {
@@ -3473,7 +3479,8 @@ canvas {
   text-shadow: 0 0 10px color-mix(in srgb, var(--element-glow) 50%, transparent);
   margin-bottom: 0.4rem;
   text-align: center;
-  text-wrap: balance;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
 }
 
 .app-home .celestial-temperament-content p {
@@ -3484,7 +3491,8 @@ canvas {
   text-shadow: 0 0 8px color-mix(in srgb, var(--element-glow) 35%, transparent);
   margin-bottom: 0.5rem;
   text-align: center;
-  text-wrap: balance;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
 }
 
 .app-home .celestial-temperament-content .celestial-temperament-note {
@@ -3494,5 +3502,11 @@ canvas {
   font-style: italic;
   text-shadow: 0 0 5px color-mix(in srgb, var(--element-glow) 25%, transparent);
   text-align: center;
-  text-wrap: balance;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+
+/* Keep the modal's flex content shrinkable, so long text always scrolls inside instead of being clipped. */
+.app-home .celestial-temperament-card {
+  min-height: 0 !important;
 }
