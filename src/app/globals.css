@@ -418,7 +418,7 @@ svg {
   width: min(100%, 78rem);
   min-height: clamp(30rem, 68vw, 48rem);
   margin: 0 auto;
-  overflow: hidden;
+  overflow: visible !important;
   border: 1px solid rgba(197, 188, 255, 0.17);
   border-radius: clamp(1.25rem, 3vw, 2.4rem);
   background:
@@ -439,7 +439,7 @@ svg {
 .celestial-system {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  overflow: visible !important;
   perspective: 1100px;
   background:
     radial-gradient(circle at 48% 48%, rgba(172, 161, 255, 0.08) 0 1px, transparent 2px),
@@ -447,6 +447,7 @@ svg {
     radial-gradient(circle at 79% 20%, rgba(255, 255, 255, 0.38) 0 1px, transparent 1.8px),
     radial-gradient(circle at 82% 78%, rgba(179, 200, 255, 0.34) 0 1px, transparent 1.7px),
     linear-gradient(155deg, rgba(18, 22, 46, 0.98), rgba(5, 8, 19, 0.99));
+  border-radius: inherit;
 }
 
 .celestial-system::before {
@@ -769,6 +770,60 @@ svg {
   isolation: isolate;
   cursor: pointer;
   user-select: none;
+}
+
+.brand-title-row {
+  display: flex;
+  min-width: 0;
+  align-items: flex-end;
+  gap: 0.28rem;
+}
+
+.brand-title-row > span:first-child {
+  min-width: 0;
+}
+
+.brand-georgia-map {
+  width: 1.75rem;
+  height: 0.88rem;
+  flex: 0 0 auto;
+  margin-bottom: 0.08rem;
+  overflow: visible;
+  fill: #8b82e8;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 0.22rem rgba(99, 102, 241, 0.72));
+  transition: filter 260ms ease, fill 260ms ease, opacity 260ms ease, transform 260ms ease;
+}
+
+.brand-georgia-map-cross {
+  fill: none;
+  stroke: #c4b5fd;
+  stroke-width: 2.3;
+  stroke-linecap: round;
+  opacity: 0.88;
+}
+
+.brand-link:hover .brand-georgia-map {
+  fill: #a5b4fc;
+  opacity: 1;
+  filter: drop-shadow(0 0 0.25rem rgba(129, 140, 248, 0.95)) drop-shadow(0 0 0.55rem rgba(56, 189, 248, 0.62));
+  transform: translateY(-0.04rem) scale(1.06);
+}
+
+.brand-link.is-brand-lit {
+  animation: brand-logo-light 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.brand-link.is-brand-lit .brand-georgia-map {
+  fill: #c4b5fd;
+  opacity: 1;
+  filter: drop-shadow(0 0 0.35rem rgba(196, 181, 253, 1)) drop-shadow(0 0 0.8rem rgba(56, 189, 248, 0.9));
+}
+
+@keyframes brand-logo-light {
+  0% { filter: brightness(1); text-shadow: none; }
+  35% { filter: brightness(1.45); text-shadow: 0 0 1.2rem rgba(129, 140, 248, 0.95); }
+  100% { filter: brightness(1); text-shadow: none; }
 }
 
 .brand-mark-container {
@@ -3358,13 +3413,20 @@ canvas {
   transition: opacity 180ms ease, visibility 180ms ease;
 }
 
+.celestial-element-panel.is-info-open {
+  z-index: 99999 !important;
+  overflow: visible !important;
+}
+
 /* Card visibility is governed strictly by CLICK (.is-visible / .is-pinned). HOVER ONLY GLOWS THE PANEL. */
 .app-home .celestial-temperament-card {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
-  z-index: 1000 !important;
+  z-index: 100000 !important;
+  border-radius: clamp(1.1rem, 2.5vw, 1.5rem) !important;
+  overflow: hidden !important;
 }
 
 .app-home .celestial-temperament-card.is-visible,
@@ -3374,6 +3436,7 @@ canvas {
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;
+  z-index: 100000 !important;
 }
 
 .app-home .celestial-element-panel-fire > .celestial-temperament-card.is-visible,
@@ -3442,6 +3505,76 @@ canvas {
   .app-home .celestial-element-panel-air,
   .app-home .celestial-element-panel-water {
     bottom: -8.5rem !important;
+  }
+
+  /* TOP ELEMENTS (Fire & Earth): Expand UPWARDS into free vertical space above on mobile */
+  .app-home .celestial-element-panel-fire > .celestial-temperament-card,
+  .app-home .celestial-element-panel-earth > .celestial-temperament-card {
+    top: auto !important;
+    bottom: 28% !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: min(88vw, 19.5rem) !important;
+    height: clamp(15rem, 42vh, 22rem) !important;
+    max-height: clamp(15rem, 52vh, 25rem) !important;
+    z-index: 1000000 !important;
+  }
+
+  .app-home .celestial-element-panel-fire.is-info-open .celestial-element-heading,
+  .app-home .celestial-element-panel-earth.is-info-open .celestial-element-heading {
+    bottom: 0.45rem !important;
+    top: auto !important;
+  }
+
+  .app-home .celestial-element-panel-fire > .celestial-temperament-card.is-visible,
+  .app-home .celestial-element-panel-earth > .celestial-temperament-card.is-visible {
+    animation: elemental-card-rise 240ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  }
+
+  /* BOTTOM ELEMENTS (Air & Water): Expand DOWNWARDS into free vertical space below on mobile */
+  .app-home .celestial-element-panel-air > .celestial-temperament-card,
+  .app-home .celestial-element-panel-water > .celestial-temperament-card {
+    top: 28% !important;
+    bottom: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: min(88vw, 19.5rem) !important;
+    height: clamp(15rem, 42vh, 22rem) !important;
+    max-height: clamp(15rem, 52vh, 25rem) !important;
+    z-index: 1000000 !important;
+  }
+
+  .app-home .celestial-element-panel-air.is-info-open .celestial-element-heading,
+  .app-home .celestial-element-panel-water.is-info-open .celestial-element-heading {
+    top: 0.45rem !important;
+    bottom: auto !important;
+  }
+
+  .app-home .celestial-element-panel-air > .celestial-temperament-card.is-visible,
+  .app-home .celestial-element-panel-water > .celestial-temperament-card.is-visible {
+    animation: elemental-card-drop 240ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  }
+
+  /* Centered, symmetrical text alignment inside mobile modal */
+  .app-home .celestial-temperament-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 1.4rem 1rem 1rem !important;
+  }
+
+  .app-home .celestial-temperament-content strong,
+  .app-home .celestial-temperament-content .celestial-temperament-kicker,
+  .app-home .celestial-temperament-content .celestial-temperament-lede,
+  .app-home .celestial-temperament-content p,
+  .app-home .celestial-temperament-content .celestial-temperament-note {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-wrap: balance !important;
   }
 }
 

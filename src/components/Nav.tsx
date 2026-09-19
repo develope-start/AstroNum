@@ -23,6 +23,7 @@ export default function Nav() {
   const [me, setMe] = useState<Me | null | undefined>(undefined);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isExploding, setIsExploding] = useState(false);
+  const [isBrandLit, setIsBrandLit] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth/me", { cache: "no-store" })
@@ -33,7 +34,9 @@ export default function Nav() {
 
   const triggerExplosion = () => {
     setIsExploding(true);
+    setIsBrandLit(true);
     setTimeout(() => setIsExploding(false), 700);
+    setTimeout(() => setIsBrandLit(false), 520);
   };
 
   return (
@@ -42,7 +45,7 @@ export default function Nav() {
         <div className="flex items-center justify-between gap-3">
           <Link
             href="/"
-            className="brand-link group flex min-w-0 items-center gap-3"
+            className={`brand-link group flex min-w-0 items-center gap-3${isBrandLit ? " is-brand-lit" : ""}`}
             onClick={triggerExplosion}
           >
             <div className="brand-mark-container">
@@ -112,24 +115,22 @@ export default function Nav() {
               </span>
             </div>
 
-            {/* Brand Title + Dark Georgian Map Silhouette */}
-            <span className="min-w-0 flex flex-col justify-center">
-              <span className="block truncate font-display text-lg font-bold tracking-tight text-slate-100 sm:text-xl drop-shadow-[0_0_10px_rgba(167,139,250,0.3)]">
-                Astro<span className="text-violet-300">Num</span><sup className="ml-0.5 text-[0.55em] font-extrabold text-violet-300">°</sup>
-              </span>
-              <span className="flex items-center gap-1.5 mt-0.5">
-                {/* Sleek Dark-Toned Georgia Map Silhouette Icon */}
+            {/* Brand title with the Georgia silhouette anchored to AstroNum's lower-right edge */}
+            <span className="brand-title-wrap min-w-0 flex flex-col justify-center">
+              <span className="brand-title-row">
+                <span className="block truncate font-display text-lg font-bold tracking-tight text-slate-100 sm:text-xl drop-shadow-[0_0_10px_rgba(167,139,250,0.3)]">
+                  Astro<span className="text-violet-300">Num</span><sup className="ml-0.5 text-[0.55em] font-extrabold text-violet-300">°</sup>
+                </span>
                 <svg
                   viewBox="0 0 120 60"
-                  className="h-2.5 sm:h-3 w-auto fill-current text-violet-400/60 group-hover:text-violet-300 transition-colors duration-300 drop-shadow-[0_0_4px_rgba(167,139,250,0.4)]"
-                  aria-label="საქართველო · Georgia"
+                  className="brand-georgia-map"
+                  role="img"
+                  aria-label="საქართველოს რუკა"
                 >
-                  <title>საქართველო · Georgia</title>
-                  <path d="M 10,32 C 8,24 14,18 24,15 C 34,12 45,9 56,9 C 67,9 78,7 89,10 C 99,13 108,12 114,18 C 119,23 116,30 110,35 C 103,40 93,42 83,43 C 72,44 61,44 50,43 C 39,42 29,45 19,43 C 13,41 11,37 10,32 Z M 60,18 H 63 V 22 H 60 Z M 61,16 H 62 V 24 H 61 Z M 58,20 H 65 V 21 H 58 Z" />
+                  <title>საქართველოს რუკა</title>
+                  <path d="M9 29c4-6 9-8 16-8 5-4 10-7 16-4 5-4 11-5 17-1 6-2 12 0 16 3 7-2 12 0 17 4l11 1-4 6-9 2-4 7-9-1-8 5-9-2-7 5-8-4-8 3-8-5-8 2-7-5-8 1-4-5-7-2z" />
+                  <path className="brand-georgia-map-cross" d="M58 18v16M50 26h16" />
                 </svg>
-                <span className="text-[0.56rem] sm:text-[0.62rem] font-bold uppercase tracking-[0.18em] text-slate-400 group-hover:text-slate-300 transition-colors">
-                  precision astrology
-                </span>
               </span>
             </span>
           </Link>
