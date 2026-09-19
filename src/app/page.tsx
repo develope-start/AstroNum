@@ -95,7 +95,9 @@ export default function HomePage() {
   const [tab, setTab] = useState<Tab>("natal");
   const [hoveredCelestial, setHoveredCelestial] = useState<CelestialTarget>(null);
   const [selectedCelestial, setSelectedCelestial] = useState<CelestialTarget>(null);
-  const [activeElementInfo, setActiveElementInfo] = useState<keyof typeof TEMPERAMENT_INFO | null>(null);
+  const [hoveredElementInfo, setHoveredElementInfo] = useState<keyof typeof TEMPERAMENT_INFO | null>(null);
+  const [selectedElementInfo, setSelectedElementInfo] = useState<keyof typeof TEMPERAMENT_INFO | null>(null);
+  const activeElementInfo = selectedElementInfo ?? hoveredElementInfo;
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
   const activeCelestial = selectedCelestial ?? hoveredCelestial;
   const activePlanetIndex = typeof activeCelestial === "number" ? activeCelestial : null;
@@ -126,6 +128,8 @@ export default function HomePage() {
               if (!target.closest("button, .celestial-element-panel, .celestial-info-card")) {
                 setSelectedCelestial(null);
                 setHoveredCelestial(null);
+                setSelectedElementInfo(null);
+                setHoveredElementInfo(null);
               }
             }}
           >
@@ -136,19 +140,29 @@ export default function HomePage() {
                 className={`celestial-element-panel celestial-element-panel-${element.id}${activeElementInfo === element.id ? " is-info-open" : ""}`}
                 aria-label={`${element.name} სტიქია`}
                 tabIndex={0}
-                onMouseEnter={() => setActiveElementInfo(element.id)}
-                onMouseLeave={() => setActiveElementInfo(null)}
-                onFocus={() => setActiveElementInfo(element.id)}
+                onMouseEnter={() => setHoveredElementInfo(element.id)}
+                onMouseLeave={() => setHoveredElementInfo(null)}
+                onFocus={() => setHoveredElementInfo(element.id)}
                 onBlur={(event) => {
                   if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                    setActiveElementInfo(null);
+                    setHoveredElementInfo(null);
                   }
                 }}
-                onClick={() => setActiveElementInfo((current) => current === element.id ? null : element.id)}
+                onClick={() => {
+                  setSelectedElementInfo((current) => {
+                    const isSameElement = current === element.id;
+                    if (isSameElement) setHoveredElementInfo(null);
+                    return isSameElement ? null : element.id;
+                  });
+                }}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
-                    setActiveElementInfo((current) => current === element.id ? null : element.id);
+                    setSelectedElementInfo((current) => {
+                      const isSameElement = current === element.id;
+                      if (isSameElement) setHoveredElementInfo(null);
+                      return isSameElement ? null : element.id;
+                    });
                   }
                 }}
               >
@@ -179,7 +193,8 @@ export default function HomePage() {
                       aria-label="ინფორმაციის დახურვა"
                       onClick={(event) => {
                         event.stopPropagation();
-                        setActiveElementInfo(null);
+                        setSelectedElementInfo(null);
+                        setHoveredElementInfo(null);
                       }}
                     >
                       ×

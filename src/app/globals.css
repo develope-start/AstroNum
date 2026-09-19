@@ -3077,3 +3077,52 @@ canvas {
   .app-home .celestial-element-panel-air,
   .app-home .celestial-element-panel-water { bottom: -3.9rem; }
 }
+
+/* Keep every elemental label and symbol optically centered at every breakpoint. */
+.app-home .celestial-element-panel {
+  align-items: center;
+  text-align: center;
+}
+
+.app-home .celestial-element-heading {
+  width: 100%;
+  justify-content: center;
+}
+
+.app-home .celestial-element-heading > div {
+  text-align: center;
+}
+
+.app-home .celestial-element-row {
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.28rem;
+}
+
+.app-home .celestial-element-label {
+  text-align: center;
+}
+
+.app-home .celestial-element-items {
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .app-home .celestial-element-panel {
+    gap: 0.48rem;
+  }
+
+  .app-home .celestial-element-heading {
+    gap: 0.42rem;
+  }
+
+  .app-home .celestial-element-symbol {
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+
+  .app-home .celestial-element-items span {
+    flex: 0 0 auto;
+  }
+}
