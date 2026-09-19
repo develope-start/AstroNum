@@ -2626,11 +2626,12 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   inset: 0;
   z-index: -1;
   border-radius: inherit;
+  pointer-events: none;
   content: "";
   background: linear-gradient(115deg, transparent 38%, color-mix(in srgb, var(--element-text) 22%, transparent) 50%, transparent 62%);
   opacity: 0;
-  transform: translateX(-42%) rotate(12deg);
-  transition: opacity 220ms ease, transform 600ms ease;
+  transform: none;
+  transition: opacity 220ms ease;
 }
 
 .celestial-element-panel:hover,
@@ -2644,7 +2645,6 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
 .celestial-element-panel:hover::before,
 .celestial-element-panel:focus-within::before {
   opacity: 1;
-  transform: translateX(42%) rotate(12deg);
 }
 
 .celestial-element-panel-air { --element-border: rgba(186, 239, 255, 0.82); --element-text: #dcf8ff; --element-bg: rgba(61, 137, 170, 0.48); --element-glow: rgba(130, 224, 248, 0.48); }
