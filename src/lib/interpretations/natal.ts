@@ -193,8 +193,6 @@ export function generateNatalInterpretation(input: PlacementInput): string {
 
   const parts: string[] = [];
 
-  parts.push(`## გამოთვლისა და ინტერპრეტაციის საფუძველი\n\n${methodNote()}`);
-
   parts.push(`\n## რუკის ხასიათი`);
   parts.push(chartSignature(planets));
 
@@ -233,6 +231,10 @@ export function generateNatalInterpretation(input: PlacementInput): string {
     parts.push(`\n## დამატებითი ბიბლიოთეკური განმარტებები`);
     parts.push(...libraryEntries.slice(0, 24).map((entry) => entry.text));
   }
+
+  // Keep the methodology as the final section so future interpretation
+  // additions are always placed above it.
+  parts.push(`\n## გამოთვლისა და ინტერპრეტაციის საფუძველი\n\n${methodNote()}`);
 
   return parts.join("\n\n");
 }

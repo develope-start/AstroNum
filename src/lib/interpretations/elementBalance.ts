@@ -4,6 +4,7 @@ import { calculateElementBalance, ELEMENT_IDS, type BalancePlanet, type ElementB
 import { translatedExternalLibraryEntries } from "./libraryStore";
 
 export const ELEMENT_BALANCE_LIBRARY_VERSION = "2026.09.19.1";
+const FOUNDATION_HEADING = "## გამოთვლისა და ინტერპრეტაციის საფუძველი";
 
 const ELEMENT_NAMES: Record<ElementId, string> = {
   fire: "ცეცხლი",
@@ -116,19 +117,32 @@ export async function getElementBalanceInterpretation(balance: ElementBalance): 
   return interpretationText;
 }
 
+/** Keep the methodology section last in stored and freshly generated text. */
+export function ensureInterpretationFoundationLast(text: string): string {
+  const chunks = text
+    .trim()
+    .split(/\n(?=#{2,3}\s)/)
+    .map((chunk) => chunk.trim())
+    .filter(Boolean);
+  const foundation = chunks.filter((chunk) => chunk.startsWith(FOUNDATION_HEADING));
+  if (!foundation.length) return text;
+  const rest = chunks.filter((chunk) => !chunk.startsWith(FOUNDATION_HEADING));
+  return [...rest, ...foundation].join("\n\n");
+}
+
 function externalProviderName() {
   return process.env.LIBRETRANSLATE_URL?.trim() ? "builtin+library+libretranslate" : "builtin+library";
 }
 
 export async function appendElementBalanceInterpretation(existing: string | null | undefined, result: unknown): Promise<string | null> {
-  if (existing?.includes("## სტიქიების პროცენტული სინთეზი")) return existing;
+  if (existing?.includes("## სტიქიების პროცენტული სინთეზი")) return ensureInterpretationFoundationLast(existing);
   if (!result || typeof result !== "object") return existing ?? null;
   const value = result as { planets?: unknown };
   if (!Array.isArray(value.planets)) return existing ?? null;
   const planets = value.planets.filter((planet): planet is BalancePlanet => Boolean(planet) && typeof planet === "object" && typeof (planet as { name?: unknown }).name === "string" && typeof (planet as { longitude?: unknown }).longitude === "number");
   const balance = calculateElementBalance(planets);
   const synthesis = await getElementBalanceInterpretation(balance);
-  return existing ? `${existing}\n\n${synthesis}` : synthesis;
+  return ensureInterpretationFoundationLast(existing ? `${existing}\n\n${synthesis}` : synthesis);
 }
 
 export function elementBalanceMetadata(result: unknown) {

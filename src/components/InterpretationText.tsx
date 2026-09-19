@@ -154,6 +154,7 @@ export default function InterpretationText({ text }: { text: string }) {
 
   const { preface, sections } = splitInterpretation(text);
   const orderedSections = [...sections];
+  const isFoundationSection = (heading: string) => heading.toLowerCase().includes("გამოთვლისა და ინტერპრეტაციის საფუძველი");
 
   // Keep the percentage synthesis directly below the separate balance/axes
   // guide that is rendered above this interpretation block.
@@ -173,7 +174,17 @@ export default function InterpretationText({ text }: { text: string }) {
     orderedSections.splice(ascendantIndex, 0, characterSection!);
   }
 
-  const isFoundationSection = (heading: string) => heading.toLowerCase().includes("გამოთვლისა და ინტერპრეტაციის საფუძველი");
+  // The methodology/foundation is always the final section. This also keeps
+  // newly added interpretation sections above it without depending on the
+  // order in which the server or an older cached record generated them.
+  const foundationSections = orderedSections.filter((section) => isFoundationSection(section.heading));
+  if (foundationSections.length) {
+    for (let index = orderedSections.length - 1; index >= 0; index -= 1) {
+      if (isFoundationSection(orderedSections[index]!.heading)) orderedSections.splice(index, 1);
+    }
+    orderedSections.push(...foundationSections);
+  }
+
   const defaultOpenIndex = orderedSections.findIndex((section) => !isFoundationSection(section.heading));
 
   useEffect(() => {

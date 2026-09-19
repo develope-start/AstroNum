@@ -14,7 +14,7 @@ import { natalLibraryInsights } from "@/lib/interpretations/library";
 import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/interpretations/libraryStore";
 import { eclipticToSign } from "@/lib/astro/signs";
 import { calculateAngularity, calculateDeclinationContacts, calculateFixedStarContacts, calculateTraditionalDignities } from "@/lib/astro/advanced";
-import { appendElementBalanceInterpretation } from "@/lib/interpretations/elementBalance";
+import { appendElementBalanceInterpretation, ensureInterpretationFoundationLast } from "@/lib/interpretations/elementBalance";
 
 const calculationSchema = z.object({
   ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     planets: result.planets.map((planet) => ({ name: planet.name, sign: eclipticToSign(planet.longitude).signName, house: result.planetHouses[planet.name] })),
     aspects: result.aspects,
   });
-  const interpretation = [elementBalanceInterpretation ?? baseInterpretation, ...externalEntries].join("\n\n");
+  const interpretation = ensureInterpretationFoundationLast([elementBalanceInterpretation ?? baseInterpretation, ...externalEntries].join("\n\n"));
 
   const responseBody = { result: { ...result, advanced }, interpretation };
   const session = await getActiveSessionFromRequest(req);
