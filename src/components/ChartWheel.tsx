@@ -192,6 +192,14 @@ export default function ChartWheel({
               key={label}
               className={isAsc ? "cursor-pointer transition-opacity hover:opacity-80" : undefined}
               onClick={isAsc ? scrollToAscendantSection : undefined}
+              onKeyDown={isAsc ? (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  scrollToAscendantSection();
+                }
+              } : undefined}
+              role={isAsc ? "button" : undefined}
+              tabIndex={isAsc ? 0 : undefined}
             >
               {isAsc && <title>გადადი ასცენდენტის ინტერპრეტაციაზე</title>}
               <line

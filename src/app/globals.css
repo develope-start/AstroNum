@@ -4107,6 +4107,10 @@ canvas {
   overflow-wrap: anywhere;
 }
 
+#ascendant-section {
+  scroll-margin-top: 1.25rem;
+}
+
 /* Mobile hero breathing room: reserve the tall outer space only while a
    temperament card is actually pinned open. */
 @media (max-width: 640px) {

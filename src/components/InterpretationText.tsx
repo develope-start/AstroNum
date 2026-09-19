@@ -103,6 +103,16 @@ export default function InterpretationText({ text }: { text: string }) {
   }
 
   const { preface, sections } = splitInterpretation(text);
+  const orderedSections = [...sections];
+  const ascendantIndex = orderedSections.findIndex((section) => section.heading.toLowerCase().includes("ასცენდენტი"));
+  const characterIndex = orderedSections.findIndex((section) => section.heading.toLowerCase().includes("რუკის ხასიათი"));
+
+  // Keep the map signature immediately above the Ascendant section even for
+  // older cached/database interpretations that were generated in another order.
+  if (ascendantIndex >= 0 && characterIndex >= 0 && characterIndex > ascendantIndex) {
+    const [characterSection] = orderedSections.splice(characterIndex, 1);
+    orderedSections.splice(ascendantIndex, 0, characterSection!);
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-hidden">
@@ -149,12 +159,11 @@ export default function InterpretationText({ text }: { text: string }) {
             {renderInline(block)}
           </p>
         ))}
-        {sections.map((section, index) => (
+        {orderedSections.map((section, index) => (
           <InterpretationSectionView key={`${section.heading}-${index}`} section={section} openByDefault={index === 0} />
         ))}
       </div>
     </div>
   );
 }
-
 
