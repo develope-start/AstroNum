@@ -216,11 +216,13 @@ export default function HomePage() {
                     >
                       ×
                     </button>
-                    <span className="celestial-temperament-kicker">კლასიკური ტემპერამენტების მოდელი</span>
-                    <strong>{temperamentInfo[element.id].temperament}</strong>
-                    <span className="celestial-temperament-lede">{temperamentInfo[element.id].short}</span>
-                    <p>{temperamentInfo[element.id].description}</p>
-                    <span className="celestial-temperament-note">ისტორიული ფსიქოლოგიური მოდელი — არა კლინიკური დიაგნოზი.</span>
+                    <div className="celestial-temperament-content">
+                      <span className="celestial-temperament-kicker">კლასიკური ტემპერამენტების მოდელი</span>
+                      <strong>{temperamentInfo[element.id].temperament}</strong>
+                      <span className="celestial-temperament-lede">{temperamentInfo[element.id].short}</span>
+                      <p>{temperamentInfo[element.id].description}</p>
+                      <span className="celestial-temperament-note">ისტორიული ფსიქოლოგიური მოდელი — არა კლინიკური დიაგნოზი.</span>
+                    </div>
                 </div>
               </section>
             ))}
