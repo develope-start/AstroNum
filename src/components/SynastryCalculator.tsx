@@ -8,7 +8,9 @@ import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
 import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Info, Heart } from "lucide-react";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
+import HouseSystemSelect from "./HouseSystemSelect";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
+import type { HouseSystem } from "@/lib/astro/positions";
 
 interface CacheShape {
   a: BirthValue;
@@ -16,12 +18,14 @@ interface CacheShape {
   interpretation: string;
   mapNumber?: string | null;
   calculation?: CalculationOptions;
+  houseSystem?: HouseSystem;
 }
 
 export default function SynastryCalculator() {
   const me = useMe();
   const [a, setA] = useState<BirthValue>(EMPTY_BIRTH);
   const [b, setB] = useState<BirthValue>(EMPTY_BIRTH);
+  const [houseSystem, setHouseSystem] = useState<HouseSystem>("placidus");
   const [calculation, setCalculation] = useState<CalculationOptions>({ ...DEFAULT_UI_CALCULATION });
   const [interpretation, setInterpretation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -36,12 +40,14 @@ export default function SynastryCalculator() {
       if (!active) {
         setA(EMPTY_BIRTH);
         setB(EMPTY_BIRTH);
+        setHouseSystem("placidus");
         setInterpretation(null);
         setMapNumber(null);
         return;
       }
       setA(cached.a);
       setB(cached.b);
+      setHouseSystem(cached.houseSystem ?? "placidus");
       setCalculation({ ...DEFAULT_UI_CALCULATION, ...(cached.calculation ?? {}) });
       setInterpretation(cached.interpretation);
       setMapNumber(cached.mapNumber ?? null);
@@ -73,7 +79,7 @@ export default function SynastryCalculator() {
       const res = await fetch("/api/chart/synastry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ personA: toPerson(a), personB: toPerson(b), calculation, save }),
+        body: JSON.stringify({ personA: toPerson(a), personB: toPerson(b), calculation, houseSystem, save }),
       });
       const data = await readApiResponse(res);
       if (!res.ok) {
@@ -83,7 +89,7 @@ export default function SynastryCalculator() {
       setInterpretation(data.interpretation);
       setMapNumber(data.mapNumber ?? null);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("synastry", { a, b, calculation, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
+      else saveGuestCache<CacheShape>("synastry", { a, b, calculation, houseSystem, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {
@@ -99,6 +105,7 @@ export default function SynastryCalculator() {
       </div>
 
       <CalculationSettings value={calculation} onChange={setCalculation} />
+      <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} />
 
       <div className="glass-panel relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl sm:rounded-[28px] p-4 sm:p-6 border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 backdrop-blur-2xl shadow-xl text-center w-full">
         <div className="flex items-center justify-center gap-2.5 text-xs font-bold uppercase tracking-wider text-amber-300">

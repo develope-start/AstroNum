@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
+import HouseSystemSelect from "./HouseSystemSelect";
 import InterpretationText from "./InterpretationText";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
 import { Loader2, Sparkles } from "lucide-react";
+import type { HouseSystem } from "@/lib/astro/positions";
 
 type AdvancedMode = "progression" | "directions" | "return" | "eclipse" | "harmonics";
 
@@ -30,6 +32,7 @@ function dateInputClass() {
 export default function AdvancedCalculator() {
   const [birth, setBirth] = useState<BirthValue>(EMPTY_BIRTH);
   const [mode, setMode] = useState<AdvancedMode>("progression");
+  const [houseSystem, setHouseSystem] = useState<HouseSystem>("placidus");
   const [targetDate, setTargetDate] = useState(today());
   const [startDate, setStartDate] = useState(today());
   const [endDate, setEndDate] = useState(nextYear());
@@ -56,9 +59,9 @@ export default function AdvancedCalculator() {
       let endpoint = "";
       let body: Record<string, unknown> = {};
       const natal = natalPayload();
-      if (mode === "progression") { endpoint = "/api/chart/progression"; body = { natal, targetDate, houseSystem: "placidus" }; }
+      if (mode === "progression") { endpoint = "/api/chart/progression"; body = { natal, targetDate, houseSystem }; }
       if (mode === "directions") { endpoint = "/api/chart/directions"; body = { natal, targetDate, houseSystem: "placidus" }; }
-      if (mode === "return") { endpoint = "/api/chart/return"; body = { natal, planet, startDate, endDate, houseSystem: "placidus" }; }
+      if (mode === "return") { endpoint = "/api/chart/return"; body = { natal, planet, startDate, endDate, houseSystem }; }
       if (mode === "eclipse") { endpoint = "/api/chart/eclipses"; body = { type: eclipseType, startDate, backward: false }; }
       if (mode === "harmonics") { endpoint = "/api/chart/harmonics"; body = { natal, harmonic: Number(harmonic) }; }
       const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -95,6 +98,7 @@ export default function AdvancedCalculator() {
           <select value={mode} onChange={(event) => setMode(event.target.value as AdvancedMode)} className={dateInputClass()}>
             {Object.entries(modeLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
+          {(mode === "progression" || mode === "return") && <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} />}
 
           {(mode === "progression" || mode === "directions") && <label className="block text-xs font-bold text-slate-300">სამიზნე თარიღი<input type="date" value={targetDate} onChange={(event) => setTargetDate(event.target.value)} className={`${dateInputClass()} mt-1`} /></label>}
           {mode === "return" && <>

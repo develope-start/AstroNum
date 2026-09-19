@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
 import SharedWideDateInput from "./WideDateInput";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
+import HouseSystemSelect from "./HouseSystemSelect";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
+import type { HouseSystem } from "@/lib/astro/positions";
 import InterpretationText from "./InterpretationText";
 import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
@@ -21,6 +23,7 @@ interface CacheShape {
   interpretation: string;
   mapNumber?: string | null;
   calculation?: CalculationOptions;
+  houseSystem?: HouseSystem;
 }
 
 function today(): string {
@@ -42,6 +45,7 @@ export default function TransitCalculator() {
   const [transitStartDate, setTransitStartDate] = useState(today());
   const [transitEndDate, setTransitEndDate] = useState(offsetDays(7));
   const [inputMode, setInputMode] = useState<TransitInputMode>("date");
+  const [houseSystem, setHouseSystem] = useState<HouseSystem>("placidus");
   const [calculation, setCalculation] = useState<CalculationOptions>({ ...DEFAULT_UI_CALCULATION });
   const [interpretation, setInterpretation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -59,6 +63,7 @@ export default function TransitCalculator() {
         setTransitStartDate(today());
         setTransitEndDate(offsetDays(7));
         setInputMode("date");
+        setHouseSystem("placidus");
         setInterpretation(null);
         setMapNumber(null);
         return;
@@ -68,6 +73,7 @@ export default function TransitCalculator() {
       setTransitStartDate(cached.transitStartDate ?? cached.transitDate);
       setTransitEndDate(cached.transitEndDate ?? cached.transitDate);
       setInputMode(cached.inputMode ?? "date");
+      setHouseSystem(cached.houseSystem ?? "placidus");
       setCalculation({ ...DEFAULT_UI_CALCULATION, ...(cached.calculation ?? {}) });
       setInterpretation(cached.interpretation);
       setMapNumber(cached.mapNumber ?? null);
@@ -111,6 +117,7 @@ export default function TransitCalculator() {
           transitStartDate: calculationStartDate,
           transitEndDate: calculationEndDate,
           calculation,
+          houseSystem,
           save,
         }),
       });
@@ -122,7 +129,7 @@ export default function TransitCalculator() {
       setInterpretation(data.interpretation);
       setMapNumber(data.mapNumber ?? null);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("transit", { birth, transitDate: calculationDate, transitStartDate: calculationStartDate, transitEndDate: calculationEndDate, inputMode: selectedMode, calculation, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
+      else saveGuestCache<CacheShape>("transit", { birth, transitDate: calculationDate, transitStartDate: calculationStartDate, transitEndDate: calculationEndDate, inputMode: selectedMode, calculation, houseSystem, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {
@@ -218,6 +225,7 @@ export default function TransitCalculator() {
           </div>
 
           <CalculationSettings value={calculation} onChange={setCalculation} />
+          <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} />
 
           <div className="flex flex-col gap-3 pt-2">
             <button

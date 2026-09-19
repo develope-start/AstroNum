@@ -6,11 +6,13 @@ import InterpretationText from "./InterpretationText";
 import ChartWheel, { WheelPlanet } from "./ChartWheel";
 import ElementBalanceGuide from "./ElementBalanceGuide";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
+import HouseSystemSelect from "./HouseSystemSelect";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
+import type { HouseSystem } from "@/lib/astro/positions";
 import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
-import { Sparkles, Bookmark, Sliders, Loader2, CheckCircle2, AlertCircle, Info } from "lucide-react";
+import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Info } from "lucide-react";
 
 interface WheelData {
   ascendant: number;
@@ -21,7 +23,7 @@ interface WheelData {
 
 interface CacheShape {
   birth: BirthValue;
-  houseSystem: string;
+  houseSystem: HouseSystem;
   interpretation: string;
   wheel: WheelData | null;
   mapNumber?: string | null;
@@ -31,7 +33,7 @@ interface CacheShape {
 export default function NatalCalculator() {
   const me = useMe();
   const [birth, setBirth] = useState<BirthValue>(EMPTY_BIRTH);
-  const [houseSystem, setHouseSystem] = useState("placidus");
+  const [houseSystem, setHouseSystem] = useState<HouseSystem>("placidus");
   const [calculation, setCalculation] = useState<CalculationOptions>({ ...DEFAULT_UI_CALCULATION });
   const [interpretation, setInterpretation] = useState<string | null>(null);
   const [wheel, setWheel] = useState<WheelData | null>(null);
@@ -122,25 +124,7 @@ export default function NatalCalculator() {
 
         {/* House System Filter & Action Card */}
         <div className="glass-panel relative z-10 space-y-5 rounded-2xl sm:rounded-[28px] p-4 sm:p-7 border-amber-500/25 bg-gradient-to-b from-[#130938]/90 to-[#09041a]/95 backdrop-blur-2xl shadow-xl text-center w-full lg:col-span-5 lg:h-full flex flex-col justify-center">
-          <div className="space-y-2">
-            <div className="flex items-center justify-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
-                <Sliders className="h-4 w-4" />
-              </div>
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-200">სახლთა სისტემა:</label>
-            </div>
-
-            <select
-              value={houseSystem}
-              onChange={(e) => setHouseSystem(e.target.value)}
-              className="w-full rounded-xl border border-amber-500/25 bg-[#080418] px-3 py-2.5 text-xs font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 hover:border-amber-500/40 text-center cursor-pointer"
-            >
-              <option value="placidus" className="bg-[#0A051D] text-slate-100">პლაციდუსი (Placidus)</option>
-              <option value="whole_sign" className="bg-[#0A051D] text-slate-100">მთელი ნიშანი (Whole Sign)</option>
-              <option value="equal" className="bg-[#0A051D] text-slate-100">თანაბარი (Equal)</option>
-              <option value="porphyry" className="bg-[#0A051D] text-slate-100">პორფირი (Porphyry)</option>
-            </select>
-          </div>
+          <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} />
 
           <CalculationSettings value={calculation} onChange={setCalculation} />
 
