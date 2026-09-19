@@ -3308,3 +3308,12 @@ canvas {
   opacity: 1 !important;
   pointer-events: auto !important;
 }
+
+/* The card opens outside its elemental panel; never clip that content. */
+.app-home .celestial-element-panel {
+  overflow: visible !important;
+}
+
+.app-home .celestial-temperament-card {
+  z-index: 1000 !important;
+}
