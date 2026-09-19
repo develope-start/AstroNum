@@ -57,6 +57,71 @@ function calculateElementBalance(planets: WheelPlanet[]) {
   };
 }
 
+const ELEMENT_GUIDES = [
+  {
+    id: "fire",
+    icon: "🔥",
+    title: "ქოლერიკი — ცეცხლის სტიქია",
+    signs: "ვერძი, ლომი, მშვილდოსანი",
+    qualities: "ცხელი და მშრალი",
+    description: "ეს არის მოქმედების, ლიდერობისა და ენერგიის ტემპერამენტი. ცეცხლის ნიშნები, ისევე როგორც ტიპური ქოლერიკები, არიან ამბიციურები, პირდაპირები, იმპულსურები და მუდამ წინ მიისწრაფვიან. ახასიათებთ სწრაფი აალება და მგზნებარე ნება, თუმცა სუსტი მხარე მოუთმენლობა და ფეთქებადობაა.",
+    sources: [
+      ["1", "https://saptarishisastrology.com/greek-medicine-and-astrology-1-2-by-david-osborn/"],
+      ["2", "https://saptarishisastrology.com/temperaments-of-the-zodiac-signs-by-david-osborn/"],
+      ["3", "https://en.wikipedia.org/wiki/Astrology_and_the_classical_elements"],
+      ["4", "https://www.wattpad.com/713334294-zodiac-scenarios-which-of-the-4-basic-temperaments"],
+      ["5", "https://thealignedlover.com/traditional-astrology-the-four-elements-and-their-core-qualities/"],
+      ["6", "https://en.wikipedia.org/wiki/Four_temperaments"],
+      ["7", "https://www.scribd.com/document/325090063/Four-Temperament"],
+    ],
+  },
+  {
+    id: "air",
+    icon: "💨",
+    title: "სანგვინიკი — ჰაერის სტიქია",
+    signs: "ტყუპები, სასწორი, მერწყული",
+    qualities: "ცხელი და ნოტიო",
+    description: "ეს არის კომუნიკაციის, აზროვნებისა და სოციალიზაციის ტემპერამენტი. ჰაერის ნიშნები, სანგვინიკების მსგავსად, არიან ძალიან ცოცხალები, ცნობისმოყვარეები, ოპტიმისტები და ადვილად ეგუებიან სიახლეებს. მათ უყვართ ხალხთან კონტაქტი და ინფორმაციის გაცვლა. სუსტი მხარეა ყურადღების გაფანტვა და არამდგრადობა.",
+    sources: [
+      ["1", "https://en.wikipedia.org/wiki/Four_temperaments"],
+      ["2", "https://en.wikipedia.org/wiki/Astrology_and_the_classical_elements"],
+      ["3", "https://saptarishisastrology.com/greek-medicine-and-astrology-1-2-by-david-osborn/"],
+      ["4", "https://mysticalanalytics.com/the-big-3-of-temperament/"],
+      ["5", "https://psychology.com/types/four-temperaments"],
+      ["6", "https://medaybe.com/the-four-temperaments-in-anthroposophy/"],
+      ["7", "https://fourtemperaments.com/4-primary-temperaments/"],
+    ],
+  },
+  {
+    id: "earth",
+    icon: "🪵",
+    title: "მელანქოლიკი — მიწის სტიქია",
+    signs: "კურო, ქალწული, თხის რქა",
+    qualities: "ცივი და მშრალი",
+    description: "ეს არის სტრუქტურის, ანალიზისა და მატერიალური რეალიზაციის ტემპერამენტი. მიწის ნიშნები, ტრადიციული მელანქოლიკებივით, არიან შრომისმოყვარეები, დისციპლინირებულები, პრაქტიკულები და დეტალებზე ორიენტირებულები. მათ უყვართ წესრიგი და საქმის საფუძვლიანად კეთება. სუსტი მხარეა გადამეტებული სიფრთხილე, ჩაკეტილობა და პესიმიზმისკენ მიდრეკილება.",
+    sources: [
+      ["1", "https://lifeencounter.com/personality-temperament-zodiac-signs-and-what-kind-of-poptart-you-are/"],
+      ["2", "https://en.wikipedia.org/wiki/Astrology_and_the_classical_elements"],
+      ["3", "https://saptarishisastrology.com/greek-medicine-and-astrology-1-2-by-david-osborn/"],
+      ["4", "https://medaybe.com/the-four-temperaments-in-anthroposophy/"],
+      ["5", "https://judithfrizlen.com/2021/10/24/do-you-know-your-temperament/"],
+      ["6", "https://fourtemperaments.com/4-primary-temperaments/"],
+      ["7", "https://www.wattpad.com/713334294-zodiac-scenarios-which-of-the-4-basic-temperaments"],
+      ["8", "https://www.scribd.com/document/325090063/Four-Temperament"],
+      ["9", "https://en.wikipedia.org/wiki/Four_temperaments"],
+    ],
+  },
+  {
+    id: "water",
+    icon: "🌊",
+    title: "ფლეგმატიკი — წყლის სტიქია",
+    signs: "კირჩხიბი, მორიელი, თევზები",
+    qualities: "ცივი და ნოტიო",
+    description: "ეს არის შინაგანი სამყაროს, გრძნობებისა და მდგრადობის ტემპერამენტი. წყლის ნიშნები, კლასიკური ფლეგმატიკების მსგავსად, გარეგნულად არიან აუღელვებლები, მშვიდები, თავშეკავებულები და ინტროვერტულები. მათ აქვთ მდიდარი შინაგანი ცხოვრება და საოცარი მოთმინების უნარი. სუსტი მხარეა პასიურობა და ცვლილებებისადმი შინაგანი წინააღმდეგობა.",
+    sources: [],
+  },
+] as const;
+
 export default function NatalCalculator() {
   const me = useMe();
   const [birth, setBirth] = useState<BirthValue>(EMPTY_BIRTH);
@@ -276,6 +341,46 @@ export default function NatalCalculator() {
               <div className="infographic-bar-bg h-1.5">
                 <div className="infographic-bar-fill bg-gradient-to-r from-sky-500 to-indigo-400" style={{ width: `${elements.water}%` }} />
               </div>
+            </div>
+          </div>
+
+          <div className="border-t border-amber-500/20 pt-4 text-left">
+            <h4 className="mb-3 text-center font-display text-sm font-bold text-amber-200 sm:text-base">
+              სტიქიებისა და ტემპერამენტების განმარტება
+            </h4>
+            <div className="grid gap-3 lg:grid-cols-2">
+              {ELEMENT_GUIDES.map((guide) => (
+                <article
+                  key={guide.id}
+                  className="rounded-2xl border border-slate-700/60 bg-slate-950/35 p-3.5 text-xs leading-relaxed text-slate-200 sm:p-4 sm:text-sm"
+                >
+                  <h5 className="mb-2 font-display text-sm font-bold text-amber-200 sm:text-base">
+                    {guide.icon} {guide.title}
+                  </h5>
+                  <p><strong className="text-slate-100">ზოდიაქოს ნიშნები:</strong> {guide.signs}.</p>
+                  <p><strong className="text-slate-100">თვისებები ასტროლოგიაში:</strong> {guide.qualities}.</p>
+                  <p className="mt-1.5">
+                    <strong className="text-slate-100">ზოგადი განმარტება:</strong> {guide.description}{" "}
+                    {guide.sources.length > 0 && (
+                      <span className="whitespace-normal">
+                        [{guide.sources.map(([label, href], index) => (
+                          <span key={label}>
+                            {index > 0 && ", "}
+                            <a
+                              href={href}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-amber-300 underline decoration-amber-400/50 underline-offset-2 hover:text-amber-200"
+                            >
+                              {label}
+                            </a>
+                          </span>
+                        ))}]
+                      </span>
+                    )}
+                  </p>
+                </article>
+              ))}
             </div>
           </div>
         </div>
