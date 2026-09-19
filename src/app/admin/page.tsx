@@ -1017,11 +1017,12 @@ export default function AdminPage() {
     CHART_DELETED: "წაშლილი — შედგენილი რუკა",
     CALCULATION_DELETED: "წაშლილი — რუკის ჩანაწერი",
     ACCOUNT_RESTORED: "აღდგენილი — ანგარიში",
+    CHART_RESTORED: "აღდგენილი — რუკა",
     CALCULATION_RESTORED: "აღდგენილი — შედგენილი რუკა",
   };
   const eventBaseType = (type: string) => type.split(":", 1)[0];
   const eventIsDeleted = (type: string) => ["ACCOUNT_DELETED", "ACCOUNT_AND_CHARTS_DELETED", "CHART_DELETED", "CALCULATION_DELETED"].includes(eventBaseType(type));
-  const eventIsRestored = (type: string) => ["ACCOUNT_RESTORED", "CALCULATION_RESTORED", "ACCOUNT_CREATED", "ADMIN_CREATED", "PRIMARY_ADMIN_RECOVERED"].includes(eventBaseType(type));
+  const eventIsRestored = (type: string) => ["ACCOUNT_RESTORED", "CHART_RESTORED", "CALCULATION_RESTORED", "ACCOUNT_CREATED", "ADMIN_CREATED", "PRIMARY_ADMIN_RECOVERED"].includes(eventBaseType(type));
 
   const filteredAccountEvents = useMemo(() => {
     if (!accountEvents) return null;
@@ -1396,7 +1397,7 @@ export default function AdminPage() {
                   onChange={() => setSelectedAccountEvents((current) => current.includes(event.id) ? current.filter((id) => id !== event.id) : [...current, event.id])}
                 />
                 <div>
-                <span className={`inline-flex rounded-full border px-2.5 py-1 font-bold ${eventIsDeleted(event.type) ? "border-rose-400/70 bg-rose-950/50 text-rose-300" : eventIsRestored(event.type) ? "border-emerald-400/70 bg-emerald-950/50 text-emerald-300" : "border-amber-400/50 bg-amber-500/10 text-brass-2"}`}>
+                <span className={`inline-flex rounded-full border px-2.5 py-1 font-bold ${eventIsDeleted(event.type) ? "border-rose-400/70 bg-rose-950/50 text-rose-300" : eventIsRestored(event.type) ? "border-sky-400/70 bg-sky-950/50 text-sky-300" : "border-amber-400/50 bg-amber-500/10 text-brass-2"}`}>
                   <HighlightText value={eventStatusLabel[eventBaseType(event.type)] ?? eventLabel[eventBaseType(event.type)] ?? event.type} query={highlightQuery} />
                 </span>
                 <span className="ml-3 font-bold text-parchment-dim">იუზერი:</span>
