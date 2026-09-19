@@ -190,7 +190,7 @@ export default function ChartWheel({
           return (
             <g
               key={label}
-              className={isAsc ? "cursor-pointer transition-opacity hover:opacity-80" : undefined}
+              className={isAsc ? "ascendant-axis cursor-pointer transition-opacity hover:opacity-80" : undefined}
               onClick={isAsc ? scrollToAscendantSection : undefined}
               onKeyDown={isAsc ? (event) => {
                 if (event.key === "Enter" || event.key === " ") {

@@ -4288,6 +4288,14 @@ canvas {
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.18), 0 10px 25px -17px rgba(129, 140, 248, 0.95) !important;
 }
 
+/* SVG groups receive a browser focus outline after a mouse click. The ASC
+   marker remains keyboard accessible, but its focus should not frame the
+   whole diagonal axis with a rectangular outline. */
+.ascendant-axis:focus,
+.ascendant-axis:focus-visible {
+  outline: none;
+}
+
 /* The element synthesis header has three competing controls on a phone.
    Give the heading the full readable row, then place ASC below it instead of
    squeezing every word into a narrow vertical strip. */
