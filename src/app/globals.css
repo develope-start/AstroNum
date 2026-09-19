@@ -4051,3 +4051,56 @@ canvas {
   word-break: normal;
   overflow-wrap: anywhere;
 }
+
+/* Mobile hero breathing room: reserve the tall outer space only while a
+   temperament card is actually pinned open. */
+@media (max-width: 640px) {
+  .app-home .hero-grid {
+    padding-bottom: 1.25rem;
+  }
+
+  .app-home .hero-orbit-card {
+    min-height: clamp(24rem, 105vw, 34rem) !important;
+    margin: 0.75rem auto 0.75rem !important;
+    transition: min-height 260ms ease, margin 260ms ease;
+  }
+
+  /* Closed state: keep all four elemental frames inside the main instrument. */
+  .app-home .celestial-element-panel-fire,
+  .app-home .celestial-element-panel-earth {
+    top: 0.7rem !important;
+  }
+
+  .app-home .celestial-element-panel-air,
+  .app-home .celestial-element-panel-water {
+    bottom: 0.7rem !important;
+  }
+
+  /* Top elements open upward and get only the upper breathing room they need. */
+  .app-home .hero-orbit-card:has(.celestial-element-panel-fire.is-info-open),
+  .app-home .hero-orbit-card:has(.celestial-element-panel-earth.is-info-open) {
+    min-height: clamp(38rem, 135vw, 48rem) !important;
+    margin-top: 8.5rem !important;
+  }
+
+  .app-home .hero-orbit-card:has(.celestial-element-panel-fire.is-info-open) .celestial-element-panel-fire,
+  .app-home .hero-orbit-card:has(.celestial-element-panel-earth.is-info-open) .celestial-element-panel-earth {
+    top: -8.5rem !important;
+  }
+
+  /* Bottom elements open downward and get only the lower breathing room they need. */
+  .app-home .hero-orbit-card:has(.celestial-element-panel-air.is-info-open),
+  .app-home .hero-orbit-card:has(.celestial-element-panel-water.is-info-open) {
+    min-height: clamp(38rem, 135vw, 48rem) !important;
+    margin-bottom: 8.5rem !important;
+  }
+
+  .app-home .hero-orbit-card:has(.celestial-element-panel-air.is-info-open) .celestial-element-panel-air,
+  .app-home .hero-orbit-card:has(.celestial-element-panel-water.is-info-open) .celestial-element-panel-water {
+    bottom: -8.5rem !important;
+  }
+
+  .app-home .celestial-element-panel {
+    transition: top 260ms ease, bottom 260ms ease, transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+  }
+}
