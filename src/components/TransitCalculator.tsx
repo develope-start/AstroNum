@@ -81,7 +81,7 @@ export default function TransitCalculator() {
   }, []);
 
   async function calculate(save = false) {
-    if (!birth.name || !birth.date || !birth.time || birth.lat === null || birth.timezone === null) {
+    if (!birth.name || !birth.date || !birth.time || birth.lat === null || birth.lon === null || birth.timezone === null) {
       setError("შეავსეთ დაბადების მონაცემები და დაადასტურეთ ადგილის მოძებნა.");
       return;
     }

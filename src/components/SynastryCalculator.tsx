@@ -55,7 +55,7 @@ export default function SynastryCalculator() {
   }, []);
 
   function ready(p: BirthValue) {
-    return p.name && p.date && p.time && p.lat !== null && p.timezone !== null;
+    return p.name && p.date && p.time && p.lat !== null && p.lon !== null && p.timezone !== null;
   }
 
   async function calculate(save = false) {

@@ -64,7 +64,7 @@ export default function NatalCalculator() {
   }, []);
 
   async function calculate(save = false) {
-    if (!birth.name || !birth.date || !birth.time || birth.lat === null || birth.timezone === null) {
+    if (!birth.name || !birth.date || !birth.time || birth.lat === null || birth.lon === null || birth.timezone === null) {
       setError("შეავსეთ სახელი, თარიღი, დრო და დაბადების ადგილი (დაადასტურეთ ადგილის მოძებნა).");
       return;
     }
