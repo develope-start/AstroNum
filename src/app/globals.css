@@ -3390,30 +3390,33 @@ canvas {
   min-width: 0;
   min-height: 0;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding: 1.2rem 0.65rem 0.65rem !important;
+  padding: 1.3rem 0.8rem 0.85rem !important;
   word-break: break-word;
   overflow-wrap: break-word;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-width: thin !important;
+  scrollbar-color: color-mix(in srgb, var(--element-text) 50%, rgba(255, 255, 255, 0.25)) rgba(0, 0, 0, 0.15) !important;
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar {
-  width: 0.12rem;
+  width: 4px !important;
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.15) !important;
+  border-radius: 999px !important;
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--element-text) 50%, rgba(255, 255, 255, 0.25)) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
 }
 
 .app-home .celestial-temperament-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--element-text) 80%, white) !important;
 }
 
 /* Pinned close button at absolute top-right of modal frame - never scrolls away */
