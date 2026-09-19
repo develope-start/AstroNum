@@ -194,13 +194,14 @@ export function generateNatalInterpretation(input: PlacementInput): string {
   const parts: string[] = [];
 
   parts.push(`## გამოთვლისა და ინტერპრეტაციის საფუძველი\n\n${methodNote()}`);
-  parts.push(`## ასცენდენტი — ${ascSign.signName} (${formatDegree(ascSign.degreeInSign)})`);
-  parts.push(
-    `თქვენი ასცენდენტი განსაზღვრავს, როგორ წარსდგებით სამყაროს წინაშე პირველი შეხვედრისას — ${SIGN_QUALITY_KA[ascSign.signName]}. ეს არის თქვენი "ინტერფეისი" გარესამყაროსთან, არა აუცილებლად შინაგანი არსი.`
-  );
 
   parts.push(`\n## რუკის ხასიათი`);
   parts.push(chartSignature(planets));
+
+  parts.push(`\n## ასცენდენტი — ${ascSign.signName} (${formatDegree(ascSign.degreeInSign)})`);
+  parts.push(
+    `თქვენი ასცენდენტი განსაზღვრავს, როგორ წარსდგებით სამყაროს წინაშე პირველი შეხვედრისას — ${SIGN_QUALITY_KA[ascSign.signName]}. ეს არის თქვენი "ინტერფეისი" გარესამყაროსთან, არა აუცილებლად შინაგანი არსი.`
+  );
 
   if (sun) {
     parts.push(`\n## მზე — ${eclipticToSign(sun.longitude).signName}`);

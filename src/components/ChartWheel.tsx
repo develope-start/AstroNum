@@ -1,5 +1,7 @@
 "use client";
 
+import { scrollToAscendantSection } from "@/lib/scrollToAscendant";
+
 const SIGN_SYMBOLS = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
 const SIGN_COLORS = [
   "#FF3B30", "#D97706", "#38BDF8", "#2563EB", // ცეცხლი/მიწა/ჰაერი/წყალი
@@ -183,9 +185,15 @@ export default function ChartWheel({
           const pEnd = toXY(lon, rOuter + size * 0.035);
           const pBadge = toXY(lon, rOuter + size * 0.08);
           const pInner = toXY(lon, rInner);
+          const isAsc = label === "ASC";
 
           return (
-            <g key={label}>
+            <g
+              key={label}
+              className={isAsc ? "cursor-pointer transition-opacity hover:opacity-80" : undefined}
+              onClick={isAsc ? scrollToAscendantSection : undefined}
+            >
+              {isAsc && <title>გადადი ასცენდენტის ინტერპრეტაციაზე</title>}
               <line
                 x1={pInner.x}
                 y1={pInner.y}

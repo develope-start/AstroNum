@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Clock, Calendar, Copy, Check, Sparkles, BookOpen } from "lucide-react";
 
 function renderInline(text: string) {
@@ -44,9 +44,30 @@ function splitInterpretation(text: string) {
 
 function InterpretationSectionView({ section, openByDefault }: { section: InterpretationSection; openByDefault: boolean }) {
   const [open, setOpen] = useState(openByDefault);
+  const isAscendant = section.heading.toLowerCase().includes("ასცენდენტი");
+
+  useEffect(() => {
+    if (!isAscendant) return;
+    const handleScrollEvent = () => {
+      setOpen(true);
+      setTimeout(() => {
+        const el = document.getElementById("ascendant-section");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 50);
+    };
+    window.addEventListener("scroll-to-ascendant", handleScrollEvent);
+    return () => window.removeEventListener("scroll-to-ascendant", handleScrollEvent);
+  }, [isAscendant]);
 
   return (
-    <details open={open} onToggle={(event) => setOpen(event.currentTarget.open)} className="interpretation-accordion">
+    <details
+      id={isAscendant ? "ascendant-section" : undefined}
+      open={open}
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+      className="interpretation-accordion"
+    >
       <summary className="interpretation-accordion-summary">
         <span className="interpretation-accordion-icon"><Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-300" /></span>
         <span className="interpretation-accordion-title">{section.heading}</span>

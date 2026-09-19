@@ -7,6 +7,7 @@ import ChartWheel, { WheelPlanet } from "./ChartWheel";
 import ElementTemperamentDetails from "./ElementTemperamentDetails";
 import ElementSynthesisTable from "./ElementSynthesisTable";
 import ElementSources from "./ElementSources";
+import ElementBalanceGuide from "./ElementBalanceGuide";
 import { ELEMENT_TEMPERAMENTS } from "@/lib/elementTemperaments";
 import { calculateElementBalance as calculateSharedElementBalance } from "@/lib/elementBalance";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
@@ -213,78 +214,8 @@ export default function NatalCalculator() {
       )}
 
       {/* Element Infographic Breakdown */}
-      {wheel && elements && (
-        <div className="glass-panel rounded-2xl sm:rounded-[28px] p-4 sm:p-6 border-amber-500/25 bg-gradient-to-b from-[#130938]/90 to-[#09041a]/95 backdrop-blur-2xl shadow-xl space-y-3 sm:space-y-4 text-center">
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 border-b border-amber-500/20 pb-3">
-            <span className="font-display text-xs sm:text-sm font-bold text-amber-300 flex items-center justify-center gap-1.5">
-              <Compass className="h-4 w-4 text-amber-400 shrink-0" />
-              <span>სტიქიების ბალანსი & ცის ღერძები</span>
-            </span>
-            <span className="rounded-full border border-purple-400/30 bg-purple-500/10 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[0.7rem] sm:text-xs font-bold text-purple-300">
-              ASC: {getSignName(wheel.ascendant)} ({Math.floor(wheel.ascendant % 30)}°)
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4 text-xs">
-            <div className="rounded-xl border border-rose-500/30 bg-rose-950/30 p-2.5 sm:p-3 space-y-1.5 text-center">
-              <div className="flex justify-between font-bold text-rose-300 text-[0.7rem] sm:text-xs">
-                <span className="flex items-center gap-1"><Flame className="h-3 w-3 text-rose-400" /> ცეცხლი</span>
-                <span>{elements.percentages.fire}%</span>
-              </div>
-              <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-rose-500 to-red-600" style={{ width: `${elements.percentages.fire}%` }} />
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-amber-600/30 bg-amber-950/35 p-2.5 sm:p-3 space-y-1.5 text-center">
-              <div className="flex justify-between font-bold text-amber-300 text-[0.7rem] sm:text-xs">
-                <span className="flex items-center gap-1"><Mountain className="h-3 w-3 text-amber-500" /> მიწა</span>
-                <span>{elements.percentages.earth}%</span>
-              </div>
-              <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-amber-600 to-yellow-800" style={{ width: `${elements.percentages.earth}%` }} />
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-sky-400/30 bg-sky-950/30 p-2.5 sm:p-3 space-y-1.5 text-center">
-              <div className="flex justify-between font-bold text-sky-200 text-[0.7rem] sm:text-xs">
-                <span className="flex items-center gap-1"><Wind className="h-3 w-3 text-sky-300" /> ჰაერი</span>
-                <span>{elements.percentages.air}%</span>
-              </div>
-              <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-sky-400 to-cyan-300" style={{ width: `${elements.percentages.air}%` }} />
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-blue-600/30 bg-blue-950/40 p-2.5 sm:p-3 space-y-1.5 text-center">
-              <div className="flex justify-between font-bold text-blue-300 text-[0.7rem] sm:text-xs">
-                <span className="flex items-center gap-1"><Droplets className="h-3 w-3 text-blue-400" /> წყალი</span>
-                <span>{elements.percentages.water}%</span>
-              </div>
-              <div className="infographic-bar-bg h-1.5">
-                <div className="infographic-bar-fill bg-gradient-to-r from-blue-600 to-indigo-900" style={{ width: `${elements.percentages.water}%` }} />
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-amber-500/20 pt-4 text-left">
-            <h4 className="mb-3 text-center font-display text-sm font-bold text-amber-200 sm:text-base">
-              სტიქიებისა და ტემპერამენტების განმარტება
-            </h4>
-            <div className="grid gap-3 lg:grid-cols-2">
-              {ELEMENT_GUIDES.map((guide) => (
-                <article
-                  key={guide.id}
-                  className="rounded-2xl border border-slate-700/60 bg-slate-950/35 p-3.5 text-xs leading-relaxed text-slate-200 sm:p-4 sm:text-sm"
-                >
-                  <ElementTemperamentDetails element={guide.id} />
-                </article>
-              ))}
-            </div>
-          </div>
-          <ElementSynthesisTable />
-          <ElementSources />
-        </div>
+      {wheel && (
+        <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />
       )}
 
       {/* Chart Wheel Display */}
