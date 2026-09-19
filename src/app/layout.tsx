@@ -1,4 +1,24 @@
 import type { Metadata } from "next";
+import "@fontsource/noto-sans-georgian/georgian-400.css";
+import "@fontsource/noto-sans-georgian/georgian-500.css";
+import "@fontsource/noto-sans-georgian/georgian-600.css";
+import "@fontsource/noto-sans-georgian/georgian-700.css";
+import "@fontsource/noto-sans-georgian/georgian-800.css";
+import "@fontsource/noto-sans-georgian/latin-400.css";
+import "@fontsource/noto-sans-georgian/latin-500.css";
+import "@fontsource/noto-sans-georgian/latin-600.css";
+import "@fontsource/noto-sans-georgian/latin-700.css";
+import "@fontsource/noto-sans-georgian/latin-800.css";
+import "@fontsource/noto-serif-georgian/georgian-400.css";
+import "@fontsource/noto-serif-georgian/georgian-500.css";
+import "@fontsource/noto-serif-georgian/georgian-600.css";
+import "@fontsource/noto-serif-georgian/georgian-700.css";
+import "@fontsource/noto-serif-georgian/georgian-800.css";
+import "@fontsource/noto-serif-georgian/latin-400.css";
+import "@fontsource/noto-serif-georgian/latin-500.css";
+import "@fontsource/noto-serif-georgian/latin-600.css";
+import "@fontsource/noto-serif-georgian/latin-700.css";
+import "@fontsource/noto-serif-georgian/latin-800.css";
 import "./globals.css";
 import Nav from "@/components/Nav";
 
@@ -10,22 +30,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ka" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Serif+Georgian:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <style>{`
-          :root {
-            --font-display: 'Noto Serif Georgian', serif;
-            --font-body: 'Noto Sans Georgian', sans-serif;
-          }
-          body { font-family: var(--font-body); }
-          h1, h2, h3, .font-display { font-family: var(--font-display); }
-        `}</style>
-      </head>
       <body className="app-body relative min-h-screen overflow-x-hidden star-field text-slate-100 selection:bg-violet-300 selection:text-slate-950">
         <div className="pointer-events-none fixed -top-48 left-1/2 -z-10 h-[620px] w-[920px] -translate-x-1/2 rounded-full bg-indigo-500/10 blur-[150px]" />
         <div className="pointer-events-none fixed bottom-0 -right-48 -z-10 h-[520px] w-[520px] rounded-full bg-sky-500/5 blur-[130px]" />

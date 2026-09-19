@@ -18,6 +18,8 @@
     --accent-gold-hover: #ede9fe;
     --accent-purple: #8b5cf6;
     --accent-blue: #7dd3fc;
+    --font-display: 'Noto Serif Georgian', Georgia, serif;
+    --font-body: 'Noto Sans Georgian', Arial, sans-serif;
   }
 }
 
@@ -55,6 +57,10 @@ body {
   background-color: var(--bg-main);
   color: var(--text-primary);
   font-family: var(--font-body), sans-serif;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display), serif;
 }
 
 ::selection {
