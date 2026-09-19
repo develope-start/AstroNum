@@ -70,12 +70,13 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
                   key={bar.id}
                   type="button"
                   onClick={() => focusElementInterpretation(bar.id)}
-                  className="element-balance-indicator rounded-xl border border-white/10 bg-white/[0.035] p-2.5 text-left shadow-[inset_0_1px_rgba(255,255,255,0.04)] transition-all duration-200 hover:border-white/25 hover:bg-white/[0.075] hover:shadow-[0_8px_20px_-16px_rgba(148,163,184,0.8)] focus-visible:border-slate-300/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/20 sm:p-3"
+                  data-element={bar.id}
+                  className="element-balance-indicator rounded-xl border p-2.5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/20 sm:p-3"
                   aria-label={`გადადით ${bar.label} სტიქიის ინტერპრეტაციაზე`}
                 >
-                  <div className="flex items-center justify-between gap-2 font-semibold text-slate-200 text-[0.7rem] sm:text-xs">
-                    <span className="flex min-w-0 items-center gap-1.5 truncate"><Icon className={`h-3 w-3 shrink-0 ${bar.iconClass}`} /> <span className="truncate">{bar.label}</span></span>
-                    <span className="shrink-0 tabular-nums text-slate-100">{bar.value}%</span>
+                  <div className="element-balance-indicator-header flex items-center justify-between gap-2 font-semibold text-[0.7rem] sm:text-xs">
+                    <span className="element-balance-indicator-name flex min-w-0 items-center gap-1.5 truncate"><Icon className={`element-balance-indicator-icon h-3 w-3 shrink-0 ${bar.iconClass}`} /> <span className="truncate">{bar.label}</span></span>
+                    <span className="element-balance-indicator-value shrink-0 tabular-nums">{bar.value}%</span>
                   </div>
                   <div className="infographic-bar-bg h-1.5">
                     <div className={`infographic-bar-fill bg-gradient-to-r ${bar.gradient}`} style={{ width: `${bar.value}%` }} />
