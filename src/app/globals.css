@@ -2274,3 +2274,147 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   .celestial-element-items b { font-size: 0.6rem; }
   .celestial-element-label { font-size: 0.4rem; }
 }
+
+/* Final glass pass: quiet admin hierarchy and richer elemental corner cards. */
+.admin-page .admin-history-section,
+.admin-page #registered-calculations-section > details,
+.admin-page #guest-calculations-section > details,
+.admin-page #account-events-section > details,
+.admin-page .admin-trash-section {
+  border: 1px solid rgba(168, 178, 204, 0.17) !important;
+  background: linear-gradient(145deg, rgba(19, 23, 39, 0.7), rgba(8, 11, 21, 0.82)) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.045), 0 22px 56px -42px rgba(0, 0, 0, 0.96) !important;
+}
+
+.admin-page .admin-history-section > summary,
+.admin-page #registered-calculations-section > details > summary,
+.admin-page #guest-calculations-section > details > summary,
+.admin-page #account-events-section > details > summary,
+.admin-page .admin-trash-summary {
+  border-radius: 0.95rem;
+  color: #d8dceb !important;
+  transition: background 180ms ease, color 180ms ease;
+}
+
+.admin-page .admin-history-section > summary:hover,
+.admin-page #registered-calculations-section > details > summary:hover,
+.admin-page #guest-calculations-section > details > summary:hover,
+.admin-page #account-events-section > details > summary:hover,
+.admin-page .admin-trash-summary:hover {
+  background: rgba(99, 102, 241, 0.08);
+  color: #f0effb !important;
+}
+
+.admin-page #registered-calculations-section h3,
+.admin-page #guest-calculations-section h2,
+.admin-page #account-events-section h2,
+.admin-page .admin-trash-section h2 {
+  background-image: none !important;
+  color: #e1e4ef !important;
+  -webkit-text-fill-color: #e1e4ef !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+.admin-page a[href="#account-events-section"],
+.admin-page a[href="#deleted-users-section"],
+.admin-page a[href="#deleted-calculations-section"] {
+  min-height: 2.35rem;
+  border: 1px solid rgba(167, 139, 250, 0.28) !important;
+  border-radius: 0.78rem !important;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.13), rgba(17, 21, 39, 0.78)) !important;
+  color: #cbc5ed !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.045), 0 14px 30px -27px rgba(99, 102, 241, 0.75) !important;
+  transform: none !important;
+}
+
+.admin-page a[href="#account-events-section"]:hover,
+.admin-page a[href="#deleted-users-section"]:hover,
+.admin-page a[href="#deleted-calculations-section"]:hover {
+  border-color: rgba(196, 181, 253, 0.56) !important;
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.22), rgba(32, 37, 68, 0.82)) !important;
+  color: #f0edff !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 0 18px 34px -26px rgba(129, 140, 248, 0.8) !important;
+  transform: translateY(-1px) !important;
+}
+
+.admin-page #account-events-section button,
+.admin-page .admin-trash-section button {
+  border-width: 1px !important;
+  border-radius: 0.7rem !important;
+  box-shadow: none !important;
+}
+
+.admin-page .text-emerald-400.font-bold,
+.admin-page .text-rose-400.font-bold {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(168, 178, 204, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.14rem 0.4rem;
+  background: rgba(99, 102, 241, 0.07);
+  color: #cbd2e3 !important;
+  font-weight: 650 !important;
+  text-shadow: none !important;
+}
+
+.admin-page .text-emerald-400.font-bold { border-color: rgba(110, 231, 183, 0.22); }
+.admin-page .text-rose-400.font-bold { border-color: rgba(251, 146, 160, 0.22); }
+
+.celestial-element-panel {
+  width: clamp(9.5rem, 19vw, 14rem);
+  overflow: hidden;
+  isolation: isolate;
+  border-color: color-mix(in srgb, var(--element-border) 86%, white 14%);
+  padding: 0.82rem 0.88rem;
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+}
+
+.celestial-element-panel::before {
+  position: absolute;
+  inset: -70% -30%;
+  z-index: -1;
+  content: "";
+  background: linear-gradient(115deg, transparent 38%, color-mix(in srgb, var(--element-text) 22%, transparent) 50%, transparent 62%);
+  opacity: 0;
+  transform: translateX(-42%) rotate(12deg);
+  transition: opacity 220ms ease, transform 600ms ease;
+}
+
+.celestial-element-panel:hover,
+.celestial-element-panel:focus-within {
+  border-color: color-mix(in srgb, var(--element-text) 72%, white 28%);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--element-bg) 92%, white 8%), rgba(10, 13, 26, 0.8));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.1), 0 18px 42px -28px var(--element-glow), 0 0 30px -12px var(--element-glow);
+  transform: translateY(-2px);
+}
+
+.celestial-element-panel:hover::before,
+.celestial-element-panel:focus-within::before {
+  opacity: 1;
+  transform: translateX(42%) rotate(12deg);
+}
+
+.celestial-element-panel-air { --element-border: rgba(155, 224, 249, 0.52); --element-text: #c5efff; --element-bg: rgba(31, 92, 120, 0.44); --element-glow: rgba(89, 201, 239, 0.58); }
+.celestial-element-panel-water { --element-border: rgba(91, 137, 206, 0.58); --element-text: #a9c7f4; --element-bg: rgba(22, 53, 101, 0.52); --element-glow: rgba(57, 117, 210, 0.62); }
+.celestial-element-panel-earth { --element-border: rgba(220, 187, 141, 0.5); --element-text: #ead0a5; --element-bg: rgba(86, 63, 43, 0.48); --element-glow: rgba(192, 143, 91, 0.54); }
+.celestial-element-panel-fire { --element-border: rgba(246, 141, 117, 0.52); --element-text: #ffd0bd; --element-bg: rgba(104, 38, 36, 0.52); --element-glow: rgba(239, 104, 81, 0.62); }
+
+.celestial-element-symbol,
+.celestial-element-items span {
+  border-color: color-mix(in srgb, var(--element-text) 78%, transparent);
+  box-shadow: 0 0 14px -3px var(--element-glow);
+}
+
+.celestial-element-symbol { width: 2.1rem; height: 2.1rem; font-size: 1.5rem; }
+.celestial-element-items { gap: 0.38rem; }
+.celestial-element-items span { width: 1.5rem; height: 1.5rem; }
+.celestial-element-items b { color: var(--element-text); font-size: 0.86rem; }
+
+@media (max-width: 640px) {
+  .celestial-element-panel { width: clamp(7.5rem, 27vw, 9.2rem); padding: 0.58rem; }
+  .celestial-element-symbol { width: 1.7rem; height: 1.7rem; font-size: 1.18rem; }
+  .celestial-element-items { gap: 0.2rem; }
+  .celestial-element-items span { width: 1.2rem; height: 1.2rem; }
+  .celestial-element-items b { font-size: 0.68rem; }
+}
