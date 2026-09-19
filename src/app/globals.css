@@ -3351,14 +3351,31 @@ canvas {
   overflow: visible !important;
 }
 
-/* Modal centering, 2/3 overlap on card (1/3 exposed), extending outwards with smooth adaptive height */
+/* Modal placement & edge alignment:
+   Fire & Air (Left Cards): Left edge matches card left edge (left: 0), expanding INWARDS to the right.
+   Earth & Water (Right Cards): Right edge matches card right edge (right: 0), expanding INWARDS to the left.
+   This prevents horizontal screen clipping/overflow at any viewport size or zoom level!
+*/
+.app-home .celestial-element-panel-fire > .celestial-temperament-card,
+.app-home .celestial-element-panel-air > .celestial-temperament-card {
+  left: 0 !important;
+  right: auto !important;
+  transform: none !important;
+  max-width: calc(100vw - 2.5rem) !important;
+}
+
+.app-home .celestial-element-panel-earth > .celestial-temperament-card,
+.app-home .celestial-element-panel-water > .celestial-temperament-card {
+  right: 0 !important;
+  left: auto !important;
+  transform: none !important;
+  max-width: calc(100vw - 2.5rem) !important;
+}
+
 .app-home .celestial-element-panel[data-info-placement="below"] > .celestial-temperament-card,
 .app-home .celestial-temperament-card-below {
   top: 33.333% !important;
   bottom: auto !important;
-  left: 50% !important;
-  right: auto !important;
-  transform: translateX(-50%) !important;
   height: clamp(16rem, 30vh, 22rem) !important;
   max-height: clamp(16rem, 65vh, 25rem) !important;
   width: clamp(14.8rem, 24vw, 19.5rem) !important;
@@ -3368,9 +3385,6 @@ canvas {
 .app-home .celestial-temperament-card-above {
   top: auto !important;
   bottom: 33.333% !important;
-  left: 50% !important;
-  right: auto !important;
-  transform: translateX(-50%) !important;
   height: clamp(16rem, 30vh, 22rem) !important;
   max-height: clamp(16rem, 65vh, 25rem) !important;
   width: clamp(14.8rem, 24vw, 19.5rem) !important;
