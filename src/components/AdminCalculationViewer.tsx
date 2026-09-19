@@ -2,6 +2,7 @@
 
 import InterpretationText from "@/components/InterpretationText";
 import ChartWheel, { WheelPlanet } from "@/components/ChartWheel";
+import ElementBalanceGuide from "@/components/ElementBalanceGuide";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
 export type CalculationViewData = {
@@ -105,6 +106,13 @@ export default function AdminCalculationViewer({
           <div className="mx-auto my-6 max-w-3xl rounded-2xl border border-slate-500/30 bg-slate-500/5 p-3 sm:p-6">
             <ChartWheel ascendant={wheel.ascendant} mc={wheel.mc} cusps={wheel.houseCusps} planets={wheel.planets} size={500} />
           </div>
+        )}
+
+        {wheel && (
+          <ElementBalanceGuide
+            planets={wheel.planets}
+            ascendant={wheel.ascendant}
+          />
         )}
 
         <div className="mt-6 border-t border-slate-500/30 pt-5">

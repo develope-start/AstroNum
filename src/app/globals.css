@@ -3143,67 +3143,17 @@ canvas {
   }
 }
 
-/* Mobile has its own three-zone composition: panels outside, details in the gap, zodiac in the center. */
-@media (max-width: 640px) {
-  .app-home .hero-orbit-card {
-    min-height: clamp(42rem, 145vw, 52rem);
-    padding: 10rem 0;
-  }
+/* Responsive Layout Adaptations:
+   Large Desktop Widescreen (1280px+): Panels sit in 4 corners inside celestial box, modals float on z-index 1000 without clipping.
+   Laptop/Tablet/Zoomed Viewports (<1280px or height <750px): Panels shift outside (Fire & Earth above, Air & Water below) to keep center uncluttered.
+*/
 
-  .app-home .hero-orbit-card:has(.celestial-temperament-card) {
-    min-height: clamp(49rem, 168vw, 60rem);
-  }
-
-  .app-home .celestial-system {
-    inset: 10rem 0;
-    overflow: visible;
-    border-radius: 1.35rem;
-  }
-
-  .app-home .celestial-system.element-info-fire,
-  .app-home .celestial-system.element-info-earth {
-    inset: 25rem 0 10rem;
-  }
-
-  .app-home .celestial-system.element-info-air,
-  .app-home .celestial-system.element-info-water {
-    inset: 10rem 0 25rem;
-  }
-
-  .app-home .celestial-element-panel-fire,
-  .app-home .celestial-element-panel-earth {
-    top: -10rem;
-  }
-
-  .app-home .celestial-element-panel-air,
-  .app-home .celestial-element-panel-water {
-    bottom: -10rem;
-  }
+.app-home .hero-orbit-card,
+.app-home .celestial-system {
+  overflow: visible !important;
 }
 
-@media (max-width: 380px) {
-  .app-home .hero-orbit-card:has(.celestial-temperament-card) {
-    min-height: 51rem;
-  }
-
-  .app-home .celestial-system.element-info-fire,
-  .app-home .celestial-system.element-info-earth {
-    inset: 24.5rem 0 9.5rem;
-  }
-
-  .app-home .celestial-system.element-info-air,
-  .app-home .celestial-system.element-info-water {
-    inset: 9.5rem 0 24.5rem;
-  }
-
-  .app-home .celestial-element-panel-fire,
-  .app-home .celestial-element-panel-earth { top: -9.5rem; }
-
-  .app-home .celestial-element-panel-air,
-  .app-home .celestial-element-panel-water { bottom: -9.5rem; }
-}
-
-/* Alignment & Direction: centered horizontally on parent panel, covering card + 1.5x height */
+/* Modal centering, 1.5x height, overlaying element card from top/bottom */
 .app-home .celestial-element-panel[data-info-placement="below"] > .celestial-temperament-card,
 .app-home .celestial-temperament-card-below {
   top: 0 !important;
@@ -3253,34 +3203,62 @@ canvas {
   animation: elemental-card-rise 240ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
 }
 
-@media (max-width: 640px) {
-  /* Mobile retains its clean structured flow when pinned. */
-  .app-home .hero-orbit-card:has(.celestial-temperament-card) {
-    min-height: clamp(42rem, 145vw, 52rem) !important;
+/* Laptop, Tablet, Zoomed & Compact Screens (<1280px width or <750px height) */
+@media (max-width: 1279px), (max-height: 749px) {
+  .app-home .hero-orbit-card {
+    margin: 9.5rem auto 9.5rem !important;
+    min-height: clamp(30rem, 72vw, 42rem) !important;
+    overflow: visible !important;
   }
 
-  .app-home .hero-orbit-card:has(.celestial-temperament-card.is-pinned) {
-    min-height: clamp(49rem, 168vw, 60rem) !important;
+  .app-home .celestial-system {
+    overflow: visible !important;
   }
 
-  .app-home .celestial-system:has(.celestial-temperament-card) {
-    inset: 10rem 0 !important;
+  .app-home .celestial-element-panel-fire,
+  .app-home .celestial-element-panel-earth {
+    top: -9.5rem !important;
   }
 
-  .app-home .celestial-system.element-info-fire,
-  .app-home .celestial-system.element-info-earth {
-    inset: 25rem 0 10rem !important;
+  .app-home .celestial-element-panel-air,
+  .app-home .celestial-element-panel-water {
+    bottom: -9.5rem !important;
   }
 
-  .app-home .celestial-system.element-info-air,
-  .app-home .celestial-system.element-info-water {
-    inset: 10rem 0 25rem !important;
+  .app-home .celestial-element-panel-fire,
+  .app-home .celestial-element-panel-air {
+    left: 0.5rem !important;
+  }
+
+  .app-home .celestial-element-panel-earth,
+  .app-home .celestial-element-panel-water {
+    right: 0.5rem !important;
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 640px) {
+  .app-home .hero-orbit-card {
+    min-height: clamp(38rem, 135vw, 48rem) !important;
+    margin: 8.5rem auto 8.5rem !important;
+  }
+
   .app-home .hero-orbit-card:has(.celestial-temperament-card.is-pinned) {
-    min-height: 51rem !important;
+    min-height: clamp(48rem, 160vw, 58rem) !important;
+  }
+
+  .app-home .celestial-element-panel {
+    width: clamp(8.2rem, 32vw, 10rem) !important;
+    padding: 0.65rem !important;
+  }
+
+  .app-home .celestial-element-panel-fire,
+  .app-home .celestial-element-panel-earth {
+    top: -8.5rem !important;
+  }
+
+  .app-home .celestial-element-panel-air,
+  .app-home .celestial-element-panel-water {
+    bottom: -8.5rem !important;
   }
 }
 

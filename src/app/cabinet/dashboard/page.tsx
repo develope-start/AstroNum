@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import InterpretationText from "@/components/InterpretationText";
 import ChartWheel, { WheelPlanet } from "@/components/ChartWheel";
+import ElementBalanceGuide from "@/components/ElementBalanceGuide";
 import { Compass, Copy, Check, X, Sparkles, Trash2, Eye } from "lucide-react";
 import { readApiResponse } from "@/lib/apiResponse";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
@@ -544,6 +545,13 @@ export default function DashboardPage() {
                 size={500}
               />
             </div>
+          )}
+
+          {selected.result && (
+            <ElementBalanceGuide
+              planets={selected.result.planets}
+              ascendant={selected.result.ascendant}
+            />
           )}
 
           {/* Full Interpretation Text Section */}
