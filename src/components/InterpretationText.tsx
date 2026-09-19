@@ -57,6 +57,34 @@ function splitInterpretation(text: string) {
   return { preface, sections };
 }
 
+function isFoundationSection(heading: string) {
+  return heading.toLowerCase().includes("გამოთვლისა და ინტერპრეტაციის საფუძველი");
+}
+
+function interpretationSectionOrder(heading: string): number | null {
+  const normalized = heading.toLowerCase();
+  if (normalized.includes("დამატებითი ბიბლიოთეკური")) return 0;
+  if (normalized.includes("კუთხური პლანეტები")) return 1;
+  if (normalized.includes("ტრადიციული ღირსებები") || normalized.includes("დისპოზიტორები")) return 2;
+  if (normalized.includes("ტექნიკური სინთეზი")) return 4;
+  if (normalized.includes("დეკლინაციები")) return 3;
+  if (normalized.includes("ფიქსირებული ვარსკვლავები")) return 3;
+  return null;
+}
+
+function moveTechnicalSectionsToRequestedOrder(sections: InterpretationSection[]) {
+  const technicalSections = sections.filter((section) => interpretationSectionOrder(section.heading) !== null);
+  if (!technicalSections.length) return sections;
+
+  const remainingSections = sections.filter((section) => interpretationSectionOrder(section.heading) === null);
+  const orderedTechnicalSections: InterpretationSection[] = [];
+  for (let order = 0; order <= 4; order += 1) {
+    orderedTechnicalSections.push(...technicalSections.filter((section) => interpretationSectionOrder(section.heading) === order));
+  }
+
+  return [...remainingSections, ...orderedTechnicalSections];
+}
+
 function InterpretationSectionView({
   section,
   openByDefault,
@@ -154,7 +182,6 @@ export default function InterpretationText({ text }: { text: string }) {
 
   const { preface, sections } = splitInterpretation(text);
   const orderedSections = [...sections];
-  const isFoundationSection = (heading: string) => heading.toLowerCase().includes("გამოთვლისა და ინტერპრეტაციის საფუძველი");
 
   // Keep the percentage synthesis directly below the separate balance/axes
   // guide that is rendered above this interpretation block.
@@ -174,10 +201,18 @@ export default function InterpretationText({ text }: { text: string }) {
     orderedSections.splice(ascendantIndex, 0, characterSection!);
   }
 
+  const foundationSections = orderedSections.filter((section) => isFoundationSection(section.heading));
+
+  // Keep advanced interpretation accordions in one stable order for new
+  // results as well as older cached/database interpretations.
+  const reorderedTechnicalSections = moveTechnicalSectionsToRequestedOrder(
+    orderedSections.filter((section) => !isFoundationSection(section.heading)),
+  );
+  orderedSections.splice(0, orderedSections.length, ...reorderedTechnicalSections);
+
   // The methodology/foundation is always the final section. This also keeps
   // newly added interpretation sections above it without depending on the
   // order in which the server or an older cached record generated them.
-  const foundationSections = orderedSections.filter((section) => isFoundationSection(section.heading));
   if (foundationSections.length) {
     for (let index = orderedSections.length - 1; index >= 0; index -= 1) {
       if (isFoundationSection(orderedSections[index]!.heading)) orderedSections.splice(index, 1);
