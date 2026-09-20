@@ -62,7 +62,7 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
           </div>
         </summary>
         <div className="interpretation-accordion-body pt-1 pb-3 px-3 sm:px-4">
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4 text-xs">
+          <div className="element-balance-indicators-grid grid gap-2 sm:gap-3 text-xs">
             {bars.map((bar) => {
               const Icon = bar.icon;
               return (
@@ -75,7 +75,7 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
                   aria-label={`გადადით ${bar.label} სტიქიის ინტერპრეტაციაზე`}
                 >
                   <div className="element-balance-indicator-header flex items-center justify-between gap-2 font-semibold text-[0.7rem] sm:text-xs">
-                    <span className="element-balance-indicator-name flex min-w-0 items-center gap-1.5 truncate"><Icon className={`element-balance-indicator-icon h-3 w-3 shrink-0 ${bar.iconClass}`} /> <span className="truncate">{bar.label}</span></span>
+                    <span className="element-balance-indicator-name flex min-w-0 items-center gap-1.5"><Icon className={`element-balance-indicator-icon h-3 w-3 shrink-0 ${bar.iconClass}`} /> <span className="element-balance-indicator-label">{bar.label}</span></span>
                     <span className="element-balance-indicator-value shrink-0 tabular-nums">{bar.value}%</span>
                   </div>
                   <div className="infographic-bar-bg h-1.5">

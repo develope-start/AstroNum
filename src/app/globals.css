@@ -4302,6 +4302,39 @@ canvas {
   outline: none;
 }
 
+.element-balance-indicators-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.element-balance-indicator-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.3rem;
+  min-height: 2.45rem;
+}
+
+.element-balance-indicator-name {
+  width: 100%;
+  align-items: center;
+  gap: 0.4rem;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.element-balance-indicator-label {
+  min-width: 0;
+  overflow: visible;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.element-balance-indicator-value {
+  align-self: flex-start;
+  line-height: 1.1;
+}
+
 /* The element synthesis header has three competing controls on a phone.
    Give the heading the full readable row, then place ASC below it instead of
    squeezing every word into a narrow vertical strip. */
@@ -4469,6 +4502,18 @@ canvas {
   .chart-view-wheel,
   .admin-calculation-wheel {
     padding: 0.55rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .element-balance-indicators-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 641px) {
+  .element-balance-indicators-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
