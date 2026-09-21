@@ -4,6 +4,7 @@ import {
   computeHouseCusps,
   computePlanetPositions,
   computeNorthNode,
+  computeSouthNode,
   houseOfLongitude,
   HouseSystem,
   PlanetPosition,
@@ -70,7 +71,8 @@ export function computeNatalChartAtUtc(
 ): NatalResult {
   const planets = computePlanetPositions(utcDate, calculation, longitude, latitude);
   const northNode = computeNorthNode(utcDate, calculation, longitude, latitude);
-  const allPoints = [...planets, northNode];
+  const southNode = computeSouthNode(northNode);
+  const allPoints = [...planets, northNode, southNode];
 
   const angles = computeAngles(utcDate, longitude, latitude, calculation);
   const houses = computeHouseCusps(angles, houseSystem, utcDate, longitude, latitude, calculation);
@@ -118,7 +120,8 @@ export function computeTransitAspects(natal: NatalResult, transitDate: Date): {
   };
   const transitPlanets = computePlanetPositions(transitDate, options, natal.longitude, natal.latitude);
   const transitNode = computeNorthNode(transitDate, options, natal.longitude, natal.latitude);
-  const allTransit = [...transitPlanets, transitNode];
+  const transitSouthNode = computeSouthNode(transitNode);
+  const allTransit = [...transitPlanets, transitNode, transitSouthNode];
   const aspects = computeAspects(allTransit, natal.planets);
   return { transitPlanets: allTransit, aspects };
 }

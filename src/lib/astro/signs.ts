@@ -26,6 +26,7 @@ export const PLANET_NAMES_KA: Record<string, string> = {
   Pluto: "პლუტონი",
   TrueNode: "ჩრდილო კვანძი",
   MeanNode: "ჩრდილო კვანძი (საშუალო)",
+  SouthNode: "სამხრეთი კვანძი",
 };
 
 PLANET_NAMES_KA.Lilith = "ლილითი";

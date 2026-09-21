@@ -2,11 +2,9 @@
 
 import { ArrowDown, ChevronDown } from "lucide-react";
 import { eclipticToSign, formatDegree, PLANET_NAMES_KA } from "@/lib/astro/signs";
-import { calculateElementBalance } from "@/lib/elementBalance";
 import type { AspectHit } from "@/lib/astro/aspects";
 import { aspectMeaning, sortAspectsByInfluence } from "@/lib/astro/aspectInterpretation";
 import type { WheelFixedStar, WheelPlanet } from "./ChartWheel";
-import { ELEMENT_VISUALS } from "./elementVisuals";
 
 const HOUSE_NAMES = [
   "პიროვნება და გარეგნობა", "ფინანსები და ღირებულებები", "კომუნიკაცია და სწავლა", "ოჯახი და ფესვები",
@@ -21,6 +19,17 @@ const DISPLAY_NAMES: Record<string, string> = {
   Chiron: "ქირონი",
 };
 
+const POINT_SUMMARY_MEANINGS: Record<string, string> = {
+  Sun: "იდენტობის, ნებისყოფისა და თვითგამოხატვის მთავარი ღერძი",
+  Moon: "ემოციური უსაფრთხოებისა და შინაგანი რეაქციების მთავარი მაჩვენებელი",
+  TrueNode: "განვითარების მიმართულება და ახალი გამოცდილებისკენ გადადგმული ნაბიჯები",
+  MeanNode: "განვითარების მიმართულება და განმეორებადი ცხოვრებისეული გაკვეთილები",
+  SouthNode: "ნაცნობი უნარები და ავტომატური რეაქციები, რომლებიც საყრდენიცაა და ჩვევად ქცევის რისკიც აქვს",
+  Lilith: "უარყოფილი სურვილების, ტაბუებისა და პირადი ძალის გაცნობიერების ადგილი",
+  Selena: "შინაგანი მხარდაჭერისა და კეთილსინდისიერი არჩევანის რესურსი",
+  Chiron: "მგრძნობიარე გამოცდილება, რომელიც გააზრებისას სამკურნალო უნარად შეიძლება იქცეს",
+};
+
 function focus(target: { type: string; key: string }) {
   window.dispatchEvent(new CustomEvent("focus-interpretation", { detail: target }));
 }
@@ -28,6 +37,38 @@ function focus(target: { type: string; key: string }) {
 function degreeLabel(longitude: number) {
   const sign = eclipticToSign(longitude);
   return `${sign.signName} · ${formatDegree(sign.degreeInSign)}`;
+}
+
+function placementLabel(name: string, planets: WheelPlanet[], planetHouses: Record<string, number>) {
+  const point = planets.find((item) => item.name === name);
+  if (!point) return null;
+  const sign = eclipticToSign(point.longitude);
+  const house = planetHouses[name] ?? "—";
+  return `${DISPLAY_NAMES[name] ?? name} ${sign.signName}-ში, ${house}-ე სახლში`;
+}
+
+function summaryParagraphs(planets: WheelPlanet[], planetHouses: Record<string, number>, aspects: AspectHit[], ascendant: number) {
+  const sun = placementLabel("Sun", planets, planetHouses);
+  const moon = placementLabel("Moon", planets, planetHouses);
+  const northNode = placementLabel("TrueNode", planets, planetHouses) ?? placementLabel("MeanNode", planets, planetHouses);
+  const southNode = placementLabel("SouthNode", planets, planetHouses);
+  const special = ["Lilith", "Selena", "Chiron"]
+    .filter((name) => planets.some((planet) => planet.name === name))
+    .map((name) => `${placementLabel(name, planets, planetHouses)} — ${POINT_SUMMARY_MEANINGS[name]}.`)
+    .join(" ");
+  const strongest = sortAspectsByInfluence(aspects).slice(0, 3);
+  const aspectText = strongest.length
+    ? strongest.map((aspect) => `${DISPLAY_NAMES[aspect.a] ?? aspect.a} ${aspect.aspectKa} ${DISPLAY_NAMES[aspect.b] ?? aspect.b} (${aspect.orb}°) — ${aspectMeaning(aspect)}`).join(" ")
+    : "ამ ორბებში გამოკვეთილი ასპექტური კავშირი არ დაფიქსირდა.";
+
+  return [
+    `${sun ? `${sun} აჩვენებს, სად იკრიბება თქვენი იდენტობისა და თვითგამოხატვის მთავარი ძალა.` : "მზის მდებარეობა ამ რუკის მონაცემებში არ იკითხება."} ${moon ? `${moon} აღწერს, როგორ ეძებთ ემოციურ უსაფრთხოებას და როგორ რეაგირებთ შინაგანად.` : "მთვარის მდებარეობა ამ რუკის მონაცემებში არ იკითხება."} ასცენდენტი — ${degreeLabel(ascendant)} — ამ ყველაფერს გარესამყაროსთან გამოჩენისა და პირველი რეაქციის სტილს უმატებს.`,
+    northNode && southNode
+      ? `განვითარების ღერძი ასეთია: ${northNode} — ${POINT_SUMMARY_MEANINGS["TrueNode"] ?? "ახალი მიმართულება"}; ${southNode} — ${POINT_SUMMARY_MEANINGS.SouthNode ?? "ნაცნობი საყრდენი"}. ამ ორი პოლუსის დაბალანსება რუკის ერთ-ერთი მთავარი სიუჟეტია.`
+      : "მთვარის კვანძთა ღერძი სრულად არ არის წარმოდგენილი.",
+    special ? `დამატებითი ფსიქოლოგიური ფენა: ${special}` : "ლილითის, სელენასა და ქირონის მონაცემები ამ რუკაში არ არის ხელმისაწვდომი.",
+    `ყველაზე აქტიური კავშირები: ${aspectText}`,
+  ];
 }
 
 function rowButton(label: string, target: { type: string; key: string }) {
@@ -58,12 +99,10 @@ export default function ChartDetails({
   ascendant: number;
   mc: number;
 }) {
-  const balance = calculateElementBalance(planets);
-  const sun = planets.find((planet) => planet.name === "Sun");
-  const moon = planets.find((planet) => planet.name === "Moon");
   const orderedAspects = sortAspectsByInfluence(aspects);
   const tightAspects = orderedAspects.slice(0, 4);
   const uniqueStars = Array.from(new Set(fixedStars.map((item) => item.star)));
+  const summary = summaryParagraphs(planets, planetHouses, aspects, ascendant);
 
   return (
     <div className="chart-details mt-4 space-y-3 text-left">
@@ -76,16 +115,11 @@ export default function ChartDetails({
           <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-2.5 py-1 text-[0.68rem] font-bold text-amber-100">ASC · {degreeLabel(ascendant)}</span>
         </div>
 
-        <p className="mt-3 text-sm leading-relaxed text-slate-200">
-          ამ რუკაში მზე მდებარეობს {sun ? degreeLabel(sun.longitude) : "—"}-ზე, მთვარე — {moon ? degreeLabel(moon.longitude) : "—"}-ზე, ხოლო ასცენდენტი — {degreeLabel(ascendant)}-ზე. საბოლოო სურათს ავსებს {aspects.length} ასპექტური კავშირი, {planets.length} გამოთვლილი წერტილი და {uniqueStars.length} აქტიური ფიქსირებული ვარსკვლავი.
-        </p>
-
-        <div className="mt-3 grid gap-2 sm:grid-cols-4">
-          {ELEMENT_VISUALS.map((visual) => {
-            const Icon = visual.icon;
-            return <div key={visual.id} className="rounded-xl border border-slate-500/20 bg-slate-950/35 p-2.5"><div className="flex items-center gap-1.5 text-xs font-bold text-slate-200"><Icon className={`h-3.5 w-3.5 ${visual.iconClass}`} />{visual.label}</div><strong className="mt-1 block text-sm text-amber-100">{balance.percentages[visual.id]}%</strong><div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-800"><div className={`h-full rounded-full bg-gradient-to-r ${visual.gradient}`} style={{ width: `${balance.percentages[visual.id]}%` }} /></div></div>;
-          })}
+        <div className="mt-3 space-y-2 text-sm leading-relaxed text-slate-200">
+          {summary.map((paragraph, index) => <p key={index}><strong className="text-slate-100">{["ძირითადი ტონი", "განვითარების ღერძი", "დამატებითი ფენა", "კავშირების სურათი"][index]}:</strong> {paragraph}</p>)}
         </div>
+
+        <p className="mt-3 text-xs leading-relaxed text-slate-400">რუკა აერთიანებს {aspects.length} ასპექტურ კავშირს, {planets.length} გამოთვლილ წერტილს და {uniqueStars.length} აქტიურ ფიქსირებულ ვარსკვლავს.</p>
 
         {tightAspects.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{tightAspects.map((aspect) => <button key={`${aspect.a}-${aspect.b}-${aspect.aspect}`} type="button" onClick={() => focus({ type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })} className="chart-focus-source rounded-full border border-sky-400/25 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-100 transition hover:border-sky-300">{DISPLAY_NAMES[aspect.a] ?? aspect.a} {aspect.aspectKa} {DISPLAY_NAMES[aspect.b] ?? aspect.b} · {aspect.orb}°</button>)}</div>}
         <button type="button" onClick={openDetails} className="chart-details-jump mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-sm font-extrabold text-amber-100 transition hover:border-amber-300 hover:bg-amber-400/20"><ArrowDown className="h-4 w-4" /> დეტალები იხილეთ ქვემოთ</button>

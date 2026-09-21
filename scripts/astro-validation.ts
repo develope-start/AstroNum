@@ -33,6 +33,7 @@ assert(Math.abs(swiss.ascendant - 78.45236330142991) < 1e-7, "Swiss Placidus Asc
 assert(swiss.houseCusps.length === 12, "Swiss house cusp count is 12");
 assert(swiss.ephemeris.source === "swiss", "Swiss metadata is present");
 assert(swiss.planets.some((planet) => planet.name === "MeanNode"), "Mean Node is explicitly identified");
+assert(swiss.planets.some((planet) => planet.name === "SouthNode"), "South Node is explicitly identified");
 
 const advanced = computeNatalChart(
   { ...input, calculation: { ephemeris: "swiss", zodiac: "sidereal", siderealMode: 1, nodeType: "true", topocentric: true, altitudeMeters: 120, includeAsteroids: true } },
@@ -78,7 +79,7 @@ const astronomy = computePlanetPositions(
   new Date("2000-01-01T12:00:00.000Z"),
   { ephemeris: "astronomy" },
 );
-for (const swissPlanet of swiss.planets.filter((planet) => planet.name !== "MeanNode")) {
+for (const swissPlanet of swiss.planets.filter((planet) => !["MeanNode", "SouthNode"].includes(planet.name))) {
   const astronomyPlanet = astronomy.find((planet) => planet.name === swissPlanet.name);
   assert(astronomyPlanet, `${swissPlanet.name} exists in fallback engine`);
   assert(angularDifference(swissPlanet.longitude, astronomyPlanet.longitude) < 0.5, `${swissPlanet.name} engine delta is below 0.5°`);

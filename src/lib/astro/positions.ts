@@ -218,6 +218,25 @@ export function computeNorthNode(date: Date, inputOptions?: CalculationOptions, 
   };
 }
 
+/**
+ * The descending lunar node is the exact opposite point of the selected
+ * ascending node. It is kept as a separate chart object so it participates
+ * in houses, aspects, wheel rendering, and interpretation just like the
+ * North Node.
+ */
+export function computeSouthNode(northNode: PlanetPosition): PlanetPosition {
+  const longitude = norm360(northNode.longitude + 180);
+  return {
+    name: "SouthNode",
+    longitude,
+    speed: northNode.speed,
+    retrograde: northNode.retrograde,
+    eclipticLatitude: -(northNode.eclipticLatitude ?? 0),
+    declination: -(northNode.declination ?? 0),
+    rightAscension: norm360((northNode.rightAscension ?? 0) + 180),
+  };
+}
+
 function meanLunarApogeeLongitude(date: Date): number {
   const jd = dateToJulianDay(date);
   const t = (jd - 2451545.0) / 36525;

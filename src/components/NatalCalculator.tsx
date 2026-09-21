@@ -11,7 +11,7 @@ import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettin
 import HouseSystemSelect from "./HouseSystemSelect";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
 import type { HouseSystem } from "@/lib/astro/positions";
-import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
+import { saveGuestCache, loadGuestCache, clearGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
 import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Info } from "lucide-react";
@@ -54,6 +54,18 @@ export default function NatalCalculator() {
       if (!active) {
         setBirth(EMPTY_BIRTH);
         setHouseSystem("placidus");
+        setInterpretation(null);
+        setWheel(null);
+        setMapNumber(null);
+        return;
+      }
+      const requiredPoints = new Set(["Lilith", "Selena", "Chiron", "SouthNode"]);
+      const hasExpandedPointSet = cached.wheel?.planets?.some((planet) => requiredPoints.has(planet.name)) &&
+        [...requiredPoints].every((name) => cached.wheel?.planets?.some((planet) => planet.name === name));
+      if (cached.wheel && !hasExpandedPointSet) {
+        // Do not silently show a pre-expansion chart without the lunar points.
+        // The next calculation will write a complete cache entry.
+        clearGuestCache("natal");
         setInterpretation(null);
         setWheel(null);
         setMapNumber(null);

@@ -5,7 +5,6 @@ import { aspectLibraryInsight, dedupeInsights, natalLibraryInsights } from "./li
 import type { SecondaryProgressionResult } from "@/lib/astro/progressions";
 import type { AngularityResult, DeclinationContact, DignityResult, FixedStarContact } from "@/lib/astro/advanced";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
-import { calculateElementBalance, ELEMENT_IDS } from "@/lib/elementBalance";
 
 const PLANET_MEANING_KA: Record<string, string> = {
   Sun: "იდენტობა და ნებისყოფა",
@@ -20,11 +19,12 @@ const PLANET_MEANING_KA: Record<string, string> = {
   Pluto: "სიღრმისეული გარდაქმნის ძალა",
   TrueNode: "განვითარების მთავარი მიმართულება",
   MeanNode: "განვითარების მთავარი მიმართულება",
+  SouthNode: "ნაცნობი გამოცდილება, წარსული ჩვევები და საყრდენი რესურსი",
 };
 
-PLANET_MEANING_KA.Lilith = "ჩრდილოვან სურვილებს, ტაბუებსა და იმ ადგილს აჩვენებს, სადაც ადამიანი საკუთარ ძლიერ ბუნებას სწავლობს";
-PLANET_MEANING_KA.Selena = "დაცულობის, შინაგანი სიწმინდისა და ბუნებრივი მხარდაჭერის სიმბოლურ წერტილს აჩვენებს";
 PLANET_MEANING_KA.Chiron = "ძველ მგრძნობიარე გამოცდილებას და იმ უნარს აჩვენებს, რომლითაც ადამიანი სხვასაც ეხმარება";
+PLANET_MEANING_KA.Lilith = "დაუმუშავებელ სურვილებს, ტაბუებს, უარყოფილ ძალას და საკუთარი საზღვრების დაცვის საჭიროებას აჩვენებს";
+PLANET_MEANING_KA.Selena = "შინაგან მხარდაჭერას, კეთილგანწყობილ რესურსს და იმ ღირებულებებს აჩვენებს, რომელთა ერთგულებაც გაძლიერებთ";
 
 const SIGN_QUALITY_KA: Record<string, string> = {
   ვერძი: "პირდაპირ, სწრაფად და ინიციატივით",
@@ -151,17 +151,9 @@ function advancedAnalysisLines(advanced: PlacementInput["advanced"]): string[] {
   return lines.length > 1 ? lines : [];
 }
 
-const ELEMENTS_KA = ["ცეცხლი", "მიწა", "ჰაერი", "წყალი"];
-const ELEMENT_OF_SIGN = [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]; // ვერძი..თევზები
 const MODALITIES_KA = ["კარდინალური", "ფიქსირებული", "ცვალებადი"];
 const MODALITY_OF_SIGN = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2];
 
-const ELEMENT_MEANING_KA: Record<string, string> = {
-  ცეცხლი: "მოქმედება, ინიციატივა და გატაცება",
-  მიწა: "პრაქტიკულობა, სტაბილურობა და შედეგზე ორიენტაცია",
-  ჰაერი: "იდეები, კომუნიკაცია და სოციალური კავშირები",
-  წყალი: "ემოცია, ინტუიცია და სიღრმისეული განცდა",
-};
 const MODALITY_MEANING_KA: Record<string, string> = {
   კარდინალური: "დაწყებასა და ინიციირებაზე",
   ფიქსირებული: "შენარჩუნებასა და სიმტკიცეზე",
@@ -169,27 +161,20 @@ const MODALITY_MEANING_KA: Record<string, string> = {
 };
 
 function chartSignature(planets: PlanetPosition[]): string {
-  const core = planets.filter((p) => p.name !== "TrueNode" && p.name !== "MeanNode");
-  const balance = calculateElementBalance(core);
-  const elementCount = ELEMENT_IDS.map((id) => balance.counts[id]);
+  const core = planets.filter((p) => !["TrueNode", "MeanNode", "SouthNode", "Lilith", "Selena", "Chiron"].includes(p.name));
   const modalityCount = [0, 0, 0];
   for (const p of core) {
     const { signIndex } = eclipticToSign(p.longitude);
-    elementCount[ELEMENT_OF_SIGN[signIndex]]++;
     modalityCount[MODALITY_OF_SIGN[signIndex]]++;
   }
-  const topElementIdx = elementCount.indexOf(Math.max(...elementCount));
   const topModalityIdx = modalityCount.indexOf(Math.max(...modalityCount));
-  const topElement = ELEMENTS_KA[topElementIdx];
   const topModality = MODALITIES_KA[topModalityIdx];
 
-  const elementLine = ELEMENTS_KA.map((e, i) => `${e} — ${elementCount[i]} (${balance.percentages[ELEMENT_IDS[i]]}%)`).join(", ");
   const modalityLine = MODALITIES_KA.map((m, i) => `${m} — ${modalityCount[i]}`).join(", ");
 
   return [
-    `**სტიქიათა განაწილება:** ${elementLine}.`,
     `**ხარისხთა განაწილება:** ${modalityLine}.`,
-    `ჭარბობს **${topElement}** სტიქია — თქვენს ბუნებაში შესამჩნევია ${ELEMENT_MEANING_KA[topElement]}. ხარისხებში წამყვანია **${topModality}** — ენერგია ბუნებრივად მიდრეკილია ${MODALITY_MEANING_KA[topModality]}.`,
+    `ხარისხებში წამყვანია **${topModality}** — ენერგია ბუნებრივად მიდრეკილია ${MODALITY_MEANING_KA[topModality]}.`,
   ].join(" ");
 }
 
