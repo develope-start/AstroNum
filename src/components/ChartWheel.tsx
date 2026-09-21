@@ -129,7 +129,7 @@ export default function ChartWheel({
           const isAngle = i === 0 || i === 3 || i === 6 || i === 9;
           const labelPos = toXY(c + 4, rInner + size * 0.052);
           return (
-            <g key={`cusp-${i}`} className="cursor-pointer" onClick={() => emitFocus({ type: "house", key: String(i + 1) })}>
+            <g key={`cusp-${i}`} className="chart-focus-source cursor-pointer" onClick={() => emitFocus({ type: "house", key: String(i + 1) })}>
               <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={isAngle ? (i === 0 || i === 6 ? "#f59e0b" : "#38bdf8") : "#64748b"} strokeWidth={isAngle ? 2.8 : 1} strokeDasharray={isAngle ? undefined : "3 3"} />
               <text x={labelPos.x} y={labelPos.y} fill={isAngle ? "#fde68a" : "#cbd5e1"} className="select-none font-bold" fontSize={size * 0.027} textAnchor="middle" dominantBaseline="central">{i + 1}</text>
               <title>{`სახლი ${i + 1} — დეტალების ნახვა`}</title>
@@ -143,7 +143,7 @@ export default function ChartWheel({
           const pInner = toXY(lon, rInner);
           const isAsc = label === "ASC";
           return (
-            <g key={label} className="chart-wheel-interactive cursor-pointer transition-opacity hover:opacity-80" onClick={isAsc ? scrollToAscendantSection : () => emitFocus({ type: "angle", key: label })} onMouseDown={(event) => event.currentTarget.blur()} onKeyDown={isAsc ? (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); scrollToAscendantSection(); } } : undefined} role="button" tabIndex={isAsc ? 0 : -1}>
+            <g key={label} className="chart-focus-source chart-wheel-interactive cursor-pointer transition-opacity hover:opacity-80" onClick={isAsc ? scrollToAscendantSection : () => emitFocus({ type: "angle", key: label })} onMouseDown={(event) => event.currentTarget.blur()} onKeyDown={isAsc ? (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); scrollToAscendantSection(); } } : undefined} role="button" tabIndex={isAsc ? 0 : -1}>
               <line x1={pInner.x} y1={pInner.y} x2={pEnd.x} y2={pEnd.y} stroke={color} strokeWidth={2.6} strokeDasharray={label === "DESC" || label === "IC" ? "4 2" : undefined} filter="url(#gold-glow)" />
               <rect x={pBadge.x - 24} y={pBadge.y - 12} width="48" height="24" rx="12" fill={bg} stroke={color} strokeWidth="1.8" style={{ filter: `drop-shadow(0 0 10px ${color})` }} />
               <text x={pBadge.x} y={pBadge.y} fill={textColor} className="select-none font-black tracking-wider" fontSize={size * 0.029} textAnchor="middle" dominantBaseline="central">{label}</text>
@@ -159,12 +159,12 @@ export default function ChartWheel({
           const p2 = toXY(b.longitude, rInner * 0.95);
           const color = ASPECT_COLORS[aspect.aspect] ?? "#94a3b8";
           const opacity = Math.max(0.22, 0.78 - aspect.orb * 0.06);
-          return <g key={`aspect-${aspect.a}-${aspect.b}-${aspect.aspect}-${index}`} className="cursor-pointer" onClick={() => emitFocus({ type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })}><line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={color} strokeOpacity={opacity} strokeWidth={aspect.kind === "major" ? 1.8 : 0.95} strokeDasharray={aspect.kind === "minor" ? "3 3" : undefined} /><title>{`${aspect.a} ${aspect.aspectKa} ${aspect.b} — ორბი ${aspect.orb}°`}</title></g>;
+          return <g key={`aspect-${aspect.a}-${aspect.b}-${aspect.aspect}-${index}`} className="chart-focus-source cursor-pointer" onClick={() => emitFocus({ type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })}><line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={color} strokeOpacity={opacity} strokeWidth={aspect.kind === "major" ? 1.8 : 0.95} strokeDasharray={aspect.kind === "minor" ? "3 3" : undefined} /><title>{`${aspect.a} ${aspect.aspectKa} ${aspect.b} — ორბი ${aspect.orb}°`}</title></g>;
         })}
 
         {fixedStars.map((star, index) => {
           const pos = toXY(star.longitude, rPlanetBase + size * 0.055);
-          return <g key={`star-${star.star}-${index}`} className="cursor-pointer" onClick={() => emitFocus({ type: "star", key: star.star })}><circle cx={pos.x} cy={pos.y} r={size * 0.017} fill="#0d0726" stroke="#fef08a" strokeWidth="1.2" /><text x={pos.x} y={pos.y + 0.5} fill="#fef08a" fontSize={size * 0.029} textAnchor="middle" dominantBaseline="central">★</text><title>{`${star.star} — ${star.planet}, ორბი ${star.orb}°`}</title></g>;
+          return <g key={`star-${star.star}-${index}`} className="chart-focus-source cursor-pointer" onClick={() => emitFocus({ type: "star", key: star.star })}><circle cx={pos.x} cy={pos.y} r={size * 0.017} fill="#0d0726" stroke="#fef08a" strokeWidth="1.2" /><text x={pos.x} y={pos.y + 0.5} fill="#fef08a" fontSize={size * 0.029} textAnchor="middle" dominantBaseline="central">★</text><title>{`${star.star} — ${star.planet}, ორბი ${star.orb}°`}</title></g>;
         })}
 
         {sorted.map((planet, index) => {
@@ -172,7 +172,7 @@ export default function ChartWheel({
           const deg = Math.floor(norm360(planet.longitude) % 30);
           const color = PLANET_COLORS[planet.name] ?? "#f59e0b";
           const glyph = PLANET_GLYPHS[planet.name] ?? "•";
-          return <g key={planet.name} className="cursor-pointer select-none" onClick={() => emitFocus({ type: "planet", key: planet.name })}><circle cx={pos.x} cy={pos.y} r={size * 0.027} fill="#0d0726" stroke={color} strokeWidth="1.3" opacity="0.95" style={{ filter: `drop-shadow(0 0 6px ${color}bb)` }} /><text x={pos.x} y={pos.y + 0.5} fill={color} className="font-black" fontSize={size * 0.039} textAnchor="middle" dominantBaseline="central" style={{ textShadow: `0 0 10px ${color}` }}>{glyph}</text><text x={pos.x} y={pos.y + size * 0.041} fill="#cbd5e1" className="font-bold" fontSize={size * 0.019} textAnchor="middle" dominantBaseline="central">{deg}°</text><title>{`${planet.name} — დეტალების ნახვა`}</title></g>;
+          return <g key={planet.name} className="chart-focus-source cursor-pointer select-none" onClick={() => emitFocus({ type: "planet", key: planet.name })}><circle cx={pos.x} cy={pos.y} r={size * 0.027} fill="#0d0726" stroke={color} strokeWidth="1.3" opacity="0.95" style={{ filter: `drop-shadow(0 0 6px ${color}bb)` }} /><text x={pos.x} y={pos.y + 0.5} fill={color} className="font-black" fontSize={size * 0.039} textAnchor="middle" dominantBaseline="central" style={{ textShadow: `0 0 10px ${color}` }}>{glyph}</text><text x={pos.x} y={pos.y + size * 0.041} fill="#cbd5e1" className="font-bold" fontSize={size * 0.019} textAnchor="middle" dominantBaseline="central">{deg}°</text><title>{`${planet.name} — დეტალების ნახვა`}</title></g>;
         })}
 
         <circle cx={cx} cy={cy} r={rInner * 0.4} fill="#09041a" stroke="#a855f7" strokeWidth="1.5" />

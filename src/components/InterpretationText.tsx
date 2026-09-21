@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Clock, Calendar, Copy, Check, Sparkles, BookOpen } from "lucide-react";
 import { PLANET_NAMES_KA } from "@/lib/astro/signs";
 import { ALL_ASPECTS } from "@/lib/astro/aspects";
@@ -185,8 +185,15 @@ function InterpretationSectionView({
 export default function InterpretationText({ text, viewMetadata }: { text: string; viewMetadata?: InterpretationViewMetadata }) {
   const [copied, setCopied] = useState(false);
   const [focusedElement, setFocusedElement] = useState<ElementId | null>(null);
+  const focusedNodeRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
+    const clearFocus = () => {
+      focusedNodeRef.current?.classList.remove("interpretation-focus-highlight");
+      focusedNodeRef.current = null;
+      setFocusedElement(null);
+    };
+
     const handleInterpretationFocus = (event: Event) => {
       const detail = (event as CustomEvent<{ type?: string; key?: string }>).detail;
       if (!detail?.type || !detail.key) return;
@@ -204,18 +211,38 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
           : detail.type === "angle"
             ? [angleHouse[key] ?? key]
           : [(PLANET_NAMES_KA[key] ?? key).toLowerCase()];
-      const nodes = Array.from(document.querySelectorAll<HTMLElement>(".interpretation-content .interpretation-paragraph, .interpretation-content .interpretation-accordion"));
-      const target = nodes.find((node) => {
+      clearFocus();
+      const paragraphs = Array.from(document.querySelectorAll<HTMLElement>(".interpretation-content .interpretation-paragraph"));
+      const accordions = Array.from(document.querySelectorAll<HTMLElement>(".interpretation-content .interpretation-accordion"));
+      const target = detail.type === "angle" && key === "ASC"
+        ? document.querySelector<HTMLElement>("#ascendant-section > summary")
+        : paragraphs.find((node) => {
+          const content = (node.textContent ?? "").toLowerCase();
+          return terms.every((term) => content.includes(term));
+        }) ?? accordions.find((node) => {
         const content = (node.textContent ?? "").toLowerCase();
         return terms.every((term) => content.includes(term));
       });
       if (!target) return;
+      target.classList.add("interpretation-focus-highlight");
+      focusedNodeRef.current = target;
       const parentDetails = target.closest("details") as HTMLDetailsElement | null;
       if (parentDetails) parentDetails.open = true;
       window.setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "center" }), 40);
     };
+    const handleDocumentClick = (event: MouseEvent) => {
+      if (!focusedNodeRef.current) return;
+      const clicked = event.target as HTMLElement | null;
+      if (clicked?.closest(".chart-focus-source")) return;
+      clearFocus();
+    };
     window.addEventListener("focus-interpretation", handleInterpretationFocus);
-    return () => window.removeEventListener("focus-interpretation", handleInterpretationFocus);
+    document.addEventListener("click", handleDocumentClick);
+    return () => {
+      window.removeEventListener("focus-interpretation", handleInterpretationFocus);
+      document.removeEventListener("click", handleDocumentClick);
+      focusedNodeRef.current?.classList.remove("interpretation-focus-highlight");
+    };
   }, []);
 
   const wordCount = text.trim().split(/\s+/).length;

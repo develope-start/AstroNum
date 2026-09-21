@@ -31,7 +31,7 @@ function degreeLabel(longitude: number) {
 }
 
 function rowButton(label: string, target: { type: string; key: string }) {
-  return <button type="button" onClick={() => focus(target)} className="chart-detail-link">{label}</button>;
+  return <button type="button" onClick={() => focus(target)} className="chart-detail-link chart-focus-source">{label}</button>;
 }
 
 function openDetails() {
@@ -87,7 +87,7 @@ export default function ChartDetails({
           })}
         </div>
 
-        {tightAspects.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{tightAspects.map((aspect) => <button key={`${aspect.a}-${aspect.b}-${aspect.aspect}`} type="button" onClick={() => focus({ type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })} className="rounded-full border border-sky-400/25 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-100 transition hover:border-sky-300">{DISPLAY_NAMES[aspect.a] ?? aspect.a} {aspect.aspectKa} {DISPLAY_NAMES[aspect.b] ?? aspect.b} · {aspect.orb}°</button>)}</div>}
+        {tightAspects.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{tightAspects.map((aspect) => <button key={`${aspect.a}-${aspect.b}-${aspect.aspect}`} type="button" onClick={() => focus({ type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })} className="chart-focus-source rounded-full border border-sky-400/25 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-100 transition hover:border-sky-300">{DISPLAY_NAMES[aspect.a] ?? aspect.a} {aspect.aspectKa} {DISPLAY_NAMES[aspect.b] ?? aspect.b} · {aspect.orb}°</button>)}</div>}
         <button type="button" onClick={openDetails} className="chart-details-jump mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-sm font-extrabold text-amber-100 transition hover:border-amber-300 hover:bg-amber-400/20"><ArrowDown className="h-4 w-4" /> დეტალები იხილეთ ქვემოთ</button>
       </section>
 
