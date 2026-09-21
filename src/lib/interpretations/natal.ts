@@ -22,6 +22,10 @@ const PLANET_MEANING_KA: Record<string, string> = {
   MeanNode: "განვითარების მთავარი მიმართულება",
 };
 
+PLANET_MEANING_KA.Lilith = "ჩრდილოვან სურვილებს, ტაბუებსა და იმ ადგილს აჩვენებს, სადაც ადამიანი საკუთარ ძლიერ ბუნებას სწავლობს";
+PLANET_MEANING_KA.Selena = "დაცულობის, შინაგანი სიწმინდისა და ბუნებრივი მხარდაჭერის სიმბოლურ წერტილს აჩვენებს";
+PLANET_MEANING_KA.Chiron = "ძველ მგრძნობიარე გამოცდილებას და იმ უნარს აჩვენებს, რომლითაც ადამიანი სხვასაც ეხმარება";
+
 const SIGN_QUALITY_KA: Record<string, string> = {
   ვერძი: "პირდაპირ, სწრაფად და ინიციატივით",
   კურო: "მდგრადად, საფუძვლიანად და მოთმინებით",
@@ -185,7 +189,7 @@ function chartSignature(planets: PlanetPosition[]): string {
 }
 
 export function generateNatalInterpretation(input: PlacementInput): string {
-  const { planets, ascendant, aspects, houseOfFn } = input;
+  const { planets, houseCusps, ascendant, aspects, houseOfFn } = input;
   const ascSign = eclipticToSign(ascendant);
 
   const sun = planets.find((p) => p.name === "Sun");
@@ -216,9 +220,16 @@ export function generateNatalInterpretation(input: PlacementInput): string {
     parts.push(planetLine(p, houseOfFn(p.longitude)));
   }
 
+  for (let index = 0; index < houseCusps.length; index += 1) {
+    const house = index + 1;
+    const cusp = eclipticToSign(houseCusps[index]!);
+    parts.push(`\n## ${house} სახლი — ${cusp.signName} (${formatDegree(cusp.degreeInSign)})`);
+    parts.push(`ეს სახლი აღწერს ცხოვრების იმ სფეროს, სადაც ${HOUSE_THEME_KA[index] ?? "რუკის შესაბამისი გამოცდილებები"} აქტიურდება. მისი კუსპიდის ნიშანი აჩვენებს, როგორ შედიხართ ამ თემაში და როგორ ვითარდება იგი.`);
+  }
+
   if (aspects.length) {
     parts.push(`\n## მთავარი ასპექტები`);
-    const sorted = [...aspects].sort((a, b) => a.orb - b.orb).slice(0, 12);
+    const sorted = [...aspects].sort((a, b) => a.orb - b.orb);
     for (const hit of sorted) {
       parts.push(aspectLine(hit));
     }

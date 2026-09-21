@@ -98,7 +98,7 @@ export default function CalculationSettings({
 
           <label className="flex items-center gap-2 rounded-xl border border-slate-500/20 bg-slate-900/30 px-3 py-2 text-xs font-semibold text-slate-300 sm:col-span-2">
             <input type="checkbox" checked={value.includeAsteroids ?? false} onChange={(event) => set("includeAsteroids", event.target.checked)} className="h-4 w-4 accent-amber-400" />
-            დამატებითი სხეულები — Chiron, Ceres, Pallas, Juno და Vesta
+            დამატებითი ასტეროიდები — Ceres, Pallas, Juno და Vesta (Chiron რუკაში ყოველთვის ჩანს)
           </label>
         </div>
       )}

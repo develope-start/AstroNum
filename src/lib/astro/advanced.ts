@@ -54,6 +54,11 @@ export const FIXED_STAR_CATALOG = [
   { id: "Star6", name: "Fomalhaut", nameKa: "ფომალჰაუტი", raHours: 22.960848, dec: -29.622236 },
 ] as const;
 
+const EXTENDED_FIXED_STAR_CATALOG = [
+  { id: "Star7", name: "Arcturus", nameKa: "არქტურუსი", raHours: 14.26103, dec: 19.1825 },
+  { id: "Star8", name: "Vega", nameKa: "ვეგა", raHours: 18.61565, dec: 38.7837 },
+] as const;
+
 function oppositeSign(signIndex: number): number {
   return (signIndex + 6) % 12;
 }
@@ -164,7 +169,7 @@ export function calculateFixedStarContacts(
   const observer = new Astronomy.Observer(0, 0, 0);
   const obliquity = Astronomy.e_tilt(Astronomy.MakeTime(date)).tobl;
   const contacts: FixedStarContact[] = [];
-  for (const star of FIXED_STAR_CATALOG) {
+  for (const star of [...FIXED_STAR_CATALOG, ...EXTENDED_FIXED_STAR_CATALOG]) {
     const body = Astronomy.Body[star.id as keyof typeof Astronomy.Body];
     Astronomy.DefineStar(body, star.raHours, star.dec, 1000);
     const equatorial = Astronomy.Equator(body, date, observer, true, false);

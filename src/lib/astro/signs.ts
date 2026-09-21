@@ -28,6 +28,10 @@ export const PLANET_NAMES_KA: Record<string, string> = {
   MeanNode: "ჩრდილო კვანძი (საშუალო)",
 };
 
+PLANET_NAMES_KA.Lilith = "ლილითი";
+PLANET_NAMES_KA.Selena = "სელენა";
+PLANET_NAMES_KA.Chiron = "ქირონი";
+
 export const HOUSE_LABELS_KA = [
   "I — პიროვნება, გარეგნობა",
   "II — ფინანსები, ღირებულებები",

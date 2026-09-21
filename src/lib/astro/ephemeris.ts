@@ -68,6 +68,8 @@ export function isSwissAvailableForDate(
     const bodies = [
       ...SWISS_PLANETS,
       [options.nodeType === "true" ? 11 : 10, "Node"],
+      [12, "MeanLilith"],
+      [15, "Chiron"],
       ...(options.includeAsteroids ? SWISS_ASTEROIDS : []),
     ];
     for (const entry of bodies) swiss.calculatePosition(toJulianDay(date), entry[0] as number, swissFlags(options));
@@ -152,6 +154,17 @@ export function calculateSwissNode(
 ) {
   const body = options.nodeType === "true" ? 11 : 10;
   return calculateSwissPosition(date, body, options, lon, lat);
+}
+
+/** Mean Black Moon Lilith is Swiss Ephemeris body 12. Selena is represented
+ * by the commonly used White Moon opposition to the mean apogee. */
+export function calculateSwissLilith(
+  date: Date,
+  options: Required<CalculationOptions>,
+  lon = 0,
+  lat = 0,
+) {
+  return calculateSwissPosition(date, 12, options, lon, lat);
 }
 
 export function calculateSwissHouses(

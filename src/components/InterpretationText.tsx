@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Clock, Calendar, Copy, Check, Sparkles, BookOpen } from "lucide-react";
+import { PLANET_NAMES_KA } from "@/lib/astro/signs";
+import { ALL_ASPECTS } from "@/lib/astro/aspects";
 
 function renderInline(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -117,6 +119,7 @@ function InterpretationSectionView({
   const [open, setOpen] = useState(openByDefault);
   const isAscendant = section.heading.toLowerCase().includes("ასცენდენტი");
   const isElementSynthesis = section.heading.toLowerCase().includes("სტიქიების პროცენტული სინთეზი");
+  const isAngularHouse = /^(1|4|7|10)\s+სახლი/.test(section.heading);
   const focusedBlockInSection = isElementSynthesis && section.blocks.some((block) => elementIdForBlock(block) === focusedElement);
 
   useEffect(() => {
@@ -143,7 +146,7 @@ function InterpretationSectionView({
       id={isAscendant ? "ascendant-section" : undefined}
       open={open}
       onToggle={(event) => setOpen(event.currentTarget.open)}
-      className="interpretation-accordion"
+      className={`interpretation-accordion ${isAngularHouse ? "interpretation-angular-house" : ""}`}
     >
       <summary className="interpretation-accordion-summary">
         <span className="interpretation-accordion-icon"><Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-300" /></span>
@@ -182,6 +185,35 @@ function InterpretationSectionView({
 export default function InterpretationText({ text, viewMetadata }: { text: string; viewMetadata?: InterpretationViewMetadata }) {
   const [copied, setCopied] = useState(false);
   const [focusedElement, setFocusedElement] = useState<ElementId | null>(null);
+
+  useEffect(() => {
+    const handleInterpretationFocus = (event: Event) => {
+      const detail = (event as CustomEvent<{ type?: string; key?: string }>).detail;
+      if (!detail?.type || !detail.key) return;
+      const key = detail.key;
+      const parts = key.split("|");
+      const terms = detail.type === "aspect"
+        ? [
+          PLANET_NAMES_KA[parts[0]!] ?? parts[0]!,
+          ALL_ASPECTS.find((aspect) => aspect.name === parts[1])?.nameKa ?? parts[1]!,
+          PLANET_NAMES_KA[parts[2]!] ?? parts[2]!,
+        ].map((term) => term.toLowerCase())
+        : detail.type === "house"
+          ? [`${key} სახლი`]
+          : [(PLANET_NAMES_KA[key] ?? key).toLowerCase()];
+      const nodes = Array.from(document.querySelectorAll<HTMLElement>(".interpretation-content .interpretation-paragraph, .interpretation-content .interpretation-accordion"));
+      const target = nodes.find((node) => {
+        const content = (node.textContent ?? "").toLowerCase();
+        return terms.every((term) => content.includes(term));
+      });
+      if (!target) return;
+      const parentDetails = target.closest("details") as HTMLDetailsElement | null;
+      if (parentDetails) parentDetails.open = true;
+      window.setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "center" }), 40);
+    };
+    window.addEventListener("focus-interpretation", handleInterpretationFocus);
+    return () => window.removeEventListener("focus-interpretation", handleInterpretationFocus);
+  }, []);
 
   const wordCount = text.trim().split(/\s+/).length;
   const readingMinutes = Math.max(1, Math.ceil(wordCount / 180));

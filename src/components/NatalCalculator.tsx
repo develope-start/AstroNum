@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
 import InterpretationText from "./InterpretationText";
 import ChartWheel, { WheelPlanet } from "./ChartWheel";
+import ChartDetails from "./ChartDetails";
+import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "./ElementBalanceGuide";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
 import HouseSystemSelect from "./HouseSystemSelect";
@@ -19,6 +21,9 @@ interface WheelData {
   mc: number;
   houseCusps: number[];
   planets: WheelPlanet[];
+  aspects: AspectHit[];
+  fixedStars: Array<{ star: string; planet: string; longitude: number; orb: number }>;
+  planetHouses: Record<string, number>;
 }
 
 interface CacheShape {
@@ -58,7 +63,12 @@ export default function NatalCalculator() {
       setHouseSystem(cached.houseSystem);
       setCalculation({ ...DEFAULT_UI_CALCULATION, ...(cached.calculation ?? {}) });
       setInterpretation(cached.interpretation);
-      setWheel(cached.wheel ?? null);
+      setWheel(cached.wheel ? {
+        ...cached.wheel,
+        aspects: cached.wheel.aspects ?? [],
+        fixedStars: cached.wheel.fixedStars ?? [],
+        planetHouses: cached.wheel.planetHouses ?? {},
+      } : null);
       setMapNumber(cached.mapNumber ?? null);
     });
   }, []);
@@ -102,6 +112,9 @@ export default function NatalCalculator() {
           name: p.name,
           longitude: p.longitude,
         })),
+        aspects: data.result.aspects ?? [],
+        fixedStars: data.result.advanced?.fixedStarContacts ?? [],
+        planetHouses: data.result.planetHouses ?? {},
       };
       setWheel(w);
       if (save) setSaved(true);
@@ -187,7 +200,8 @@ export default function NatalCalculator() {
             <h3 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">ნატალური ცის რუკა</h3>
             <p className="mt-0.5 text-[0.7rem] sm:text-xs font-semibold text-slate-300">პლანეტების ეკლიპტიკური პოზიციები</p>
           </div>
-          <ChartWheel ascendant={wheel.ascendant} mc={wheel.mc} cusps={wheel.houseCusps} planets={wheel.planets} />
+          <ChartWheel ascendant={wheel.ascendant} mc={wheel.mc} cusps={wheel.houseCusps} planets={wheel.planets} aspects={wheel.aspects} fixedStars={wheel.fixedStars} size={620} />
+          <ChartDetails planets={wheel.planets} planetHouses={wheel.planetHouses} houseCusps={wheel.houseCusps} aspects={wheel.aspects} fixedStars={wheel.fixedStars} ascendant={wheel.ascendant} mc={wheel.mc} />
         </div>
       )}
 

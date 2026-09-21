@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import InterpretationText from "@/components/InterpretationText";
-import ChartWheel, { WheelPlanet } from "@/components/ChartWheel";
+import ChartWheel, { WheelPlanet, type WheelFixedStar } from "@/components/ChartWheel";
+import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
 import { Compass, Copy, Check, X, Sparkles, Trash2, Eye } from "lucide-react";
 import { readApiResponse } from "@/lib/apiResponse";
@@ -34,6 +35,8 @@ interface WheelResult {
   mc: number;
   houseCusps: number[];
   planets: WheelPlanet[];
+  aspects: AspectHit[];
+  fixedStars: WheelFixedStar[];
 }
 
 interface SelectedChart {
@@ -88,6 +91,10 @@ function wheelFromResult(result: unknown): WheelResult | undefined {
     mc: typeof source.mc === "number" ? source.mc : 0,
     houseCusps: source.houseCusps as number[],
     planets: source.planets as WheelPlanet[],
+    aspects: Array.isArray(source.aspects) ? source.aspects as AspectHit[] : [],
+    fixedStars: source.advanced && typeof source.advanced === "object" && Array.isArray((source.advanced as Record<string, unknown>).fixedStarContacts)
+      ? (source.advanced as Record<string, unknown>).fixedStarContacts as WheelFixedStar[]
+      : [],
   };
 }
 
@@ -545,7 +552,9 @@ export default function DashboardPage() {
                 mc={selected.result.mc}
                 cusps={selected.result.houseCusps}
                 planets={selected.result.planets}
-                size={500}
+                aspects={selected.result.aspects}
+                fixedStars={selected.result.fixedStars}
+                size={620}
               />
             </div>
           )}

@@ -1,6 +1,7 @@
 import * as Astronomy from "astronomy-engine";
 import {
   calculateSwissHouses,
+  calculateSwissLilith,
   calculateSwissNode,
   calculateSwissPosition,
   CalculationOptions,
@@ -92,7 +93,7 @@ export function computePlanetPositions(date: Date, inputOptions?: CalculationOpt
   const options = resolveCalculationOptions(inputOptions);
   const dayMs = 24 * 60 * 60 * 1000;
   if (options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, options, lon, lat)) {
-    const planets = BODIES.map(({ swissKey, name }) => {
+    const planets: PlanetPosition[] = BODIES.map(({ swissKey, name }) => {
       const position = calculateSwissPosition(date, swissKey, options, lon, lat);
       const tropicalPosition = options.zodiac === "sidereal"
         ? calculateSwissPosition(date, swissKey, { ...options, zodiac: "tropical" }, lon, lat)
@@ -105,8 +106,11 @@ export function computePlanetPositions(date: Date, inputOptions?: CalculationOpt
         ...positionMetadata(date, tropicalPosition.longitude, tropicalPosition.latitude),
       };
     });
-    if (options.includeAsteroids) {
-      for (const [body, name] of SWISS_ASTEROIDS) {
+    const asteroidBodies = options.includeAsteroids
+      ? SWISS_ASTEROIDS.filter(([, name]) => name !== "Chiron")
+      : [];
+    if (options.includeAsteroids || isSwissAvailable()) {
+      for (const [body, name] of asteroidBodies) {
         const position = calculateSwissPosition(date, body, options, lon, lat);
         const tropicalPosition = options.zodiac === "sidereal"
           ? calculateSwissPosition(date, body, { ...options, zodiac: "tropical" }, lon, lat)
@@ -120,10 +124,22 @@ export function computePlanetPositions(date: Date, inputOptions?: CalculationOpt
         });
       }
     }
+    const chironPosition = calculateSwissPosition(date, 15, options, lon, lat);
+    const chironTropical = options.zodiac === "sidereal"
+      ? calculateSwissPosition(date, 15, { ...options, zodiac: "tropical" }, lon, lat)
+      : chironPosition;
+    planets.push({
+      name: "Chiron",
+      longitude: norm360(chironPosition.longitude),
+      speed: chironPosition.longitudeSpeed,
+      retrograde: chironPosition.longitudeSpeed < 0,
+      ...positionMetadata(date, chironTropical.longitude, chironTropical.latitude),
+    });
+    planets.push(...computeLunarApogeePoints(date, options, lon, lat));
     return planets;
   }
 
-  return BODIES.map(({ key, name }) => {
+  const fallbackPlanets: PlanetPosition[] = BODIES.map(({ key, name }) => {
     const vector = Astronomy.GeoVector(key, date, true);
     const ecliptic = Astronomy.Ecliptic(vector);
     const lon = norm360(ecliptic.elon);
@@ -134,6 +150,22 @@ export function computePlanetPositions(date: Date, inputOptions?: CalculationOpt
     if (speed < -180) speed += 360;
     return { name, longitude: lon, speed, retrograde: speed < 0, ...positionMetadata(date, lon, ecliptic.elat) };
   });
+  const swissFallbackOptions = { ...options, ephemeris: "swiss" as const };
+  if (isSwissAvailable() && isSwissAvailableForDate(date, swissFallbackOptions, lon, lat)) {
+    const position = calculateSwissPosition(date, 15, swissFallbackOptions, lon, lat);
+    const tropicalPosition = options.zodiac === "sidereal"
+      ? calculateSwissPosition(date, 15, { ...swissFallbackOptions, zodiac: "tropical" }, lon, lat)
+      : position;
+    fallbackPlanets.push({
+      name: "Chiron",
+      longitude: norm360(position.longitude),
+      speed: position.longitudeSpeed,
+      retrograde: position.longitudeSpeed < 0,
+      ...positionMetadata(date, tropicalPosition.longitude, tropicalPosition.latitude),
+    });
+  }
+  fallbackPlanets.push(...computeLunarApogeePoints(date, options, lon, lat));
+  return fallbackPlanets;
 }
 
 /**
@@ -184,6 +216,40 @@ export function computeNorthNode(date: Date, inputOptions?: CalculationOptions, 
     retrograde: speed < 0,
     ...positionMetadata(date, nodeLon, 0),
   };
+}
+
+function meanLunarApogeeLongitude(date: Date): number {
+  const jd = dateToJulianDay(date);
+  const t = (jd - 2451545.0) / 36525;
+  return norm360(83.3532465 + 4069.0137287 * t - 0.01032 * t * t - (t * t * t) / 80053 + (t * t * t * t) / 18999000);
+}
+
+/** Returns Black Moon Lilith and White Moon Selena as chart points. */
+export function computeLunarApogeePoints(
+  date: Date,
+  inputOptions?: CalculationOptions,
+  observerLon = 0,
+  lat = 0,
+): PlanetPosition[] {
+  const options = resolveCalculationOptions(inputOptions);
+  let longitude = meanLunarApogeeLongitude(date);
+  let speed = meanLunarApogeeLongitude(new Date(date.getTime() + 86400000)) - longitude;
+
+  const swissOptions = { ...options, ephemeris: "swiss" as const };
+  if (isSwissAvailable() && isSwissAvailableForDate(date, swissOptions, observerLon, lat)) {
+    const position = calculateSwissLilith(date, swissOptions, observerLon, lat);
+    const tomorrow = calculateSwissLilith(new Date(date.getTime() + 86400000), swissOptions, observerLon, lat);
+    longitude = norm360(position.longitude);
+    speed = tomorrow.longitude - longitude;
+    if (speed > 180) speed -= 360;
+    if (speed < -180) speed += 360;
+  }
+
+  const metadata = positionMetadata(date, longitude, 0);
+  return [
+    { name: "Lilith", longitude, speed, retrograde: speed < 0, ...metadata },
+    { name: "Selena", longitude: norm360(longitude + 180), speed, retrograde: speed < 0, ...positionMetadata(date, norm360(longitude + 180), 0) },
+  ];
 }
 
 function dateToJulianDay(date: Date): number {
