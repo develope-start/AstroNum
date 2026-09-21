@@ -2,6 +2,7 @@
 
 import InterpretationText, { type InterpretationViewMetadata } from "@/components/InterpretationText";
 import ChartWheel, { WheelPlanet, type WheelFixedStar } from "@/components/ChartWheel";
+import ChartDetails from "@/components/ChartDetails";
 import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
@@ -34,6 +35,7 @@ type WheelData = {
   planets: WheelPlanet[];
   aspects: AspectHit[];
   fixedStars: WheelFixedStar[];
+  planetHouses: Record<string, number>;
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -62,6 +64,7 @@ function wheelFromResult(result: unknown): WheelData | null {
     fixedStars: source.advanced && typeof source.advanced === "object" && Array.isArray((source.advanced as Record<string, unknown>).fixedStarContacts)
       ? (source.advanced as Record<string, unknown>).fixedStarContacts as WheelFixedStar[]
       : [],
+    planetHouses: source.planetHouses && typeof source.planetHouses === "object" ? source.planetHouses as Record<string, number> : {},
   };
 }
 
@@ -115,6 +118,7 @@ export default function AdminCalculationViewer({
         {wheel && (
           <div className="admin-calculation-wheel mx-auto my-6 min-w-0 w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-500/30 bg-slate-500/5 p-2 sm:p-6">
             <ChartWheel ascendant={wheel.ascendant} mc={wheel.mc} cusps={wheel.houseCusps} planets={wheel.planets} aspects={wheel.aspects} fixedStars={wheel.fixedStars} size={620} />
+            <ChartDetails planets={wheel.planets} planetHouses={wheel.planetHouses} houseCusps={wheel.houseCusps} aspects={wheel.aspects} fixedStars={wheel.fixedStars} ascendant={wheel.ascendant} mc={wheel.mc} />
           </div>
         )}
 

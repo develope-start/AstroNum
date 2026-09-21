@@ -1,4 +1,4 @@
-import { Flame, Mountain, Wind, Droplets, Compass, ChevronDown, BookOpen } from "lucide-react";
+import { Compass, ChevronDown, BookOpen } from "lucide-react";
 import type { WheelPlanet } from "@/components/ChartWheel";
 import ElementTemperamentDetails from "@/components/ElementTemperamentDetails";
 import ElementSynthesisTable from "@/components/ElementSynthesisTable";
@@ -7,6 +7,7 @@ import { ELEMENT_TEMPERAMENTS } from "@/lib/elementTemperaments";
 import { calculateElementBalance as calculateSharedElementBalance } from "@/lib/elementBalance";
 
 import { scrollToAscendantSection } from "@/lib/scrollToAscendant";
+import { ELEMENT_VISUALS } from "./elementVisuals";
 
 const ZODIAC_NAMES = [
   "ვერძი", "კურო", "ტყუპები", "კირჩხიბი", "ლომი", "ქალწული",
@@ -25,12 +26,7 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
     window.dispatchEvent(new CustomEvent("focus-element-interpretation", { detail: { element } }));
   }
 
-  const bars = [
-    { id: "fire", label: "ცეცხლი", value: elements.percentages.fire, icon: Flame, iconClass: "text-rose-300", gradient: "from-rose-400/80 to-red-500/80" },
-    { id: "earth", label: "მიწა", value: elements.percentages.earth, icon: Mountain, iconClass: "text-amber-300", gradient: "from-amber-400/80 to-yellow-600/80" },
-    { id: "air", label: "ჰაერი", value: elements.percentages.air, icon: Wind, iconClass: "text-sky-200", gradient: "from-sky-300/80 to-cyan-400/80" },
-    { id: "water", label: "წყალი", value: elements.percentages.water, icon: Droplets, iconClass: "text-blue-300", gradient: "from-blue-400/80 to-indigo-500/80" },
-  ];
+  const bars = ELEMENT_VISUALS.map((visual) => ({ ...visual, value: elements.percentages[visual.id] }));
 
   return (
     <div className="glass-panel rounded-2xl sm:rounded-[28px] p-3 sm:p-5 border-amber-500/25 bg-gradient-to-b from-[#130938]/90 to-[#09041a]/95 backdrop-blur-2xl shadow-xl space-y-3.5 text-center">

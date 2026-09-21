@@ -4378,6 +4378,12 @@ canvas {
   max-width: 100%;
 }
 
+.chart-wheel-interactive,
+.chart-wheel-interactive:focus,
+.chart-wheel-interactive:focus-visible {
+  outline: none !important;
+}
+
 .chart-details {
   min-width: 0;
 }

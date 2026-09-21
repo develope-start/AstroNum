@@ -83,9 +83,14 @@ function planetLine(p: PlanetPosition, houseNum: number): string {
   return `**${nameKa}** ${signName}-ში (${formatDegree(degreeInSign)}), ${houseNum}-ე სახლში${retro}. თქვენი ${meaning} ვლინდება ${quality}, უპირატესად ${theme}.`;
 }
 
-function aspectLine(hit: AspectHit): string {
+function aspectLine(hit: AspectHit, planets?: PlanetPosition[], houseOfFn?: (lon: number) => number): string {
   const a = PLANET_NAMES_KA[hit.a] ?? hit.a;
   const b = PLANET_NAMES_KA[hit.b] ?? hit.b;
+  const aPoint = planets?.find((planet) => planet.name === hit.a);
+  const bPoint = planets?.find((planet) => planet.name === hit.b);
+  const placement = (point: PlanetPosition | undefined) => point && houseOfFn
+    ? ` (${eclipticToSign(point.longitude).signName}, ${houseOfFn(point.longitude)}-ე სახლი)`
+    : "";
   const strength = hit.orb <= 1 ? "ზუსტად" : hit.orb <= 3 ? "ძლიერად" : "უფრო ფართო ორბით";
   const phase = hit.applying ? "მოახლოების ფაზაშია" : "დაშორების ფაზაშია";
   const tone =
@@ -97,7 +102,7 @@ function aspectLine(hit: AspectHit): string {
       ? "ეს არის შინაგანი ხახუნი, რომელიც ზრდის მამოძრავებელი ძალაა, თუ შეგნებულად გაუმკლავდებით"
       : "ეს ორი ძალა ერთმანეთში ირევა და ერთ თემად ერწყმის თქვენს ხასიათს";
 
-  return `${a} — ${hit.aspectKa} — ${b} (ორბი ${hit.orb}°, ${strength}; ${phase}). ${tone}.`;
+  return `${a}${placement(aPoint)} — ${hit.aspectKa} — ${b}${placement(bPoint)} (ორბი ${hit.orb}°, ${strength}; ${phase}). ${tone}.`;
 }
 
 function methodNote(): string {
@@ -192,9 +197,6 @@ export function generateNatalInterpretation(input: PlacementInput): string {
   const { planets, houseCusps, ascendant, aspects, houseOfFn } = input;
   const ascSign = eclipticToSign(ascendant);
 
-  const sun = planets.find((p) => p.name === "Sun");
-  const moon = planets.find((p) => p.name === "Moon");
-
   const parts: string[] = [];
 
   parts.push(`\n## რუკის ხასიათი`);
@@ -205,43 +207,31 @@ export function generateNatalInterpretation(input: PlacementInput): string {
     `თქვენი ასცენდენტი განსაზღვრავს, როგორ წარსდგებით სამყაროს წინაშე პირველი შეხვედრისას — ${SIGN_QUALITY_KA[ascSign.signName]}. ეს არის თქვენი "ინტერფეისი" გარესამყაროსთან, არა აუცილებლად შინაგანი არსი.`
   );
 
-  if (sun) {
-    parts.push(`\n## მზე — ${eclipticToSign(sun.longitude).signName}`);
-    parts.push(planetLine(sun, houseOfFn(sun.longitude)));
-  }
-  if (moon) {
-    parts.push(`\n## მთვარე — ${eclipticToSign(moon.longitude).signName}`);
-    parts.push(planetLine(moon, houseOfFn(moon.longitude)));
-  }
-
-  parts.push(`\n## პლანეტების განლაგება`);
-  for (const p of planets) {
-    if (p.name === "Sun" || p.name === "Moon") continue;
-    parts.push(planetLine(p, houseOfFn(p.longitude)));
-  }
+  parts.push(`\n## რუკის აღწერა — პლანეტები, სახლები და ასპექტები`);
+  parts.push("ქვემოთ მოცემული აღწერა აერთიანებს პლანეტის ნიშანს, სახლს, მის ცხოვრებისეულ თემას და სხვა წერტილებთან კავშირებს. ამიტომ თითოეული ფაქტი ცალკე სათაურად კი არა, ერთი მთლიანი რუკის სურათის ნაწილად იკითხება.");
+  for (const p of planets) parts.push(planetLine(p, houseOfFn(p.longitude)));
 
   for (let index = 0; index < houseCusps.length; index += 1) {
     const house = index + 1;
     const cusp = eclipticToSign(houseCusps[index]!);
-    parts.push(`\n## ${house} სახლი — ${cusp.signName} (${formatDegree(cusp.degreeInSign)})`);
-    parts.push(`ეს სახლი აღწერს ცხოვრების იმ სფეროს, სადაც ${HOUSE_THEME_KA[index] ?? "რუკის შესაბამისი გამოცდილებები"} აქტიურდება. მისი კუსპიდის ნიშანი აჩვენებს, როგორ შედიხართ ამ თემაში და როგორ ვითარდება იგი.`);
+    parts.push(`**${house} სახლი — ${cusp.signName} (${formatDegree(cusp.degreeInSign)})** — ${HOUSE_THEME_KA[index] ?? "რუკის შესაბამისი გამოცდილებები"} აქტიურდება ამ სფეროში; კუსპიდის ნიშანი აჩვენებს, როგორ შედიხართ ამ თემაში.`);
   }
 
   if (aspects.length) {
     parts.push(`\n## მთავარი ასპექტები`);
     const sorted = [...aspects].sort((a, b) => a.orb - b.orb);
     for (const hit of sorted) {
-      parts.push(aspectLine(hit));
+      parts.push(aspectLine(hit, planets, houseOfFn));
     }
   }
 
-  parts.push(...advancedAnalysisLines(input.advanced));
-
   const libraryEntries = dedupeInsights(natalLibraryInsights(planets, aspects, houseOfFn));
   if (libraryEntries.length) {
-    parts.push(`\n## დამატებითი ბიბლიოთეკური განმარტებები`);
+    parts.push("ბიბლიოთეკის კონტექსტი: ზემოთ აღწერილ პოზიციებსა და კავშირებს ემატება შემდეგი განმარტებითი კავშირები:");
     parts.push(...libraryEntries.slice(0, 24).map((entry) => entry.text));
   }
+
+  parts.push(...advancedAnalysisLines(input.advanced));
 
   // Keep the methodology as the final section so future interpretation
   // additions are always placed above it.

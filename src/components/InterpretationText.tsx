@@ -192,6 +192,7 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
       if (!detail?.type || !detail.key) return;
       const key = detail.key;
       const parts = key.split("|");
+      const angleHouse: Record<string, string> = { ASC: "1 სახლი", DSC: "7 სახლი", MC: "10 სახლი", IC: "4 სახლი" };
       const terms = detail.type === "aspect"
         ? [
           PLANET_NAMES_KA[parts[0]!] ?? parts[0]!,
@@ -200,6 +201,8 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
         ].map((term) => term.toLowerCase())
         : detail.type === "house"
           ? [`${key} სახლი`]
+          : detail.type === "angle"
+            ? [angleHouse[key] ?? key]
           : [(PLANET_NAMES_KA[key] ?? key).toLowerCase()];
       const nodes = Array.from(document.querySelectorAll<HTMLElement>(".interpretation-content .interpretation-paragraph, .interpretation-content .interpretation-accordion"));
       const target = nodes.find((node) => {

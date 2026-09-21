@@ -143,7 +143,7 @@ export default function ChartWheel({
           const pInner = toXY(lon, rInner);
           const isAsc = label === "ASC";
           return (
-            <g key={label} className={isAsc ? "cursor-pointer transition-opacity hover:opacity-80" : undefined} onClick={isAsc ? scrollToAscendantSection : () => emitFocus({ type: "angle", key: label })} onKeyDown={isAsc ? (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); scrollToAscendantSection(); } } : undefined} role="button" tabIndex={0}>
+            <g key={label} className="chart-wheel-interactive cursor-pointer transition-opacity hover:opacity-80" onClick={isAsc ? scrollToAscendantSection : () => emitFocus({ type: "angle", key: label })} onMouseDown={(event) => event.currentTarget.blur()} onKeyDown={isAsc ? (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); scrollToAscendantSection(); } } : undefined} role="button" tabIndex={isAsc ? 0 : -1}>
               <line x1={pInner.x} y1={pInner.y} x2={pEnd.x} y2={pEnd.y} stroke={color} strokeWidth={2.6} strokeDasharray={label === "DESC" || label === "IC" ? "4 2" : undefined} filter="url(#gold-glow)" />
               <rect x={pBadge.x - 24} y={pBadge.y - 12} width="48" height="24" rx="12" fill={bg} stroke={color} strokeWidth="1.8" style={{ filter: `drop-shadow(0 0 10px ${color})` }} />
               <text x={pBadge.x} y={pBadge.y} fill={textColor} className="select-none font-black tracking-wider" fontSize={size * 0.029} textAnchor="middle" dominantBaseline="central">{label}</text>

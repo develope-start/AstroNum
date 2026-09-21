@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import InterpretationText from "@/components/InterpretationText";
 import ChartWheel, { WheelPlanet, type WheelFixedStar } from "@/components/ChartWheel";
+import ChartDetails from "@/components/ChartDetails";
 import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
 import { Compass, Copy, Check, X, Sparkles, Trash2, Eye } from "lucide-react";
@@ -37,6 +38,7 @@ interface WheelResult {
   planets: WheelPlanet[];
   aspects: AspectHit[];
   fixedStars: WheelFixedStar[];
+  planetHouses: Record<string, number>;
 }
 
 interface SelectedChart {
@@ -95,6 +97,7 @@ function wheelFromResult(result: unknown): WheelResult | undefined {
     fixedStars: source.advanced && typeof source.advanced === "object" && Array.isArray((source.advanced as Record<string, unknown>).fixedStarContacts)
       ? (source.advanced as Record<string, unknown>).fixedStarContacts as WheelFixedStar[]
       : [],
+    planetHouses: source.planetHouses && typeof source.planetHouses === "object" ? source.planetHouses as Record<string, number> : {},
   };
 }
 
@@ -556,6 +559,7 @@ export default function DashboardPage() {
                 fixedStars={selected.result.fixedStars}
                 size={620}
               />
+              <ChartDetails planets={selected.result.planets} planetHouses={selected.result.planetHouses} houseCusps={selected.result.houseCusps} aspects={selected.result.aspects} fixedStars={selected.result.fixedStars} ascendant={selected.result.ascendant} mc={selected.result.mc} />
             </div>
           )}
 

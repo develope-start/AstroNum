@@ -188,11 +188,6 @@ export default function NatalCalculator() {
         </div>
       )}
 
-      {/* Element Infographic Breakdown */}
-      {wheel && (
-        <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />
-      )}
-
       {/* Chart Wheel Display */}
       {wheel && (
         <div className="glass-panel relative overflow-hidden rounded-2xl sm:rounded-[28px] p-3 sm:p-8 border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl shadow-2xl text-center w-full">
@@ -204,6 +199,8 @@ export default function NatalCalculator() {
           <ChartDetails planets={wheel.planets} planetHouses={wheel.planetHouses} houseCusps={wheel.houseCusps} aspects={wheel.aspects} fixedStars={wheel.fixedStars} ascendant={wheel.ascendant} mc={wheel.mc} />
         </div>
       )}
+
+      {wheel && <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />}
 
       {!me && interpretation && (
         <div className="flex items-start justify-center gap-2.5 rounded-2xl border border-amber-500/30 bg-purple-950/40 p-3.5 sm:p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center">
