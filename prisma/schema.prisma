@@ -17,6 +17,7 @@ datasource db {
 }
 
 model User {
+  chartViews   ChartView[] @relation("ChartViewer")
   id           String   @id @default(cuid())
   publicId     String?  @unique
   adminId      String?  @unique
@@ -35,6 +36,7 @@ model User {
 // ერთი "Chart" ინახავს ერთი ან ორი დაბადების პროფილს (სინასტრიისთვის ორივე)
 // და მათგან გამოთვლილ შედეგსა და ინტერპრეტაციას JSON სახით.
 model Chart {
+  views     ChartView[]
   id     String @id @default(cuid())
   mapNumber String?
   userId String
@@ -73,6 +75,19 @@ model Chart {
 // ყველა წარმატებული გამოთვლის აუდიტის ჩანაწერი. userId შეიძლება იყოს null,
 // რადგან სტუმარ მომხმარებელს ანგარიში არ აქვს, მაგრამ მისი შეყვანილი მონაცემებიც
 // უნდა გამოჩნდეს ადმინისტრატორის ისტორიაში.
+model ChartView {
+  id         String   @id @default(cuid())
+  chartId    String
+  viewerId   String
+  viewerRole String
+  viewedAt   DateTime @default(now()) @updatedAt
+  chart      Chart    @relation(fields: [chartId], references: [id], onDelete: Cascade)
+  viewer     User     @relation("ChartViewer", fields: [viewerId], references: [id], onDelete: Cascade)
+
+  @@unique([chartId, viewerId])
+  @@index([chartId, viewerRole, viewedAt])
+}
+
 model Calculation {
   id     String @id @default(cuid())
   userId String?

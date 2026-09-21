@@ -1,6 +1,6 @@
 "use client";
 
-import InterpretationText from "@/components/InterpretationText";
+import InterpretationText, { type InterpretationViewMetadata } from "@/components/InterpretationText";
 import ChartWheel, { WheelPlanet } from "@/components/ChartWheel";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
@@ -23,6 +23,7 @@ export type CalculationViewData = {
   createdAt: string;
   result: unknown;
   interpretation: string | null;
+  viewMetadata?: InterpretationViewMetadata | null;
 };
 
 type WheelData = {
@@ -119,7 +120,9 @@ export default function AdminCalculationViewer({
 
         <div className="admin-calculation-interpretation mt-6 min-w-0 border-t border-slate-500/30 pt-5">
           <h3 className="mb-4 text-lg font-bold text-slate-200">ასტროლოგიური ინტერპრეტაცია</h3>
-          {calculation.interpretation ? <InterpretationText text={calculation.interpretation} /> : <p className="text-sm text-slate-400">ამ ჩანაწერისთვის ინტერპრეტაცია ვერ მოიძებნა.</p>}
+          {calculation.interpretation ? (
+            <InterpretationText text={calculation.interpretation} viewMetadata={calculation.viewMetadata ?? undefined} />
+          ) : <p className="text-sm text-slate-400">ამ ჩანაწერისთვის ინტერპრეტაცია ვერ მოიძებნა.</p>}
         </div>
       </div>
     </div>

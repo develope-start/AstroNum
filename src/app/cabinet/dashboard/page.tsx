@@ -53,6 +53,7 @@ interface SelectedChart {
   houseSystem: string;
   createdAt: string;
   interpretation: string;
+  lastViewedAt: string | null;
   result?: WheelResult;
 }
 
@@ -193,6 +194,7 @@ export default function DashboardPage() {
         transitDate?: string | null;
         houseSystem?: string;
         createdAt?: string;
+        lastViewedAt?: string | null;
         interpretation?: string | null;
         result?: unknown;
         error?: string;
@@ -219,6 +221,7 @@ export default function DashboardPage() {
         houseSystem: data.houseSystem ?? "—",
         createdAt: data.createdAt ?? new Date().toISOString(),
         interpretation: data.interpretation ?? "",
+        lastViewedAt: data.lastViewedAt ?? null,
         result: wheelFromResult(data.result),
       });
       setShowWheel(true);
@@ -560,7 +563,10 @@ export default function DashboardPage() {
               ასტროლოგიური ინტერპრეტაცია & ანალიზი
             </h3>
             {selected.interpretation ? (
-              <InterpretationText text={selected.interpretation} />
+              <InterpretationText
+                text={selected.interpretation}
+                viewMetadata={{ mode: "USER", viewedAt: selected.lastViewedAt }}
+              />
             ) : (
               <p className="text-sm text-slate-400">ამ ჩანაწერისთვის ინტერპრეტაცია ვერ მოიძებნა.</p>
             )}

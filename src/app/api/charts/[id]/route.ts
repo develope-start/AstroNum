@@ -6,6 +6,7 @@ import { generateNatalInterpretation, generateSynastryInterpretation, generateTr
 import { houseOfLongitude } from "@/lib/astro/positions";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 import { appendElementBalanceInterpretation } from "@/lib/interpretations/elementBalance";
+import { recordChartView } from "@/lib/chartViews";
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getActiveSessionFromRequest(req);
@@ -15,6 +16,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   if (!chart) return NextResponse.json({ error: "რუკა ვერ მოიძებნა" }, { status: 404 });
   if (chart.userId !== session.userId && session.role !== "ADMIN") {
     return NextResponse.json({ error: "წვდომა აკრძალულია" }, { status: 403 });
+  }
+
+  let lastViewedAt: string | null = null;
+  try {
+    const view = await recordChartView(params.id, session.userId, session.role);
+    lastViewedAt = view.viewedAt.toISOString();
+  } catch (error) {
+    console.error("Could not record chart view", error);
   }
 
   let result: unknown;
@@ -50,7 +59,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     interpretation = await appendElementBalanceInterpretation(interpretation, result);
   }
 
-  return NextResponse.json({ ...chart, result, interpretation });
+  return NextResponse.json({ ...chart, result, interpretation, lastViewedAt });
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {

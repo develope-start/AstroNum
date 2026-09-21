@@ -7,6 +7,7 @@ import { houseOfLongitude } from "@/lib/astro/positions";
 import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 import { appendElementBalanceInterpretation } from "@/lib/interpretations/elementBalance";
+import { getChartViewSummary, recordChartView } from "@/lib/chartViews";
 
 const nullableString = z.string().nullable().optional();
 const schema = z.object({
@@ -20,13 +21,15 @@ const schema = z.object({
 
 async function authorized(req: NextRequest) {
   const session = await getActiveSessionFromRequest(req);
-  return session?.role === "ADMIN";
+  return session?.role === "ADMIN" ? session : null;
 }
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  if (!(await authorized(req))) return NextResponse.json({ error: "Access denied" }, { status: 403 });
+  const session = await authorized(req);
+  if (!session) return NextResponse.json({ error: "Access denied" }, { status: 403 });
   // Keep this select explicit so an older database missing the optional
   // interpretation column can still open a calculation.
+  let viewChartId: string | null = null;
   let calculation = await prisma.calculation.findUnique({
     where: { id: params.id },
     select: {
@@ -48,6 +51,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       },
     });
     if (!savedChart) return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
+    viewChartId = savedChart.id;
     calculation = {
       ...savedChart,
       publicId: null,
@@ -88,8 +92,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         transitDate: calculation.transitDate,
         houseSystem: calculation.houseSystem,
       },
-      select: { interpretation: true },
+      select: { id: true, interpretation: true },
     });
+    viewChartId = savedChart?.id ?? null;
     interpretation = savedChart?.interpretation ?? null;
   }
 
@@ -118,8 +123,18 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     interpretation = await appendElementBalanceInterpretation(interpretation, result);
   }
 
+  let viewMetadata: Awaited<ReturnType<typeof getChartViewSummary>> | null = null;
+  if (viewChartId) {
+    try {
+      await recordChartView(viewChartId, session.userId, "ADMIN");
+      viewMetadata = await getChartViewSummary(viewChartId);
+    } catch (error) {
+      console.error("Could not record admin chart view", error);
+    }
+  }
+
   const { resultJson, ...metadata } = calculation;
-  return NextResponse.json({ ...metadata, result, interpretation });
+  return NextResponse.json({ ...metadata, result, interpretation, viewMetadata });
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {

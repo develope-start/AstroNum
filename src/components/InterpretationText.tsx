@@ -22,6 +22,24 @@ type InterpretationSection = {
   blocks: string[];
 };
 
+export type InterpretationViewMetadata =
+  | { mode: "USER"; viewedAt: string | null }
+  | {
+      mode: "ADMIN";
+      userLastViewedAt: string | null;
+      adminLastViewedAt: string | null;
+      admin: { id: string; adminId: string | null; name: string | null; username: string | null } | null;
+    };
+
+function formatViewDate(value: string | null | undefined, includeTime = false) {
+  if (!value) return "ჯერ არ უნახავს";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleString("en-US", includeTime
+    ? { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" }
+    : { year: "numeric", month: "long", day: "numeric" });
+}
+
 type ElementId = "fire" | "earth" | "air" | "water";
 
 const ELEMENT_NAMES: Record<ElementId, string> = {
@@ -161,18 +179,14 @@ function InterpretationSectionView({
   );
 }
 
-export default function InterpretationText({ text }: { text: string }) {
+export default function InterpretationText({ text, viewMetadata }: { text: string; viewMetadata?: InterpretationViewMetadata }) {
   const [copied, setCopied] = useState(false);
   const [focusedElement, setFocusedElement] = useState<ElementId | null>(null);
 
   const wordCount = text.trim().split(/\s+/).length;
   const readingMinutes = Math.max(1, Math.ceil(wordCount / 180));
 
-  const todayStr = new Date().toLocaleDateString("ka-GE", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const fallbackViewedAt = new Date().toISOString();
 
   function handleCopy() {
     navigator.clipboard.writeText(text);
@@ -249,12 +263,27 @@ export default function InterpretationText({ text }: { text: string }) {
           </div>
           <div className="flex items-center gap-1.5 text-slate-300 text-[0.7rem] sm:text-xs">
             <Clock className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-            <span>~{readingMinutes} წთ</span>
+            <span>კითხვის სავარაუდო დრო: დაახლოებით {readingMinutes} წუთი</span>
           </div>
-          <div className="flex items-center gap-1.5 text-slate-300 text-[0.7rem] sm:text-xs">
-            <Calendar className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-            <span>{todayStr}</span>
-          </div>
+          {viewMetadata?.mode === "ADMIN" ? (
+            <div className="flex flex-col gap-1 text-slate-300 text-[0.7rem] sm:text-xs">
+              <span className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                მომხმარებლის ბოლო ნახვა: {formatViewDate(viewMetadata.userLastViewedAt, true)}
+              </span>
+              <span className="pl-5">
+                ადმინის ბოლო ნახვა: {formatViewDate(viewMetadata.adminLastViewedAt, true)}
+                {viewMetadata.admin
+                  ? ` — ${viewMetadata.admin.name || viewMetadata.admin.username || "სახელი უცნობია"} (ID: ${viewMetadata.admin.adminId || viewMetadata.admin.id})`
+                  : ""}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 text-slate-300 text-[0.7rem] sm:text-xs">
+              <Calendar className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+              <span>ნახვის თარიღი: {formatViewDate(viewMetadata?.viewedAt ?? fallbackViewedAt)}</span>
+            </div>
+          )}
         </div>
 
         <button
