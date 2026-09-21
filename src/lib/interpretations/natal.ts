@@ -151,41 +151,11 @@ function advancedAnalysisLines(advanced: PlacementInput["advanced"]): string[] {
   return lines.length > 1 ? lines : [];
 }
 
-const MODALITIES_KA = ["კარდინალური", "ფიქსირებული", "ცვალებადი"];
-const MODALITY_OF_SIGN = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2];
-
-const MODALITY_MEANING_KA: Record<string, string> = {
-  კარდინალური: "დაწყებასა და ინიციირებაზე",
-  ფიქსირებული: "შენარჩუნებასა და სიმტკიცეზე",
-  ცვალებადი: "ადაპტაციასა და ცვლილებაზე",
-};
-
-function chartSignature(planets: PlanetPosition[]): string {
-  const core = planets.filter((p) => !["TrueNode", "MeanNode", "SouthNode", "Lilith", "Selena", "Chiron"].includes(p.name));
-  const modalityCount = [0, 0, 0];
-  for (const p of core) {
-    const { signIndex } = eclipticToSign(p.longitude);
-    modalityCount[MODALITY_OF_SIGN[signIndex]]++;
-  }
-  const topModalityIdx = modalityCount.indexOf(Math.max(...modalityCount));
-  const topModality = MODALITIES_KA[topModalityIdx];
-
-  const modalityLine = MODALITIES_KA.map((m, i) => `${m} — ${modalityCount[i]}`).join(", ");
-
-  return [
-    `**ხარისხთა განაწილება:** ${modalityLine}.`,
-    `ხარისხებში წამყვანია **${topModality}** — ენერგია ბუნებრივად მიდრეკილია ${MODALITY_MEANING_KA[topModality]}.`,
-  ].join(" ");
-}
-
 export function generateNatalInterpretation(input: PlacementInput): string {
   const { planets, houseCusps, ascendant, aspects, houseOfFn } = input;
   const ascSign = eclipticToSign(ascendant);
 
   const parts: string[] = [];
-
-  parts.push(`\n## რუკის ხასიათი`);
-  parts.push(chartSignature(planets));
 
   parts.push(`\n## ასცენდენტი — ${ascSign.signName} (${formatDegree(ascSign.degreeInSign)})`);
   parts.push(

@@ -2,8 +2,9 @@ import { prisma } from "@/lib/db";
 import { ELEMENT_SYNTHESIS, ELEMENT_TEMPERAMENTS } from "@/lib/elementTemperaments";
 import { calculateElementBalance, ELEMENT_IDS, type BalancePlanet, type ElementBalance, type ElementId } from "@/lib/elementBalance";
 import { translatedExternalLibraryEntries } from "./libraryStore";
+import { eclipticToSign } from "@/lib/astro/signs";
 
-export const ELEMENT_BALANCE_LIBRARY_VERSION = "2026.09.19.1";
+export const ELEMENT_BALANCE_LIBRARY_VERSION = "2026.09.21.2";
 const FOUNDATION_HEADING = "## გამოთვლისა და ინტერპრეტაციის საფუძველი";
 
 const ELEMENT_NAMES: Record<ElementId, string> = {
@@ -19,6 +20,18 @@ const ELEMENT_LEVELS: Record<ElementId, string> = {
   air: "აზროვნების, კომუნიკაციისა და სოციალური მოქნილობის წილი",
   water: "ემოციური აღქმის, ინტუიციისა და სიღრმის წილი",
 };
+
+const MODALITIES = ["კარდინალური", "ფიქსირებული", "ცვალებადი"];
+const MODALITY_OF_SIGN = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2];
+const MODALITY_MEANINGS = ["დაწყებასა და ინიციირებაზე", "შენარჩუნებასა და სიმტკიცეზე", "ადაპტაციასა და ცვლილებაზე"];
+
+function modalitySummary(planets: BalancePlanet[]) {
+  const core = planets.filter((planet) => !["TrueNode", "MeanNode", "SouthNode", "Lilith", "Selena", "Chiron"].includes(planet.name));
+  const counts = [0, 0, 0];
+  for (const planet of core) counts[MODALITY_OF_SIGN[eclipticToSign(planet.longitude).signIndex]] += 1;
+  const strongest = counts.indexOf(Math.max(...counts));
+  return `**ხარისხთა განაწილება:** ${MODALITIES.map((name, index) => `${name} — ${counts[index]}`).join(", ")}. ხარისხებში წამყვანია **${MODALITIES[strongest]}** — ენერგია ბუნებრივად მიდრეკილია ${MODALITY_MEANINGS[strongest]}.`;
+}
 
 function levelText(percentage: number) {
   if (percentage >= 60) return "ძალიან ძლიერი დომინირებაა";
@@ -37,7 +50,14 @@ function combinationText(active: ElementId[]) {
   return match ? `ამ წყვილის საერთო დინამიკა შეიძლება გამოიხატოს როგორც „${match.syndrome}“: ${match.manifestation}` : "ამ ორი წამყვანი ფენის კომბინაცია ქმნის ინდივიდუალურ სტილს, სადაც მათი რესურსები ერთდროულად მუშაობს.";
 }
 
-function builtInElementBalanceText(balance: ElementBalance) {
+function modalityKey(planets: BalancePlanet[]) {
+  const core = planets.filter((planet) => !["TrueNode", "MeanNode", "SouthNode", "Lilith", "Selena", "Chiron"].includes(planet.name));
+  const counts = [0, 0, 0];
+  for (const planet of core) counts[MODALITY_OF_SIGN[eclipticToSign(planet.longitude).signIndex]] += 1;
+  return counts.join(",");
+}
+
+function builtInElementBalanceText(balance: ElementBalance, planets: BalancePlanet[]) {
   if (!balance.total) {
     return "## სტიქიების პროცენტული სინთეზი\n\nსტიქიური განაწილება ვერ გამოითვალა, რადგან რუკაში შესაბამისი პლანეტური პოზიციები არ მოიძებნა.";
   }
@@ -59,12 +79,13 @@ function builtInElementBalanceText(balance: ElementBalance) {
   const combination = combinationText(active);
   if (combination) lines.push(`**საერთო კომბინაცია:** ${combination}.`);
   lines.push("ეს სინთეზი არის რუკის პროპორციული, საშუალო დონის დახასიათება: მაღალი პროცენტი მიუთითებს იმ თვისებების ხშირ აქტივაციაზე, დაბალი პროცენტი კი ნიშნავს, რომ შესაბამისი რესურსი სუსტ ფონად მუშაობს და სხვა სტიქიების ბალანსით ივსება.");
+  lines.push(modalitySummary(planets));
   return lines.join("\n\n");
 }
 
-export async function getElementBalanceInterpretation(balance: ElementBalance): Promise<string> {
-  const cacheKey = `${ELEMENT_BALANCE_LIBRARY_VERSION}|${balance.distributionKey}`;
-  const builtInText = builtInElementBalanceText(balance);
+export async function getElementBalanceInterpretation(balance: ElementBalance, planets: BalancePlanet[]): Promise<string> {
+  const cacheKey = `${ELEMENT_BALANCE_LIBRARY_VERSION}|${balance.distributionKey}|${modalityKey(planets)}`;
+  const builtInText = builtInElementBalanceText(balance, planets);
   if (!balance.total) return builtInText;
 
   try {
@@ -119,7 +140,17 @@ export async function getElementBalanceInterpretation(balance: ElementBalance): 
 
 /** Keep the methodology section last in stored and freshly generated text. */
 export function ensureInterpretationFoundationLast(text: string): string {
-  const chunks = text
+  const legacyCharacter = text.match(/## რუკის ხასიათი\s*\n\n([\s\S]*?)(?=\n##\s|$)/);
+  let normalizedText = text;
+  if (legacyCharacter && text.includes("## სტიქიების პროცენტული სინთეზი")) {
+    const characterText = legacyCharacter[1]?.trim();
+    normalizedText = text.replace(legacyCharacter[0], "").replace(
+      "## სტიქიების პროცენტული სინთეზი",
+      characterText ? `## სტიქიების პროცენტული სინთეზი\n\n${characterText}` : "## სტიქიების პროცენტული სინთეზი",
+    );
+  }
+
+  const chunks = normalizedText
     .trim()
     .split(/\n(?=#{2,3}\s)/)
     .map((chunk) => chunk.trim())
@@ -141,7 +172,7 @@ export async function appendElementBalanceInterpretation(existing: string | null
   if (!Array.isArray(value.planets)) return existing ?? null;
   const planets = value.planets.filter((planet): planet is BalancePlanet => Boolean(planet) && typeof planet === "object" && typeof (planet as { name?: unknown }).name === "string" && typeof (planet as { longitude?: unknown }).longitude === "number");
   const balance = calculateElementBalance(planets);
-  const synthesis = await getElementBalanceInterpretation(balance);
+  const synthesis = await getElementBalanceInterpretation(balance, planets);
   return ensureInterpretationFoundationLast(existing ? `${existing}\n\n${synthesis}` : synthesis);
 }
 

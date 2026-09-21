@@ -4403,18 +4403,18 @@ canvas {
 }
 
 .chart-detail-link {
-  color: #fde68a;
+  color: #cbd5e1;
   font-weight: 800;
   text-decoration: underline;
-  text-decoration-color: rgba(245, 158, 11, 0.35);
+  text-decoration-color: rgba(148, 163, 184, 0.4);
   text-underline-offset: 3px;
   transition: color 160ms ease, text-decoration-color 160ms ease;
 }
 
 .chart-detail-link:hover,
 .chart-detail-link:focus-visible {
-  color: #fff7ed;
-  text-decoration-color: rgba(253, 230, 138, 0.9);
+  color: #f8fafc;
+  text-decoration-color: rgba(226, 232, 240, 0.8);
   outline: none;
 }
 
@@ -4445,7 +4445,7 @@ canvas {
 .chart-subsection > summary::-webkit-details-marker { display: none; }
 .chart-details-accordion > summary > span { color: #fbbf24; font-size: 1rem; }
 .chart-details-accordion > summary > small { margin-left: auto; color: #94a3b8; font-size: 0.72rem; font-weight: 600; }
-.chart-subsection > summary { color: #fde68a; border-bottom: 1px solid transparent; }
+.chart-subsection > summary { color: #cbd5e1; border-bottom: 1px solid transparent; }
 .chart-subsection[open] > summary { border-bottom-color: rgba(148, 163, 184, 0.15); }
 
 .chart-table-wrap { width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
@@ -4455,7 +4455,7 @@ canvas {
 .chart-data-table th { color: #94a3b8; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
 .chart-data-table td { color: #cbd5e1; }
 .chart-data-table tr:last-child td { border-bottom: 0; }
-.chart-kind-major { color: #fcd34d; font-weight: 800; }
+.chart-kind-major { color: #fb923c; font-weight: 800; }
 .chart-kind-minor { color: #c4b5fd; font-weight: 800; }
 .chart-aspect-table { min-width: 57rem; }
 .chart-aspect-rank { color: #94a3b8 !important; font-weight: 800; text-align: center !important; }

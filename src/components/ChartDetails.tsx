@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowDown, ChevronDown } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
+import { useState } from "react";
 import { eclipticToSign, formatDegree, PLANET_NAMES_KA } from "@/lib/astro/signs";
 import type { AspectHit } from "@/lib/astro/aspects";
 import { aspectMeaning, sortAspectsByInfluence } from "@/lib/astro/aspectInterpretation";
@@ -75,13 +76,6 @@ function rowButton(label: string, target: { type: string; key: string }) {
   return <button type="button" onClick={() => focus(target)} className="chart-detail-link chart-focus-source">{label}</button>;
 }
 
-function openDetails() {
-  const details = document.getElementById("chart-details-accordion") as HTMLDetailsElement | null;
-  if (!details) return;
-  details.open = true;
-  window.setTimeout(() => details.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
-}
-
 export default function ChartDetails({
   planets,
   planetHouses,
@@ -99,6 +93,7 @@ export default function ChartDetails({
   ascendant: number;
   mc: number;
 }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const orderedAspects = sortAspectsByInfluence(aspects);
   const tightAspects = orderedAspects.slice(0, 4);
   const uniqueStars = Array.from(new Set(fixedStars.map((item) => item.star)));
@@ -106,13 +101,13 @@ export default function ChartDetails({
 
   return (
     <div className="chart-details mt-4 space-y-3 text-left">
-      <section className="chart-summary-card rounded-2xl border border-amber-400/25 bg-gradient-to-br from-amber-500/10 via-purple-950/30 to-slate-950/30 p-4 sm:p-5">
+      <section className="chart-summary-card rounded-2xl border border-slate-500/25 bg-gradient-to-br from-slate-800/25 via-slate-950/45 to-indigo-950/25 p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-amber-300">შემაჯამებელი ასტრო-რეზიუმე</p>
+            <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-slate-400">შემაჯამებელი ასტრო-რეზიუმე</p>
             <h3 className="mt-1 text-base font-extrabold text-slate-100 sm:text-lg">რუკის მთავარი სურათი</h3>
           </div>
-          <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-2.5 py-1 text-[0.68rem] font-bold text-amber-100">ASC · {degreeLabel(ascendant)}</span>
+          <span className="rounded-full border border-slate-500/30 bg-slate-500/10 px-2.5 py-1 text-[0.68rem] font-bold text-slate-200">ASC · {degreeLabel(ascendant)}</span>
         </div>
 
         <div className="mt-3 space-y-2 text-sm leading-relaxed text-slate-200">
@@ -122,11 +117,21 @@ export default function ChartDetails({
         <p className="mt-3 text-xs leading-relaxed text-slate-400">რუკა აერთიანებს {aspects.length} ასპექტურ კავშირს, {planets.length} გამოთვლილ წერტილს და {uniqueStars.length} აქტიურ ფიქსირებულ ვარსკვლავს.</p>
 
         {tightAspects.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{tightAspects.map((aspect) => <button key={`${aspect.a}-${aspect.b}-${aspect.aspect}`} type="button" onClick={() => focus({ type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })} className="chart-focus-source rounded-full border border-sky-400/25 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-100 transition hover:border-sky-300">{DISPLAY_NAMES[aspect.a] ?? aspect.a} {aspect.aspectKa} {DISPLAY_NAMES[aspect.b] ?? aspect.b} · {aspect.orb}°</button>)}</div>}
-        <button type="button" onClick={openDetails} className="chart-details-jump mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-sm font-extrabold text-amber-100 transition hover:border-amber-300 hover:bg-amber-400/20"><ArrowDown className="h-4 w-4" /> დეტალები იხილეთ ქვემოთ</button>
+        <button
+          type="button"
+          aria-expanded={detailsOpen}
+          onClick={() => {
+            const next = !detailsOpen;
+            setDetailsOpen(next);
+            if (next) window.setTimeout(() => document.getElementById("chart-details-accordion")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
+          }}
+          className="chart-details-jump mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-500/35 bg-slate-500/10 px-4 py-2.5 text-sm font-extrabold text-slate-200 transition hover:border-slate-300/60 hover:bg-slate-500/20"
+        >
+          {detailsOpen ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />} {detailsOpen ? "დეტალები დამალეთ" : "დეტალები იხილეთ ქვემოთ"}
+        </button>
       </section>
 
-      <details id="chart-details-accordion" className="chart-details-accordion">
-        <summary><ChevronDown className="h-4 w-4 text-amber-300" /><strong>რუკის დეტალები</strong><small>პლანეტები, დამატებითი წერტილები, სახლები, ასპექტები და ვარსკვლავები</small></summary>
+      <details id="chart-details-accordion" open={detailsOpen} className="chart-details-accordion">
         <div className="space-y-3 p-3 sm:p-5">
           <details open className="chart-subsection"><summary>პლანეტები და დამატებითი წერტილები</summary><div className="chart-table-wrap"><table className="chart-data-table"><thead><tr><th>ობიექტი</th><th>ზოდიაქო / გრადუსი</th><th>სახლი</th></tr></thead><tbody>{planets.map((planet) => <tr key={planet.name}><td>{rowButton(DISPLAY_NAMES[planet.name] ?? planet.name, { type: "planet", key: planet.name })}</td><td>{degreeLabel(planet.longitude)}</td><td>{rowButton(`${planetHouses[planet.name] ?? "—"}`, { type: "house", key: String(planetHouses[planet.name] ?? "") })}</td></tr>)}</tbody></table></div></details>
 

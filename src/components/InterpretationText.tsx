@@ -267,16 +267,6 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
     orderedSections.unshift(synthesisSection!);
   }
 
-  const ascendantIndex = orderedSections.findIndex((section) => section.heading.toLowerCase().includes("ასცენდენტი"));
-  const characterIndex = orderedSections.findIndex((section) => section.heading.toLowerCase().includes("რუკის ხასიათი"));
-
-  // Keep the map signature immediately above the Ascendant section even for
-  // older cached/database interpretations that were generated in another order.
-  if (ascendantIndex >= 0 && characterIndex >= 0 && characterIndex > ascendantIndex) {
-    const [characterSection] = orderedSections.splice(characterIndex, 1);
-    orderedSections.splice(ascendantIndex, 0, characterSection!);
-  }
-
   const foundationSections = orderedSections.filter((section) => isFoundationSection(section.heading));
 
   // Keep advanced interpretation accordions in one stable order for new

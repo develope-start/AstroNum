@@ -20,5 +20,10 @@ export function aspectMeaning(aspect: AspectHit): string {
 }
 
 export function sortAspectsByInfluence(aspects: AspectHit[]): AspectHit[] {
-  return [...aspects].sort((a, b) => a.orb - b.orb || (a.kind === b.kind ? 0 : a.kind === "major" ? -1 : 1));
+  // Major aspects carry the primary structural influence. Within each class,
+  // the smallest orb is the strongest and therefore appears first.
+  return [...aspects].sort((a, b) =>
+    (a.kind === b.kind ? 0 : a.kind === "major" ? -1 : 1) ||
+    a.orb - b.orb,
+  );
 }

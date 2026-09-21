@@ -12,7 +12,7 @@ export type ElementBalance = {
 };
 
 function isNode(name: string) {
-  return name === "TrueNode" || name === "MeanNode";
+  return name === "TrueNode" || name === "MeanNode" || name === "SouthNode";
 }
 
 function elementFromLongitude(longitude: number): ElementId {
