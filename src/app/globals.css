@@ -4443,6 +4443,9 @@ canvas {
 .chart-data-table tr:last-child td { border-bottom: 0; }
 .chart-kind-major { color: #fcd34d; font-weight: 800; }
 .chart-kind-minor { color: #c4b5fd; font-weight: 800; }
+.chart-aspect-table { min-width: 57rem; }
+.chart-aspect-rank { color: #94a3b8 !important; font-weight: 800; text-align: center !important; }
+.chart-aspect-interpretation { min-width: 25rem; color: #cbd5e1 !important; line-height: 1.5; }
 .interpretation-angular-house > .interpretation-accordion-summary { border-color: rgba(56, 189, 248, 0.35); box-shadow: inset 3px 0 #38bdf8; }
 
 @media (max-width: 640px) {
@@ -4450,6 +4453,7 @@ canvas {
   .chart-subsection > summary { padding: 0.82rem 0.78rem; font-size: 0.82rem; }
   .chart-details-accordion > summary > small { display: none; }
   .chart-data-table { min-width: 31rem; font-size: 0.74rem; }
+  .chart-aspect-table { min-width: 50rem; }
   .chart-data-table th,
   .chart-data-table td { padding: 0.62rem 0.58rem; }
 }

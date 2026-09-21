@@ -4,6 +4,7 @@ import { ArrowDown, ChevronDown } from "lucide-react";
 import { eclipticToSign, formatDegree, PLANET_NAMES_KA } from "@/lib/astro/signs";
 import { calculateElementBalance } from "@/lib/elementBalance";
 import type { AspectHit } from "@/lib/astro/aspects";
+import { aspectMeaning, sortAspectsByInfluence } from "@/lib/astro/aspectInterpretation";
 import type { WheelFixedStar, WheelPlanet } from "./ChartWheel";
 import { ELEMENT_VISUALS } from "./elementVisuals";
 
@@ -60,7 +61,8 @@ export default function ChartDetails({
   const balance = calculateElementBalance(planets);
   const sun = planets.find((planet) => planet.name === "Sun");
   const moon = planets.find((planet) => planet.name === "Moon");
-  const tightAspects = aspects.slice().sort((a, b) => a.orb - b.orb).slice(0, 4);
+  const orderedAspects = sortAspectsByInfluence(aspects);
+  const tightAspects = orderedAspects.slice(0, 4);
   const uniqueStars = Array.from(new Set(fixedStars.map((item) => item.star)));
 
   return (
@@ -96,7 +98,7 @@ export default function ChartDetails({
 
           <details className="chart-subsection"><summary>12 სახლის კუსპიდები</summary><div className="chart-table-wrap"><table className="chart-data-table"><thead><tr><th>სახლი</th><th>დაწყება</th><th>თემა</th></tr></thead><tbody>{houseCusps.map((cusp, index) => <tr key={index}><td>{rowButton(`${index + 1}`, { type: "house", key: String(index + 1) })}</td><td>{degreeLabel(cusp)}</td><td>{HOUSE_NAMES[index]}</td></tr>)}</tbody></table></div></details>
 
-          <details className="chart-subsection"><summary>მაჟორული და მინორული ასპექტების ცხრილი ({aspects.length})</summary><div className="chart-table-wrap"><table className="chart-data-table"><thead><tr><th>კავშირი</th><th>ტიპი</th><th>ორბი</th><th>ფაზა</th></tr></thead><tbody>{aspects.map((aspect, index) => <tr key={`${aspect.a}-${aspect.b}-${aspect.aspect}-${index}`}><td>{rowButton(`${DISPLAY_NAMES[aspect.a] ?? aspect.a} ${aspect.aspectKa} ${DISPLAY_NAMES[aspect.b] ?? aspect.b}`, { type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })}</td><td><span className={aspect.kind === "major" ? "chart-kind-major" : "chart-kind-minor"}>{aspect.kind === "major" ? "მაჟორული" : "მინორული"}</span></td><td>{aspect.orb}°</td><td>{aspect.applying ? "მოახლოებადი" : "დაშორებადი"}</td></tr>)}</tbody></table></div></details>
+          <details className="chart-subsection"><summary>მაჟორული და მინორული ასპექტების ცხრილი ({aspects.length})</summary><div className="chart-table-wrap"><table className="chart-data-table chart-aspect-table"><thead><tr><th>#</th><th>კავშირი</th><th>ტიპი</th><th>ორბი</th><th>ფაზა</th><th>მოკლე ინტერპრეტაცია</th></tr></thead><tbody>{orderedAspects.map((aspect, index) => <tr key={`${aspect.a}-${aspect.b}-${aspect.aspect}-${index}`}><td className="chart-aspect-rank">{index + 1}</td><td>{rowButton(`${DISPLAY_NAMES[aspect.a] ?? aspect.a} ${aspect.aspectKa} ${DISPLAY_NAMES[aspect.b] ?? aspect.b}`, { type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })}</td><td><span className={aspect.kind === "major" ? "chart-kind-major" : "chart-kind-minor"}>{aspect.kind === "major" ? "მაჟორული" : "მინორული"}</span></td><td>{aspect.orb}°</td><td>{aspect.applying ? "მოახლოებადი" : "დაშორებადი"}</td><td className="chart-aspect-interpretation">{aspectMeaning(aspect)}</td></tr>)}</tbody></table></div></details>
 
           <details className="chart-subsection"><summary>ფიქსირებული ვარსკვლავები {fixedStars.length ? `(${fixedStars.length})` : ""}</summary>{fixedStars.length ? <div className="chart-table-wrap"><table className="chart-data-table"><thead><tr><th>ვარსკვლავი</th><th>კონტაქტი</th><th>გრადუსი</th><th>ორბი</th></tr></thead><tbody>{fixedStars.map((star, index) => <tr key={`${star.star}-${star.planet}-${index}`}><td>{rowButton(star.star, { type: "star", key: star.star })}</td><td>{rowButton(DISPLAY_NAMES[star.planet] ?? star.planet, { type: "planet", key: star.planet })}</td><td>{degreeLabel(star.longitude)}</td><td>{star.orb}°</td></tr>)}</tbody></table></div> : <p className="px-2 pb-2 text-sm text-slate-400">ამ რუკაში შერჩეულ ფიქსირებულ ვარსკვლავებთან ზუსტი კონტაქტი არ დაფიქსირდა.</p>}</details>
 
