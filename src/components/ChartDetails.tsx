@@ -1,7 +1,8 @@
 "use client";
 
-import { Hand } from "lucide-react";
-import { useState } from "react";
+import { Hand, Minus, Plus, RotateCw, Table2, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { eclipticToSign, formatDegree, PLANET_NAMES_KA } from "@/lib/astro/signs";
 import type { AspectHit } from "@/lib/astro/aspects";
 import { aspectMeaning, sortAspectsByInfluence } from "@/lib/astro/aspectInterpretation";
@@ -76,6 +77,130 @@ function rowButton(label: string, target: { type: string; key: string }) {
   return <button type="button" onClick={() => focus(target)} className="chart-detail-link chart-focus-source">{label}</button>;
 }
 
+function CombinedChartTable({
+  planets,
+  planetHouses,
+  houseCusps,
+  aspects,
+}: {
+  planets: WheelPlanet[];
+  planetHouses: Record<string, number>;
+  houseCusps: number[];
+  aspects: AspectHit[];
+}) {
+  const [open, setOpen] = useState(false);
+  const [rotated, setRotated] = useState(false);
+  const [zoom, setZoom] = useState(1);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
+  const rows = [
+    ...planets.map((planet) => ({
+      category: "პლანეტა",
+      object: DISPLAY_NAMES[planet.name] ?? planet.name,
+      position: degreeLabel(planet.longitude),
+      house: planetHouses[planet.name] ? `${planetHouses[planet.name]}-ე სახლი` : "—",
+      type: "—",
+      orbit: "—",
+      phase: "—",
+      meaning: "რუკის გამოთვლილი მდებარეობა",
+    })),
+    ...houseCusps.map((cusp, index) => ({
+      category: "სახლი",
+      object: `${index + 1} სახლი`,
+      position: degreeLabel(cusp),
+      house: "—",
+      type: "კუსპიდი",
+      orbit: "—",
+      phase: "—",
+      meaning: HOUSE_NAMES[index] ?? "—",
+    })),
+    ...sortAspectsByInfluence(aspects).map((aspect) => ({
+      category: "ასპექტი",
+      object: `${DISPLAY_NAMES[aspect.a] ?? aspect.a} ${aspect.aspectKa} ${DISPLAY_NAMES[aspect.b] ?? aspect.b}`,
+      position: "—",
+      house: "—",
+      type: aspect.kind === "major" ? "მაჟორული" : "მინორული",
+      orbit: `${aspect.orb}°`,
+      phase: aspect.applying ? "მოახლოებადი" : "დაშორებადი",
+      meaning: aspectMeaning(aspect),
+    })),
+  ];
+
+  const tableImage = (
+    <div className="combined-chart-table-modal" role="dialog" aria-modal="true" aria-label="პლანეტების, სახლებისა და ასპექტების სრული ცხრილი">
+      <div className="combined-chart-table-header">
+        <div className="min-w-0">
+          <p className="combined-chart-table-kicker">რუკის სრული მონაცემები</p>
+          <h2>სრული ცხრილი</h2>
+        </div>
+        <button type="button" className="combined-chart-table-close" onClick={() => setOpen(false)} aria-label="ცხრილის დახურვა" title="დახურვა">
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+
+      <div className="combined-chart-table-tools" aria-label="ცხრილის მართვა">
+        <button type="button" onClick={() => setRotated((value) => !value)} aria-pressed={rotated} className="combined-chart-table-tool combined-chart-table-rotate">
+          <RotateCw className="h-4 w-4" />
+          <span>ამოაბრუნეთ</span>
+        </button>
+        <div className="combined-chart-table-zoom" aria-label="ცხრილის ზომა">
+          <button type="button" onClick={() => setZoom((value) => Math.max(0.65, Number((value - 0.15).toFixed(2))))} aria-label="დაპატარავება" title="დაპატარავება"><Minus className="h-4 w-4" /></button>
+          <span>{Math.round(zoom * 100)}%</span>
+          <button type="button" onClick={() => setZoom((value) => Math.min(1.8, Number((value + 0.15).toFixed(2))))} aria-label="გადიდება" title="გადიდება"><Plus className="h-4 w-4" /></button>
+        </div>
+      </div>
+
+      <div className={`combined-chart-table-stage ${rotated ? "is-rotated" : ""}`}>
+        <div className="combined-chart-table-sheet" style={{ transform: `rotate(${rotated ? 90 : 0}deg) scale(${zoom})` }}>
+          <div className="combined-chart-table-sheet-caption">ცხრილი · {rows.length} ჩანაწერი</div>
+          <table>
+            <thead>
+              <tr><th>კატეგორია</th><th>ობიექტი / კავშირი</th><th>ნიშანი / გრადუსი</th><th>სახლი</th><th>ტიპი</th><th>ორბი</th><th>ფაზა</th><th>მოკლე ინტერპრეტაცია</th></tr>
+            </thead>
+            <tbody>
+              {rows.map((row, index) => (
+                <tr key={`${row.category}-${row.object}-${index}`}>
+                  <td data-label="კატეგორია">{row.category}</td>
+                  <td data-label="ობიექტი / კავშირი">{row.object}</td>
+                  <td data-label="ნიშანი / გრადუსი">{row.position}</td>
+                  <td data-label="სახლი">{row.house}</td>
+                  <td data-label="ტიპი">{row.type}</td>
+                  <td data-label="ორბი">{row.orbit}</td>
+                  <td data-label="ფაზა">{row.phase}</td>
+                  <td data-label="მოკლე ინტერპრეტაცია">{row.meaning}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <button type="button" className="combined-chart-table-launch" onClick={() => { setOpen(true); setZoom(1); }}>
+        <Table2 className="h-4 w-4" />
+        <span>სრული ცხრილი</span>
+      </button>
+      {open && typeof document !== "undefined" ? createPortal(tableImage, document.body) : null}
+    </>
+  );
+}
+
 export default function ChartDetails({
   planets,
   planetHouses,
@@ -141,9 +266,11 @@ export default function ChartDetails({
 
           <details className="chart-subsection"><summary>12 სახლის კუსპიდები</summary><div className="chart-table-wrap"><table className="chart-data-table"><thead><tr><th>სახლი</th><th>დაწყება</th><th>თემა</th></tr></thead><tbody>{houseCusps.map((cusp, index) => <tr key={index}><td data-label="სახლი">{rowButton(`${index + 1}`, { type: "house", key: String(index + 1) })}</td><td data-label="დაწყება">{degreeLabel(cusp)}</td><td data-label="თემა">{HOUSE_NAMES[index]}</td></tr>)}</tbody></table></div></details>
 
-          <details className="chart-subsection"><summary>მაჟორული და მინორული ასპექტების ცხრილი ({aspects.length})</summary><div className="chart-table-wrap"><table className="chart-data-table chart-aspect-table"><thead><tr><th>#</th><th>კავშირი</th><th>ტიპი</th><th>ორბი</th><th>ფაზა</th><th>მოკლე ინტერპრეტაცია</th></tr></thead><tbody>{orderedAspects.map((aspect, index) => <tr key={`${aspect.a}-${aspect.b}-${aspect.aspect}-${index}`}><td data-label="#" className="chart-aspect-rank">{index + 1}</td><td data-label="კავშირი">{rowButton(`${DISPLAY_NAMES[aspect.a] ?? aspect.a} ${aspect.aspectKa} ${DISPLAY_NAMES[aspect.b] ?? aspect.b}`, { type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })}</td><td data-label="ტიპი"><span className={aspect.kind === "major" ? "chart-kind-major" : "chart-kind-minor"}>{aspect.kind === "major" ? "მაჟორული" : "მინორული"}</span></td><td data-label="ორბი">{aspect.orb}°</td><td data-label="ფაზა">{aspect.applying ? "მოახლოებადი" : "დაშორებადი"}</td><td data-label="მოკლე ინტერპრეტაცია" className="chart-aspect-interpretation">{aspectMeaning(aspect)}</td></tr>)}</tbody></table></div></details>
+          <details className="chart-subsection"><summary>მაჟორული და მინორული ასპექტები ({aspects.length})</summary><div className="chart-table-wrap"><table className="chart-data-table chart-aspect-table"><thead><tr><th>#</th><th>კავშირი</th><th>ტიპი</th><th>ორბი</th><th>ფაზა</th><th>მოკლე ინტერპრეტაცია</th></tr></thead><tbody>{orderedAspects.map((aspect, index) => <tr key={`${aspect.a}-${aspect.b}-${aspect.aspect}-${index}`}><td data-label="#" className="chart-aspect-rank">{index + 1}</td><td data-label="კავშირი">{rowButton(`${DISPLAY_NAMES[aspect.a] ?? aspect.a} ${aspect.aspectKa} ${DISPLAY_NAMES[aspect.b] ?? aspect.b}`, { type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })}</td><td data-label="ტიპი"><span className={aspect.kind === "major" ? "chart-kind-major" : "chart-kind-minor"}>{aspect.kind === "major" ? "მაჟორული" : "მინორული"}</span></td><td data-label="ორბი">{aspect.orb}°</td><td data-label="ფაზა">{aspect.applying ? "მოახლოებადი" : "დაშორებადი"}</td><td data-label="მოკლე ინტერპრეტაცია" className="chart-aspect-interpretation">{aspectMeaning(aspect)}</td></tr>)}</tbody></table></div></details>
 
           <details className="chart-subsection"><summary>ფიქსირებული ვარსკვლავები {fixedStars.length ? `(${fixedStars.length})` : ""}</summary>{fixedStars.length ? <div className="chart-table-wrap"><table className="chart-data-table"><thead><tr><th>ვარსკვლავი</th><th>კონტაქტი</th><th>გრადუსი</th><th>ორბი</th></tr></thead><tbody>{fixedStars.map((star, index) => <tr key={`${star.star}-${star.planet}-${index}`}><td data-label="ვარსკვლავი">{rowButton(star.star, { type: "star", key: star.star })}</td><td data-label="კონტაქტი">{rowButton(DISPLAY_NAMES[star.planet] ?? star.planet, { type: "planet", key: star.planet })}</td><td data-label="გრადუსი">{degreeLabel(star.longitude)}</td><td data-label="ორბი">{star.orb}°</td></tr>)}</tbody></table></div> : <p className="px-2 pb-2 text-sm text-slate-400">ამ რუკაში შერჩეულ ფიქსირებულ ვარსკვლავებთან ზუსტი კონტაქტი არ დაფიქსირდა.</p>}</details>
+
+          <CombinedChartTable planets={planets} planetHouses={planetHouses} houseCusps={houseCusps} aspects={aspects} />
 
           <div className="rounded-xl border border-slate-500/20 bg-slate-950/25 p-3 text-xs leading-relaxed text-slate-400">MC: {degreeLabel(mc)} · მაჟორული ხაზები ბორბალზე უწყვეტია, მინორული — წყვეტილი. ჩანაწერზე დაჭერით შესაბამის ინტერპრეტაციაზე გადახვალთ.</div>
         </div>

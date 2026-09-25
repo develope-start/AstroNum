@@ -303,7 +303,8 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
 
   const defaultOpenIndex = orderedSections.findIndex((section) =>
     !isFoundationSection(section.heading)
-    && !section.heading.toLowerCase().includes("სტიქიების პროცენტული სინთეზი"),
+    && !section.heading.toLowerCase().includes("სტიქიების პროცენტული სინთეზი")
+    && !section.heading.toLowerCase().includes("ასცენდენტი"),
   );
 
   useEffect(() => {
@@ -386,7 +387,7 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
           <InterpretationSectionView
             key={`${section.heading}-${index}`}
             section={section}
-            openByDefault={index === defaultOpenIndex && !isFoundationSection(section.heading) && !section.heading.toLowerCase().includes("სტიქიების პროცენტული სინთეზი")}
+            openByDefault={index === defaultOpenIndex && !isFoundationSection(section.heading) && !section.heading.toLowerCase().includes("სტიქიების პროცენტული სინთეზი") && !section.heading.toLowerCase().includes("ასცენდენტი")}
             focusedElement={focusedElement}
             onClearElementFocus={() => setFocusedElement(null)}
           />
