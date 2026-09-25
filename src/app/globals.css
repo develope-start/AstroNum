@@ -4421,11 +4421,22 @@ canvas {
 
 .chart-details-jump-label {
   max-width: 100%;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
   font-size: 0.98rem;
   font-weight: 900;
   letter-spacing: 0.01em;
   line-height: 1.35;
   text-align: center;
+}
+
+.chart-details-jump-label:focus-visible {
+  border-radius: 0.35rem;
+  outline: 2px solid rgba(252, 211, 77, 0.82);
+  outline-offset: 0.3rem;
 }
 
 .chart-details-jump-icon {

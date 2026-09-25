@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDown, ArrowUp, Hand } from "lucide-react";
+import { Hand } from "lucide-react";
 import { useState } from "react";
 import { eclipticToSign, formatDegree, PLANET_NAMES_KA } from "@/lib/astro/signs";
 import type { AspectHit } from "@/lib/astro/aspects";
@@ -117,21 +117,22 @@ export default function ChartDetails({
         <p className="mt-3 text-xs leading-relaxed text-slate-400">რუკა აერთიანებს {aspects.length} ასპექტურ კავშირს, {planets.length} გამოთვლილ წერტილს და {uniqueStars.length} აქტიურ ფიქსირებულ ვარსკვლავს.</p>
 
         {tightAspects.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{tightAspects.map((aspect) => <button key={`${aspect.a}-${aspect.b}-${aspect.aspect}`} type="button" onClick={() => focus({ type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })} className="chart-focus-source rounded-full border border-sky-400/25 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-100 transition hover:border-sky-300">{DISPLAY_NAMES[aspect.a] ?? aspect.a} {aspect.aspectKa} {DISPLAY_NAMES[aspect.b] ?? aspect.b} · {aspect.orb}°</button>)}</div>}
-        <button
-          type="button"
-          aria-expanded={detailsOpen}
-          onClick={() => {
-            const next = !detailsOpen;
-            setDetailsOpen(next);
-            if (next) window.setTimeout(() => document.getElementById("chart-details-accordion")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
-          }}
-          aria-controls="chart-details-accordion"
-          className="chart-details-jump mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-base font-extrabold transition"
-        >
+        <div className="chart-details-jump mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-base font-extrabold transition">
           <Hand className="chart-details-jump-icon h-4 w-4 shrink-0" aria-hidden="true" />
-          <span className="chart-details-jump-label">გამოთვლილი მნიშვნელობების ნახვა</span>
-          {detailsOpen ? <ArrowUp className="h-4 w-4 shrink-0" aria-hidden="true" /> : <ArrowDown className="h-4 w-4 shrink-0" aria-hidden="true" />}
-        </button>
+          <button
+            type="button"
+            aria-expanded={detailsOpen}
+            aria-controls="chart-details-accordion"
+            onClick={() => {
+              const next = !detailsOpen;
+              setDetailsOpen(next);
+              if (next) window.setTimeout(() => document.getElementById("chart-details-accordion")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
+            }}
+            className="chart-details-jump-label"
+          >
+            გამოთვლილი მნიშვნელობების ნახვა
+          </button>
+        </div>
       </section>
 
       <details id="chart-details-accordion" open={detailsOpen} className="chart-details-accordion">
