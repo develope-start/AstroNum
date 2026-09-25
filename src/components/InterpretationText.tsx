@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Clock, Calendar, Copy, Check, Sparkles, BookOpen } from "lucide-react";
+import { Clock, Calendar, Copy, Check, Sparkles, BookOpen, ChevronDown } from "lucide-react";
 import { PLANET_NAMES_KA } from "@/lib/astro/signs";
 import { ALL_ASPECTS } from "@/lib/astro/aspects";
 
@@ -151,7 +151,9 @@ function InterpretationSectionView({
       <summary className="interpretation-accordion-summary">
         <span className="interpretation-accordion-icon"><Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-300" /></span>
         <span className="interpretation-accordion-title">{section.heading}</span>
-        <span className="interpretation-accordion-chevron" aria-hidden="true">⌄</span>
+        <span className="interpretation-accordion-chevron" aria-hidden="true">
+          <ChevronDown className="h-4 w-4" />
+        </span>
       </summary>
       <div className="interpretation-accordion-body">
         {section.blocks.map((block, index) => {

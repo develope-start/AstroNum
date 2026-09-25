@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { eclipticToSign, formatDegree, PLANET_NAMES_KA } from "@/lib/astro/signs";
 import type { AspectHit } from "@/lib/astro/aspects";
@@ -125,9 +125,13 @@ export default function ChartDetails({
             setDetailsOpen(next);
             if (next) window.setTimeout(() => document.getElementById("chart-details-accordion")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
           }}
-          className="chart-details-jump mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-500/35 bg-slate-500/10 px-4 py-2.5 text-sm font-extrabold text-slate-200 transition hover:border-slate-300/60 hover:bg-slate-500/20"
+          aria-controls="chart-details-accordion"
+          className="chart-details-jump mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-base font-extrabold transition"
         >
-          {detailsOpen ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />} {detailsOpen ? "დეტალები დამალეთ" : "დეტალები იხილეთ ქვემოთ"}
+          <Sparkles className="chart-details-jump-icon h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="chart-details-jump-label">დეტალები</span>
+          <span className="chart-details-jump-caption">{detailsOpen ? "დამალვა" : "გამოთვლილი მნიშვნელობების ნახვა"}</span>
+          {detailsOpen ? <ArrowUp className="h-4 w-4 shrink-0" aria-hidden="true" /> : <ArrowDown className="h-4 w-4 shrink-0" aria-hidden="true" />}
         </button>
       </section>
 
