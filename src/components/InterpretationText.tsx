@@ -11,17 +11,24 @@ function keepGeorgianWordsTogether(text: string) {
   return text.replace(/(^|[\s([{«„])([ა-ჰ])\s+(?=[ა-ჰ])/gu, "$1$2\u00a0");
 }
 
+function renderWholeWords(text: string, keyPrefix: string) {
+  return text.split(/(\s+)/u).map((part, index) => {
+    if (/\s+/u.test(part)) return part;
+    return <span key={`${keyPrefix}-${index}`} className="interpretation-word">{part}</span>;
+  });
+}
+
 function renderInline(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
         <strong key={i} className="font-extrabold text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]">
-          {keepGeorgianWordsTogether(part.slice(2, -2))}
+          {renderWholeWords(keepGeorgianWordsTogether(part.slice(2, -2)), `strong-${i}`)}
         </strong>
       );
     }
-    return <span key={i}>{keepGeorgianWordsTogether(part)}</span>;
+    return <span key={i}>{renderWholeWords(keepGeorgianWordsTogether(part), `text-${i}`)}</span>;
   });
 }
 
