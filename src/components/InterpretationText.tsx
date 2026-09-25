@@ -5,17 +5,23 @@ import { Clock, Calendar, Copy, Check, Sparkles, BookOpen, ChevronDown } from "l
 import { PLANET_NAMES_KA } from "@/lib/astro/signs";
 import { ALL_ASPECTS } from "@/lib/astro/aspects";
 
+function keepGeorgianWordsTogether(text: string) {
+  // Keep a one-letter Georgian word with the following word so particles and
+  // short linking words do not hang alone at the end of a line on mobile.
+  return text.replace(/(^|[\s([{«„])([ა-ჰ])\s+(?=[ა-ჰ])/gu, "$1$2\u00a0");
+}
+
 function renderInline(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
         <strong key={i} className="font-extrabold text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]">
-          {part.slice(2, -2)}
+          {keepGeorgianWordsTogether(part.slice(2, -2))}
         </strong>
       );
     }
-    return <span key={i}>{part}</span>;
+    return <span key={i}>{keepGeorgianWordsTogether(part)}</span>;
   });
 }
 
@@ -288,7 +294,10 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
     orderedSections.push(...foundationSections);
   }
 
-  const defaultOpenIndex = orderedSections.findIndex((section) => !isFoundationSection(section.heading));
+  const defaultOpenIndex = orderedSections.findIndex((section) =>
+    !isFoundationSection(section.heading)
+    && !section.heading.toLowerCase().includes("სტიქიების პროცენტული სინთეზი"),
+  );
 
   useEffect(() => {
     const handleElementFocus = (event: Event) => {
@@ -370,7 +379,7 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
           <InterpretationSectionView
             key={`${section.heading}-${index}`}
             section={section}
-            openByDefault={index === defaultOpenIndex && !isFoundationSection(section.heading)}
+            openByDefault={index === defaultOpenIndex && !isFoundationSection(section.heading) && !section.heading.toLowerCase().includes("სტიქიების პროცენტული სინთეზი")}
             focusedElement={focusedElement}
             onClearElementFocus={() => setFocusedElement(null)}
           />

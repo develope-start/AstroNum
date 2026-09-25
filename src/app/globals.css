@@ -4104,12 +4104,15 @@ canvas {
 .interpretation-content * {
   box-sizing: border-box;
   min-width: 0;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 }
 
 .interpretation-content {
   width: 100%;
   max-width: 100%;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   word-break: normal;
 }
 
@@ -4119,7 +4122,7 @@ canvas {
   font-size: clamp(0.94rem, 2.2vw, 1.04rem);
   line-height: 1.82;
   letter-spacing: 0.002em;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   word-break: normal;
   white-space: normal;
   text-wrap: pretty;
@@ -4127,7 +4130,7 @@ canvas {
 
 .interpretation-content .interpretation-paragraph strong,
 .interpretation-content .interpretation-accordion-title {
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   word-break: normal;
   white-space: normal;
 }

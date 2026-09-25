@@ -31,8 +31,8 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
   return (
     <div className="glass-panel rounded-2xl sm:rounded-[28px] p-3 sm:p-5 border-amber-500/25 bg-gradient-to-b from-[#130938]/90 to-[#09041a]/95 backdrop-blur-2xl shadow-xl space-y-3.5 text-center">
       
-      {/* 1. Element Percentages & Synthesis Progress Bars: VERY TOP, OPEN BY DEFAULT WITH TOGGLE */}
-      <details className="interpretation-accordion border-amber-500/30 bg-purple-950/20" open>
+      {/* 1. Element Percentages & Synthesis Progress Bars: COLLAPSED BY DEFAULT */}
+      <details className="interpretation-accordion border-amber-500/30 bg-purple-950/20">
         <summary className="element-balance-summary interpretation-accordion-summary flex-nowrap gap-2 sm:gap-3 p-3 sm:p-4">
           <div className="element-balance-heading flex items-center gap-2 min-w-0 flex-1">
             <span className="interpretation-accordion-icon">

@@ -135,7 +135,7 @@ export default function ChartDetails({
         </div>
       </section>
 
-      <details id="chart-details-accordion" open={detailsOpen} className="chart-details-accordion">
+      {detailsOpen && <div id="chart-details-accordion" className="chart-details-accordion">
         <div className="space-y-3 p-3 sm:p-5">
           <details open className="chart-subsection"><summary>პლანეტები და დამატებითი წერტილები</summary><div className="chart-table-wrap"><table className="chart-data-table"><thead><tr><th>ობიექტი</th><th>ზოდიაქო / გრადუსი</th><th>სახლი</th></tr></thead><tbody>{planets.map((planet) => <tr key={planet.name}><td data-label="ობიექტი">{rowButton(DISPLAY_NAMES[planet.name] ?? planet.name, { type: "planet", key: planet.name })}</td><td data-label="ზოდიაქო / გრადუსი">{degreeLabel(planet.longitude)}</td><td data-label="სახლი">{rowButton(`${planetHouses[planet.name] ?? "—"}`, { type: "house", key: String(planetHouses[planet.name] ?? "") })}</td></tr>)}</tbody></table></div></details>
 
@@ -147,7 +147,7 @@ export default function ChartDetails({
 
           <div className="rounded-xl border border-slate-500/20 bg-slate-950/25 p-3 text-xs leading-relaxed text-slate-400">MC: {degreeLabel(mc)} · მაჟორული ხაზები ბორბალზე უწყვეტია, მინორული — წყვეტილი. ჩანაწერზე დაჭერით შესაბამის ინტერპრეტაციაზე გადახვალთ.</div>
         </div>
-      </details>
+      </div>}
     </div>
   );
 }
