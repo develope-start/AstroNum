@@ -123,11 +123,13 @@ function InterpretationSectionView({
   openByDefault,
   focusedElement,
   onClearElementFocus,
+  resetKey,
 }: {
   section: InterpretationSection;
   openByDefault: boolean;
   focusedElement: ElementId | null;
   onClearElementFocus: () => void;
+  resetKey: string;
 }) {
   const [open, setOpen] = useState(openByDefault);
   const isAscendant = section.heading.toLowerCase().includes("ასცენდენტი");
@@ -138,6 +140,10 @@ function InterpretationSectionView({
   useEffect(() => {
     if (focusedBlockInSection) setOpen(true);
   }, [focusedBlockInSection]);
+
+  useEffect(() => {
+    setOpen(openByDefault);
+  }, [openByDefault, resetKey]);
 
   useEffect(() => {
     if (!isAscendant) return;
@@ -324,12 +330,6 @@ export default function InterpretationText({ text, viewMetadata, fullscreen = fa
     orderedSections.push(...foundationSections);
   }
 
-  const defaultOpenIndex = orderedSections.findIndex((section) =>
-    !isFoundationSection(section.heading)
-    && !section.heading.toLowerCase().includes("სტიქიების პროცენტული სინთეზი")
-    && !section.heading.toLowerCase().includes("ასცენდენტი"),
-  );
-
   useEffect(() => {
     const handleElementFocus = (event: Event) => {
       const detail = (event as CustomEvent<{ element?: string }>).detail;
@@ -424,9 +424,10 @@ export default function InterpretationText({ text, viewMetadata, fullscreen = fa
           <InterpretationSectionView
             key={`${section.heading}-${index}`}
             section={section}
-            openByDefault={index === defaultOpenIndex && !isFoundationSection(section.heading) && !section.heading.toLowerCase().includes("სტიქიების პროცენტული სინთეზი") && !section.heading.toLowerCase().includes("ასცენდენტი")}
+            openByDefault={false}
             focusedElement={focusedElement}
             onClearElementFocus={() => setFocusedElement(null)}
+            resetKey={text}
           />
         ))}
       </div>

@@ -4402,6 +4402,10 @@ canvas {
   max-width: 100%;
 }
 
+.chart-map-section[open] > summary .chart-map-section-chevron {
+  transform: rotate(180deg);
+}
+
 .chart-wheel-interactive,
 .chart-wheel-interactive:focus,
 .chart-wheel-interactive:focus-visible {

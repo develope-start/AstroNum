@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
 import InterpretationText from "./InterpretationText";
-import ChartWheel, { WheelPlanet } from "./ChartWheel";
-import ChartDetails from "./ChartDetails";
+import ChartMapSection from "./ChartMapSection";
+import type { WheelPlanet } from "./ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "./ElementBalanceGuide";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
@@ -202,14 +202,18 @@ export default function NatalCalculator() {
 
       {/* Chart Wheel Display */}
       {wheel && (
-        <div className="glass-panel relative overflow-hidden rounded-2xl sm:rounded-[28px] p-3 sm:p-8 border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl shadow-2xl text-center w-full">
-          <div className="mb-3 sm:mb-4 text-center">
-            <h3 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">ნატალური ცის რუკა</h3>
-            <p className="mt-0.5 text-[0.7rem] sm:text-xs font-semibold text-slate-300">პლანეტების ეკლიპტიკური პოზიციები</p>
-          </div>
-          <ChartWheel ascendant={wheel.ascendant} mc={wheel.mc} cusps={wheel.houseCusps} planets={wheel.planets} aspects={wheel.aspects} fixedStars={wheel.fixedStars} size={620} />
-          <ChartDetails planets={wheel.planets} planetHouses={wheel.planetHouses} houseCusps={wheel.houseCusps} aspects={wheel.aspects} fixedStars={wheel.fixedStars} ascendant={wheel.ascendant} mc={wheel.mc} />
-        </div>
+        <ChartMapSection
+          title="რუკის მთავარი სურათი"
+          subtitle="ნატალური ცის რუკა · პლანეტების ეკლიპტიკური პოზიციები"
+          className="w-full"
+          ascendant={wheel.ascendant}
+          mc={wheel.mc}
+          houseCusps={wheel.houseCusps}
+          planets={wheel.planets}
+          aspects={wheel.aspects}
+          fixedStars={wheel.fixedStars}
+          planetHouses={wheel.planetHouses}
+        />
       )}
 
       {wheel && <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />}

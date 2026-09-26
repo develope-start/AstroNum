@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import InterpretationText from "@/components/InterpretationText";
-import ChartWheel, { WheelPlanet, type WheelFixedStar } from "@/components/ChartWheel";
-import ChartDetails from "@/components/ChartDetails";
+import ChartMapSection from "@/components/ChartMapSection";
+import type { WheelFixedStar, WheelPlanet } from "@/components/ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
-import { Compass, Copy, Check, X, Sparkles, Trash2, Eye } from "lucide-react";
+import { Compass, Copy, Check, X, Trash2, Eye } from "lucide-react";
 import { readApiResponse } from "@/lib/apiResponse";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
@@ -550,27 +550,18 @@ export default function DashboardPage() {
 
           {/* Large Zodiac Chart Wheel Display (Visible right before interpretations when toggled) */}
           {showWheel && selected.result && (
-            <div className="chart-view-wheel glass-panel relative min-w-0 w-full max-w-2xl overflow-hidden rounded-2xl sm:rounded-[28px] p-2.5 sm:max-w-3xl sm:p-8 border-amber-500/30 bg-[#0d0626]/95 backdrop-blur-3xl shadow-2xl text-center mx-auto my-4 transition-all">
-              <div className="mb-3 text-center">
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-950/50 px-3 py-1 text-xs font-bold text-emerald-300 mb-1">
-                  <Sparkles className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
-                  <span>გამოთვლილი ასტროლოგიური ცის რუკა</span>
-                </div>
-                <h3 className="font-display text-lg sm:text-2xl font-black text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">
-                  {selected.label}
-                </h3>
-              </div>
-              <ChartWheel
-                ascendant={selected.result.ascendant}
-                mc={selected.result.mc}
-                cusps={selected.result.houseCusps}
-                planets={selected.result.planets}
-                aspects={selected.result.aspects}
-                fixedStars={selected.result.fixedStars}
-                size={620}
-              />
-              <ChartDetails planets={selected.result.planets} planetHouses={selected.result.planetHouses} houseCusps={selected.result.houseCusps} aspects={selected.result.aspects} fixedStars={selected.result.fixedStars} ascendant={selected.result.ascendant} mc={selected.result.mc} />
-            </div>
+            <ChartMapSection
+              title="რუკის მთავარი სურათი"
+              subtitle={`${selected.label} · გამოთვლილი ასტროლოგიური ცის რუკა`}
+              className="chart-view-wheel mx-auto my-4 w-full max-w-3xl"
+              ascendant={selected.result.ascendant}
+              mc={selected.result.mc}
+              houseCusps={selected.result.houseCusps}
+              planets={selected.result.planets}
+              aspects={selected.result.aspects}
+              fixedStars={selected.result.fixedStars}
+              planetHouses={selected.result.planetHouses}
+            />
           )}
 
           {selected.result && (
