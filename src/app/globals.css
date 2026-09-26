@@ -4968,9 +4968,12 @@ canvas {
   right: 0 !important;
   bottom: 0 !important;
   left: 0 !important;
-  width: 100vw !important;
+  width: 100% !important;
+  max-width: 100% !important;
   height: 100dvh !important;
+  max-height: 100dvh !important;
   min-height: 0 !important;
+  box-sizing: border-box !important;
   z-index: 40 !important;
   padding-top: var(--site-header-height, 5rem) !important;
   border: 0;
@@ -4980,6 +4983,72 @@ canvas {
 
 .admin-calculation-dialog {
   border-radius: 0;
+}
+
+.interpretation-close-row {
+  width: 100%;
+  height: 0;
+  margin: 0;
+  overflow: visible;
+}
+
+.interpretation-close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.32rem;
+  min-height: 2rem;
+  padding: 0.28rem 0.58rem 0.28rem 0.34rem;
+  border: 1px solid rgba(196, 181, 253, 0.36);
+  border-radius: 9999px;
+  color: #e2e8f0;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(49, 46, 129, 0.78));
+  box-shadow: 0 0.55rem 1.4rem -0.8rem rgba(129, 140, 248, 0.72), inset 0 1px rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.interpretation-close-button:hover,
+.interpretation-close-button:focus-visible {
+  border-color: rgba(221, 214, 254, 0.78);
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(79, 70, 229, 0.82));
+  box-shadow: 0 0.7rem 1.7rem -0.8rem rgba(165, 180, 252, 0.9), inset 0 1px rgba(255, 255, 255, 0.16);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.interpretation-close-button:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.interpretation-close-icon {
+  display: inline-grid;
+  width: 1.38rem;
+  height: 1.38rem;
+  place-items: center;
+  border: 1px solid rgba(196, 181, 253, 0.34);
+  border-radius: 9999px;
+  color: #c4b5fd;
+  background: rgba(99, 102, 241, 0.22);
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.interpretation-close-button:hover .interpretation-close-icon,
+.interpretation-close-button:focus-visible .interpretation-close-icon {
+  border-color: rgba(224, 231, 255, 0.72);
+  color: #ffffff;
+  background: rgba(129, 140, 248, 0.46);
+}
+
+.interpretation-close-label {
+  padding-inline: 0.08rem 0.08rem;
+  letter-spacing: 0.015em;
 }
 
 /* Shared neutral glass hierarchy for chart-view and chart-builder surfaces. */

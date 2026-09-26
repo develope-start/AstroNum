@@ -484,15 +484,15 @@ export default function DashboardPage() {
         <div id="chart-view" className="chart-view-panel fixed inset-0 z-[100] h-[100dvh] min-w-0 overflow-y-auto overscroll-contain bg-[#05020f]/95 p-3.5 backdrop-blur-md space-y-5 transition-all sm:p-8">
           
           {/* Premium Fixed Top-Right Close Button */}
-          <div className="sticky top-2 sm:top-4 z-50 flex justify-end float-right -mt-2 -mr-2 sm:-mt-4 sm:-mr-4 mb-2 pointer-events-none">
+          <div className="interpretation-close-row sticky top-2 sm:top-4 z-50 flex justify-end pointer-events-none">
             <button
               type="button"
               onClick={() => setSelected(null)}
-              className="pointer-events-auto group inline-flex items-center gap-2 rounded-full border border-violet-400/30 bg-gradient-to-r from-slate-900/95 via-[#181c38]/95 to-slate-900/95 px-4 py-2 text-xs font-bold text-slate-200 shadow-[0_8px_24px_-6px_rgba(99,102,241,0.35)] backdrop-blur-xl ring-1 ring-white/10 transition-all duration-250 hover:scale-105 hover:border-violet-300/70 hover:text-white hover:shadow-[0_0_28px_rgba(129,140,248,0.55)] active:scale-95 cursor-pointer"
+              className="interpretation-close-button pointer-events-auto group"
               title="ფანჯრის დახურვა"
             >
-              <X className="h-4 w-4 text-violet-300 group-hover:text-white transition-colors shrink-0" />
-              <span className="font-bold tracking-wider text-slate-200 group-hover:text-white transition-colors">
+              <span className="interpretation-close-icon"><X className="h-3.5 w-3.5" /></span>
+              <span className="interpretation-close-label">
                 დახურვა
               </span>
             </button>

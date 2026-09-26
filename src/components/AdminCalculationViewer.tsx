@@ -97,15 +97,15 @@ export default function AdminCalculationViewer({
       <div className="admin-calculation-dialog relative min-h-0 min-w-0 h-full w-full overflow-y-auto overscroll-contain border border-slate-400/50 bg-[#0d0a18] p-3 shadow-[0_0_35px_rgba(148,163,184,0.28)] sm:p-8">
         
         {/* Premium Fixed Top-Right Close Button */}
-        <div className="sticky top-0 z-50 flex justify-end -mt-1 -mr-1 sm:-mt-4 sm:-mr-4 mb-2 pointer-events-none">
+        <div className="interpretation-close-row sticky top-0 z-50 flex justify-end pointer-events-none">
           <button
             type="button"
             onClick={onClose}
-            className="pointer-events-auto group inline-flex items-center gap-2 rounded-full border border-violet-400/30 bg-gradient-to-r from-slate-900/95 via-[#181c38]/95 to-slate-900/95 px-4 py-2 text-xs font-bold text-slate-200 shadow-[0_8px_24px_-6px_rgba(99,102,241,0.35)] backdrop-blur-xl ring-1 ring-white/10 transition-all duration-250 hover:scale-105 hover:border-violet-300/70 hover:text-white hover:shadow-[0_0_28px_rgba(129,140,248,0.55)] active:scale-95 cursor-pointer"
+            className="interpretation-close-button pointer-events-auto group"
             title="ფანჯრის დახურვა"
           >
-            <X className="h-4 w-4 text-violet-300 group-hover:text-white transition-colors shrink-0" />
-            <span className="font-bold tracking-wider text-slate-200 group-hover:text-white transition-colors">
+            <span className="interpretation-close-icon"><X className="h-3.5 w-3.5" /></span>
+            <span className="interpretation-close-label">
               დახურვა
             </span>
           </button>
