@@ -5776,17 +5776,6 @@ html.mode-ultra .celestial-ruler-zodiac {
   font-weight: 850 !important;
 }
 
-html.mode-ultra .celestial-ruler-planet-symbol {
-  color: #334155 !important;
-  font-weight: 850 !important;
-}
-
-html.mode-ultra .celestial-ruler:hover .celestial-ruler-body,
-html.mode-ultra .celestial-ruler.is-active .celestial-ruler-body {
-  transform: scale(1.18) !important;
-  box-shadow: 0 0 18px currentColor !important;
-}
-
 /* Center Celestial Info Card on Hover/Click of Planet or Earth */
 html.mode-ultra .celestial-info-card {
   border: 1px solid rgba(37, 99, 235, 0.35) !important;
@@ -6200,31 +6189,6 @@ html.mode-ultra .chart-map-section > div {
   background: #ffffff !important;
 }
 
-/* The SVG has inline dark-mode fills, so these selectors intentionally use
-   !important to make the planet badges and degree labels visible on white. */
-html.mode-ultra .chart-wheel-wrap svg circle[fill="#0d0726"],
-html.mode-ultra .chart-wheel-wrap svg circle[fill="#09041a"],
-html.mode-ultra .chart-wheel-wrap svg circle[fill="#080414"] {
-  fill: #ffffff !important;
-}
-
-html.mode-ultra .chart-wheel-wrap svg text[fill="#f8fafc"],
-html.mode-ultra .chart-wheel-wrap svg text[fill="#e2e8f0"],
-html.mode-ultra .chart-wheel-wrap svg text[fill="#cbd5e1"] {
-  fill: #334155 !important;
-  text-shadow: none !important;
-}
-
-html.mode-ultra .chart-wheel-wrap svg text[fill="#fef3c7"],
-html.mode-ultra .chart-wheel-wrap svg text[fill="#e0f2fe"] {
-  fill: #1e3a8a !important;
-  text-shadow: none !important;
-}
-
-html.mode-ultra .chart-wheel-wrap svg circle[fill="#f8fafc"] {
-  fill: #334155 !important;
-}
-
 html.mode-ultra .chart-details-accordion,
 html.mode-ultra .chart-subsection,
 html.mode-ultra .interpretation-accordion,
@@ -6433,24 +6397,6 @@ html.mode-ultra .celestial-temperament-close {
   color: #f8fafc !important;
 }
 
-html.mode-ultra .celestial-ruler-planet-symbol {
-  color: #1e3a8a !important;
-  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95) !important;
-  font-weight: 900 !important;
-}
-
-html.mode-ultra .celestial-ruler-body {
-  border-color: rgba(37, 99, 235, 0.42) !important;
-  background: rgba(255, 255, 255, 0.96) !important;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14), inset 0 1px rgba(255, 255, 255, 0.95) !important;
-}
-
-html.mode-ultra .celestial-ruler:hover .celestial-ruler-body,
-html.mode-ultra .celestial-ruler.is-active .celestial-ruler-body {
-  background: #dbeafe !important;
-  box-shadow: 0 0 18px rgba(37, 99, 235, 0.38) !important;
-}
-
 /* Darker element cards keep their identity on the luminous home surface. */
 html.mode-ultra .celestial-element-panel-fire,
 html.mode-ultra .celestial-element-panel-earth,
@@ -6518,4 +6464,296 @@ html.mode-ultra button[class*="from-blue"]:hover,
 html.mode-ultra button[class*="from-indigo"]:hover {
   background: linear-gradient(135deg, #1e3a8a, #312e81) !important;
   box-shadow: 0 12px 28px -14px rgba(30, 64, 175, 0.82) !important;
+}
+
+/* Final contrast and material pass for the light workspace. Keep the light
+   surfaces calm and legible, while reserving light text for genuinely dark
+   cards such as the elemental panels. */
+html.mode-ultra {
+  --light-ink: #172033;
+  --light-body: #334155;
+  --light-muted: #64748b;
+  --light-primary: #7a4a2b;
+  --light-primary-hover: #60351f;
+  --light-accent-soft: #f5ede5;
+  --light-accent-line: #d6b992;
+}
+
+/* Replace the electric blue result accents with a restrained copper-plum
+   accent that has stronger contrast against white result surfaces. */
+html.mode-ultra .chart-view-panel,
+html.mode-ultra .admin-calculation-dialog,
+html.mode-ultra .chart-map-section,
+html.mode-ultra .chart-view-details,
+html.mode-ultra .admin-calculation-details,
+html.mode-ultra .chart-view-interpretation,
+html.mode-ultra .admin-calculation-interpretation,
+html.mode-ultra .chart-summary-card {
+  color: var(--light-body) !important;
+}
+
+html.mode-ultra .chart-view-panel :where(.text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500),
+html.mode-ultra .admin-calculation-dialog :where(.text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500),
+html.mode-ultra .chart-map-section :where(.text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500) {
+  color: var(--light-body) !important;
+}
+
+html.mode-ultra .chart-view-panel :where([class*="text-blue"], [class*="text-indigo"], [class*="text-sky"], [class*="text-cyan"], [class*="text-violet"], [class*="text-purple"]),
+html.mode-ultra .admin-calculation-dialog :where([class*="text-blue"], [class*="text-indigo"], [class*="text-sky"], [class*="text-cyan"], [class*="text-violet"], [class*="text-purple"]),
+html.mode-ultra .chart-map-section :where([class*="text-blue"], [class*="text-indigo"], [class*="text-sky"], [class*="text-cyan"], [class*="text-violet"], [class*="text-purple"]) {
+  color: var(--light-primary) !important;
+}
+
+html.mode-ultra .chart-view-panel :where([class*="bg-blue"], [class*="bg-indigo"], [class*="bg-sky"], [class*="bg-cyan"], [class*="bg-violet"], [class*="bg-purple"]),
+html.mode-ultra .admin-calculation-dialog :where([class*="bg-blue"], [class*="bg-indigo"], [class*="bg-sky"], [class*="bg-cyan"], [class*="bg-violet"], [class*="bg-purple"]),
+html.mode-ultra .chart-map-section :where([class*="bg-blue"], [class*="bg-indigo"], [class*="bg-sky"], [class*="bg-cyan"], [class*="bg-violet"], [class*="bg-purple"]) {
+  background: var(--light-accent-soft) !important;
+  border-color: var(--light-accent-line) !important;
+  color: var(--light-primary-hover) !important;
+}
+
+html.mode-ultra .chart-view-panel :where([class*="border-blue"], [class*="border-indigo"], [class*="border-sky"], [class*="border-cyan"], [class*="border-violet"], [class*="border-purple"]),
+html.mode-ultra .admin-calculation-dialog :where([class*="border-blue"], [class*="border-indigo"], [class*="border-sky"], [class*="border-cyan"], [class*="border-violet"], [class*="border-purple"]),
+html.mode-ultra .chart-map-section :where([class*="border-blue"], [class*="border-indigo"], [class*="border-sky"], [class*="border-cyan"], [class*="border-violet"], [class*="border-purple"]) {
+  border-color: var(--light-accent-line) !important;
+}
+
+html.mode-ultra .chart-map-section > summary {
+  background: linear-gradient(105deg, #fbf7f1, #f8fafc 52%, #f5ede5) !important;
+}
+
+html.mode-ultra .chart-map-section-chevron,
+html.mode-ultra .interpretation-accordion-chevron,
+html.mode-ultra .interpretation-accordion-icon,
+html.mode-ultra .interpretation-accordion-icon svg,
+html.mode-ultra .chart-details-jump-icon {
+  color: var(--light-primary) !important;
+}
+
+html.mode-ultra .chart-details-jump,
+html.mode-ultra .combined-chart-table-launch,
+html.mode-ultra .interpretation-close-button {
+  border-color: var(--light-accent-line) !important;
+  background: linear-gradient(135deg, #fbf7f1, #f1e5d7) !important;
+  color: var(--light-primary-hover) !important;
+  box-shadow: 0 8px 20px -15px rgba(122, 74, 43, 0.65), inset 0 1px rgba(255, 255, 255, 0.95) !important;
+}
+
+html.mode-ultra .chart-details-jump:hover,
+html.mode-ultra .combined-chart-table-launch:hover,
+html.mode-ultra .interpretation-close-button:hover,
+html.mode-ultra .interpretation-close-button:focus-visible {
+  border-color: var(--light-primary) !important;
+  background: #ead8c5 !important;
+  color: var(--light-primary-hover) !important;
+}
+
+/* The main calculator and account/admin forms use one consistent modern
+   control language: clear fill, soft elevation, strong focus ring and dark
+   input text on every white surface. */
+html.mode-ultra input:not([type="checkbox"]):not([type="radio"]),
+html.mode-ultra select,
+html.mode-ultra textarea,
+html.mode-ultra .glass-input {
+  min-height: 2.75rem;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 0.85rem !important;
+  background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
+  color: #172033 !important;
+  caret-color: var(--light-primary) !important;
+  font-weight: 650 !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.96), 0 5px 16px -13px rgba(15, 23, 42, 0.5) !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease, transform 180ms ease !important;
+}
+
+html.mode-ultra input:not([type="checkbox"]):not([type="radio"]):hover,
+html.mode-ultra select:hover,
+html.mode-ultra textarea:hover,
+html.mode-ultra .glass-input:hover {
+  border-color: #b99a76 !important;
+  background: #ffffff !important;
+}
+
+html.mode-ultra input:not([type="checkbox"]):not([type="radio"]):focus,
+html.mode-ultra select:focus,
+html.mode-ultra textarea:focus,
+html.mode-ultra .glass-input:focus {
+  border-color: var(--light-primary) !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(122, 74, 43, 0.16), 0 8px 20px -16px rgba(122, 74, 43, 0.7) !important;
+  outline: none !important;
+}
+
+html.mode-ultra input::placeholder,
+html.mode-ultra textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
+html.mode-ultra option {
+  background: #ffffff !important;
+  color: #172033 !important;
+}
+
+html.mode-ultra input[type="checkbox"],
+html.mode-ultra input[type="radio"] {
+  accent-color: var(--light-primary) !important;
+}
+
+html.mode-ultra label > div,
+html.mode-ultra label .rounded-lg,
+html.mode-ultra label .rounded-xl {
+  border-color: #d6dee8 !important;
+  background: #f8fafc !important;
+  color: var(--light-body) !important;
+}
+
+html.mode-ultra label svg {
+  color: var(--light-primary) !important;
+}
+
+html.mode-ultra .wide-date-editor,
+html.mode-ultra .time-editor {
+  border-color: #cbd5e1 !important;
+  border-radius: 1rem !important;
+  background: linear-gradient(145deg, #ffffff, #f5f7fa) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.95), 0 8px 22px -18px rgba(15, 23, 42, 0.5) !important;
+}
+
+html.mode-ultra .wide-date-editor:focus-within,
+html.mode-ultra .time-editor:focus-within {
+  border-color: var(--light-primary) !important;
+  box-shadow: 0 0 0 3px rgba(122, 74, 43, 0.14), 0 10px 24px -19px rgba(122, 74, 43, 0.7) !important;
+}
+
+html.mode-ultra .wide-date-editor input,
+html.mode-ultra .time-editor input {
+  min-height: 2.2rem;
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--light-primary-hover) !important;
+  box-shadow: none !important;
+}
+
+html.mode-ultra .wide-date-editor > span,
+html.mode-ultra .time-editor > span,
+html.mode-ultra .wide-date-editor > div:last-child > button,
+html.mode-ultra .time-editor .time-picker-trigger > button {
+  color: var(--light-primary) !important;
+}
+
+html.mode-ultra .wide-date-editor > div:last-child > button,
+html.mode-ultra .time-editor .time-picker-trigger > button {
+  border-color: var(--light-accent-line) !important;
+  background: var(--light-accent-soft) !important;
+}
+
+/* Dark text for the white calculator/account/admin surfaces, including the
+   pale Tailwind utility colors that otherwise disappear on white. */
+html.mode-ultra .app-section :where(.text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500),
+html.mode-ultra .cabinet-page :where(.text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500),
+html.mode-ultra .admin-page :where(.text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500) {
+  color: var(--light-body) !important;
+}
+
+html.mode-ultra .cabinet-page :where(.text-emerald-200, .text-emerald-300, .text-amber-200, .text-amber-300, .text-cyan-200, .text-cyan-300, .text-purple-200, .text-purple-300, .text-violet-200, .text-violet-300, .text-rose-200, .text-rose-300),
+html.mode-ultra .admin-page :where(.text-emerald-200, .text-emerald-300, .text-amber-200, .text-amber-300, .text-cyan-200, .text-cyan-300, .text-purple-200, .text-purple-300, .text-violet-200, .text-violet-300, .text-rose-200, .text-rose-300) {
+  color: #7a4a2b !important;
+}
+
+/* Light-mode cosmic instrument: softly tinted, layered and readable instead
+   of a flat white rectangle. */
+html.mode-ultra .hero-orbit-card {
+  border-color: #d8c9bb !important;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.34) 32%, transparent 58%),
+    radial-gradient(circle at 12% 18%, rgba(181, 137, 92, 0.16), transparent 28%),
+    radial-gradient(circle at 88% 80%, rgba(112, 91, 143, 0.14), transparent 30%),
+    linear-gradient(145deg, #f6f0e9 0%, #e9eef2 52%, #eee8e2 100%) !important;
+  box-shadow: 0 25px 60px -20px rgba(76, 55, 39, 0.2), 0 0 1px 1px rgba(214, 185, 146, 0.65), inset 0 1px rgba(255, 255, 255, 0.95) !important;
+}
+
+html.mode-ultra .hero-orbit-card::after {
+  background:
+    radial-gradient(circle at 14% 22%, rgba(122, 74, 43, 0.22) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 74% 18%, rgba(91, 58, 41, 0.18) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 82% 76%, rgba(92, 75, 126, 0.2) 0 1px, transparent 1.8px),
+    repeating-radial-gradient(circle at 50% 50%, rgba(122, 74, 43, 0.06) 0 1px, transparent 1px 24px),
+    linear-gradient(115deg, transparent 24%, rgba(255, 255, 255, 0.52) 42%, transparent 58%) !important;
+  opacity: 0.9 !important;
+}
+
+html.mode-ultra .celestial-system {
+  border: 1px solid rgba(181, 137, 92, 0.3) !important;
+  background:
+    radial-gradient(circle at 48% 44%, rgba(255, 255, 255, 0.72) 0%, rgba(247, 241, 235, 0.76) 42%, rgba(225, 231, 236, 0.88) 100%),
+    linear-gradient(155deg, #f4eee8, #e5ebef) !important;
+  box-shadow: inset 0 0 70px rgba(122, 74, 43, 0.08), 0 0 45px rgba(122, 74, 43, 0.1) !important;
+}
+
+html.mode-ultra .celestial-system::before {
+  opacity: 0.35 !important;
+  background-image:
+    radial-gradient(circle at 12% 72%, rgba(122, 74, 43, 0.38) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 29% 15%, rgba(91, 58, 41, 0.32) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 70% 35%, rgba(91, 58, 41, 0.28) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 91% 52%, rgba(92, 75, 126, 0.34) 0 1px, transparent 1.7px) !important;
+}
+
+html.mode-ultra .celestial-star-noise {
+  opacity: 0.34 !important;
+  background-image:
+    radial-gradient(circle, rgba(91, 58, 41, 0.42) 0 0.7px, transparent 0.9px),
+    radial-gradient(circle, rgba(122, 74, 43, 0.24) 0 0.7px, transparent 0.9px) !important;
+}
+
+html.mode-ultra .celestial-system::after {
+  border-color: rgba(122, 74, 43, 0.14) !important;
+  box-shadow: 0 0 80px rgba(122, 74, 43, 0.08) !important;
+}
+
+html.mode-ultra .celestial-orbit {
+  border-color: rgba(122, 74, 43, 0.22) !important;
+  box-shadow: 0 0 26px rgba(122, 74, 43, 0.1), inset 0 0 28px rgba(122, 74, 43, 0.05) !important;
+}
+
+html.mode-ultra .celestial-orbit::after {
+  border-color: rgba(122, 74, 43, 0.14) !important;
+}
+
+html.mode-ultra .constellation-art line {
+  stroke: #8a6a4a !important;
+  opacity: 0.48 !important;
+}
+
+html.mode-ultra .constellation-art circle {
+  fill: #a66a32 !important;
+}
+
+html.mode-ultra .celestial-info-card {
+  border-color: rgba(181, 137, 92, 0.5) !important;
+  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.98), rgba(248, 241, 233, 0.97) 75%) !important;
+  box-shadow: 0 10px 30px rgba(122, 74, 43, 0.16), 0 2px 8px rgba(15, 23, 42, 0.08) !important;
+}
+
+html.mode-ultra .celestial-info-eyebrow,
+html.mode-ultra .celestial-info-tags,
+html.mode-ultra .celestial-info-card::before {
+  color: var(--light-primary) !important;
+  border-color: rgba(181, 137, 92, 0.32) !important;
+}
+
+html.mode-ultra .mode-switcher button[data-active="true"] {
+  background: linear-gradient(135deg, #7a4a2b, #60351f) !important;
+  box-shadow: 0 8px 20px -7px rgba(122, 74, 43, 0.5) !important;
+}
+
+html.mode-ultra .hero-kicker,
+html.mode-ultra fieldset.glass-panel legend,
+html.mode-ultra .glass-panel legend {
+  border-color: rgba(181, 137, 92, 0.42) !important;
+  background: var(--light-accent-soft) !important;
+  color: var(--light-primary-hover) !important;
+  box-shadow: 0 4px 14px rgba(122, 74, 43, 0.1) !important;
 }
