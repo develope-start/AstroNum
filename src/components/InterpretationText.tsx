@@ -358,7 +358,7 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
           )}
         </div>
 
-        <button
+        {false && <button
           onClick={handleCopy}
           type="button"
           className="interpretation-copy flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-[#080418] px-3.5 py-1 sm:px-4 sm:py-1.5 text-[0.7rem] sm:text-xs font-bold text-amber-300 transition-all hover:scale-105 hover:border-amber-400 shrink-0"
@@ -374,7 +374,7 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
               <span>კოპირება</span>
             </>
           )}
-        </button>
+        </button>}
       </div>
 
       {/* Main interpretation blocks */}

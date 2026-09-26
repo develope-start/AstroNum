@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import InterpretationText from "@/components/InterpretationText";
+import ChartExportButton from "@/components/ChartExportButton";
 import ChartMapSection from "@/components/ChartMapSection";
 import type { WheelFixedStar, WheelPlanet } from "@/components/ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
-import { Copy, Check, X, Trash2, Eye } from "lucide-react";
+import { X, Trash2, Eye } from "lucide-react";
 import { readApiResponse } from "@/lib/apiResponse";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
@@ -139,7 +140,6 @@ export default function DashboardPage() {
   const [account, setAccount] = useState<AccountSummary | null>(null);
   const [charts, setCharts] = useState<ChartSummary[] | null>(null);
   const [selected, setSelected] = useState<SelectedChart | null>(null);
-  const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingChart, setLoadingChart] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ChartSummary | null>(null);
@@ -248,7 +248,6 @@ export default function DashboardPage() {
         lastViewedAt: data.lastViewedAt ?? null,
         result: wheelFromResult(data.result),
       });
-      setCopied(false);
     } catch {
       setError("სერვერთან კავშირი შეწყდა");
     } finally {
@@ -281,13 +280,6 @@ export default function DashboardPage() {
     } finally {
       setDeleting(false);
     }
-  }
-
-  function handleCopy() {
-    if (!selected) return;
-    navigator.clipboard.writeText(`${selected.label}\n\n${selected.interpretation}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
   }
 
   async function logout() {
@@ -481,7 +473,7 @@ export default function DashboardPage() {
 
       {/* Selected Opened Chart View Modal / Card */}
       {selected && (
-        <div id="chart-view" className="chart-view-panel fixed inset-0 z-[100] h-[100dvh] min-w-0 overflow-y-auto overscroll-contain bg-[#05020f]/95 p-3.5 backdrop-blur-md space-y-5 transition-all sm:p-8">
+        <div id="chart-view" data-chart-export-root="true" className="chart-view-panel fixed inset-0 z-[100] h-[100dvh] min-w-0 overflow-y-auto overscroll-contain bg-[#05020f]/95 p-3.5 backdrop-blur-md space-y-5 transition-all sm:p-8">
           
           {/* Premium Fixed Top-Right Close Button */}
           <div className="interpretation-close-row sticky top-2 sm:top-4 z-50 flex justify-end pointer-events-none">
@@ -523,14 +515,7 @@ export default function DashboardPage() {
           {/* Action Toolbar: Light Moss Green Glow Button (ღია ჭაობისფერი გლოუ) & Copy Button */}
           <div className="chart-view-actions flex flex-col items-stretch gap-2.5 bg-purple-950/40 p-3 rounded-2xl border border-amber-500/20 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             {/* Copy Button */}
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/40 bg-purple-950/60 px-4 py-2 text-center text-xs sm:w-auto sm:text-sm font-bold text-amber-300 hover:bg-amber-400 hover:text-slate-950 transition-all cursor-pointer"
-            >
-              {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
-              <span>{copied ? "კოპირებულია!" : "ტექსტის კოპირება"}</span>
-            </button>
+            <ChartExportButton className="flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/40 bg-purple-950/60 px-4 py-2 text-center text-xs sm:w-auto sm:text-sm font-bold text-amber-300 hover:bg-amber-400 hover:text-slate-950 transition-all cursor-pointer" />
           </div>
 
           {/* Large Zodiac Chart Wheel Display (Visible right before interpretations when toggled) */}

@@ -29,7 +29,7 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
   const bars = ELEMENT_VISUALS.map((visual) => ({ ...visual, value: elements.percentages[visual.id] }));
 
   return (
-    <div className="glass-panel rounded-2xl sm:rounded-[28px] p-3 sm:p-5 border-amber-500/25 bg-gradient-to-b from-[#130938]/90 to-[#09041a]/95 backdrop-blur-2xl shadow-xl space-y-3.5 text-center">
+    <div data-export-element-balance="true" className="glass-panel rounded-2xl sm:rounded-[28px] p-3 sm:p-5 border-amber-500/25 bg-gradient-to-b from-[#130938]/90 to-[#09041a]/95 backdrop-blur-2xl shadow-xl space-y-3.5 text-center">
       
       {/* 1. Element Percentages & Synthesis Progress Bars: OPEN BY DEFAULT */}
       <details className="interpretation-accordion border-amber-500/30 bg-purple-950/20" open>
@@ -67,6 +67,9 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
                   type="button"
                   onClick={() => focusElementInterpretation(bar.id)}
                   data-element={bar.id}
+                  data-export-element={bar.id}
+                  data-export-element-label={bar.label}
+                  data-export-element-value={bar.value}
                   className="element-balance-indicator rounded-xl border p-2.5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/20 sm:p-3"
                   aria-label={`გადადით ${bar.label} სტიქიის ინტერპრეტაციაზე`}
                 >

@@ -5383,3 +5383,670 @@ canvas {
     height: 8.65rem !important;
   }
 }
+
+/* ==========================================================================
+   ASTRONUM BEACON TOGGLE & ULTRA-MODERN GLASS UI ENGINE
+   ========================================================================== */
+
+/* 1. Center Nav Beacon Toggle Orb */
+.nav-mode-orb-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.48rem;
+  padding: 0.35rem 0.68rem;
+  border-radius: 9999px;
+  background: rgba(12, 17, 32, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 4px 18px -4px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.nav-mode-orb-btn:hover {
+  transform: translateY(-1px) scale(1.04);
+}
+
+/* Classic Mode (Red Beep Glow) */
+.nav-mode-orb-btn.is-classic {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(18, 12, 24, 0.75);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.nav-mode-orb-btn.is-classic:hover {
+  border-color: rgba(239, 68, 68, 0.8);
+  background: rgba(28, 14, 28, 0.85);
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Ultra Mode (Blue Beep Glow) */
+.nav-mode-orb-btn.is-ultra {
+  border-color: rgba(56, 189, 248, 0.65);
+  background: rgba(6, 16, 36, 0.88);
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+
+.nav-mode-orb-btn.is-ultra:hover {
+  border-color: rgba(56, 189, 248, 0.95);
+  background: rgba(8, 22, 50, 0.92);
+  box-shadow: 0 0 32px rgba(56, 189, 248, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+/* Orb Wrap */
+.nav-toggle-orb-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+}
+
+/* Pulsing Beep Ping Rings */
+.nav-toggle-ping {
+  position: absolute;
+  inset: -0.25rem;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+.nav-toggle-ping-red {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.8) 0%, rgba(244, 63, 94, 0.3) 50%, transparent 75%);
+  animation: beacon-beep-pulse-red 1.7s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+.nav-toggle-ping-blue {
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.85) 0%, rgba(14, 165, 233, 0.35) 50%, transparent 75%);
+  animation: beacon-beep-pulse-blue 1.7s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+@keyframes beacon-beep-pulse-red {
+  0% { transform: scale(0.65); opacity: 0.95; }
+  50% { transform: scale(1.85); opacity: 0.45; }
+  100% { transform: scale(2.65); opacity: 0; }
+}
+
+@keyframes beacon-beep-pulse-blue {
+  0% { transform: scale(0.65); opacity: 1; }
+  50% { transform: scale(1.95); opacity: 0.5; }
+  100% { transform: scale(2.85); opacity: 0; }
+}
+
+/* Solid Luminous Orb Bead */
+.nav-toggle-orb {
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 9999px;
+  position: relative;
+  z-index: 2;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-toggle-orb-red {
+  background: radial-gradient(circle at 35% 35%, #fff1f2 0%, #f43f5e 45%, #be123c 100%);
+  box-shadow: 0 0 10px #f43f5e, 0 0 18px rgba(239, 68, 68, 0.85);
+}
+
+.nav-toggle-orb-blue {
+  background: radial-gradient(circle at 35% 35%, #f0fdf4 0%, #38bdf8 45%, #0284c7 100%);
+  box-shadow: 0 0 12px #38bdf8, 0 0 22px rgba(14, 165, 233, 0.9), 0 0 35px rgba(0, 240, 255, 0.6);
+}
+
+/* Toggle Badge Text */
+.nav-toggle-label {
+  font-size: 0.64rem;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+.nav-toggle-label-red {
+  color: #fb7185;
+  text-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
+}
+
+.nav-toggle-label-blue {
+  color: #38bdf8;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+}
+
+@media (max-width: 480px) {
+  .nav-mode-orb-btn {
+    padding: 0.3rem 0.5rem;
+    gap: 0.35rem;
+  }
+}
+
+/* ==========================================================================
+   2. ULTRA-MODERN GLASSMORPHISM MODE STYLES (.mode-ultra / [data-ui-theme="ultra"])
+   ========================================================================== */
+
+/* 2.1 Tokens & Ambient Void */
+html.mode-ultra {
+  --bg-main: #030614;
+  --bg-card: rgba(12, 20, 44, 0.78);
+  --bg-card-hover: rgba(18, 30, 62, 0.92);
+  --border-color: rgba(56, 189, 248, 0.28);
+  --border-glow: rgba(56, 189, 248, 0.85);
+  --border-purple: rgba(168, 85, 247, 0.4);
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-accent: #38bdf8;
+  --accent-gold: #38bdf8;
+  --accent-gold-hover: #7dd3fc;
+  --accent-purple: #818cf8;
+  --accent-blue: #00f0ff;
+}
+
+html.mode-ultra body.app-body {
+  background-color: #030614 !important;
+  color: #ffffff !important;
+}
+
+html.mode-ultra .star-field {
+  background-image:
+    linear-gradient(rgba(56, 189, 248, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.045) 1px, transparent 1px),
+    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.2) 0%, transparent 48%),
+    radial-gradient(circle at 88% 85%, rgba(168, 85, 247, 0.15) 0%, transparent 42%),
+    radial-gradient(circle at 10% 40%, rgba(37, 99, 235, 0.12) 0%, transparent 38%) !important;
+  background-size: 80px 80px, 80px 80px, auto, auto, auto !important;
+}
+
+/* 2.2 Navigation Bar in Ultra Mode */
+html.mode-ultra .nav-shell {
+  border: 1px solid rgba(56, 189, 248, 0.32) !important;
+  background: rgba(6, 12, 28, 0.84) !important;
+  box-shadow: 0 24px 65px -20px rgba(0, 0, 0, 0.95), 0 0 35px rgba(56, 189, 248, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(28px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+}
+
+html.mode-ultra .brand-mark {
+  border-color: rgba(56, 189, 248, 0.65) !important;
+  background: radial-gradient(circle at 30% 30%, rgba(56, 189, 248, 0.35), rgba(12, 18, 38, 0.92)) !important;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.45) !important;
+}
+
+html.mode-ultra .nav-action {
+  border: 1px solid rgba(56, 189, 248, 0.48) !important;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.22) 0%, rgba(99, 102, 241, 0.22) 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.22) !important;
+}
+
+html.mode-ultra .nav-action:hover {
+  border-color: rgba(56, 189, 248, 0.85) !important;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.35) 0%, rgba(99, 102, 241, 0.35) 100%) !important;
+  box-shadow: 0 0 28px rgba(56, 189, 248, 0.45) !important;
+  transform: translateY(-2px) !important;
+}
+
+html.mode-ultra .nav-quiet-action {
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  color: #e2e8f0 !important;
+}
+
+html.mode-ultra .nav-quiet-action:hover {
+  border-color: rgba(56, 189, 248, 0.6) !important;
+  background: rgba(56, 189, 248, 0.18) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.25) !important;
+}
+
+/* 2.3 Hero Section & Headings in Ultra Mode */
+html.mode-ultra .hero-kicker {
+  border: 1px solid rgba(56, 189, 248, 0.45) !important;
+  background: rgba(56, 189, 248, 0.12) !important;
+  color: #38bdf8 !important;
+  padding: 0.35rem 0.85rem !important;
+  border-radius: 9999px !important;
+  letter-spacing: 0.2em !important;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.25) !important;
+}
+
+html.mode-ultra .hero-title {
+  color: #ffffff !important;
+  text-shadow: 0 4px 25px rgba(0, 0, 0, 0.85) !important;
+}
+
+html.mode-ultra .hero-title em {
+  background: linear-gradient(135deg, #ffffff 0%, #38bdf8 52%, #c084fc 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 28px rgba(56, 189, 248, 0.5)) !important;
+}
+
+html.mode-ultra .hero-lead {
+  color: #e2e8f0 !important;
+  font-weight: 450 !important;
+  line-height: 1.85 !important;
+}
+
+html.mode-ultra .primary-action {
+  color: #030712 !important;
+  background: linear-gradient(135deg, #00f0ff 0%, #38bdf8 50%, #818cf8 100%) !important;
+  box-shadow: 0 16px 40px -15px rgba(56, 189, 248, 0.95), 0 0 28px rgba(0, 240, 255, 0.45) !important;
+  font-weight: 850 !important;
+}
+
+html.mode-ultra .primary-action:hover {
+  transform: translateY(-2px) scale(1.025) !important;
+  box-shadow: 0 20px 50px -12px rgba(56, 189, 248, 1), 0 0 38px rgba(0, 240, 255, 0.65) !important;
+}
+
+html.mode-ultra .secondary-action {
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+  background: rgba(10, 18, 40, 0.7) !important;
+  color: #ffffff !important;
+  backdrop-filter: blur(18px) !important;
+}
+
+html.mode-ultra .secondary-action:hover {
+  border-color: rgba(56, 189, 248, 0.75) !important;
+  background: rgba(56, 189, 248, 0.2) !important;
+  box-shadow: 0 0 28px rgba(56, 189, 248, 0.3) !important;
+}
+
+/* 2.4 Hero Orbit Card & Celestial System in Ultra Mode */
+html.mode-ultra .hero-orbit-card {
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  background: linear-gradient(145deg, rgba(12, 22, 48, 0.82) 0%, rgba(4, 8, 20, 0.96) 100%) !important;
+  box-shadow: 0 45px 110px -40px rgba(0, 0, 0, 0.98), 0 0 50px rgba(56, 189, 248, 0.14), inset 0 1px 1px rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(28px) !important;
+}
+
+html.mode-ultra .orbit-core {
+  border-color: rgba(56, 189, 248, 0.65) !important;
+  background: radial-gradient(circle at 35% 30%, rgba(56, 189, 248, 0.55), rgba(99, 102, 241, 0.25) 40%, rgba(4, 8, 20, 0.92) 75%) !important;
+  box-shadow: 0 0 70px rgba(56, 189, 248, 0.5), inset -15px -18px 30px rgba(0, 0, 0, 0.75) !important;
+}
+
+html.mode-ultra .orbit-ring {
+  border-color: rgba(56, 189, 248, 0.35) !important;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2) !important;
+}
+
+html.mode-ultra .celestial-system {
+  border-color: rgba(56, 189, 248, 0.3) !important;
+  background: radial-gradient(circle at center, rgba(16, 26, 52, 0.45), rgba(4, 8, 20, 0.92)) !important;
+}
+
+/* 4 Element panels - deep frosted glass with neon element glows */
+html.mode-ultra .celestial-element-panel {
+  backdrop-filter: blur(26px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(190%) !important;
+  border-radius: 1.25rem !important;
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+html.mode-ultra .celestial-element-panel-fire {
+  border: 1px solid rgba(244, 63, 94, 0.5) !important;
+  background: linear-gradient(145deg, rgba(65, 12, 30, 0.8) 0%, rgba(22, 6, 14, 0.92) 100%) !important;
+  box-shadow: 0 12px 35px -10px rgba(244, 63, 94, 0.4), inset 0 1px 0 rgba(255, 200, 210, 0.25) !important;
+}
+
+html.mode-ultra .celestial-element-panel-earth {
+  border: 1px solid rgba(16, 185, 129, 0.5) !important;
+  background: linear-gradient(145deg, rgba(10, 50, 34, 0.8) 0%, rgba(4, 22, 16, 0.92) 100%) !important;
+  box-shadow: 0 12px 35px -10px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(180, 255, 225, 0.25) !important;
+}
+
+html.mode-ultra .celestial-element-panel-air {
+  border: 1px solid rgba(56, 189, 248, 0.55) !important;
+  background: linear-gradient(145deg, rgba(10, 40, 70, 0.8) 0%, rgba(4, 18, 36, 0.92) 100%) !important;
+  box-shadow: 0 12px 35px -10px rgba(56, 189, 248, 0.4), inset 0 1px 0 rgba(200, 245, 255, 0.25) !important;
+}
+
+html.mode-ultra .celestial-element-panel-water {
+  border: 1px solid rgba(129, 140, 248, 0.55) !important;
+  background: linear-gradient(145deg, rgba(30, 24, 70, 0.8) 0%, rgba(12, 10, 36, 0.92) 100%) !important;
+  box-shadow: 0 12px 35px -10px rgba(129, 140, 248, 0.4), inset 0 1px 0 rgba(225, 220, 255, 0.25) !important;
+}
+
+html.mode-ultra .celestial-element-heading strong {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+html.mode-ultra .celestial-element-items b {
+  color: #ffffff !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+}
+
+html.mode-ultra .celestial-temperament-card {
+  border: 1px solid rgba(56, 189, 248, 0.45) !important;
+  background: rgba(6, 12, 28, 0.96) !important;
+  backdrop-filter: blur(34px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(210%) !important;
+  box-shadow: 0 35px 90px -20px rgba(0, 0, 0, 0.98), 0 0 45px rgba(56, 189, 248, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
+}
+
+html.mode-ultra .celestial-temperament-content {
+  color: #f8fafc !important;
+}
+
+html.mode-ultra .celestial-ruler {
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35) !important;
+}
+
+html.mode-ultra .celestial-ruler:hover,
+html.mode-ultra .celestial-ruler.is-active {
+  box-shadow: 0 0 28px rgba(56, 189, 248, 0.9), 0 0 45px rgba(99, 102, 241, 0.6) !important;
+  transform: translate(-50%, -50%) scale(1.22) !important;
+}
+
+html.mode-ultra .celestial-info-card {
+  border: 1px solid rgba(56, 189, 248, 0.5) !important;
+  background: rgba(6, 14, 32, 0.94) !important;
+  backdrop-filter: blur(30px) !important;
+  box-shadow: 0 25px 70px -15px rgba(0, 0, 0, 0.95), 0 0 35px rgba(56, 189, 248, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+html.mode-ultra .celestial-info-card strong {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+html.mode-ultra .celestial-info-card p {
+  color: #e2e8f0 !important;
+}
+
+/* 2.5 Mode Switcher Tabs in Ultra Mode */
+html.mode-ultra .mode-switcher {
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  background: rgba(6, 12, 28, 0.85) !important;
+  box-shadow: 0 18px 45px -15px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(24px) !important;
+}
+
+html.mode-ultra .mode-switcher button {
+  color: #94a3b8 !important;
+  font-weight: 750 !important;
+}
+
+html.mode-ultra .mode-switcher button:hover {
+  color: #ffffff !important;
+  background: rgba(56, 189, 248, 0.16) !important;
+}
+
+html.mode-ultra .mode-switcher button[data-active="true"] {
+  color: #030712 !important;
+  background: linear-gradient(135deg, #00f0ff 0%, #38bdf8 50%, #818cf8 100%) !important;
+  box-shadow: 0 8px 28px -6px rgba(56, 189, 248, 0.9), inset 0 1px 1px rgba(255, 255, 255, 0.55) !important;
+  font-weight: 900 !important;
+}
+
+/* 2.6 Glass Panels & Containers in Ultra Mode */
+html.mode-ultra .glass-panel {
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  background: linear-gradient(145deg, rgba(12, 20, 46, 0.85) 0%, rgba(5, 9, 24, 0.95) 100%) !important;
+  box-shadow: 0 28px 70px -25px rgba(0, 0, 0, 0.95), 0 0 35px rgba(56, 189, 248, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+}
+
+html.mode-ultra fieldset.glass-panel legend,
+html.mode-ultra .glass-panel legend {
+  border: 1px solid rgba(56, 189, 248, 0.6) !important;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.55) 0%, rgba(99, 102, 241, 0.55) 100%) !important;
+  color: #e0f2fe !important;
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
+}
+
+html.mode-ultra fieldset.glass-panel legend svg,
+html.mode-ultra .glass-panel legend svg {
+  color: #38bdf8 !important;
+}
+
+/* 2.7 Form Fields, Inputs & Autocomplete in Ultra Mode */
+html.mode-ultra label {
+  color: #f8fafc !important;
+  font-weight: 800 !important;
+}
+
+html.mode-ultra label > div,
+html.mode-ultra label .rounded-lg,
+html.mode-ultra label .rounded-xl {
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  background: rgba(56, 189, 248, 0.16) !important;
+  color: #38bdf8 !important;
+}
+
+html.mode-ultra label svg {
+  color: #38bdf8 !important;
+}
+
+html.mode-ultra input:not([type="checkbox"]):not([type="radio"]),
+html.mode-ultra select,
+html.mode-ultra textarea,
+html.mode-ultra .glass-input {
+  background: rgba(4, 9, 24, 0.9) !important;
+  border: 1px solid rgba(56, 189, 248, 0.28) !important;
+  color: #ffffff !important;
+  font-weight: 650 !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html.mode-ultra input:focus,
+html.mode-ultra select:focus,
+html.mode-ultra textarea:focus,
+html.mode-ultra .glass-input:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.18) !important;
+  outline: none !important;
+}
+
+html.mode-ultra input::placeholder {
+  color: #64748b !important;
+}
+
+/* WideDateInput & TimeSelect in Ultra Mode */
+html.mode-ultra .wide-date-editor,
+html.mode-ultra .time-editor {
+  background: linear-gradient(135deg, rgba(12, 20, 46, 0.92) 0%, rgba(5, 9, 24, 0.98) 100%) !important;
+  border-color: rgba(56, 189, 248, 0.42) !important;
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.16) !important;
+}
+
+html.mode-ultra .wide-date-editor input,
+html.mode-ultra .time-editor input {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
+html.mode-ultra .wide-date-editor span,
+html.mode-ultra .time-editor span {
+  color: #38bdf8 !important;
+}
+
+html.mode-ultra .wide-date-editor svg,
+html.mode-ultra .time-editor svg {
+  color: #38bdf8 !important;
+}
+
+/* PlaceAutocomplete suggestions box in Ultra Mode */
+html.mode-ultra .place-suggestions,
+html.mode-ultra [class*="place-suggestions"],
+html.mode-ultra ul.absolute {
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  background: rgba(6, 12, 28, 0.97) !important;
+  backdrop-filter: blur(30px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
+  box-shadow: 0 28px 70px -15px rgba(0, 0, 0, 0.96), 0 0 35px rgba(56, 189, 248, 0.25) !important;
+}
+
+html.mode-ultra .place-suggestions li:hover,
+html.mode-ultra [class*="place-suggestions"] li:hover {
+  background: rgba(56, 189, 248, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* Gender buttons in Ultra Mode */
+html.mode-ultra button:has(span:contains("მამრობითი")):not([class*="ring-sky"]),
+html.mode-ultra button:has(span:contains("მდედრობითი")):not([class*="ring-pink"]) {
+  background: rgba(5, 9, 24, 0.88) !important;
+  border-color: rgba(56, 189, 248, 0.25) !important;
+  color: #cbd5e1 !important;
+}
+
+/* 2.8 Calculate Buttons in Ultra Mode */
+html.mode-ultra button[class*="from-amber-400"],
+html.mode-ultra button[class*="bg-gradient-to-r"][class*="from-amber"] {
+  background: linear-gradient(135deg, #00f0ff 0%, #0284c7 50%, #6366f1 100%) !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 0 35px rgba(0, 240, 255, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.65) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55) !important;
+}
+
+html.mode-ultra button[class*="from-amber-400"]:hover,
+html.mode-ultra button[class*="bg-gradient-to-r"][class*="from-amber"]:hover {
+  box-shadow: 0 0 50px rgba(0, 240, 255, 0.85), inset 0 1px 3px rgba(255, 255, 255, 0.85) !important;
+  transform: scale(1.03) translateY(-1px) !important;
+}
+
+html.mode-ultra button[class*="border-amber-400"] {
+  border-color: rgba(56, 189, 248, 0.55) !important;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(129, 140, 248, 0.18) 100%) !important;
+  color: #7dd3fc !important;
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.25) !important;
+}
+
+html.mode-ultra button[class*="border-amber-400"]:hover {
+  border-color: rgba(56, 189, 248, 0.95) !important;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.32) 0%, rgba(129, 140, 248, 0.32) 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.45) !important;
+}
+
+/* 2.9 Chart Map Section, Wheel & Tables in Ultra Mode */
+html.mode-ultra .chart-map-section {
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+  background: linear-gradient(145deg, rgba(10, 18, 44, 0.94) 0%, rgba(4, 8, 20, 0.98) 100%) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  box-shadow: 0 32px 85px -25px rgba(0, 0, 0, 0.96), 0 0 40px rgba(56, 189, 248, 0.14), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+}
+
+html.mode-ultra .chart-map-section summary span.text-amber-300,
+html.mode-ultra .chart-map-section summary span.text-xl {
+  color: #ffffff !important;
+  text-shadow: 0 0 22px rgba(56, 189, 248, 0.55) !important;
+}
+
+html.mode-ultra .chart-map-section-chevron {
+  color: #38bdf8 !important;
+}
+
+html.mode-ultra .combined-chart-table-modal {
+  border: 1px solid rgba(56, 189, 248, 0.38) !important;
+  background: rgba(5, 9, 24, 0.96) !important;
+  backdrop-filter: blur(34px) saturate(200%) !important;
+  box-shadow: 0 40px 100px -25px rgba(0, 0, 0, 0.98), 0 0 50px rgba(56, 189, 248, 0.25) !important;
+}
+
+html.mode-ultra .combined-chart-table-sheet table th {
+  background: rgba(56, 189, 248, 0.12) !important;
+  color: #38bdf8 !important;
+  border-color: rgba(56, 189, 248, 0.25) !important;
+}
+
+html.mode-ultra .combined-chart-table-sheet table td {
+  color: #f8fafc !important;
+  border-color: rgba(56, 189, 248, 0.15) !important;
+}
+
+/* 2.10 Element Balance Guide in Ultra Mode */
+html.mode-ultra .element-balance-title {
+  color: #ffffff !important;
+  text-shadow: 0 0 16px rgba(56, 189, 248, 0.4) !important;
+}
+
+html.mode-ultra .element-balance-ascendant {
+  border-color: rgba(56, 189, 248, 0.6) !important;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(129, 140, 248, 0.25)) !important;
+  color: #e0f2fe !important;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.3) !important;
+}
+
+html.mode-ultra .infographic-bar-fill {
+  box-shadow: 0 0 16px currentColor !important;
+}
+
+/* 2.11 Interpretation Text & Reading Areas in Ultra Mode */
+html.mode-ultra .interpretation-toolbar {
+  border-color: rgba(56, 189, 248, 0.28) !important;
+}
+
+html.mode-ultra .interpretation-meta > div:first-child {
+  border-color: rgba(56, 189, 248, 0.55) !important;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.24) 0%, rgba(99, 102, 241, 0.24) 100%) !important;
+  color: #7dd3fc !important;
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.28) !important;
+}
+
+html.mode-ultra .interpretation-content {
+  color: #f1f5f9 !important;
+}
+
+html.mode-ultra .interpretation-content p,
+html.mode-ultra .interpretation-paragraph {
+  color: #e2e8f0 !important;
+  font-size: 0.95rem !important;
+  line-height: 1.88 !important;
+}
+
+html.mode-ultra .interpretation-content strong {
+  color: #38bdf8 !important;
+  text-shadow: 0 0 15px rgba(56, 189, 248, 0.45) !important;
+}
+
+html.mode-ultra .interpretation-accordion,
+html.mode-ultra details.interpretation-accordion,
+html.mode-ultra details.glass-panel {
+  border: 1px solid rgba(56, 189, 248, 0.28) !important;
+  background: linear-gradient(145deg, rgba(10, 18, 42, 0.85) 0%, rgba(5, 9, 24, 0.95) 100%) !important;
+  backdrop-filter: blur(24px) !important;
+  box-shadow: 0 18px 45px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+html.mode-ultra details.interpretation-accordion > summary,
+html.mode-ultra details > summary {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+html.mode-ultra details[open] > summary {
+  color: #38bdf8 !important;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.22) !important;
+}
+
+/* 2.12 Cabinet & Admin in Ultra Mode */
+html.mode-ultra .cabinet-page .glass-panel,
+html.mode-ultra .admin-page section,
+html.mode-ultra .admin-page article {
+  border: 1px solid rgba(56, 189, 248, 0.28) !important;
+  background: linear-gradient(145deg, rgba(10, 18, 42, 0.85) 0%, rgba(5, 9, 24, 0.95) 100%) !important;
+  backdrop-filter: blur(26px) saturate(190%) !important;
+  box-shadow: 0 25px 65px -20px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+html.mode-ultra .cabinet-page h1,
+html.mode-ultra .cabinet-page h2,
+html.mode-ultra .admin-page h1,
+html.mode-ultra .admin-page h2 {
+  color: #ffffff !important;
+}

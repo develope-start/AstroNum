@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
 import InterpretationText from "./InterpretationText";
+import ChartExportButton from "./ChartExportButton";
 import ChartMapSection from "./ChartMapSection";
 import type { WheelPlanet } from "./ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
@@ -200,6 +201,7 @@ export default function NatalCalculator() {
         </div>
       )}
 
+      <div data-chart-export-root="true" className="space-y-4 sm:space-y-6">
       {/* Chart Wheel Display */}
       {wheel && (
         <ChartMapSection
@@ -216,6 +218,12 @@ export default function NatalCalculator() {
       )}
 
       {wheel && <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />}
+
+      {(wheel || interpretation) && (
+        <div className="flex justify-end">
+          <ChartExportButton className="flex items-center justify-center gap-1.5 rounded-full border border-amber-400/40 bg-purple-950/60 px-4 py-2 text-xs font-bold text-amber-300 transition-all hover:bg-amber-400 hover:text-slate-950 cursor-pointer" />
+        </div>
+      )}
 
       {!me && interpretation && (
         <div className="flex items-start justify-center gap-2.5 rounded-2xl border border-amber-500/30 bg-purple-950/40 p-3.5 sm:p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center">
@@ -235,6 +243,7 @@ export default function NatalCalculator() {
           <InterpretationText text={interpretation} />
         </div>
       )}
+      </div>
     </div>
   );
 }
