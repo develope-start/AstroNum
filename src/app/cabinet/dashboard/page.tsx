@@ -536,8 +536,7 @@ export default function DashboardPage() {
           {/* Large Zodiac Chart Wheel Display (Visible right before interpretations when toggled) */}
           {selected.result && (
             <ChartMapSection
-              title="რუკის მთავარი სურათი"
-              subtitle={chartDisplayTitle(selected.type, selected.name1, selected.name2)}
+              title="ზოდიაქალური წრე"
               className="chart-view-wheel mx-auto my-4 w-full max-w-3xl"
               ascendant={selected.result.ascendant}
               mc={selected.result.mc}

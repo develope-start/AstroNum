@@ -227,8 +227,8 @@ export default function ChartDetails({
   return (
     <div className="chart-details mt-4 space-y-3 text-left">
       <section className="chart-summary-card rounded-2xl border border-slate-500/25 bg-gradient-to-br from-slate-800/25 via-slate-950/45 to-indigo-950/25 p-4 sm:p-5">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div>
+        <div className="flex flex-col items-center gap-2 text-center">
+          <div className="w-full">
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-slate-400">შემაჯამებელი ასტრო-რეზიუმე</p>
             <h3 className="mt-1 text-center text-lg font-extrabold text-slate-100 sm:text-xl">რუკის მთავარი სურათი</h3>
           </div>

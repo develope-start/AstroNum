@@ -133,7 +133,6 @@ export default function AdminCalculationViewer({
 
         {wheel && (
           <ChartMapSection
-            subtitle={`${TYPE_LABEL[calculation.type] ?? `${calculation.type} რუკა`} — ${calculation.name1}${calculation.name2 ? ` & ${calculation.name2}` : ""}`}
             className="admin-calculation-wheel mx-auto my-6 min-w-0 w-full max-w-3xl"
             ascendant={wheel.ascendant}
             mc={wheel.mc}

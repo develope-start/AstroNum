@@ -6,7 +6,7 @@ import ChartDetails from "./ChartDetails";
 import type { AspectHit } from "@/lib/astro/aspects";
 
 export default function ChartMapSection({
-  title = "რუკის მთავარი სურათი",
+  title = "ზოდიაქალური წრე",
   subtitle,
   className = "",
   planets,

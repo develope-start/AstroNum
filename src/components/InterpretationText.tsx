@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Clock, Calendar, Copy, Check, Sparkles, BookOpen, ChevronDown, Maximize2, X } from "lucide-react";
+import { Clock, Calendar, Copy, Check, Sparkles, BookOpen, ChevronDown } from "lucide-react";
 import { PLANET_NAMES_KA } from "@/lib/astro/signs";
 import { ALL_ASPECTS } from "@/lib/astro/aspects";
 
@@ -203,33 +203,10 @@ function InterpretationSectionView({
   );
 }
 
-type InterpretationTextProps = {
-  text: string;
-  viewMetadata?: InterpretationViewMetadata;
-  fullscreen?: boolean;
-};
-
-export default function InterpretationText({ text, viewMetadata, fullscreen = false }: InterpretationTextProps) {
+export default function InterpretationText({ text, viewMetadata }: { text: string; viewMetadata?: InterpretationViewMetadata }) {
   const [copied, setCopied] = useState(false);
   const [focusedElement, setFocusedElement] = useState<ElementId | null>(null);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const focusedNodeRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (!isFullscreen) return;
-
-    const previousOverflow = document.body.style.overflow;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setIsFullscreen(false);
-    };
-
-    document.body.style.overflow = "hidden";
-    document.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [isFullscreen]);
 
   useEffect(() => {
     const clearFocus = () => {
@@ -381,36 +358,23 @@ export default function InterpretationText({ text, viewMetadata, fullscreen = fa
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
-          {!fullscreen && (
-            <button
-              onClick={() => setIsFullscreen(true)}
-              type="button"
-              className="interpretation-fullscreen-trigger flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-950/40 px-3.5 py-1 sm:px-4 sm:py-1.5 text-[0.7rem] sm:text-xs font-bold text-emerald-300 transition-all hover:scale-105 hover:border-emerald-300 hover:bg-emerald-900/60 shrink-0"
-              aria-label="ინტერპრეტაციის სრულ ეკრანზე ნახვა"
-            >
-              <Maximize2 className="h-3.5 w-3.5 shrink-0" />
-              <span>სრულ ეკრანზე ნახვა</span>
-            </button>
+        <button
+          onClick={handleCopy}
+          type="button"
+          className="interpretation-copy flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-[#080418] px-3.5 py-1 sm:px-4 sm:py-1.5 text-[0.7rem] sm:text-xs font-bold text-amber-300 transition-all hover:scale-105 hover:border-amber-400 shrink-0"
+        >
+          {copied ? (
+            <>
+              <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+              <span className="text-emerald-400">დაკოპირებულია!</span>
+            </>
+          ) : (
+            <>
+              <Copy className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+              <span>კოპირება</span>
+            </>
           )}
-          <button
-            onClick={handleCopy}
-            type="button"
-            className="interpretation-copy flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-[#080418] px-3.5 py-1 sm:px-4 sm:py-1.5 text-[0.7rem] sm:text-xs font-bold text-amber-300 transition-all hover:scale-105 hover:border-amber-400 shrink-0"
-          >
-            {copied ? (
-              <>
-                <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                <span className="text-emerald-400">დაკოპირებულია!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-                <span>კოპირება</span>
-              </>
-            )}
-          </button>
-        </div>
+        </button>
       </div>
 
       {/* Main interpretation blocks */}
@@ -432,38 +396,6 @@ export default function InterpretationText({ text, viewMetadata, fullscreen = fa
         ))}
       </div>
       </div>
-      {!fullscreen && isFullscreen && (
-      <div
-        className="interpretation-fullscreen fixed inset-0 z-[120] flex h-[100dvh] w-full items-stretch justify-center bg-[#05020f]/95 p-0 backdrop-blur-md sm:p-3"
-        role="presentation"
-        onMouseDown={(event) => {
-          if (event.target === event.currentTarget) setIsFullscreen(false);
-        }}
-      >
-        <section
-          className="interpretation-fullscreen-dialog flex h-full w-full min-w-0 flex-col overflow-hidden border border-amber-500/30 bg-[#0d0626] shadow-2xl sm:rounded-2xl"
-          role="dialog"
-          aria-modal="true"
-          aria-label="ინტერპრეტაცია სრულ ეკრანზე"
-        >
-          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-amber-500/25 bg-[#120833] px-4 py-3 sm:px-6 sm:py-4">
-            <h2 className="min-w-0 truncate text-sm font-bold text-amber-300 sm:text-base">ასტროლოგიური ინტერპრეტაცია</h2>
-            <button
-              type="button"
-              onClick={() => setIsFullscreen(false)}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-slate-400/50 bg-slate-900/80 px-3 py-1.5 text-xs font-bold text-slate-200 transition hover:border-white hover:text-white"
-              aria-label="სრულეკრანიანი ინტერპრეტაციის დახურვა"
-            >
-              <X className="h-4 w-4" />
-              <span>დახურვა</span>
-            </button>
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-8 sm:py-6 lg:px-12">
-            <InterpretationText text={text} viewMetadata={viewMetadata} fullscreen />
-          </div>
-        </section>
-      </div>
-      )}
     </>
   );
 }

@@ -203,8 +203,7 @@ export default function NatalCalculator() {
       {/* Chart Wheel Display */}
       {wheel && (
         <ChartMapSection
-          title="რუკის მთავარი სურათი"
-          subtitle={`ნატალური რუკა — ${birth.name || "უსახელო"}`}
+          title="ზოდიაქალური წრე"
           className="w-full"
           ascendant={wheel.ascendant}
           mc={wheel.mc}
