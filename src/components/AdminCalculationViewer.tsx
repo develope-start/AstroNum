@@ -93,7 +93,7 @@ export default function AdminCalculationViewer({
   }, [onClose]);
 
   return (
-    <div className="admin-calculation-viewer fixed inset-0 z-50 flex h-[100dvh] w-full items-stretch justify-center overflow-hidden overscroll-contain bg-black/85 p-0 sm:p-2">
+    <div className="admin-calculation-viewer fixed inset-0 z-50 flex h-[100dvh] w-full items-stretch justify-center overflow-hidden overscroll-contain bg-black/85 p-0">
       <div className="admin-calculation-dialog relative min-h-0 min-w-0 h-full w-full overflow-y-auto overscroll-contain border border-slate-400/50 bg-[#0d0a18] p-3 shadow-[0_0_35px_rgba(148,163,184,0.28)] sm:p-8">
         
         {/* Premium Fixed Top-Right Close Button */}

@@ -798,6 +798,10 @@ svg {
   padding: 0.75rem clamp(0.75rem, 3vw, 3rem);
 }
 
+:root {
+  --site-header-height: 5rem;
+}
+
 .nav-shell {
   max-width: 80rem;
   margin: 0 auto;
@@ -4953,6 +4957,128 @@ canvas {
 
 #ascendant-section {
   scroll-margin-top: 1.25rem;
+}
+
+/* Keep opened chart viewers below the navigation shell and aligned with its
+   exact horizontal bounds. The header height is measured by Nav so the
+   expanded mobile menu is included automatically. */
+.chart-view-panel,
+.admin-calculation-viewer {
+  top: var(--site-header-height, 5rem) !important;
+  right: max(clamp(0.65rem, 3vw, 3rem), calc((100vw - 80rem) / 2)) !important;
+  bottom: 0 !important;
+  left: max(clamp(0.65rem, 3vw, 3rem), calc((100vw - 80rem) / 2)) !important;
+  width: auto !important;
+  height: calc(100dvh - var(--site-header-height, 5rem)) !important;
+  min-height: 0 !important;
+  z-index: 40 !important;
+  border: 1px solid rgba(226, 232, 240, 0.18);
+  border-bottom: 0;
+  border-radius: 1.2rem 1.2rem 0 0;
+  box-shadow: 0 -14px 42px -32px rgba(226, 232, 240, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.admin-calculation-dialog {
+  border-radius: 1.05rem 1.05rem 0 0;
+}
+
+/* Shared neutral glass hierarchy for chart-view and chart-builder surfaces. */
+.chart-map-section {
+  border-color: rgba(226, 232, 240, 0.24) !important;
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.62), rgba(15, 23, 42, 0.78), rgba(49, 46, 129, 0.3)) !important;
+  box-shadow: 0 1.2rem 3rem -2.1rem rgba(226, 232, 240, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+.chart-map-section > summary {
+  border-bottom-color: rgba(226, 232, 240, 0.2) !important;
+  background: linear-gradient(100deg, rgba(148, 163, 184, 0.13), rgba(226, 232, 240, 0.06), rgba(99, 102, 241, 0.12));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.chart-map-section > div {
+  background: rgba(2, 6, 23, 0.18);
+}
+
+.chart-view-details,
+.admin-calculation-details,
+.chart-view-actions {
+  border-color: rgba(226, 232, 240, 0.22) !important;
+  background: linear-gradient(120deg, rgba(148, 163, 184, 0.1), rgba(30, 41, 59, 0.17), rgba(99, 102, 241, 0.08)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 0.9rem 2.4rem -2rem rgba(148, 163, 184, 0.55);
+}
+
+.chart-view-interpretation,
+.admin-calculation-interpretation {
+  border: 1px solid rgba(226, 232, 240, 0.18);
+  border-radius: 1.2rem;
+  background: linear-gradient(125deg, rgba(148, 163, 184, 0.065), rgba(30, 41, 59, 0.14), rgba(99, 102, 241, 0.07));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1rem 2.8rem -2.4rem rgba(203, 213, 225, 0.65);
+}
+
+.chart-summary-card {
+  border-color: rgba(226, 232, 240, 0.24) !important;
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.12), rgba(15, 23, 42, 0.34), rgba(99, 102, 241, 0.12)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1rem 2.5rem -2.2rem rgba(226, 232, 240, 0.8);
+}
+
+.interpretation-accordion-summary {
+  background: linear-gradient(105deg, rgba(148, 163, 184, 0.105), rgba(226, 232, 240, 0.035));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.065);
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+
+.interpretation-accordion-summary:hover,
+.interpretation-accordion-summary:focus-visible {
+  background: linear-gradient(105deg, rgba(148, 163, 184, 0.17), rgba(226, 232, 240, 0.07));
+  outline: none;
+}
+
+.chart-details-accordion,
+.chart-subsection {
+  border-color: rgba(226, 232, 240, 0.23);
+  background: linear-gradient(125deg, rgba(148, 163, 184, 0.09), rgba(15, 23, 42, 0.24), rgba(99, 102, 241, 0.06));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0.8rem 2.2rem -2rem rgba(148, 163, 184, 0.55);
+}
+
+.chart-details-accordion > summary,
+.chart-subsection > summary {
+  background: rgba(148, 163, 184, 0.07);
+  box-shadow: inset 0 -1px 0 rgba(226, 232, 240, 0.08);
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.chart-details-accordion > summary:hover,
+.chart-details-accordion > summary:focus-visible,
+.chart-subsection > summary:hover,
+.chart-subsection > summary:focus-visible {
+  background: rgba(226, 232, 240, 0.12);
+  outline: none;
+}
+
+.chart-details-jump {
+  border-color: rgba(226, 232, 240, 0.28);
+  color: #e2e8f0;
+  background: linear-gradient(105deg, rgba(148, 163, 184, 0.13), rgba(99, 102, 241, 0.1), rgba(226, 232, 240, 0.07));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 0 0.8rem 2rem -1.8rem rgba(226, 232, 240, 0.9);
+}
+
+.chart-details-jump:hover,
+.chart-details-jump:focus-visible {
+  border-color: rgba(226, 232, 240, 0.55);
+  color: #f8fafc;
+  background: linear-gradient(105deg, rgba(226, 232, 240, 0.18), rgba(129, 140, 248, 0.16), rgba(226, 232, 240, 0.1));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.12), 0 0.9rem 2.2rem -1.8rem rgba(226, 232, 240, 0.95);
+}
+
+@media (max-width: 640px) {
+  .chart-view-panel,
+  .admin-calculation-viewer {
+    border-radius: 0.95rem 0.95rem 0 0;
+  }
+
+  .admin-calculation-dialog {
+    border-radius: 0.85rem 0.85rem 0 0;
+  }
 }
 
 /* Mobile hero breathing room: reserve the tall outer space only while a
