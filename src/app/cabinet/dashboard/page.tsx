@@ -7,7 +7,7 @@ import ChartMapSection from "@/components/ChartMapSection";
 import type { WheelFixedStar, WheelPlanet } from "@/components/ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
-import { Compass, Copy, Check, X, Trash2, Eye } from "lucide-react";
+import { Copy, Check, X, Trash2, Eye } from "lucide-react";
 import { readApiResponse } from "@/lib/apiResponse";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
@@ -63,10 +63,15 @@ interface SelectedChart {
 }
 
 const TYPE_LABEL_KA: Record<string, string> = {
-  NATAL: "ნატალური",
-  SYNASTRY: "სინასტრია",
-  TRANSIT: "ტრანზიტი",
+  NATAL: "ნატალური რუკა",
+  SYNASTRY: "სინასტრიული რუკა",
+  TRANSIT: "ტრანზიტული რუკა",
 };
+
+function chartDisplayTitle(type: string, name1: string, name2?: string | null) {
+  const names = [name1, name2].filter(Boolean).join(" & ");
+  return `${TYPE_LABEL_KA[type] ?? `${type} რუკა`} — ${names || "უსახელო"}`;
+}
 
 function wheelFromResult(result: unknown): WheelResult | undefined {
   if (!result || typeof result !== "object") return undefined;
@@ -134,7 +139,6 @@ export default function DashboardPage() {
   const [account, setAccount] = useState<AccountSummary | null>(null);
   const [charts, setCharts] = useState<ChartSummary[] | null>(null);
   const [selected, setSelected] = useState<SelectedChart | null>(null);
-  const [showWheel, setShowWheel] = useState(true);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingChart, setLoadingChart] = useState<string | null>(null);
@@ -244,7 +248,6 @@ export default function DashboardPage() {
         lastViewedAt: data.lastViewedAt ?? null,
         result: wheelFromResult(data.result),
       });
-      setShowWheel(true);
       setCopied(false);
     } catch {
       setError("სერვერთან კავშირი შეწყდა");
@@ -496,21 +499,16 @@ export default function DashboardPage() {
           </div>
 
           {/* Header Row */}
-          <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 border-b border-amber-500/20 pb-4">
-            <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                {TYPE_LABEL_KA[selected.type] ?? selected.type}
-              </p>
-              <h2 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-                {selected.label}
-              </h2>
-            </div>
-            <span className="text-xs font-bold tracking-wide text-amber-300">რუკის ნომერი: {selected.mapNumber ?? "—"}</span>
+          <div className="flex min-w-0 flex-col items-center gap-2 border-b border-amber-500/20 pb-4 text-center">
+            <h2 className="font-display text-2xl font-bold text-amber-300 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)] sm:text-3xl">
+              {chartDisplayTitle(selected.type, selected.name1, selected.name2)}
+            </h2>
+            <span className="text-sm font-bold tracking-wide text-amber-300">რუკის ნომერი: {selected.mapNumber ?? "—"}</span>
           </div>
 
           {/* Full chart input details, matching the administrator's chart view */}
           <div className="chart-view-details grid min-w-0 gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-3 text-sm text-slate-200 sm:grid-cols-2 sm:p-4">
-            <p><span className="text-slate-400">რუკის ნომერი:</span> {selected.mapNumber ?? "—"}</p>
+            <p className="text-center sm:col-span-2"><span className="text-slate-400">რუკის ნომერი:</span> {selected.mapNumber ?? "—"}</p>
             <p><span className="text-slate-400">პირველი პროფილი:</span> {selected.name1}</p>
             <p><span className="text-slate-400">დაბადება:</span> {formatWideDateDisplay(selected.date1)} {selected.time1}</p>
             <p><span className="text-slate-400">ადგილი:</span> {selected.place1}</p>
@@ -524,19 +522,6 @@ export default function DashboardPage() {
 
           {/* Action Toolbar: Light Moss Green Glow Button (ღია ჭაობისფერი გლოუ) & Copy Button */}
           <div className="chart-view-actions flex flex-col items-stretch gap-2.5 bg-purple-950/40 p-3 rounded-2xl border border-amber-500/20 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-            {/* Light Moss Green Glow Zodiac Wheel Toggle Button */}
-            <button
-              type="button"
-              onClick={() => setShowWheel(!showWheel)}
-              className="group flex w-full items-center justify-center gap-2 rounded-full border border-emerald-400/60 bg-gradient-to-r from-emerald-950/80 via-teal-950/60 to-emerald-950/80 px-4 py-2 text-center text-xs sm:w-auto sm:text-sm font-bold text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.35)] transition-all hover:scale-105 hover:border-emerald-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] cursor-pointer"
-            >
-              <Compass className="h-4 w-4 text-emerald-400 shrink-0 group-hover:rotate-90 transition-transform duration-500" />
-              <span className="tracking-wide">✦ ზოდიაქალური წრის ჩვენება</span>
-              <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[0.65rem] font-black text-emerald-200 uppercase border border-emerald-400/30">
-                {showWheel ? "აქტიური" : "გახსნა"}
-              </span>
-            </button>
-
             {/* Copy Button */}
             <button
               type="button"
@@ -549,10 +534,10 @@ export default function DashboardPage() {
           </div>
 
           {/* Large Zodiac Chart Wheel Display (Visible right before interpretations when toggled) */}
-          {showWheel && selected.result && (
+          {selected.result && (
             <ChartMapSection
               title="რუკის მთავარი სურათი"
-              subtitle={`${selected.label} · გამოთვლილი ასტროლოგიური ცის რუკა`}
+              subtitle={chartDisplayTitle(selected.type, selected.name1, selected.name2)}
               className="chart-view-wheel mx-auto my-4 w-full max-w-3xl"
               ascendant={selected.result.ascendant}
               mc={selected.result.mc}
@@ -573,7 +558,7 @@ export default function DashboardPage() {
 
           {/* Full Interpretation Text Section */}
           <div className="chart-view-interpretation min-w-0 pt-2">
-            <h3 className="font-display text-lg sm:text-xl font-bold text-amber-300 mb-3 border-b border-amber-500/20 pb-2">
+            <h3 className="font-display mb-4 border-b border-slate-300/25 pb-3 text-center text-xl font-bold text-amber-300 sm:text-2xl">
               ასტროლოგიური ინტერპრეტაცია & ანალიზი
             </h3>
             {selected.interpretation ? (

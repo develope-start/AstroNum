@@ -111,16 +111,16 @@ export default function AdminCalculationViewer({
           </button>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-500/30 pb-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{TYPE_LABEL[calculation.type] ?? calculation.type}</p>
-            <h2 className="mt-1 text-xl font-bold text-slate-100">რუკის სრული ნახვა</h2>
-            <p className="mt-1 text-xs text-slate-400">შედგენის დრო: {new Date(calculation.createdAt).toLocaleString("ka-GE")}</p>
-          </div>
+        <div className="flex flex-col items-center gap-1 border-b border-slate-500/30 pb-4 text-center">
+          <h2 className="text-2xl font-bold text-slate-100 sm:text-3xl">
+            {TYPE_LABEL[calculation.type] ?? `${calculation.type} რუკა`} — {calculation.name1}{calculation.name2 ? ` & ${calculation.name2}` : ""}
+          </h2>
+          <p className="text-sm font-bold text-amber-300">რუკის ნომერი: {calculation.mapNumber ?? "—"}</p>
+          <p className="text-xs text-slate-400">შედგენის დრო: {new Date(calculation.createdAt).toLocaleString("ka-GE")}</p>
         </div>
 
         <div className="admin-calculation-details mt-5 grid min-w-0 gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-3 text-sm text-slate-200 sm:grid-cols-2 sm:p-4">
-          <p><span className="text-slate-400">რუკის ნომერი:</span> {calculation.mapNumber ?? "—"}</p>
+          <p className="text-center sm:col-span-2"><span className="text-slate-400">რუკის ნომერი:</span> {calculation.mapNumber ?? "—"}</p>
           <p><span className="text-slate-400">პირველი პროფილი:</span> {calculation.name1}</p>
           <p><span className="text-slate-400">დაბადება:</span> {formatWideDateDisplay(calculation.date1)} {calculation.time1}</p>
           <p><span className="text-slate-400">ადგილი:</span> {calculation.place1}</p>
@@ -133,6 +133,7 @@ export default function AdminCalculationViewer({
 
         {wheel && (
           <ChartMapSection
+            subtitle={`${TYPE_LABEL[calculation.type] ?? `${calculation.type} რუკა`} — ${calculation.name1}${calculation.name2 ? ` & ${calculation.name2}` : ""}`}
             className="admin-calculation-wheel mx-auto my-6 min-w-0 w-full max-w-3xl"
             ascendant={wheel.ascendant}
             mc={wheel.mc}
@@ -152,7 +153,7 @@ export default function AdminCalculationViewer({
         )}
 
         <div className="admin-calculation-interpretation mt-6 min-w-0 border-t border-slate-500/30 pt-5">
-          <h3 className="mb-4 text-lg font-bold text-slate-200">ასტროლოგიური ინტერპრეტაცია</h3>
+            <h3 className="mb-4 border-b border-slate-500/30 pb-3 text-center text-xl font-bold text-slate-200 sm:text-2xl">ასტროლოგიური ინტერპრეტაცია &amp; ანალიზი</h3>
           {calculation.interpretation ? (
             <InterpretationText text={calculation.interpretation} viewMetadata={calculation.viewMetadata ?? undefined} />
           ) : <p className="text-sm text-slate-400">ამ ჩანაწერისთვის ინტერპრეტაცია ვერ მოიძებნა.</p>}

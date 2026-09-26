@@ -176,7 +176,8 @@ export default function SynastryCalculator() {
 
       {interpretation && (
         <div className="glass-panel rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl text-left w-full">
-          <p className="mb-4 text-xs font-bold tracking-wide text-amber-300">რუკის ნომერი: {mapNumber ?? "—"}</p>
+          <h3 className="mb-4 border-b border-slate-300/25 pb-3 text-center text-xl font-bold text-amber-300 sm:text-2xl">ასტროლოგიური ინტერპრეტაცია &amp; ანალიზი</h3>
+          <p className="mb-4 text-center text-sm font-bold tracking-wide text-amber-300">რუკის ნომერი: {mapNumber ?? "—"}</p>
           <InterpretationText text={interpretation} />
         </div>
       )}

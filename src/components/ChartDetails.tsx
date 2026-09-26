@@ -230,7 +230,7 @@ export default function ChartDetails({
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-slate-400">შემაჯამებელი ასტრო-რეზიუმე</p>
-            <h3 className="mt-1 text-base font-extrabold text-slate-100 sm:text-lg">რუკის მთავარი სურათი</h3>
+            <h3 className="mt-1 text-center text-lg font-extrabold text-slate-100 sm:text-xl">რუკის მთავარი სურათი</h3>
           </div>
           <span className="rounded-full border border-slate-500/30 bg-slate-500/10 px-2.5 py-1 text-[0.68rem] font-bold text-slate-200">ASC · {degreeLabel(ascendant)}</span>
         </div>
