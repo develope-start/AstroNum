@@ -36,8 +36,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `
               try {
                 if (localStorage.getItem('astronum_ui_mode') === 'ultra') {
-                  document.documentElement.classList.add('mode-ultra');
+                  document.documentElement.classList.add('mode-ultra', 'light');
+                  document.documentElement.classList.remove('dark');
                   document.documentElement.setAttribute('data-ui-theme', 'ultra');
+                } else {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.classList.remove('mode-ultra', 'light');
                 }
               } catch (e) {}
             `,

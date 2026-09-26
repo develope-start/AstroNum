@@ -5526,527 +5526,591 @@ canvas {
 }
 
 /* ==========================================================================
-   2. ULTRA-MODERN GLASSMORPHISM MODE STYLES (.mode-ultra / [data-ui-theme="ultra"])
+   2. ULTRA-MODERN LIGHT MODE NEO-GLASS UI ENGINE (.mode-ultra / [data-ui-theme="ultra"])
    ========================================================================== */
 
-/* 2.1 Tokens & Ambient Void */
+/* 2.1 Tokens & Ambient Luminous Void */
 html.mode-ultra {
-  --bg-main: #030614;
-  --bg-card: rgba(12, 20, 44, 0.78);
-  --bg-card-hover: rgba(18, 30, 62, 0.92);
-  --border-color: rgba(56, 189, 248, 0.28);
-  --border-glow: rgba(56, 189, 248, 0.85);
-  --border-purple: rgba(168, 85, 247, 0.4);
-  --text-primary: #ffffff;
-  --text-secondary: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-accent: #38bdf8;
-  --accent-gold: #38bdf8;
-  --accent-gold-hover: #7dd3fc;
-  --accent-purple: #818cf8;
-  --accent-blue: #00f0ff;
+  --bg-main: #f8fafc;
+  --bg-card: rgba(255, 255, 255, 0.88);
+  --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --border-color: rgba(203, 213, 225, 0.8);
+  --border-glow: rgba(37, 99, 235, 0.5);
+  --border-purple: rgba(99, 102, 241, 0.35);
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-accent: #2563eb;
+  --accent-gold: #2563eb;
+  --accent-gold-hover: #1d4ed8;
+  --accent-purple: #4f46e5;
+  --accent-blue: #0284c7;
+  color-scheme: light;
 }
 
 html.mode-ultra body.app-body {
-  background-color: #030614 !important;
-  color: #ffffff !important;
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
 }
 
 html.mode-ultra .star-field {
   background-image:
-    linear-gradient(rgba(56, 189, 248, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(56, 189, 248, 0.045) 1px, transparent 1px),
-    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.2) 0%, transparent 48%),
-    radial-gradient(circle at 88% 85%, rgba(168, 85, 247, 0.15) 0%, transparent 42%),
-    radial-gradient(circle at 10% 40%, rgba(37, 99, 235, 0.12) 0%, transparent 38%) !important;
-  background-size: 80px 80px, 80px 80px, auto, auto, auto !important;
+    linear-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.22) 0%, transparent 52%),
+    radial-gradient(circle at 88% 85%, rgba(192, 132, 252, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 10% 40%, rgba(96, 165, 250, 0.15) 0%, transparent 42%) !important;
+  background-size: 72px 72px, 72px 72px, auto, auto, auto !important;
 }
 
-/* 2.2 Navigation Bar in Ultra Mode */
+/* 2.2 Navigation Bar in Light Mode */
 html.mode-ultra .nav-shell {
-  border: 1px solid rgba(56, 189, 248, 0.32) !important;
-  background: rgba(6, 12, 28, 0.84) !important;
-  box-shadow: 0 24px 65px -20px rgba(0, 0, 0, 0.95), 0 0 35px rgba(56, 189, 248, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
-  backdrop-filter: blur(28px) saturate(200%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
-}
-
-html.mode-ultra .brand-mark {
-  border-color: rgba(56, 189, 248, 0.65) !important;
-  background: radial-gradient(circle at 30% 30%, rgba(56, 189, 248, 0.35), rgba(12, 18, 38, 0.92)) !important;
-  box-shadow: 0 0 25px rgba(56, 189, 248, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.45) !important;
-}
-
-html.mode-ultra .nav-action {
-  border: 1px solid rgba(56, 189, 248, 0.48) !important;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.22) 0%, rgba(99, 102, 241, 0.22) 100%) !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 18px rgba(56, 189, 248, 0.22) !important;
-}
-
-html.mode-ultra .nav-action:hover {
-  border-color: rgba(56, 189, 248, 0.85) !important;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.35) 0%, rgba(99, 102, 241, 0.35) 100%) !important;
-  box-shadow: 0 0 28px rgba(56, 189, 248, 0.45) !important;
-  transform: translateY(-2px) !important;
-}
-
-html.mode-ultra .nav-quiet-action {
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  background: rgba(15, 23, 42, 0.65) !important;
-  color: #e2e8f0 !important;
-}
-
-html.mode-ultra .nav-quiet-action:hover {
-  border-color: rgba(56, 189, 248, 0.6) !important;
-  background: rgba(56, 189, 248, 0.18) !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.25) !important;
-}
-
-/* 2.3 Hero Section & Headings in Ultra Mode */
-html.mode-ultra .hero-kicker {
-  border: 1px solid rgba(56, 189, 248, 0.45) !important;
-  background: rgba(56, 189, 248, 0.12) !important;
-  color: #38bdf8 !important;
-  padding: 0.35rem 0.85rem !important;
-  border-radius: 9999px !important;
-  letter-spacing: 0.2em !important;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.25) !important;
-}
-
-html.mode-ultra .hero-title {
-  color: #ffffff !important;
-  text-shadow: 0 4px 25px rgba(0, 0, 0, 0.85) !important;
-}
-
-html.mode-ultra .hero-title em {
-  background: linear-gradient(135deg, #ffffff 0%, #38bdf8 52%, #c084fc 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  filter: drop-shadow(0 0 28px rgba(56, 189, 248, 0.5)) !important;
-}
-
-html.mode-ultra .hero-lead {
-  color: #e2e8f0 !important;
-  font-weight: 450 !important;
-  line-height: 1.85 !important;
-}
-
-html.mode-ultra .primary-action {
-  color: #030712 !important;
-  background: linear-gradient(135deg, #00f0ff 0%, #38bdf8 50%, #818cf8 100%) !important;
-  box-shadow: 0 16px 40px -15px rgba(56, 189, 248, 0.95), 0 0 28px rgba(0, 240, 255, 0.45) !important;
-  font-weight: 850 !important;
-}
-
-html.mode-ultra .primary-action:hover {
-  transform: translateY(-2px) scale(1.025) !important;
-  box-shadow: 0 20px 50px -12px rgba(56, 189, 248, 1), 0 0 38px rgba(0, 240, 255, 0.65) !important;
-}
-
-html.mode-ultra .secondary-action {
-  border: 1px solid rgba(56, 189, 248, 0.35) !important;
-  background: rgba(10, 18, 40, 0.7) !important;
-  color: #ffffff !important;
-  backdrop-filter: blur(18px) !important;
-}
-
-html.mode-ultra .secondary-action:hover {
-  border-color: rgba(56, 189, 248, 0.75) !important;
-  background: rgba(56, 189, 248, 0.2) !important;
-  box-shadow: 0 0 28px rgba(56, 189, 248, 0.3) !important;
-}
-
-/* 2.4 Hero Orbit Card & Celestial System in Ultra Mode */
-html.mode-ultra .hero-orbit-card {
-  border: 1px solid rgba(56, 189, 248, 0.3) !important;
-  background: linear-gradient(145deg, rgba(12, 22, 48, 0.82) 0%, rgba(4, 8, 20, 0.96) 100%) !important;
-  box-shadow: 0 45px 110px -40px rgba(0, 0, 0, 0.98), 0 0 50px rgba(56, 189, 248, 0.14), inset 0 1px 1px rgba(255, 255, 255, 0.18) !important;
-  backdrop-filter: blur(28px) !important;
-}
-
-html.mode-ultra .orbit-core {
-  border-color: rgba(56, 189, 248, 0.65) !important;
-  background: radial-gradient(circle at 35% 30%, rgba(56, 189, 248, 0.55), rgba(99, 102, 241, 0.25) 40%, rgba(4, 8, 20, 0.92) 75%) !important;
-  box-shadow: 0 0 70px rgba(56, 189, 248, 0.5), inset -15px -18px 30px rgba(0, 0, 0, 0.75) !important;
-}
-
-html.mode-ultra .orbit-ring {
-  border-color: rgba(56, 189, 248, 0.35) !important;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2) !important;
-}
-
-html.mode-ultra .celestial-system {
-  border-color: rgba(56, 189, 248, 0.3) !important;
-  background: radial-gradient(circle at center, rgba(16, 26, 52, 0.45), rgba(4, 8, 20, 0.92)) !important;
-}
-
-/* 4 Element panels - deep frosted glass with neon element glows */
-html.mode-ultra .celestial-element-panel {
-  backdrop-filter: blur(26px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(26px) saturate(190%) !important;
-  border-radius: 1.25rem !important;
-  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
-}
-
-html.mode-ultra .celestial-element-panel-fire {
-  border: 1px solid rgba(244, 63, 94, 0.5) !important;
-  background: linear-gradient(145deg, rgba(65, 12, 30, 0.8) 0%, rgba(22, 6, 14, 0.92) 100%) !important;
-  box-shadow: 0 12px 35px -10px rgba(244, 63, 94, 0.4), inset 0 1px 0 rgba(255, 200, 210, 0.25) !important;
-}
-
-html.mode-ultra .celestial-element-panel-earth {
-  border: 1px solid rgba(16, 185, 129, 0.5) !important;
-  background: linear-gradient(145deg, rgba(10, 50, 34, 0.8) 0%, rgba(4, 22, 16, 0.92) 100%) !important;
-  box-shadow: 0 12px 35px -10px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(180, 255, 225, 0.25) !important;
-}
-
-html.mode-ultra .celestial-element-panel-air {
-  border: 1px solid rgba(56, 189, 248, 0.55) !important;
-  background: linear-gradient(145deg, rgba(10, 40, 70, 0.8) 0%, rgba(4, 18, 36, 0.92) 100%) !important;
-  box-shadow: 0 12px 35px -10px rgba(56, 189, 248, 0.4), inset 0 1px 0 rgba(200, 245, 255, 0.25) !important;
-}
-
-html.mode-ultra .celestial-element-panel-water {
-  border: 1px solid rgba(129, 140, 248, 0.55) !important;
-  background: linear-gradient(145deg, rgba(30, 24, 70, 0.8) 0%, rgba(12, 10, 36, 0.92) 100%) !important;
-  box-shadow: 0 12px 35px -10px rgba(129, 140, 248, 0.4), inset 0 1px 0 rgba(225, 220, 255, 0.25) !important;
-}
-
-html.mode-ultra .celestial-element-heading strong {
-  color: #ffffff !important;
-  font-weight: 850 !important;
-}
-
-html.mode-ultra .celestial-element-items b {
-  color: #ffffff !important;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
-}
-
-html.mode-ultra .celestial-temperament-card {
-  border: 1px solid rgba(56, 189, 248, 0.45) !important;
-  background: rgba(6, 12, 28, 0.96) !important;
-  backdrop-filter: blur(34px) saturate(210%) !important;
-  -webkit-backdrop-filter: blur(34px) saturate(210%) !important;
-  box-shadow: 0 35px 90px -20px rgba(0, 0, 0, 0.98), 0 0 45px rgba(56, 189, 248, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
-}
-
-html.mode-ultra .celestial-temperament-content {
-  color: #f8fafc !important;
-}
-
-html.mode-ultra .celestial-ruler {
-  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35) !important;
-}
-
-html.mode-ultra .celestial-ruler:hover,
-html.mode-ultra .celestial-ruler.is-active {
-  box-shadow: 0 0 28px rgba(56, 189, 248, 0.9), 0 0 45px rgba(99, 102, 241, 0.6) !important;
-  transform: translate(-50%, -50%) scale(1.22) !important;
-}
-
-html.mode-ultra .celestial-info-card {
-  border: 1px solid rgba(56, 189, 248, 0.5) !important;
-  background: rgba(6, 14, 32, 0.94) !important;
-  backdrop-filter: blur(30px) !important;
-  box-shadow: 0 25px 70px -15px rgba(0, 0, 0, 0.95), 0 0 35px rgba(56, 189, 248, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
-  color: #ffffff !important;
-}
-
-html.mode-ultra .celestial-info-card strong {
-  color: #ffffff !important;
-  font-weight: 850 !important;
-}
-
-html.mode-ultra .celestial-info-card p {
-  color: #e2e8f0 !important;
-}
-
-/* 2.5 Mode Switcher Tabs in Ultra Mode */
-html.mode-ultra .mode-switcher {
-  border: 1px solid rgba(56, 189, 248, 0.3) !important;
-  background: rgba(6, 12, 28, 0.85) !important;
-  box-shadow: 0 18px 45px -15px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(24px) !important;
-}
-
-html.mode-ultra .mode-switcher button {
-  color: #94a3b8 !important;
-  font-weight: 750 !important;
-}
-
-html.mode-ultra .mode-switcher button:hover {
-  color: #ffffff !important;
-  background: rgba(56, 189, 248, 0.16) !important;
-}
-
-html.mode-ultra .mode-switcher button[data-active="true"] {
-  color: #030712 !important;
-  background: linear-gradient(135deg, #00f0ff 0%, #38bdf8 50%, #818cf8 100%) !important;
-  box-shadow: 0 8px 28px -6px rgba(56, 189, 248, 0.9), inset 0 1px 1px rgba(255, 255, 255, 0.55) !important;
-  font-weight: 900 !important;
-}
-
-/* 2.6 Glass Panels & Containers in Ultra Mode */
-html.mode-ultra .glass-panel {
-  border: 1px solid rgba(56, 189, 248, 0.3) !important;
-  background: linear-gradient(145deg, rgba(12, 20, 46, 0.85) 0%, rgba(5, 9, 24, 0.95) 100%) !important;
-  box-shadow: 0 28px 70px -25px rgba(0, 0, 0, 0.95), 0 0 35px rgba(56, 189, 248, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  box-shadow: 0 16px 45px -15px rgba(15, 23, 42, 0.09), 0 0 1px 1px rgba(203, 213, 225, 0.7), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
   backdrop-filter: blur(28px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
 }
 
+html.mode-ultra .brand-link {
+  color: #0f172a !important;
+}
+
+html.mode-ultra .brand-title-row span {
+  color: #0f172a !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+html.mode-ultra .brand-title-row span.text-violet-300,
+html.mode-ultra .brand-title-row sup.text-violet-300 {
+  color: #4f46e5 !important;
+}
+
+html.mode-ultra .brand-mark {
+  border-color: rgba(99, 102, 241, 0.35) !important;
+  background: radial-gradient(circle at 30% 30%, rgba(238, 242, 255, 0.95), rgba(255, 255, 255, 0.9)) !important;
+  box-shadow: 0 6px 20px -4px rgba(99, 102, 241, 0.25), inset 0 1px 2px rgba(255, 255, 255, 1) !important;
+  color: #4f46e5 !important;
+}
+
+html.mode-ultra .brand-georgia-map {
+  fill: #6366f1 !important;
+  filter: drop-shadow(0 0 0.15rem rgba(99, 102, 241, 0.4)) !important;
+}
+
+html.mode-ultra .nav-action {
+  border: 1px solid rgba(37, 99, 235, 0.25) !important;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(99, 102, 241, 0.12)) !important;
+  color: #1d4ed8 !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1) !important;
+}
+
+html.mode-ultra .nav-action:hover {
+  border-color: rgba(37, 99, 235, 0.6) !important;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(99, 102, 241, 0.2)) !important;
+  color: #1e40af !important;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2) !important;
+}
+
+html.mode-ultra .nav-quiet-action {
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  color: #334155 !important;
+}
+
+html.mode-ultra .nav-quiet-action:hover {
+  border-color: rgba(37, 99, 235, 0.45) !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+/* 2.3 Hero Section & Headings in Light Mode */
+html.mode-ultra .hero-kicker {
+  border: 1px solid rgba(37, 99, 235, 0.25) !important;
+  background: #eff6ff !important;
+  color: #2563eb !important;
+  padding: 0.35rem 0.85rem !important;
+  border-radius: 9999px !important;
+  letter-spacing: 0.2em !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08) !important;
+}
+
+html.mode-ultra .hero-title {
+  color: #0f172a !important;
+  text-shadow: none !important;
+}
+
+html.mode-ultra .hero-title em {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #2563eb 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.2)) !important;
+}
+
+html.mode-ultra .hero-lead {
+  color: #334155 !important;
+  font-weight: 500 !important;
+  line-height: 1.85 !important;
+}
+
+html.mode-ultra .primary-action {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;
+  box-shadow: 0 10px 25px -4px rgba(37, 99, 235, 0.42), 0 0 15px rgba(37, 99, 235, 0.2) !important;
+  font-weight: 850 !important;
+}
+
+html.mode-ultra .primary-action:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 14px 32px -4px rgba(37, 99, 235, 0.58), 0 0 20px rgba(37, 99, 235, 0.3) !important;
+}
+
+html.mode-ultra .secondary-action {
+  border: 1px solid rgba(203, 213, 225, 0.85) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  color: #1e293b !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
+  backdrop-filter: blur(18px) !important;
+}
+
+html.mode-ultra .secondary-action:hover {
+  border-color: rgba(37, 99, 235, 0.4) !important;
+  background: #f8fafc !important;
+  color: #1d4ed8 !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* 2.4 Hero Orbit Card & Celestial System in Light Mode */
+html.mode-ultra .hero-orbit-card {
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.94) 0%, rgba(241, 245, 249, 0.98) 100%) !important;
+  box-shadow: 0 25px 60px -20px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(203, 213, 225, 0.65), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  backdrop-filter: blur(28px) !important;
+}
+
+html.mode-ultra .orbit-core {
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  background: radial-gradient(circle at 35% 30%, #e0e7ff 0%, #c7d2fe 45%, #818cf8 100%) !important;
+  box-shadow: 0 0 35px rgba(99, 102, 241, 0.25) !important;
+}
+
+html.mode-ultra .orbit-ring {
+  border-color: rgba(99, 102, 241, 0.16) !important;
+  box-shadow: none !important;
+}
+
+html.mode-ultra .celestial-system {
+  border-color: rgba(203, 213, 225, 0.5) !important;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.6) 0%, rgba(241, 245, 249, 0.7) 100%) !important;
+}
+
+html.mode-ultra .celestial-orbit {
+  border-color: rgba(99, 102, 241, 0.18) !important;
+}
+
+html.mode-ultra .constellation-art line {
+  stroke: #64748b !important;
+  opacity: 0.55 !important;
+}
+
+html.mode-ultra .constellation-art circle {
+  fill: #3b82f6 !important;
+}
+
+/* 4 Element panels - Crisp, High-Contrast Frosted Glass */
+html.mode-ultra .celestial-element-panel {
+  backdrop-filter: blur(22px) !important;
+  -webkit-backdrop-filter: blur(22px) !important;
+  border-radius: 1.25rem !important;
+}
+
+html.mode-ultra .celestial-element-panel-fire {
+  border: 1px solid rgba(244, 63, 94, 0.35) !important;
+  background: linear-gradient(145deg, rgba(255, 241, 242, 0.92), rgba(254, 226, 226, 0.96)) !important;
+  box-shadow: 0 8px 24px -8px rgba(244, 63, 94, 0.22) !important;
+}
+html.mode-ultra .celestial-element-panel-fire strong { color: #9f1239 !important; }
+html.mode-ultra .celestial-element-panel-fire .celestial-element-kicker { color: #e11d48 !important; }
+html.mode-ultra .celestial-element-panel-fire .celestial-element-symbol { color: #e11d48 !important; }
+html.mode-ultra .celestial-element-panel-fire .celestial-element-items b { color: #be123c !important; }
+
+html.mode-ultra .celestial-element-panel-earth {
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  background: linear-gradient(145deg, rgba(240, 253, 244, 0.92), rgba(220, 252, 231, 0.96)) !important;
+  box-shadow: 0 8px 24px -8px rgba(16, 185, 129, 0.22) !important;
+}
+html.mode-ultra .celestial-element-panel-earth strong { color: #065f46 !important; }
+html.mode-ultra .celestial-element-panel-earth .celestial-element-kicker { color: #059669 !important; }
+html.mode-ultra .celestial-element-panel-earth .celestial-element-symbol { color: #059669 !important; }
+html.mode-ultra .celestial-element-panel-earth .celestial-element-items b { color: #047857 !important; }
+
+html.mode-ultra .celestial-element-panel-air {
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  background: linear-gradient(145deg, rgba(240, 249, 255, 0.92), rgba(224, 242, 254, 0.96)) !important;
+  box-shadow: 0 8px 24px -8px rgba(14, 165, 233, 0.22) !important;
+}
+html.mode-ultra .celestial-element-panel-air strong { color: #0369a1 !important; }
+html.mode-ultra .celestial-element-panel-air .celestial-element-kicker { color: #0284c7 !important; }
+html.mode-ultra .celestial-element-panel-air .celestial-element-symbol { color: #0284c7 !important; }
+html.mode-ultra .celestial-element-panel-air .celestial-element-items b { color: #0284c7 !important; }
+
+html.mode-ultra .celestial-element-panel-water {
+  border: 1px solid rgba(99, 102, 241, 0.35) !important;
+  background: linear-gradient(145deg, rgba(238, 242, 255, 0.92), rgba(224, 231, 255, 0.96)) !important;
+  box-shadow: 0 8px 24px -8px rgba(99, 102, 241, 0.22) !important;
+}
+html.mode-ultra .celestial-element-panel-water strong { color: #3730a3 !important; }
+html.mode-ultra .celestial-element-panel-water .celestial-element-kicker { color: #4f46e5 !important; }
+html.mode-ultra .celestial-element-panel-water .celestial-element-symbol { color: #4f46e5 !important; }
+html.mode-ultra .celestial-element-panel-water .celestial-element-items b { color: #4338ca !important; }
+
+html.mode-ultra .celestial-element-label {
+  color: #64748b !important;
+}
+
+/* Planet Rulers on the Orbit Ring: NEVER OVERRIDE .celestial-ruler transform! */
+html.mode-ultra .celestial-ruler-zodiac {
+  color: #0f172a !important;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9) !important;
+  font-weight: 850 !important;
+}
+
+html.mode-ultra .celestial-ruler-planet-symbol {
+  color: #334155 !important;
+  font-weight: 850 !important;
+}
+
+html.mode-ultra .celestial-ruler:hover .celestial-ruler-body,
+html.mode-ultra .celestial-ruler.is-active .celestial-ruler-body {
+  transform: scale(1.18) !important;
+  box-shadow: 0 0 18px currentColor !important;
+}
+
+/* Center Celestial Info Card on Hover/Click of Planet or Earth */
+html.mode-ultra .celestial-info-card {
+  border: 1px solid rgba(37, 99, 235, 0.35) !important;
+  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.98), rgba(240, 246, 255, 0.96) 75%) !important;
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.18), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  color: #0f172a !important;
+  z-index: 10 !important;
+  pointer-events: none !important;
+}
+
+html.mode-ultra .celestial-info-card::before {
+  border-color: rgba(37, 99, 235, 0.25) !important;
+}
+
+html.mode-ultra .celestial-info-card strong {
+  color: #0f172a !important;
+  font-weight: 850 !important;
+}
+
+html.mode-ultra .celestial-info-card p {
+  color: #334155 !important;
+  font-weight: 500 !important;
+}
+
+html.mode-ultra .celestial-info-eyebrow,
+html.mode-ultra .celestial-info-tags {
+  color: #2563eb !important;
+  font-weight: 750 !important;
+}
+
+/* Temperament popup modal */
+html.mode-ultra .celestial-temperament-card {
+  border: 1px solid rgba(203, 213, 225, 0.85) !important;
+  background: rgba(255, 255, 255, 0.97) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.16) !important;
+  color: #0f172a !important;
+}
+
+html.mode-ultra .celestial-temperament-content {
+  color: #1e293b !important;
+}
+
+html.mode-ultra .celestial-temperament-close {
+  color: #64748b !important;
+}
+
+/* 2.5 Mode Switcher Tabs in Light Mode */
+html.mode-ultra .mode-switcher {
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+html.mode-ultra .mode-switcher button {
+  color: #64748b !important;
+  font-weight: 750 !important;
+}
+
+html.mode-ultra .mode-switcher button:hover {
+  color: #0f172a !important;
+  background: rgba(241, 245, 249, 0.8) !important;
+}
+
+html.mode-ultra .mode-switcher button[data-active="true"] {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;
+  box-shadow: 0 6px 20px -4px rgba(37, 99, 235, 0.45) !important;
+  font-weight: 850 !important;
+}
+
+/* 2.6 Glass Panels & Containers in Light Mode */
+html.mode-ultra .glass-panel {
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.94) 0%, rgba(248, 250, 252, 0.98) 100%) !important;
+  box-shadow: 0 20px 50px -15px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  backdrop-filter: blur(24px) !important;
+}
+
 html.mode-ultra fieldset.glass-panel legend,
 html.mode-ultra .glass-panel legend {
-  border: 1px solid rgba(56, 189, 248, 0.6) !important;
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.55) 0%, rgba(99, 102, 241, 0.55) 100%) !important;
-  color: #e0f2fe !important;
-  box-shadow: 0 0 24px rgba(56, 189, 248, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
+  border: 1px solid rgba(37, 99, 235, 0.35) !important;
+  background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%) !important;
+  color: #1e40af !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12) !important;
 }
 
 html.mode-ultra fieldset.glass-panel legend svg,
 html.mode-ultra .glass-panel legend svg {
-  color: #38bdf8 !important;
+  color: #2563eb !important;
 }
 
-/* 2.7 Form Fields, Inputs & Autocomplete in Ultra Mode */
+/* 2.7 Form Fields, Inputs & Autocomplete in Light Mode */
 html.mode-ultra label {
-  color: #f8fafc !important;
+  color: #1e293b !important;
   font-weight: 800 !important;
 }
 
 html.mode-ultra label > div,
 html.mode-ultra label .rounded-lg,
 html.mode-ultra label .rounded-xl {
-  border-color: rgba(56, 189, 248, 0.45) !important;
-  background: rgba(56, 189, 248, 0.16) !important;
-  color: #38bdf8 !important;
+  border-color: rgba(37, 99, 235, 0.25) !important;
+  background: #eff6ff !important;
+  color: #2563eb !important;
 }
 
 html.mode-ultra label svg {
-  color: #38bdf8 !important;
+  color: #2563eb !important;
 }
 
 html.mode-ultra input:not([type="checkbox"]):not([type="radio"]),
 html.mode-ultra select,
 html.mode-ultra textarea,
 html.mode-ultra .glass-input {
-  background: rgba(4, 9, 24, 0.9) !important;
-  border: 1px solid rgba(56, 189, 248, 0.28) !important;
-  color: #ffffff !important;
-  font-weight: 650 !important;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45) !important;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
 }
 
 html.mode-ultra input:focus,
 html.mode-ultra select:focus,
 html.mode-ultra textarea:focus,
 html.mode-ultra .glass-input:focus {
-  border-color: #38bdf8 !important;
-  box-shadow: 0 0 25px rgba(56, 189, 248, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.18) !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16) !important;
   outline: none !important;
 }
 
 html.mode-ultra input::placeholder {
-  color: #64748b !important;
+  color: #94a3b8 !important;
 }
 
-/* WideDateInput & TimeSelect in Ultra Mode */
+/* WideDateInput & TimeSelect in Light Mode */
 html.mode-ultra .wide-date-editor,
 html.mode-ultra .time-editor {
-  background: linear-gradient(135deg, rgba(12, 20, 46, 0.92) 0%, rgba(5, 9, 24, 0.98) 100%) !important;
-  border-color: rgba(56, 189, 248, 0.42) !important;
-  box-shadow: 0 0 22px rgba(56, 189, 248, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.16) !important;
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
 }
 
 html.mode-ultra .wide-date-editor input,
 html.mode-ultra .time-editor input {
-  color: #ffffff !important;
+  color: #0f172a !important;
   font-weight: 900 !important;
 }
 
 html.mode-ultra .wide-date-editor span,
 html.mode-ultra .time-editor span {
-  color: #38bdf8 !important;
+  color: #2563eb !important;
 }
 
 html.mode-ultra .wide-date-editor svg,
 html.mode-ultra .time-editor svg {
-  color: #38bdf8 !important;
+  color: #2563eb !important;
 }
 
-/* PlaceAutocomplete suggestions box in Ultra Mode */
+/* PlaceAutocomplete suggestions box in Light Mode */
 html.mode-ultra .place-suggestions,
 html.mode-ultra [class*="place-suggestions"],
 html.mode-ultra ul.absolute {
-  border: 1px solid rgba(56, 189, 248, 0.4) !important;
-  background: rgba(6, 12, 28, 0.97) !important;
-  backdrop-filter: blur(30px) saturate(200%) !important;
-  -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
-  box-shadow: 0 28px 70px -15px rgba(0, 0, 0, 0.96), 0 0 35px rgba(56, 189, 248, 0.25) !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.15) !important;
 }
 
 html.mode-ultra .place-suggestions li:hover,
 html.mode-ultra [class*="place-suggestions"] li:hover {
-  background: rgba(56, 189, 248, 0.2) !important;
-  color: #ffffff !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
 }
 
-/* Gender buttons in Ultra Mode */
+/* Gender buttons in Light Mode */
 html.mode-ultra button:has(span:contains("მამრობითი")):not([class*="ring-sky"]),
 html.mode-ultra button:has(span:contains("მდედრობითი")):not([class*="ring-pink"]) {
-  background: rgba(5, 9, 24, 0.88) !important;
-  border-color: rgba(56, 189, 248, 0.25) !important;
-  color: #cbd5e1 !important;
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #64748b !important;
 }
 
-/* 2.8 Calculate Buttons in Ultra Mode */
+/* 2.8 Calculate Buttons in Light Mode */
 html.mode-ultra button[class*="from-amber-400"],
 html.mode-ultra button[class*="bg-gradient-to-r"][class*="from-amber"] {
-  background: linear-gradient(135deg, #00f0ff 0%, #0284c7 50%, #6366f1 100%) !important;
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;
   color: #ffffff !important;
   font-weight: 850 !important;
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
-  box-shadow: 0 0 35px rgba(0, 240, 255, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.65) !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 10px 25px -4px rgba(37, 99, 235, 0.45) !important;
+  text-shadow: none !important;
 }
 
 html.mode-ultra button[class*="from-amber-400"]:hover,
 html.mode-ultra button[class*="bg-gradient-to-r"][class*="from-amber"]:hover {
-  box-shadow: 0 0 50px rgba(0, 240, 255, 0.85), inset 0 1px 3px rgba(255, 255, 255, 0.85) !important;
-  transform: scale(1.03) translateY(-1px) !important;
+  box-shadow: 0 14px 32px -4px rgba(37, 99, 235, 0.6) !important;
+  transform: scale(1.025) translateY(-1px) !important;
 }
 
 html.mode-ultra button[class*="border-amber-400"] {
-  border-color: rgba(56, 189, 248, 0.55) !important;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(129, 140, 248, 0.18) 100%) !important;
-  color: #7dd3fc !important;
-  box-shadow: 0 0 22px rgba(56, 189, 248, 0.25) !important;
+  border-color: rgba(245, 158, 11, 0.55) !important;
+  background: #ffffff !important;
+  color: #b45309 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
 html.mode-ultra button[class*="border-amber-400"]:hover {
-  border-color: rgba(56, 189, 248, 0.95) !important;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.32) 0%, rgba(129, 140, 248, 0.32) 100%) !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 35px rgba(56, 189, 248, 0.45) !important;
+  border-color: rgba(245, 158, 11, 0.9) !important;
+  background: #fffbeb !important;
+  color: #92400e !important;
 }
 
-/* 2.9 Chart Map Section, Wheel & Tables in Ultra Mode */
+/* 2.9 Chart Map Section, Wheel & Tables in Light Mode */
 html.mode-ultra .chart-map-section {
-  border: 1px solid rgba(56, 189, 248, 0.35) !important;
-  background: linear-gradient(145deg, rgba(10, 18, 44, 0.94) 0%, rgba(4, 8, 20, 0.98) 100%) !important;
-  backdrop-filter: blur(28px) saturate(190%) !important;
-  box-shadow: 0 32px 85px -25px rgba(0, 0, 0, 0.96), 0 0 40px rgba(56, 189, 248, 0.14), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  box-shadow: 0 18px 45px -15px rgba(15, 23, 42, 0.08) !important;
 }
 
 html.mode-ultra .chart-map-section summary span.text-amber-300,
 html.mode-ultra .chart-map-section summary span.text-xl {
-  color: #ffffff !important;
-  text-shadow: 0 0 22px rgba(56, 189, 248, 0.55) !important;
+  color: #0f172a !important;
+  text-shadow: none !important;
 }
 
 html.mode-ultra .chart-map-section-chevron {
-  color: #38bdf8 !important;
+  color: #2563eb !important;
 }
 
 html.mode-ultra .combined-chart-table-modal {
-  border: 1px solid rgba(56, 189, 248, 0.38) !important;
-  background: rgba(5, 9, 24, 0.96) !important;
-  backdrop-filter: blur(34px) saturate(200%) !important;
-  box-shadow: 0 40px 100px -25px rgba(0, 0, 0, 0.98), 0 0 50px rgba(56, 189, 248, 0.25) !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.2) !important;
 }
 
 html.mode-ultra .combined-chart-table-sheet table th {
-  background: rgba(56, 189, 248, 0.12) !important;
-  color: #38bdf8 !important;
-  border-color: rgba(56, 189, 248, 0.25) !important;
+  background: #f1f5f9 !important;
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+  font-weight: 800 !important;
 }
 
 html.mode-ultra .combined-chart-table-sheet table td {
-  color: #f8fafc !important;
-  border-color: rgba(56, 189, 248, 0.15) !important;
+  color: #334155 !important;
+  border-color: #e2e8f0 !important;
 }
 
-/* 2.10 Element Balance Guide in Ultra Mode */
+/* 2.10 Element Balance Guide in Light Mode */
 html.mode-ultra .element-balance-title {
-  color: #ffffff !important;
-  text-shadow: 0 0 16px rgba(56, 189, 248, 0.4) !important;
+  color: #0f172a !important;
+  text-shadow: none !important;
 }
 
 html.mode-ultra .element-balance-ascendant {
-  border-color: rgba(56, 189, 248, 0.6) !important;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(129, 140, 248, 0.25)) !important;
-  color: #e0f2fe !important;
-  box-shadow: 0 0 18px rgba(56, 189, 248, 0.3) !important;
+  border-color: #c084fc !important;
+  background: #f3e8ff !important;
+  color: #7e22ce !important;
 }
 
 html.mode-ultra .infographic-bar-fill {
-  box-shadow: 0 0 16px currentColor !important;
+  box-shadow: 0 0 10px currentColor !important;
 }
 
-/* 2.11 Interpretation Text & Reading Areas in Ultra Mode */
+/* 2.11 Interpretation Text & Reading Areas in Light Mode */
 html.mode-ultra .interpretation-toolbar {
-  border-color: rgba(56, 189, 248, 0.28) !important;
+  border-color: #e2e8f0 !important;
 }
 
 html.mode-ultra .interpretation-meta > div:first-child {
-  border-color: rgba(56, 189, 248, 0.55) !important;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.24) 0%, rgba(99, 102, 241, 0.24) 100%) !important;
-  color: #7dd3fc !important;
-  box-shadow: 0 0 22px rgba(56, 189, 248, 0.28) !important;
+  border-color: #93c5fd !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1) !important;
 }
 
 html.mode-ultra .interpretation-content {
-  color: #f1f5f9 !important;
+  color: #1e293b !important;
 }
 
 html.mode-ultra .interpretation-content p,
 html.mode-ultra .interpretation-paragraph {
-  color: #e2e8f0 !important;
+  color: #334155 !important;
   font-size: 0.95rem !important;
   line-height: 1.88 !important;
 }
 
 html.mode-ultra .interpretation-content strong {
-  color: #38bdf8 !important;
-  text-shadow: 0 0 15px rgba(56, 189, 248, 0.45) !important;
+  color: #1d4ed8 !important;
+  text-shadow: none !important;
+  font-weight: 800 !important;
 }
 
 html.mode-ultra .interpretation-accordion,
 html.mode-ultra details.interpretation-accordion,
 html.mode-ultra details.glass-panel {
-  border: 1px solid rgba(56, 189, 248, 0.28) !important;
-  background: linear-gradient(145deg, rgba(10, 18, 42, 0.85) 0%, rgba(5, 9, 24, 0.95) 100%) !important;
-  backdrop-filter: blur(24px) !important;
-  box-shadow: 0 18px 45px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
 }
 
 html.mode-ultra details.interpretation-accordion > summary,
 html.mode-ultra details > summary {
-  color: #ffffff !important;
+  color: #0f172a !important;
   font-weight: 800 !important;
 }
 
 html.mode-ultra details[open] > summary {
-  color: #38bdf8 !important;
-  border-bottom: 1px solid rgba(56, 189, 248, 0.22) !important;
+  color: #2563eb !important;
+  border-bottom: 1px solid #e2e8f0 !important;
 }
 
-/* 2.12 Cabinet & Admin in Ultra Mode */
+/* 2.12 Cabinet & Admin in Light Mode */
 html.mode-ultra .cabinet-page .glass-panel,
 html.mode-ultra .admin-page section,
 html.mode-ultra .admin-page article {
-  border: 1px solid rgba(56, 189, 248, 0.28) !important;
-  background: linear-gradient(145deg, rgba(10, 18, 42, 0.85) 0%, rgba(5, 9, 24, 0.95) 100%) !important;
-  backdrop-filter: blur(26px) saturate(190%) !important;
-  box-shadow: 0 25px 65px -20px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  box-shadow: 0 16px 40px -15px rgba(15, 23, 42, 0.06) !important;
 }
 
 html.mode-ultra .cabinet-page h1,
 html.mode-ultra .cabinet-page h2,
 html.mode-ultra .admin-page h1,
 html.mode-ultra .admin-page h2 {
-  color: #ffffff !important;
+  color: #0f172a !important;
 }
+

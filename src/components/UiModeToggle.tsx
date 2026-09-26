@@ -14,11 +14,13 @@ export default function UiModeToggle() {
       const savedMode = localStorage.getItem("astronum_ui_mode") as UiMode | null;
       if (savedMode === "ultra") {
         setMode("ultra");
-        document.documentElement.classList.add("mode-ultra");
+        document.documentElement.classList.add("mode-ultra", "light");
+        document.documentElement.classList.remove("dark");
         document.documentElement.setAttribute("data-ui-theme", "ultra");
       } else {
         setMode("classic");
-        document.documentElement.classList.remove("mode-ultra");
+        document.documentElement.classList.remove("mode-ultra", "light");
+        document.documentElement.classList.add("dark");
         document.documentElement.removeAttribute("data-ui-theme");
       }
     } catch {
@@ -47,10 +49,12 @@ export default function UiModeToggle() {
     }
 
     if (nextMode === "ultra") {
-      document.documentElement.classList.add("mode-ultra");
+      document.documentElement.classList.add("mode-ultra", "light");
+      document.documentElement.classList.remove("dark");
       document.documentElement.setAttribute("data-ui-theme", "ultra");
     } else {
-      document.documentElement.classList.remove("mode-ultra");
+      document.documentElement.classList.remove("mode-ultra", "light");
+      document.documentElement.classList.add("dark");
       document.documentElement.removeAttribute("data-ui-theme");
     }
 
@@ -69,13 +73,13 @@ export default function UiModeToggle() {
       aria-checked={isUltra}
       aria-label={
         isUltra
-          ? "ლურჯი ბურთულა: ჩართულია თანამედროვე Glassmorphism დიზაინი (დააჭირეთ კლასიკურზე დასაბრუნებლად)"
-          : "წითელი ბურთულა: ჩართულია კლასიკური დიზაინი (დააჭირეთ თანამედროვე დიზაინზე გადასასვლელად)"
+          ? "ლურჯი ბურთულა: ჩართულია ახალი ღია Neo-Glass დიზაინი (დააჭირეთ ბნელზე დასაბრუნებლად)"
+          : "წითელი ბურთულა: ჩართულია კლასიკური ბნელი დიზაინი (დააჭირეთ ახალ ღია დიზაინზე გადასასვლელად)"
       }
       title={
         isUltra
-          ? "🔵 Ultra-Modern Glassmorphism UI (დააჭირეთ კლასიკურზე დასაბრუნებლად)"
-          : "🔴 კლასიკური რეჟიმი (დააჭირეთ ახალ Ultra-Glass დიზაინზე გადასასვლელად)"
+          ? "🔵 ახალი ღია Neo-Glass დიზაინი (დააჭირეთ ბნელ რეჟიმზე დასაბრუნებლად)"
+          : "🔴 კლასიკური ბნელი რეჟიმი (დააჭირეთ ახალ ღია Neo-Glass დიზაინზე გადასასვლელად)"
       }
       className={`nav-mode-orb-btn group ${isUltra ? "is-ultra" : "is-classic"}`}
     >
@@ -102,7 +106,7 @@ export default function UiModeToggle() {
           isUltra ? "nav-toggle-label-blue" : "nav-toggle-label-red"
         }`}
       >
-        {isUltra ? "ULTRA" : "NEO UI"}
+        {isUltra ? "LIGHT" : "DARK"}
       </span>
     </button>
   );
