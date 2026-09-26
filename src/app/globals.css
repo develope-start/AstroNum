@@ -6114,3 +6114,408 @@ html.mode-ultra .admin-page h2 {
   color: #0f172a !important;
 }
 
+/* Final light-mode contrast pass: keep every workspace surface, chart detail
+   and interpretation readable without changing any content or behavior. */
+html.mode-ultra {
+  --light-ink: #172033;
+  --light-body: #334155;
+  --light-muted: #64748b;
+  --light-border: #cbd5e1;
+  --light-border-soft: #e2e8f0;
+  --light-surface: #ffffff;
+  --light-surface-soft: #f8fafc;
+  --light-surface-raised: #e2e8f0;
+  --light-primary: #1e40af;
+  --light-primary-hover: #1e3a8a;
+}
+
+html.mode-ultra .chart-view-panel,
+html.mode-ultra .admin-calculation-viewer,
+html.mode-ultra .admin-calculation-dialog {
+  color: var(--light-body) !important;
+  background: #f8fafc !important;
+  border-color: var(--light-border) !important;
+  box-shadow: 0 18px 50px -28px rgba(15, 23, 42, 0.22) !important;
+}
+
+html.mode-ultra .chart-view-panel h2,
+html.mode-ultra .chart-view-panel h3,
+html.mode-ultra .admin-calculation-dialog h2,
+html.mode-ultra .admin-calculation-dialog h3,
+html.mode-ultra .chart-view-panel p,
+html.mode-ultra .admin-calculation-dialog p,
+html.mode-ultra .chart-view-panel span,
+html.mode-ultra .admin-calculation-dialog span {
+  color: var(--light-body);
+  text-shadow: none !important;
+}
+
+html.mode-ultra .chart-view-panel h2,
+html.mode-ultra .chart-view-panel h3,
+html.mode-ultra .admin-calculation-dialog h2,
+html.mode-ultra .admin-calculation-dialog h3 {
+  color: var(--light-ink) !important;
+}
+
+html.mode-ultra .chart-view-panel .text-amber-300,
+html.mode-ultra .chart-view-panel .text-amber-200,
+html.mode-ultra .chart-view-panel .text-amber-400,
+html.mode-ultra .admin-calculation-dialog .text-amber-300,
+html.mode-ultra .admin-calculation-dialog .text-amber-200,
+html.mode-ultra .admin-calculation-dialog .text-amber-400 {
+  color: #b45309 !important;
+}
+
+html.mode-ultra .chart-view-details,
+html.mode-ultra .admin-calculation-details,
+html.mode-ultra .chart-view-actions,
+html.mode-ultra .chart-view-interpretation,
+html.mode-ultra .admin-calculation-interpretation,
+html.mode-ultra .chart-summary-card {
+  color: var(--light-body) !important;
+  border-color: var(--light-border) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(241, 245, 249, 0.94)) !important;
+  box-shadow: 0 12px 30px -22px rgba(15, 23, 42, 0.25), inset 0 1px rgba(255, 255, 255, 0.95) !important;
+}
+
+html.mode-ultra .chart-map-section {
+  border-color: var(--light-border) !important;
+  background: #ffffff !important;
+  box-shadow: 0 18px 42px -24px rgba(15, 23, 42, 0.22) !important;
+}
+
+html.mode-ultra .chart-map-section > summary {
+  border-bottom-color: var(--light-border-soft) !important;
+  background: linear-gradient(100deg, #eff6ff, #f8fafc 52%, #eef2ff) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.95) !important;
+}
+
+html.mode-ultra .chart-map-section > summary span.text-amber-300,
+html.mode-ultra .chart-map-section > summary span.text-xl,
+html.mode-ultra .chart-map-section > summary span {
+  color: var(--light-ink) !important;
+}
+
+html.mode-ultra .chart-map-section > div {
+  background: #ffffff !important;
+}
+
+/* The SVG has inline dark-mode fills, so these selectors intentionally use
+   !important to make the planet badges and degree labels visible on white. */
+html.mode-ultra .chart-wheel-wrap svg circle[fill="#0d0726"],
+html.mode-ultra .chart-wheel-wrap svg circle[fill="#09041a"],
+html.mode-ultra .chart-wheel-wrap svg circle[fill="#080414"] {
+  fill: #ffffff !important;
+}
+
+html.mode-ultra .chart-wheel-wrap svg text[fill="#f8fafc"],
+html.mode-ultra .chart-wheel-wrap svg text[fill="#e2e8f0"],
+html.mode-ultra .chart-wheel-wrap svg text[fill="#cbd5e1"] {
+  fill: #334155 !important;
+  text-shadow: none !important;
+}
+
+html.mode-ultra .chart-wheel-wrap svg text[fill="#fef3c7"],
+html.mode-ultra .chart-wheel-wrap svg text[fill="#e0f2fe"] {
+  fill: #1e3a8a !important;
+  text-shadow: none !important;
+}
+
+html.mode-ultra .chart-wheel-wrap svg circle[fill="#f8fafc"] {
+  fill: #334155 !important;
+}
+
+html.mode-ultra .chart-details-accordion,
+html.mode-ultra .chart-subsection,
+html.mode-ultra .interpretation-accordion,
+html.mode-ultra details.interpretation-accordion,
+html.mode-ultra .element-balance-indicator {
+  border-color: var(--light-border) !important;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+  color: var(--light-body) !important;
+  box-shadow: 0 8px 22px -18px rgba(15, 23, 42, 0.38), inset 0 1px rgba(255, 255, 255, 0.9) !important;
+}
+
+html.mode-ultra .chart-details-accordion > summary,
+html.mode-ultra .chart-subsection > summary,
+html.mode-ultra .interpretation-accordion > summary,
+html.mode-ultra .interpretation-accordion-summary {
+  color: var(--light-ink) !important;
+  background: linear-gradient(105deg, #eef2f7, #f8fafc) !important;
+  border-bottom-color: var(--light-border-soft) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.9) !important;
+}
+
+html.mode-ultra details[open] > summary,
+html.mode-ultra .interpretation-accordion[open] > summary {
+  color: var(--light-primary) !important;
+}
+
+html.mode-ultra .interpretation-accordion-title,
+html.mode-ultra .element-balance-title,
+html.mode-ultra .chart-details-accordion > summary > span,
+html.mode-ultra .chart-subsection > summary {
+  color: var(--light-ink) !important;
+}
+
+html.mode-ultra .interpretation-accordion-icon {
+  border-color: #93c5fd !important;
+  background: #dbeafe !important;
+  color: #1d4ed8 !important;
+}
+
+html.mode-ultra .interpretation-accordion-icon svg,
+html.mode-ultra .interpretation-accordion-chevron,
+html.mode-ultra .chart-map-section-chevron {
+  color: #1d4ed8 !important;
+}
+
+html.mode-ultra .element-balance-indicator-header,
+html.mode-ultra .element-balance-indicator-name,
+html.mode-ultra .element-balance-indicator-label,
+html.mode-ultra .element-balance-indicator-value {
+  color: #1e293b !important;
+}
+
+html.mode-ultra .element-balance-indicator-icon {
+  filter: saturate(0.82) brightness(0.78) !important;
+}
+
+html.mode-ultra .chart-data-table,
+html.mode-ultra .chart-data-table th,
+html.mode-ultra .chart-data-table td {
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.mode-ultra .chart-data-table th {
+  background: #e2e8f0 !important;
+  color: #172033 !important;
+}
+
+html.mode-ultra .chart-data-table tr:nth-child(even) td {
+  background: #f8fafc !important;
+}
+
+html.mode-ultra .chart-details-jump,
+html.mode-ultra .combined-chart-table-launch,
+html.mode-ultra .interpretation-close-button {
+  border-color: #93c5fd !important;
+  background: linear-gradient(135deg, #eff6ff, #e0e7ff) !important;
+  color: #1e3a8a !important;
+  box-shadow: 0 8px 18px -14px rgba(37, 99, 235, 0.7), inset 0 1px rgba(255, 255, 255, 0.95) !important;
+}
+
+html.mode-ultra .chart-details-jump:hover,
+html.mode-ultra .combined-chart-table-launch:hover,
+html.mode-ultra .interpretation-close-button:hover,
+html.mode-ultra .interpretation-close-button:focus-visible {
+  border-color: #3b82f6 !important;
+  background: #dbeafe !important;
+  color: #1e3a8a !important;
+}
+
+html.mode-ultra .interpretation-close-icon {
+  border-color: #93c5fd !important;
+  background: #dbeafe !important;
+  color: #1d4ed8 !important;
+}
+
+html.mode-ultra .interpretation-content,
+html.mode-ultra .interpretation-content p,
+html.mode-ultra .interpretation-paragraph,
+html.mode-ultra .interpretation-accordion-body {
+  color: #334155 !important;
+}
+
+html.mode-ultra .interpretation-content strong {
+  color: #1e40af !important;
+  font-weight: 800 !important;
+}
+
+html.mode-ultra .interpretation-toolbar {
+  border-color: var(--light-border-soft) !important;
+}
+
+html.mode-ultra .interpretation-meta > div:first-child {
+  border-color: #93c5fd !important;
+  background: #eff6ff !important;
+  color: #1e3a8a !important;
+}
+
+html.mode-ultra .chart-view-panel button,
+html.mode-ultra .admin-calculation-dialog button,
+html.mode-ultra .cabinet-page button,
+html.mode-ultra .admin-page button {
+  color: #1e293b;
+}
+
+html.mode-ultra .chart-view-panel button[class*="bg-purple"],
+html.mode-ultra .admin-calculation-dialog button[class*="bg-purple"],
+html.mode-ultra .cabinet-page button[class*="bg-purple"],
+html.mode-ultra .admin-page button[class*="bg-purple"] {
+  border-color: #93c5fd !important;
+  background: #eff6ff !important;
+  color: #1e3a8a !important;
+}
+
+html.mode-ultra .chart-view-panel button[class*="bg-purple"]:hover,
+html.mode-ultra .admin-calculation-dialog button[class*="bg-purple"]:hover,
+html.mode-ultra .cabinet-page button[class*="bg-purple"]:hover,
+html.mode-ultra .admin-page button[class*="bg-purple"]:hover {
+  background: #dbeafe !important;
+  color: #1e3a8a !important;
+}
+
+html.mode-ultra .cabinet-page .text-slate-100,
+html.mode-ultra .admin-page .text-slate-100,
+html.mode-ultra .cabinet-page .text-slate-200,
+html.mode-ultra .admin-page .text-slate-200 {
+  color: #1e293b !important;
+}
+
+html.mode-ultra .cabinet-page .text-slate-300,
+html.mode-ultra .admin-page .text-slate-300,
+html.mode-ultra .cabinet-page .text-slate-400,
+html.mode-ultra .admin-page .text-slate-400,
+html.mode-ultra .cabinet-page .text-slate-500,
+html.mode-ultra .admin-page .text-slate-500 {
+  color: #475569 !important;
+}
+
+html.mode-ultra .cabinet-page .glass-panel,
+html.mode-ultra .cabinet-page section,
+html.mode-ultra .cabinet-page article,
+html.mode-ultra .admin-page section,
+html.mode-ultra .admin-page article,
+html.mode-ultra .admin-page details {
+  border-color: var(--light-border) !important;
+  background: linear-gradient(145deg, #ffffff, #f8fafc) !important;
+  color: var(--light-body) !important;
+  box-shadow: 0 16px 38px -24px rgba(15, 23, 42, 0.25), inset 0 1px rgba(255, 255, 255, 0.95) !important;
+}
+
+html.mode-ultra .cabinet-page h1,
+html.mode-ultra .cabinet-page h2,
+html.mode-ultra .cabinet-page h3,
+html.mode-ultra .admin-page h1,
+html.mode-ultra .admin-page h2,
+html.mode-ultra .admin-page h3 {
+  color: #172033 !important;
+}
+
+html.mode-ultra .celestial-temperament-card {
+  border-color: #475569 !important;
+  background: linear-gradient(145deg, #1e293b, #0f172a) !important;
+  color: #f8fafc !important;
+  box-shadow: 0 25px 60px -18px rgba(15, 23, 42, 0.42) !important;
+}
+
+html.mode-ultra .celestial-temperament-card strong,
+html.mode-ultra .celestial-temperament-card h1,
+html.mode-ultra .celestial-temperament-card h2,
+html.mode-ultra .celestial-temperament-card h3,
+html.mode-ultra .celestial-temperament-card p,
+html.mode-ultra .celestial-temperament-card span,
+html.mode-ultra .celestial-temperament-content,
+html.mode-ultra .celestial-temperament-lede {
+  color: #f8fafc !important;
+}
+
+html.mode-ultra .celestial-temperament-card p,
+html.mode-ultra .celestial-temperament-lede {
+  color: #cbd5e1 !important;
+}
+
+html.mode-ultra .celestial-temperament-close {
+  border-color: #64748b !important;
+  background: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.mode-ultra .celestial-ruler-planet-symbol {
+  color: #1e3a8a !important;
+  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95) !important;
+  font-weight: 900 !important;
+}
+
+html.mode-ultra .celestial-ruler-body {
+  border-color: rgba(37, 99, 235, 0.42) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14), inset 0 1px rgba(255, 255, 255, 0.95) !important;
+}
+
+html.mode-ultra .celestial-ruler:hover .celestial-ruler-body,
+html.mode-ultra .celestial-ruler.is-active .celestial-ruler-body {
+  background: #dbeafe !important;
+  box-shadow: 0 0 18px rgba(37, 99, 235, 0.38) !important;
+}
+
+/* Darker element cards keep their identity on the luminous home surface. */
+html.mode-ultra .celestial-element-panel-fire,
+html.mode-ultra .celestial-element-panel-earth,
+html.mode-ultra .celestial-element-panel-air,
+html.mode-ultra .celestial-element-panel-water {
+  color: #f8fafc !important;
+  box-shadow: 0 16px 34px -18px rgba(15, 23, 42, 0.34), inset 0 1px rgba(255, 255, 255, 0.14) !important;
+}
+
+html.mode-ultra .celestial-element-panel-fire {
+  border-color: #be123c !important;
+  background: linear-gradient(145deg, #881337, #4c0519) !important;
+}
+
+html.mode-ultra .celestial-element-panel-earth {
+  border-color: #059669 !important;
+  background: linear-gradient(145deg, #065f46, #022c22) !important;
+}
+
+html.mode-ultra .celestial-element-panel-air {
+  border-color: #0284c7 !important;
+  background: linear-gradient(145deg, #075985, #082f49) !important;
+}
+
+html.mode-ultra .celestial-element-panel-water {
+  border-color: #6366f1 !important;
+  background: linear-gradient(145deg, #3730a3, #1e1b4b) !important;
+}
+
+html.mode-ultra .celestial-element-panel-fire strong,
+html.mode-ultra .celestial-element-panel-earth strong,
+html.mode-ultra .celestial-element-panel-air strong,
+html.mode-ultra .celestial-element-panel-water strong,
+html.mode-ultra .celestial-element-panel-fire .celestial-element-items b,
+html.mode-ultra .celestial-element-panel-earth .celestial-element-items b,
+html.mode-ultra .celestial-element-panel-air .celestial-element-items b,
+html.mode-ultra .celestial-element-panel-water .celestial-element-items b {
+  color: #ffffff !important;
+}
+
+html.mode-ultra .celestial-element-panel-fire .celestial-element-kicker,
+html.mode-ultra .celestial-element-panel-earth .celestial-element-kicker,
+html.mode-ultra .celestial-element-panel-air .celestial-element-kicker,
+html.mode-ultra .celestial-element-panel-water .celestial-element-kicker,
+html.mode-ultra .celestial-element-panel-fire .celestial-element-symbol,
+html.mode-ultra .celestial-element-panel-earth .celestial-element-symbol,
+html.mode-ultra .celestial-element-panel-air .celestial-element-symbol,
+html.mode-ultra .celestial-element-panel-water .celestial-element-symbol {
+  color: #dbeafe !important;
+}
+
+html.mode-ultra button[class*="bg-blue"],
+html.mode-ultra a[class*="bg-blue"],
+html.mode-ultra button[class*="from-blue"],
+html.mode-ultra button[class*="from-indigo"] {
+  background: linear-gradient(135deg, #1e40af, #3730a3) !important;
+  border-color: #1e3a8a !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px -16px rgba(30, 64, 175, 0.72) !important;
+}
+
+html.mode-ultra button[class*="bg-blue"]:hover,
+html.mode-ultra a[class*="bg-blue"]:hover,
+html.mode-ultra button[class*="from-blue"]:hover,
+html.mode-ultra button[class*="from-indigo"]:hover {
+  background: linear-gradient(135deg, #1e3a8a, #312e81) !important;
+  box-shadow: 0 12px 28px -14px rgba(30, 64, 175, 0.82) !important;
+}
