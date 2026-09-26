@@ -6,6 +6,7 @@ import ChartDetails from "@/components/ChartDetails";
 import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
+import { useEffect } from "react";
 
 import { X } from "lucide-react";
 
@@ -76,9 +77,24 @@ export default function AdminCalculationViewer({
   onClose: () => void;
 }) {
   const wheel = wheelFromResult(calculation.result);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [onClose]);
+
   return (
-    <div className="admin-calculation-viewer fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overscroll-contain bg-black/80 p-2 sm:p-4">
-      <div className="admin-calculation-dialog relative min-w-0 max-h-[calc(100dvh-1rem)] w-full max-w-5xl overflow-y-auto overscroll-contain rounded-2xl border border-slate-400/50 bg-[#0d0a18] p-3 shadow-[0_0_35px_rgba(148,163,184,0.28)] sm:max-h-[92vh] sm:p-8">
+    <div className="admin-calculation-viewer fixed inset-0 z-50 flex h-[100dvh] w-full items-stretch justify-center overflow-hidden overscroll-contain bg-black/85 p-0 sm:p-2">
+      <div className="admin-calculation-dialog relative min-h-0 min-w-0 h-full w-full overflow-y-auto overscroll-contain border border-slate-400/50 bg-[#0d0a18] p-3 shadow-[0_0_35px_rgba(148,163,184,0.28)] sm:p-8">
         
         {/* Premium Fixed Top-Right Close Button */}
         <div className="sticky top-0 z-50 flex justify-end -mt-1 -mr-1 sm:-mt-4 sm:-mr-4 mb-2 pointer-events-none">

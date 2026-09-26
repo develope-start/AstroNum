@@ -4911,7 +4911,7 @@ canvas {
   }
 
   .admin-calculation-dialog {
-    margin-block: 0.5rem;
+    margin-block: 0;
   }
 
   .chart-view-wheel,

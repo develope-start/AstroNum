@@ -141,6 +141,16 @@ export default function DashboardPage() {
   const [deleteTarget, setDeleteTarget] = useState<ChartSummary | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  useEffect(() => {
+    if (!selected) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [selected]);
+
   const handleSessionExpired = useCallback(() => {
     router.replace("/cabinet");
   }, [router]);
@@ -468,7 +478,7 @@ export default function DashboardPage() {
 
       {/* Selected Opened Chart View Modal / Card */}
       {selected && (
-        <div id="chart-view" className="chart-view-panel glass-panel relative mt-8 min-w-0 rounded-2xl sm:rounded-[28px] p-3.5 sm:p-8 border-amber-500/30 bg-[#120833]/95 backdrop-blur-2xl shadow-2xl space-y-5 transition-all">
+        <div id="chart-view" className="chart-view-panel fixed inset-0 z-[100] h-[100dvh] min-w-0 overflow-y-auto overscroll-contain bg-[#05020f]/95 p-3.5 backdrop-blur-md space-y-5 transition-all sm:p-8">
           
           {/* Premium Fixed Top-Right Close Button */}
           <div className="sticky top-2 sm:top-4 z-50 flex justify-end float-right -mt-2 -mr-2 sm:-mt-4 sm:-mr-4 mb-2 pointer-events-none">
