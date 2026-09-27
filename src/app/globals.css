@@ -7347,137 +7347,34 @@ html.mode-simple.mode-simple-light .hero-orbit-card {
 }
 
 
+
 /* ==========================================================================
-   ASTRONUM SIMPLE - MINIMALIST WORKSPACE STYLING
+   ASTRONUM SIMPLE - MINIMALIST MONOCHROME WORKSPACE (DARK & LIGHT)
+   Clean, distraction-free black & white design with high-contrast typography.
    ========================================================================== */
+
+/* 1. Base Container & Structure */
 .simple-page {
   position: relative;
   width: 100%;
-  max-width: 72rem;
+  max-width: 74rem;
   margin: 0 auto;
-  padding: 1.5rem 0.5rem 6rem;
+  padding: 1rem 0.75rem 5rem;
   display: flex;
   flex-direction: column;
-  gap: 3.5rem;
+  gap: 2.5rem;
 }
 
-/* 1. Simple Hero */
-.simple-hero {
-  text-align: center;
-  max-width: 48rem;
-  margin: 1.5rem auto 0.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.simple-hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #94a3b8;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.simple-hero-dot {
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: 9999px;
-  background: #f97316;
-  box-shadow: 0 0 8px #f97316;
-}
-
-.simple-hero-title {
-  font-size: clamp(2.2rem, 5.5vw, 3.8rem);
-  font-weight: 900;
-  line-height: 1.12;
-  letter-spacing: -0.03em;
-  color: #f8fafc;
-}
-
-.simple-hero-title span {
-  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.simple-hero-lead {
-  font-size: clamp(0.95rem, 1.8vw, 1.12rem);
-  line-height: 1.68;
-  color: #94a3b8;
-  max-width: 42rem;
-}
-
-.simple-hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  margin-top: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.simple-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.4rem;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-  color: #ffffff;
-  font-size: 0.88rem;
-  font-weight: 750;
-  text-decoration: none;
-  box-shadow: 0 4px 18px rgba(234, 88, 12, 0.35);
-  transition: all 0.22s ease;
-}
-
-.simple-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 26px rgba(234, 88, 12, 0.48);
-}
-
-.simple-btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.3rem;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #e2e8f0;
-  font-size: 0.88rem;
-  font-weight: 650;
-  text-decoration: none;
-  transition: all 0.22s ease;
-}
-
-.simple-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
-}
-
-/* Sections */
 .simple-section {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .simple-section-header {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 
 @media (min-width: 768px) {
@@ -7489,202 +7386,179 @@ html.mode-simple.mode-simple-light .hero-orbit-card {
 }
 
 .simple-tag {
-  font-size: 0.7rem;
-  font-weight: 750;
+  font-size: 0.68rem;
+  font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #f97316;
+  color: #a1a1aa;
 }
 
 .simple-section-title {
-  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+  font-size: clamp(1.25rem, 2.2vw, 1.65rem);
   font-weight: 850;
-  color: #f8fafc;
   letter-spacing: -0.02em;
 }
 
 .simple-section-desc {
-  font-size: 0.88rem;
-  color: #94a3b8;
-  max-width: 28rem;
+  font-size: 0.82rem;
+  color: #a1a1aa;
+  max-width: 32rem;
   line-height: 1.5;
 }
 
-/* 2. Four Elements Bento Grid */
-.simple-elements-grid {
-  display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-@media (min-width: 640px) {
-  .simple-elements-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .simple-elements-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-.simple-element-card {
-  position: relative;
-  background: rgba(15, 23, 42, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1.25rem;
-  padding: 1.25rem;
+/* 2. Element Strips (Minimalist Monochrome Accordion Rows) */
+.simple-element-strips-list {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.simple-element-strip {
+  border-radius: 1rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 }
 
-.simple-element-card:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
-}
-
-.simple-element-card.is-expanded {
-  grid-column: 1 / -1;
-  border-color: rgba(255, 255, 255, 0.22);
-}
-
-.simple-element-top {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-}
-
-.simple-element-symbol-box {
-  width: 2.6rem;
-  height: 2.6rem;
-  border-radius: 0.85rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  font-size: 1.3rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.simple-element-mini-icon {
-  position: absolute;
-  bottom: 0.2rem;
-  right: 0.2rem;
-  width: 0.8rem;
-  height: 0.8rem;
-  opacity: 0.7;
-}
-
-.simple-element-kicker {
-  font-size: 0.68rem;
-  font-weight: 750;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.simple-element-name {
-  font-size: 1.2rem;
-  font-weight: 850;
-  color: #f8fafc;
-  line-height: 1.2;
-}
-
-.simple-element-focus {
-  font-size: 0.8rem;
-  color: #94a3b8;
-  line-height: 1.45;
-  min-height: 2.4rem;
-}
-
-.simple-element-chips-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.simple-chip-label {
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #64748b;
-}
-
-.simple-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-
-.simple-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.72rem;
-  color: #cbd5e1;
-}
-
-.simple-chip b {
-  color: #f8fafc;
-}
-
-.simple-element-expand-btn {
-  margin-top: auto;
+.simple-element-strip-header {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.65rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.75rem;
-  font-weight: 650;
-  color: #cbd5e1;
+  gap: 0.75rem;
+  padding: 0.85rem 1.1rem;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  text-align: left;
+  user-select: none;
 }
 
-.simple-element-expand-btn:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #ffffff;
+.simple-element-strip-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
-.simple-expand-arrow {
-  font-size: 0.65rem;
-  opacity: 0.7;
+.simple-element-strip-glyph {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
 }
 
-.simple-element-drawer {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+.simple-element-strip-title-box {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
-.badge-fire .simple-element-symbol-box { color: #f87171; border-color: rgba(248, 113, 113, 0.3); background: rgba(239, 68, 68, 0.1); }
-.badge-fire .simple-element-kicker { color: #f87171; }
-.badge-earth .simple-element-symbol-box { color: #34d399; border-color: rgba(52, 211, 153, 0.3); background: rgba(16, 185, 129, 0.1); }
-.badge-earth .simple-element-kicker { color: #34d399; }
-.badge-air .simple-element-symbol-box { color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); background: rgba(14, 165, 233, 0.1); }
-.badge-air .simple-element-kicker { color: #38bdf8; }
-.badge-water .simple-element-symbol-box { color: #a78bfa; border-color: rgba(167, 139, 250, 0.3); background: rgba(139, 92, 246, 0.1); }
-.badge-water .simple-element-kicker { color: #a78bfa; }
+.simple-element-strip-name {
+  font-size: 1rem;
+  font-weight: 850;
+  line-height: 1.2;
+}
 
-/* 3. Celestial Bodies Horizon Ribbon */
+.simple-element-strip-badge {
+  font-size: 0.62rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+}
+
+.simple-element-strip-focus {
+  font-size: 0.76rem;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 32rem;
+}
+
+.simple-element-strip-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.simple-element-strip-zodiacs {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+@media (max-width: 768px) {
+  .simple-element-strip-zodiacs,
+  .simple-element-strip-focus {
+    display: none;
+  }
+}
+
+.simple-strip-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+
+.simple-element-strip-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.simple-element-strip-drawer {
+  padding: 0 1.1rem 1.1rem;
+  border-top: 1px solid transparent;
+}
+
+.simple-drawer-inner {
+  padding-top: 0.85rem;
+}
+
+.simple-drawer-lede-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.simple-drawer-modal-btn {
+  font-size: 0.68rem;
+  font-weight: 750;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.simple-drawer-card {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+}
+
+/* 3. Celestial Bodies Ribbon */
 .simple-planet-ribbon {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.45rem;
   overflow-x: auto;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
   scrollbar-width: thin;
 }
 
@@ -7693,141 +7567,115 @@ html.mode-simple.mode-simple-light .hero-orbit-card {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.5rem 0.85rem;
+  padding: 0.45rem 0.8rem;
   border-radius: 9999px;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #94a3b8;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.simple-planet-pill:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #f8fafc;
-  border-color: rgba(255, 255, 255, 0.16);
-}
-
-.simple-planet-pill.is-selected {
-  background: rgba(249, 115, 22, 0.15);
-  border-color: rgba(249, 115, 22, 0.6);
-  color: #ffedd5;
-  box-shadow: 0 0 14px rgba(249, 115, 22, 0.25);
-}
-
-.simple-planet-glyph {
-  font-size: 1rem;
-  color: #f8fafc;
-}
-
-.simple-planet-detail-card {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(249, 115, 22, 0.35);
-  border-radius: 1rem;
-  padding: 1rem 1.25rem;
-  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4);
-}
-
-.simple-planet-detail-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.simple-planet-detail-glyph {
-  font-size: 1.8rem;
-  color: #fb923c;
-}
-
-.simple-planet-detail-name {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #f8fafc;
-}
-
-.simple-planet-detail-role {
-  font-size: 0.82rem;
-  color: #94a3b8;
-}
-
-.simple-detail-close {
-  margin-left: auto;
-  font-size: 1.4rem;
-  line-height: 1;
-  color: #64748b;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  padding: 0.25rem;
-}
-
-.simple-detail-close:hover {
-  color: #f8fafc;
-}
-
-/* 4. Calculator Workspace */
-.simple-tab-nav {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.35rem;
-  border-radius: 9999px;
-  width: fit-content;
-}
-
-.simple-tab-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.5rem 1.1rem;
-  border-radius: 9999px;
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   font-weight: 750;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.simple-tab-btn:hover {
-  color: #f8fafc;
+.simple-planet-glyph {
+  font-size: 0.95rem;
 }
 
-.simple-tab-btn.is-active {
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.85) 0%, rgba(234, 88, 12, 0.95) 100%);
-  color: #ffffff;
-  box-shadow: 0 2px 10px rgba(234, 88, 12, 0.35);
+.simple-planet-detail-card {
+  border-radius: 0.9rem;
+  padding: 0.85rem 1.1rem;
+}
+
+.simple-planet-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.simple-planet-detail-glyph {
+  font-size: 1.6rem;
+}
+
+.simple-planet-detail-name {
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.simple-planet-detail-role {
+  font-size: 0.78rem;
+}
+
+.simple-detail-close {
+  margin-left: auto;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0.2rem;
+}
+
+/* 4. Calculator Workspace Tabs */
+.simple-tab-nav {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  padding: 0.3rem;
+  border-radius: 9999px;
+  width: fit-content;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .simple-tab-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    border-radius: 0.85rem;
+  }
+}
+
+.simple-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+@media (max-width: 640px) {
+  .simple-tab-btn {
+    border-radius: 0.6rem;
+  }
 }
 
 .simple-tab-hint {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.78rem;
-  color: #64748b;
+  font-size: 0.74rem;
 }
 
 .simple-hint-dot {
-  width: 0.4rem;
-  height: 0.4rem;
+  width: 0.38rem;
+  height: 0.38rem;
   border-radius: 9999px;
-  background: #f97316;
 }
 
 .simple-calc-frame {
-  margin-top: 0.5rem;
+  margin-top: 0.35rem;
 }
 
 /* 5. Architectural Methodology Highlights */
 .simple-methods-grid {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 @media (min-width: 640px) {
@@ -7843,603 +7691,578 @@ html.mode-simple.mode-simple-light .hero-orbit-card {
 }
 
 .simple-method-card {
-  position: relative;
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1.15rem;
-  padding: 1.3rem;
+  border-radius: 0.9rem;
+  padding: 1.1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  transition: all 0.22s ease;
-}
-
-.simple-method-card:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  transform: translateY(-2px);
+  gap: 0.5rem;
 }
 
 .simple-method-num {
-  font-size: 0.7rem;
-  font-weight: 800;
-  color: #475569;
+  font-size: 0.65rem;
+  font-weight: 850;
   letter-spacing: 0.08em;
 }
 
 .simple-method-icon-wrap {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.6rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .simple-method-title {
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 800;
-  color: #f8fafc;
 }
 
 .simple-method-text {
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: #94a3b8;
+  font-size: 0.76rem;
+  line-height: 1.45;
 }
+
 
 /* ==========================================================================
-   SIMPLE PAGE LIGHT MODE (html.mode-ultra)
+   SIMPLE MODE: DARK THEME (html.mode-simple:not(.mode-simple-light))
+   Deep matte black / zinc with crisp pure white typography & white buttons.
    ========================================================================== */
-html.mode-ultra .simple-hero-badge {
-  background: rgba(15, 23, 42, 0.04) !important;
-  border-color: rgba(15, 23, 42, 0.1) !important;
-  color: #475569 !important;
+html.mode-simple:not(.mode-simple-light) body.app-body {
+  background-color: #09090b !important;
+  color: #f4f4f5 !important;
 }
 
-html.mode-ultra .simple-hero-title {
-  color: #0f172a !important;
+html.mode-simple:not(.mode-simple-light) .simple-page {
+  color: #f4f4f5;
 }
 
-html.mode-ultra .simple-hero-title span {
-  background: linear-gradient(135deg, #1e293b 0%, #475569 100%) !important;
-  background-clip: text !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-}
-
-html.mode-ultra .simple-hero-lead {
-  color: #475569 !important;
-}
-
-html.mode-ultra .simple-btn-secondary {
-  background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #1e293b !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-}
-
-html.mode-ultra .simple-btn-secondary:hover {
-  background: #f8fafc !important;
-  border-color: #94a3b8 !important;
-}
-
-html.mode-ultra .simple-section-title {
-  color: #0f172a !important;
-}
-
-html.mode-ultra .simple-section-desc {
-  color: #475569 !important;
-}
-
-html.mode-ultra .simple-element-card {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04) !important;
-}
-
-html.mode-ultra .simple-element-card:hover {
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.08) !important;
-}
-
-html.mode-ultra .simple-element-name {
-  color: #0f172a !important;
-}
-
-html.mode-ultra .simple-element-focus {
-  color: #475569 !important;
-}
-
-html.mode-ultra .simple-chip {
-  background: #f8fafc !important;
-  border-color: #e2e8f0 !important;
-  color: #334155 !important;
-}
-
-html.mode-ultra .simple-chip b {
-  color: #0f172a !important;
-}
-
-html.mode-ultra .simple-element-expand-btn {
-  background: #f8fafc !important;
-  border-color: #e2e8f0 !important;
-  color: #334155 !important;
-}
-
-html.mode-ultra .simple-element-expand-btn:hover {
-  background: #f1f5f9 !important;
-  color: #0f172a !important;
-}
-
-html.mode-ultra .simple-planet-pill {
-  background: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  color: #475569 !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-}
-
-html.mode-ultra .simple-planet-pill:hover {
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-html.mode-ultra .simple-planet-pill.is-selected {
-  background: rgba(249, 115, 22, 0.1) !important;
-  border-color: #ea580c !important;
-  color: #ea580c !important;
-}
-
-html.mode-ultra .simple-planet-glyph {
-  color: #0f172a !important;
-}
-
-html.mode-ultra .simple-planet-detail-card {
-  background: #ffffff !important;
-  border-color: #fdba74 !important;
-  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.08) !important;
-}
-
-html.mode-ultra .simple-planet-detail-name {
-  color: #0f172a !important;
-}
-
-html.mode-ultra .simple-planet-detail-role {
-  color: #475569 !important;
-}
-
-html.mode-ultra .simple-tab-nav {
-  background: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-}
-
-html.mode-ultra .simple-tab-btn {
-  color: #64748b !important;
-}
-
-html.mode-ultra .simple-tab-btn:hover {
-  color: #0f172a !important;
-}
-
-html.mode-ultra .simple-tab-btn.is-active {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+html.mode-simple:not(.mode-simple-light) .simple-section-title,
+html.mode-simple:not(.mode-simple-light) .simple-element-strip-name,
+html.mode-simple:not(.mode-simple-light) .simple-planet-detail-name,
+html.mode-simple:not(.mode-simple-light) .simple-method-title {
   color: #ffffff !important;
 }
 
-html.mode-ultra .simple-method-card {
+html.mode-simple:not(.mode-simple-light) .simple-tag,
+html.mode-simple:not(.mode-simple-light) .simple-section-desc,
+html.mode-simple:not(.mode-simple-light) .simple-element-strip-focus,
+html.mode-simple:not(.mode-simple-light) .simple-planet-detail-role,
+html.mode-simple:not(.mode-simple-light) .simple-tab-hint,
+html.mode-simple:not(.mode-simple-light) .simple-method-text,
+html.mode-simple:not(.mode-simple-light) .simple-method-num {
+  color: #a1a1aa !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-hint-dot {
+  background: #f4f4f5 !important;
+}
+
+/* Dark Strips */
+html.mode-simple:not(.mode-simple-light) .simple-element-strip {
+  background: #121216 !important;
+  border: 1px solid #27272a !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-element-strip:hover,
+html.mode-simple:not(.mode-simple-light) .simple-element-strip.is-expanded {
+  border-color: #52525b !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-element-strip-glyph {
+  background: #18181b !important;
+  border: 1px solid #27272a !important;
+  color: #f4f4f5 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-element-strip-badge {
+  background: #27272a !important;
+  color: #e4e4e7 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-strip-chip {
+  background: #18181b !important;
+  border: 1px solid #27272a !important;
+  color: #d4d4d8 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-strip-chip b {
+  color: #ffffff !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-element-strip-action {
+  color: #e4e4e7 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-element-strip-drawer {
+  border-top-color: #27272a !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-drawer-modal-btn {
+  background: #27272a !important;
+  color: #f4f4f5 !important;
+  border: 1px solid #3f3f46 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-drawer-modal-btn:hover {
+  background: #3f3f46 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-drawer-card {
+  background: #18181b !important;
+  border: 1px solid #27272a !important;
+}
+
+/* Dark Planet Ribbon */
+html.mode-simple:not(.mode-simple-light) .simple-planet-pill {
+  background: #121216 !important;
+  border: 1px solid #27272a !important;
+  color: #a1a1aa !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-planet-pill:hover {
+  color: #ffffff !important;
+  border-color: #52525b !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-planet-pill.is-selected {
   background: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
 }
 
-html.mode-ultra .simple-method-title {
-  color: #0f172a !important;
+html.mode-simple:not(.mode-simple-light) .simple-planet-pill.is-selected .simple-planet-glyph {
+  color: #000000 !important;
 }
 
-html.mode-ultra .simple-method-text {
-  color: #475569 !important;
+html.mode-simple:not(.mode-simple-light) .simple-planet-glyph {
+  color: #ffffff !important;
 }
 
-html.mode-ultra .simple-method-icon-wrap {
-  background: #f8fafc !important;
-  border-color: #e2e8f0 !important;
+html.mode-simple:not(.mode-simple-light) .simple-planet-detail-card {
+  background: #121216 !important;
+  border: 1px solid #3f3f46 !important;
 }
 
-@media (max-width: 480px) {
-  .nav-version-group {
-    gap: 0.2rem;
-  }
-  .nav-version-btn {
-    width: 4.4rem;
-    height: 1.7rem;
-    font-size: 0.54rem;
-    padding: 0 0.35rem;
-    gap: 0.2rem;
-  }
+html.mode-simple:not(.mode-simple-light) .simple-detail-close {
+  color: #a1a1aa !important;
 }
+
+html.mode-simple:not(.mode-simple-light) .simple-detail-close:hover {
+  color: #ffffff !important;
+}
+
+/* Dark Tabs */
+html.mode-simple:not(.mode-simple-light) .simple-tab-nav {
+  background: #121216 !important;
+  border: 1px solid #27272a !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-tab-btn {
+  color: #a1a1aa !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-tab-btn:hover {
+  color: #ffffff !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-tab-btn.is-active {
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+}
+
+/* Dark Methods */
+html.mode-simple:not(.mode-simple-light) .simple-method-card {
+  background: #121216 !important;
+  border: 1px solid #27272a !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-method-icon-wrap {
+  background: #18181b !important;
+  border: 1px solid #27272a !important;
+  color: #ffffff !important;
+}
+
+/* Dark Mode Universal Form & Calculator Overrides */
+html.mode-simple:not(.mode-simple-light) .glass-panel,
+html.mode-simple:not(.mode-simple-light) fieldset.glass-panel,
+html.mode-simple:not(.mode-simple-light) .chart-map-section,
+html.mode-simple:not(.mode-simple-light) .chart-summary-card,
+html.mode-simple:not(.mode-simple-light) .interpretation-accordion,
+html.mode-simple:not(.mode-simple-light) details.interpretation-accordion {
+  background: #121216 !important;
+  border: 1px solid #27272a !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) fieldset.glass-panel legend,
+html.mode-simple:not(.mode-simple-light) .glass-panel legend {
+  background: #18181b !important;
+  border: 1px solid #3f3f46 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) input:not([type="checkbox"]):not([type="radio"]),
+html.mode-simple:not(.mode-simple-light) select,
+html.mode-simple:not(.mode-simple-light) textarea,
+html.mode-simple:not(.mode-simple-light) .glass-input {
+  background: #18181b !important;
+  border: 1px solid #3f3f46 !important;
+  color: #ffffff !important;
+  caret-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) input:focus,
+html.mode-simple:not(.mode-simple-light) select:focus,
+html.mode-simple:not(.mode-simple-light) textarea:focus,
+html.mode-simple:not(.mode-simple-light) .glass-input:focus {
+  border-color: #ffffff !important;
+  outline: none !important;
+}
+
+/* Dark Mode Primary Action Button: SOLID WHITE WITH BLACK TEXT */
+html.mode-simple:not(.mode-simple-light) button[class*="from-amber-400"],
+html.mode-simple:not(.mode-simple-light) button[class*="bg-gradient-to-r"][class*="from-amber"],
+html.mode-simple:not(.mode-simple-light) a[class*="from-amber-400"],
+html.mode-simple:not(.mode-simple-light) .primary-action {
+  background: #ffffff !important;
+  border: 1px solid #ffffff !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) button[class*="from-amber-400"]:hover,
+html.mode-simple:not(.mode-simple-light) button[class*="bg-gradient-to-r"][class*="from-amber"]:hover,
+html.mode-simple:not(.mode-simple-light) a[class*="from-amber-400"]:hover,
+html.mode-simple:not(.mode-simple-light) .primary-action:hover {
+  background: #e4e4e7 !important;
+  transform: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) button[class*="from-amber-400"] :where(.text-slate-950, .text-amber-300, .text-amber-400, svg, span),
+html.mode-simple:not(.mode-simple-light) button[class*="bg-gradient-to-r"][class*="from-amber"] :where(.text-slate-950, .text-amber-300, .text-amber-400, svg, span),
+html.mode-simple:not(.mode-simple-light) a[class*="from-amber-400"] :where(.text-slate-950, .text-amber-300, .text-amber-400, svg, span) {
+  color: #000000 !important;
+}
+
+/* Dark Mode Secondary Action Buttons */
+html.mode-simple:not(.mode-simple-light) button[class*="from-amber-500/20"],
+html.mode-simple:not(.mode-simple-light) button[class*="border-amber-400"]:not([class*="from-amber-400"]),
+html.mode-simple:not(.mode-simple-light) button[class*="bg-purple-950"],
+html.mode-simple:not(.mode-simple-light) .secondary-action,
+html.mode-simple:not(.mode-simple-light) .chart-details-jump,
+html.mode-simple:not(.mode-simple-light) .combined-chart-table-launch,
+html.mode-simple:not(.mode-simple-light) .interpretation-close-button {
+  background: #18181b !important;
+  border: 1px solid #3f3f46 !important;
+  color: #f4f4f5 !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) button[class*="from-amber-500/20"]:hover,
+html.mode-simple:not(.mode-simple-light) button[class*="border-amber-400"]:not([class*="from-amber-400"]):hover,
+html.mode-simple:not(.mode-simple-light) button[class*="bg-purple-950"]:hover,
+html.mode-simple:not(.mode-simple-light) .secondary-action:hover,
+html.mode-simple:not(.mode-simple-light) .chart-details-jump:hover,
+html.mode-simple:not(.mode-simple-light) .combined-chart-table-launch:hover {
+  background: #27272a !important;
+  border-color: #52525b !important;
+  color: #ffffff !important;
+}
+
+html.mode-simple:not(.mode-simple-light) button[class*="from-amber-500/20"] :where(.text-amber-300, .text-amber-400, svg, span),
+html.mode-simple:not(.mode-simple-light) button[class*="border-amber-400"]:not([class*="from-amber-400"]) :where(.text-amber-300, .text-amber-400, svg, span),
+html.mode-simple:not(.mode-simple-light) button[class*="bg-purple-950"] :where(.text-slate-300, .text-amber-300, .text-amber-400, svg, span) {
+  color: #f4f4f5 !important;
+}
+
+/* Dark Mode Gender Buttons */
+html.mode-simple:not(.mode-simple-light) button[class*="bg-[#080418]"] {
+  background: #18181b !important;
+  border: 1px solid #3f3f46 !important;
+  color: #a1a1aa !important;
+}
+
+html.mode-simple:not(.mode-simple-light) button[class*="bg-[#080418]"] :where(span, svg) {
+  color: #a1a1aa !important;
+}
+
 
 /* ==========================================================================
-   SIMPLE MODE REFINEMENT
-   Compact navigation, paired element cards and strong readable contrast.
+   SIMPLE MODE: LIGHT THEME (html.mode-simple.mode-simple-light)
+   Crisp pure white with deep black typography & solid black buttons.
    ========================================================================== */
-html.mode-simple .simple-page {
-  max-width: 78rem;
-  padding: 0.55rem 0.75rem 3.5rem;
-  gap: 2rem;
+html.mode-simple.mode-simple-light body.app-body {
+  background-color: #ffffff !important;
+  color: #09090b !important;
 }
 
-html.mode-simple .simple-hero {
-  max-width: 52rem;
-  margin: 0 auto;
-  gap: 0;
-}
-
-html.mode-simple .simple-hero-badge,
-html.mode-simple .simple-hero-lead,
-html.mode-simple .simple-hero-actions,
-html.mode-simple .simple-section-desc,
-html.mode-simple .simple-tab-hint,
-html.mode-simple .simple-method-text {
-  display: none;
-}
-
-html.mode-simple .simple-hero-title {
-  font-size: clamp(1.65rem, 3.2vw, 2.35rem);
-  line-height: 1.15;
-}
-
-html.mode-simple .simple-hero-title span {
-  display: none;
-}
-
-html.mode-simple .simple-quick-nav {
-  position: sticky;
-  top: 0.6rem;
-  z-index: 8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 0.3rem;
-  border: 1px solid #334155;
-  border-radius: 0.85rem;
-  background: rgba(15, 23, 42, 0.94);
-  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.2);
-  backdrop-filter: blur(14px);
-}
-
-html.mode-simple .simple-quick-nav a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2rem;
-  padding: 0.38rem 0.75rem;
-  border-radius: 0.58rem;
-  color: #cbd5e1;
-  font-size: 0.74rem;
-  font-weight: 800;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
-}
-
-html.mode-simple .simple-quick-nav a:hover,
-html.mode-simple .simple-quick-nav a:focus-visible {
-  color: #ffffff;
-  background: #334155;
-  outline: none;
-  transform: translateY(-1px);
-}
-
-html.mode-simple .simple-section {
-  gap: 0.8rem;
-  scroll-margin-top: 4.5rem;
-}
-
-html.mode-simple .simple-section-header {
-  gap: 0.25rem;
-}
-
-html.mode-simple .simple-tag {
-  font-size: 0.64rem;
-  letter-spacing: 0.06em;
-}
-
-html.mode-simple .simple-section-title {
-  font-size: clamp(1.15rem, 2.1vw, 1.55rem);
-  line-height: 1.25;
-}
-
-html.mode-simple .simple-elements-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-html.mode-simple .simple-element-card {
-  min-width: 0;
-  padding: 0.85rem;
-  gap: 0.55rem;
-  border-radius: 0.9rem;
-  background: #172033;
-  border-color: #334155;
-  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.16);
-}
-
-html.mode-simple .simple-element-card:hover,
-html.mode-simple .simple-element-card.is-expanded {
-  border-color: #64748b;
-  box-shadow: 0 12px 26px rgba(2, 6, 23, 0.25);
-}
-
-html.mode-simple .simple-element-top {
-  gap: 0.55rem;
-}
-
-html.mode-simple .simple-element-symbol-box {
-  width: 2.15rem;
-  height: 2.15rem;
-  flex: 0 0 auto;
-  border-radius: 0.65rem;
-}
-
-html.mode-simple .simple-element-meta {
-  min-width: 0;
-}
-
-html.mode-simple .simple-element-kicker {
-  display: block;
-  overflow: hidden;
-  color: #cbd5e1;
-  font-size: 0.56rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-html.mode-simple .simple-element-name {
-  font-size: 1rem;
-}
-
-html.mode-simple .simple-element-focus {
-  display: none;
-}
-
-html.mode-simple .simple-element-chips-row {
-  gap: 0.22rem;
-}
-
-html.mode-simple .simple-chip-label {
-  color: #94a3b8;
-  font-size: 0.55rem;
-}
-
-html.mode-simple .simple-chips {
-  gap: 0.25rem;
-}
-
-html.mode-simple .simple-chip {
-  max-width: 100%;
-  padding: 0.16rem 0.38rem;
-  border-color: #475569;
-  background: #243047;
-  color: #e2e8f0;
-  font-size: 0.64rem;
-  line-height: 1.25;
-}
-
-html.mode-simple .simple-chip b {
-  color: #ffffff;
-}
-
-html.mode-simple .simple-element-expand-btn {
-  padding: 0.4rem 0.55rem;
-  border-color: #475569;
-  background: #243047;
-  color: #e2e8f0;
-  font-size: 0.65rem;
-}
-
-html.mode-simple .simple-element-drawer {
-  margin-top: 0.45rem;
-  padding-top: 0.55rem;
-  border-color: #475569;
-}
-
-html.mode-simple .simple-planet-ribbon {
-  gap: 0.35rem;
-  padding-bottom: 0.2rem;
-}
-
-html.mode-simple .simple-planet-pill {
-  padding: 0.42rem 0.68rem;
-  border-color: #475569;
-  background: #172033;
-  color: #cbd5e1;
-  font-size: 0.72rem;
-}
-
-html.mode-simple .simple-planet-pill.is-selected {
-  border-color: #fb923c;
-  background: #7c2d12;
-  color: #ffedd5;
-}
-
-html.mode-simple .simple-planet-detail-card {
-  padding: 0.75rem 0.9rem;
-  border-color: #fb923c;
-  background: #172033;
-}
-
-html.mode-simple .simple-tab-nav {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: 100%;
-  gap: 0.3rem;
-  padding: 0.3rem;
-  border-radius: 0.9rem;
-  background: #172033;
-  border-color: #334155;
-}
-
-html.mode-simple .simple-tab-btn {
-  justify-content: center;
-  min-width: 0;
-  padding: 0.55rem 0.45rem;
-  border-radius: 0.6rem;
-  color: #cbd5e1;
-  font-size: 0.72rem;
-}
-
-html.mode-simple .simple-tab-btn:hover {
-  color: #ffffff;
-  background: #334155;
-}
-
-html.mode-simple .simple-tab-btn.is-active {
-  color: #ffffff;
-  background: #c2410c;
-}
-
-html.mode-simple .simple-methods-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-html.mode-simple .simple-method-card {
-  min-width: 0;
-  padding: 0.85rem;
-  gap: 0.45rem;
-  border-radius: 0.9rem;
-  background: #172033;
-  border-color: #334155;
-}
-
-html.mode-simple .simple-method-title {
-  font-size: 0.88rem;
-  line-height: 1.3;
-}
-
-html.mode-simple .simple-method-num {
-  color: #94a3b8;
-}
-
-html.mode-simple.mode-simple-light .simple-quick-nav {
-  border-color: #cbd5e1;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
-}
-
-html.mode-simple.mode-simple-light .simple-quick-nav a {
-  color: #334155;
-}
-
-html.mode-simple.mode-simple-light .simple-quick-nav a:hover,
-html.mode-simple.mode-simple-light .simple-quick-nav a:focus-visible {
-  color: #0f172a;
-  background: #e2e8f0;
+html.mode-simple.mode-simple-light .simple-page {
+  color: #09090b;
 }
 
 html.mode-simple.mode-simple-light .simple-section-title,
+html.mode-simple.mode-simple-light .simple-element-strip-name,
 html.mode-simple.mode-simple-light .simple-planet-detail-name,
-html.mode-simple.mode-simple-light .simple-element-name,
 html.mode-simple.mode-simple-light .simple-method-title {
-  color: #0f172a;
+  color: #09090b !important;
 }
 
-html.mode-simple.mode-simple-light .simple-element-card,
-html.mode-simple.mode-simple-light .simple-method-card,
-html.mode-simple.mode-simple-light .simple-tab-nav,
-html.mode-simple.mode-simple-light .simple-planet-pill,
-html.mode-simple.mode-simple-light .simple-planet-detail-card {
-  background: #ffffff;
-  border-color: #cbd5e1;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
-}
-
-html.mode-simple.mode-simple-light .simple-element-kicker,
-html.mode-simple.mode-simple-light .simple-chip-label,
+html.mode-simple.mode-simple-light .simple-tag,
+html.mode-simple.mode-simple-light .simple-section-desc,
+html.mode-simple.mode-simple-light .simple-element-strip-focus,
+html.mode-simple.mode-simple-light .simple-planet-detail-role,
+html.mode-simple.mode-simple-light .simple-tab-hint,
+html.mode-simple.mode-simple-light .simple-method-text,
 html.mode-simple.mode-simple-light .simple-method-num {
-  color: #475569;
+  color: #71717a !important;
 }
 
-html.mode-simple.mode-simple-light .simple-chip,
-html.mode-simple.mode-simple-light .simple-element-expand-btn {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  color: #334155;
+html.mode-simple.mode-simple-light .simple-hint-dot {
+  background: #09090b !important;
 }
 
-html.mode-simple.mode-simple-light .simple-chip b {
-  color: #0f172a;
+/* Light Strips */
+html.mode-simple.mode-simple-light .simple-element-strip {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.mode-simple.mode-simple-light .simple-element-strip:hover,
+html.mode-simple.mode-simple-light .simple-element-strip.is-expanded {
+  border-color: #a1a1aa !important;
+}
+
+html.mode-simple.mode-simple-light .simple-element-strip-glyph {
+  background: #f4f4f5 !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #09090b !important;
+}
+
+html.mode-simple.mode-simple-light .simple-element-strip-badge {
+  background: #f4f4f5 !important;
+  color: #27272a !important;
+  border: 1px solid #e4e4e7 !important;
+}
+
+html.mode-simple.mode-simple-light .simple-strip-chip {
+  background: #f4f4f5 !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #3f3f46 !important;
+}
+
+html.mode-simple.mode-simple-light .simple-strip-chip b {
+  color: #09090b !important;
+}
+
+html.mode-simple.mode-simple-light .simple-element-strip-action {
+  color: #09090b !important;
+}
+
+html.mode-simple.mode-simple-light .simple-element-strip-drawer {
+  border-top-color: #e4e4e7 !important;
+}
+
+html.mode-simple.mode-simple-light .simple-drawer-modal-btn {
+  background: #f4f4f5 !important;
+  color: #09090b !important;
+  border: 1px solid #d4d4d8 !important;
+}
+
+html.mode-simple.mode-simple-light .simple-drawer-modal-btn:hover {
+  background: #e4e4e7 !important;
+}
+
+html.mode-simple.mode-simple-light .simple-drawer-card {
+  background: #f4f4f5 !important;
+  border: 1px solid #e4e4e7 !important;
+}
+
+/* Light Planet Ribbon */
+html.mode-simple.mode-simple-light .simple-planet-pill {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #71717a !important;
+}
+
+html.mode-simple.mode-simple-light .simple-planet-pill:hover {
+  color: #09090b !important;
+  border-color: #a1a1aa !important;
+}
+
+html.mode-simple.mode-simple-light .simple-planet-pill.is-selected {
+  background: #09090b !important;
+  border-color: #09090b !important;
+  color: #ffffff !important;
+}
+
+html.mode-simple.mode-simple-light .simple-planet-pill.is-selected .simple-planet-glyph {
+  color: #ffffff !important;
+}
+
+html.mode-simple.mode-simple-light .simple-planet-glyph {
+  color: #09090b !important;
+}
+
+html.mode-simple.mode-simple-light .simple-planet-detail-card {
+  background: #ffffff !important;
+  border: 1px solid #d4d4d8 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.mode-simple.mode-simple-light .simple-detail-close {
+  color: #71717a !important;
+}
+
+html.mode-simple.mode-simple-light .simple-detail-close:hover {
+  color: #09090b !important;
+}
+
+/* Light Tabs */
+html.mode-simple.mode-simple-light .simple-tab-nav {
+  background: #f4f4f5 !important;
+  border: 1px solid #e4e4e7 !important;
 }
 
 html.mode-simple.mode-simple-light .simple-tab-btn {
-  color: #475569;
+  color: #71717a !important;
 }
 
 html.mode-simple.mode-simple-light .simple-tab-btn:hover {
-  color: #0f172a;
-  background: #e2e8f0;
+  color: #09090b !important;
 }
 
 html.mode-simple.mode-simple-light .simple-tab-btn.is-active {
-  color: #ffffff;
-  background: #c2410c;
+  background: #09090b !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
 }
 
-@media (max-width: 520px) {
-  html.mode-simple .simple-page {
-    padding-inline: 0.5rem;
-    gap: 1.4rem;
-  }
-
-  html.mode-simple .simple-quick-nav {
-    position: static;
-    width: 100%;
-    overflow-x: auto;
-    justify-content: flex-start;
-  }
-
-  html.mode-simple .simple-quick-nav a {
-    flex: 1 0 auto;
-    padding-inline: 0.62rem;
-  }
-
-  html.mode-simple .simple-element-card {
-    padding: 0.68rem;
-  }
-
-  html.mode-simple .simple-element-symbol-box {
-    width: 1.9rem;
-    height: 1.9rem;
-    font-size: 1rem;
-  }
-
-  html.mode-simple .simple-element-name {
-    font-size: 0.88rem;
-  }
-
-  html.mode-simple .simple-element-chips-row:nth-of-type(3) {
-    display: none;
-  }
-
-  html.mode-simple .simple-chip {
-    font-size: 0.58rem;
-  }
-
-  html.mode-simple .simple-methods-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  html.mode-simple .simple-method-title {
-    font-size: 0.78rem;
-  }
+/* Light Methods */
+html.mode-simple.mode-simple-light .simple-method-card {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
 }
 
+html.mode-simple.mode-simple-light .simple-method-icon-wrap {
+  background: #f4f4f5 !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #09090b !important;
+}
+
+/* Light Mode Universal Form & Calculator Overrides */
+html.mode-simple.mode-simple-light .glass-panel,
+html.mode-simple.mode-simple-light fieldset.glass-panel,
+html.mode-simple.mode-simple-light .chart-map-section,
+html.mode-simple.mode-simple-light .chart-summary-card,
+html.mode-simple.mode-simple-light .interpretation-accordion,
+html.mode-simple.mode-simple-light details.interpretation-accordion {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.mode-simple.mode-simple-light fieldset.glass-panel legend,
+html.mode-simple.mode-simple-light .glass-panel legend {
+  background: #f4f4f5 !important;
+  border: 1px solid #d4d4d8 !important;
+  color: #09090b !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple.mode-simple-light input:not([type="checkbox"]):not([type="radio"]),
+html.mode-simple.mode-simple-light select,
+html.mode-simple.mode-simple-light textarea,
+html.mode-simple.mode-simple-light .glass-input {
+  background: #ffffff !important;
+  border: 1px solid #d4d4d8 !important;
+  color: #09090b !important;
+  caret-color: #09090b !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple.mode-simple-light input:focus,
+html.mode-simple.mode-simple-light select:focus,
+html.mode-simple.mode-simple-light textarea:focus,
+html.mode-simple.mode-simple-light .glass-input:focus {
+  border-color: #09090b !important;
+  outline: none !important;
+}
+
+/* Light Mode Primary Action Button: SOLID BLACK WITH WHITE TEXT */
+html.mode-simple.mode-simple-light button[class*="from-amber-400"],
+html.mode-simple.mode-simple-light button[class*="bg-gradient-to-r"][class*="from-amber"],
+html.mode-simple.mode-simple-light a[class*="from-amber-400"],
+html.mode-simple.mode-simple-light .primary-action {
+  background: #09090b !important;
+  border: 1px solid #09090b !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html.mode-simple.mode-simple-light button[class*="from-amber-400"]:hover,
+html.mode-simple.mode-simple-light button[class*="bg-gradient-to-r"][class*="from-amber"]:hover,
+html.mode-simple.mode-simple-light a[class*="from-amber-400"]:hover,
+html.mode-simple.mode-simple-light .primary-action:hover {
+  background: #27272a !important;
+  transform: none !important;
+}
+
+html.mode-simple.mode-simple-light button[class*="from-amber-400"] :where(.text-slate-950, .text-amber-300, .text-amber-400, svg, span),
+html.mode-simple.mode-simple-light button[class*="bg-gradient-to-r"][class*="from-amber"] :where(.text-slate-950, .text-amber-300, .text-amber-400, svg, span),
+html.mode-simple.mode-simple-light a[class*="from-amber-400"] :where(.text-slate-950, .text-amber-300, .text-amber-400, svg, span) {
+  color: #ffffff !important;
+}
+
+/* Light Mode Secondary Action Buttons */
+html.mode-simple.mode-simple-light button[class*="from-amber-500/20"],
+html.mode-simple.mode-simple-light button[class*="border-amber-400"]:not([class*="from-amber-400"]),
+html.mode-simple.mode-simple-light button[class*="bg-purple-950"],
+html.mode-simple.mode-simple-light .secondary-action,
+html.mode-simple.mode-simple-light .chart-details-jump,
+html.mode-simple.mode-simple-light .combined-chart-table-launch,
+html.mode-simple.mode-simple-light .interpretation-close-button {
+  background: #ffffff !important;
+  border: 1px solid #d4d4d8 !important;
+  color: #09090b !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple.mode-simple-light button[class*="from-amber-500/20"]:hover,
+html.mode-simple.mode-simple-light button[class*="border-amber-400"]:not([class*="from-amber-400"]):hover,
+html.mode-simple.mode-simple-light button[class*="bg-purple-950"]:hover,
+html.mode-simple.mode-simple-light .secondary-action:hover,
+html.mode-simple.mode-simple-light .chart-details-jump:hover,
+html.mode-simple.mode-simple-light .combined-chart-table-launch:hover {
+  background: #f4f4f5 !important;
+  border-color: #a1a1aa !important;
+  color: #09090b !important;
+}
+
+html.mode-simple.mode-simple-light button[class*="from-amber-500/20"] :where(.text-amber-300, .text-amber-400, svg, span),
+html.mode-simple.mode-simple-light button[class*="border-amber-400"]:not([class*="from-amber-400"]) :where(.text-amber-300, .text-amber-400, svg, span),
+html.mode-simple.mode-simple-light button[class*="bg-purple-950"] :where(.text-slate-300, .text-amber-300, .text-amber-400, svg, span) {
+  color: #09090b !important;
+}
+
+/* Light Mode Gender Buttons */
+html.mode-simple.mode-simple-light button[class*="bg-[#080418]"] {
+  background: #ffffff !important;
+  border: 1px solid #d4d4d8 !important;
+  color: #71717a !important;
+}
+
+html.mode-simple.mode-simple-light button[class*="bg-[#080418]"] :where(span, svg) {
+  color: #71717a !important;
+}
 /* ==========================================================================
    ADMIN LIGHT MODE CONTRAST PASS
    Keep the management workspace quiet, dense and readable on white surfaces.

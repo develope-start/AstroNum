@@ -1,7 +1,7 @@
 "use client";
 
 import { type CSSProperties, useState } from "react";
-import { Activity, ArrowRight, Check, Compass, Heart, Orbit, Sparkles, Sun } from "lucide-react";
+import { Activity, ArrowRight, Check, Compass, Heart, Orbit, Sparkles, Sun, X } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
 import SynastryCalculator from "@/components/SynastryCalculator";
@@ -337,6 +337,38 @@ export default function HomePage() {
         <div className="home-feature"><h3><Check className="mr-1 inline h-4 w-4 text-violet-300" /> გამჭვირვალე ანალიზი</h3><p>ორბები, კუთხეები, ღირსებები, დეკლინაციები და მეთოდის წყაროები ცალკე ფენებად.</p></div>
         <div className="home-feature"><h3><Check className="mr-1 inline h-4 w-4 text-violet-300" /> პირადი სამუშაო სივრცე</h3><p>შეინახეთ რუკები კაბინეტში და მართეთ წვდომა ერთი მშვიდი ინტერფეისიდან.</p></div>
       </section>
+
+      {/* Mobile-Safe Top-Level Modal Dialog for Element Temperament (Zero Clipping) */}
+      {selectedElementInfo && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto overscroll-contain sm:hidden"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setSelectedElementInfo(null)}
+        >
+          <div
+            className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-700 bg-slate-950 p-5 text-left text-slate-100 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+              <h3 className="text-base font-bold text-amber-300">
+                {ELEMENT_GROUPS.find((e) => e.id === selectedElementInfo)?.name} სტიქია
+              </h3>
+              <button
+                type="button"
+                onClick={() => setSelectedElementInfo(null)}
+                className="rounded-lg border border-slate-700 bg-slate-900 p-1 text-slate-400 hover:text-white"
+                aria-label="დახურვა"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="space-y-3 text-xs leading-relaxed text-slate-200">
+              <ElementTemperamentSummary element={selectedElementInfo} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

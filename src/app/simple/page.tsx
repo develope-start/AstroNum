@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Activity, Check, Flame, Heart, Layers, Orbit, ShieldCheck, Sun, Wind, Mountain, Droplet } from "lucide-react";
+import { Activity, Check, Flame, Heart, Layers, Orbit, ShieldCheck, Sun, Wind, Mountain, Droplet, ChevronDown, X, BookOpen, Sparkles } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
 import SynastryCalculator from "@/components/SynastryCalculator";
 import TransitCalculator from "@/components/TransitCalculator";
-import ElementTemperamentSummary from "@/components/ElementTemperamentSummary";
-import type { ElementTemperamentId } from "@/lib/elementTemperaments";
+import ElementTemperamentDetails from "@/components/ElementTemperamentDetails";
+import { ELEMENT_TEMPERAMENTS, type ElementTemperamentId } from "@/lib/elementTemperaments";
 
 type Tab = "natal" | "synastry" | "transit" | "advanced";
 
@@ -31,17 +31,16 @@ const CELESTIAL_BODIES = [
   { id: "pluto", name: "პლუტონი", glyph: "♇", role: "ტრანსფორმაცია და ღრმა განახლება", element: "water" },
 ] as const;
 
-const ELEMENT_CARDS = [
+const ELEMENT_STRIPS = [
   {
     id: "fire" as ElementTemperamentId,
     name: "ცეცხლი",
     symbol: "🜂",
     icon: Flame,
     temperament: "ქოლერიკი",
-    focus: "ენერგია და შემოქმედებითი იმპულსი",
+    focus: "ენერგია, ნება და შემოქმედებითი იმპულსი",
     signs: [{ name: "ვერძი", symbol: "♈" }, { name: "ლომი", symbol: "♌" }, { name: "მშვილდოსანი", symbol: "♐" }],
     rulers: [{ name: "მარსი", symbol: "♂" }, { name: "მზე", symbol: "☉" }, { name: "იუპიტერი", symbol: "♃" }],
-    badgeClass: "badge-fire",
   },
   {
     id: "earth" as ElementTemperamentId,
@@ -49,10 +48,9 @@ const ELEMENT_CARDS = [
     symbol: "🜃",
     icon: Mountain,
     temperament: "მელანქოლიკი",
-    focus: "სტრუქტურა, სტაბილურობა და ფორმა",
+    focus: "სტრუქტურა, სტაბილურობა და მატერიალური ფორმა",
     signs: [{ name: "კურო", symbol: "♉" }, { name: "ქალწული", symbol: "♍" }, { name: "თხის რქა", symbol: "♑" }],
     rulers: [{ name: "ვენერა", symbol: "♀" }, { name: "მერკური", symbol: "☿" }, { name: "სატურნი", symbol: "♄" }],
-    badgeClass: "badge-earth",
   },
   {
     id: "air" as ElementTemperamentId,
@@ -60,10 +58,9 @@ const ELEMENT_CARDS = [
     symbol: "🜁",
     icon: Wind,
     temperament: "სანგვინიკი",
-    focus: "კომუნიკაცია, ინტელექტი და კონცეფცია",
+    focus: "კომუნიკაცია, ინტელექტი და კონცეპტუალური აზროვნება",
     signs: [{ name: "ტყუპები", symbol: "♊" }, { name: "სასწორი", symbol: "♎" }, { name: "მერწყული", symbol: "♒" }],
     rulers: [{ name: "მერკური", symbol: "☿" }, { name: "ვენერა", symbol: "♀" }, { name: "ურანი", symbol: "♅" }],
-    badgeClass: "badge-air",
   },
   {
     id: "water" as ElementTemperamentId,
@@ -71,10 +68,9 @@ const ELEMENT_CARDS = [
     symbol: "🜄",
     icon: Droplet,
     temperament: "ფლეგმატიკი",
-    focus: "ემპათია, ინტუიცია და შინაგანი ექო",
+    focus: "ემპათია, ინტუიცია და ფსიქოდინამიკური სიღრმე",
     signs: [{ name: "კირჩხიბი", symbol: "♋" }, { name: "მორიელი", symbol: "♏" }, { name: "თევზები", symbol: "♓" }],
     rulers: [{ name: "მთვარე", symbol: "☽" }, { name: "პლუტონი", symbol: "♇" }, { name: "ნეპტუნი", symbol: "♆" }],
-    badgeClass: "badge-water",
   },
 ] as const;
 
@@ -82,13 +78,14 @@ export default function SimplePage() {
   const [tab, setTab] = useState<Tab>("natal");
   const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
   const [expandedElement, setExpandedElement] = useState<ElementTemperamentId | null>(null);
+  const [modalElement, setModalElement] = useState<ElementTemperamentId | null>(null);
 
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
   const activePlanet = CELESTIAL_BODIES.find((p) => p.id === selectedPlanet);
 
   return (
     <div className="simple-page">
-      {/* The Simple route begins directly with useful information. */}
+      {/* 1. Elements and Temperaments - Minimalist Monochrome Strip Structure */}
       <section id="elements" className="simple-section">
         <div className="simple-section-header">
           <div>
@@ -100,63 +97,91 @@ export default function SimplePage() {
           </p>
         </div>
 
-        <div className="simple-elements-grid">
-          {ELEMENT_CARDS.map((elem) => {
+        <div className="simple-element-strips-list space-y-2.5">
+          {ELEMENT_STRIPS.map((elem) => {
             const Icon = elem.icon;
             const isExpanded = expandedElement === elem.id;
+            const guide = ELEMENT_TEMPERAMENTS[elem.id];
 
             return (
               <div
                 key={elem.id}
-                className={`simple-element-card ${elem.badgeClass} ${isExpanded ? "is-expanded" : ""}`}
+                className={`simple-element-strip ${isExpanded ? "is-expanded" : ""}`}
               >
-                <div className="simple-element-top">
-                  <div className="simple-element-symbol-box">
-                    <span className="simple-element-glyph">{elem.symbol}</span>
-                    <Icon className="simple-element-mini-icon" />
-                  </div>
-                  <div className="simple-element-meta">
-                    <span className="simple-element-kicker">{elem.temperament}</span>
-                    <h3 className="simple-element-name">{elem.name}</h3>
-                  </div>
-                </div>
-
-                <p className="simple-element-focus">{elem.focus}</p>
-
-                <div className="simple-element-chips-row">
-                  <span className="simple-chip-label">ზოდიაქო</span>
-                  <div className="simple-chips">
-                    {elem.signs.map((s) => (
-                      <span key={s.name} className="simple-chip" title={s.name}>
-                        <b>{s.symbol}</b> {s.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="simple-element-chips-row">
-                  <span className="simple-chip-label">მმართველი</span>
-                  <div className="simple-chips">
-                    {elem.rulers.map((r) => (
-                      <span key={r.name} className="simple-chip" title={r.name}>
-                        <b>{r.symbol}</b> {r.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
+                {/* Clickable Header Bar */}
                 <button
                   type="button"
                   onClick={() => setExpandedElement(isExpanded ? null : elem.id)}
-                  className="simple-element-expand-btn"
+                  className="simple-element-strip-header"
+                  aria-expanded={isExpanded}
                 >
-                  <span>{isExpanded ? "ანალიზის დამალვა" : "ფსიქოლოგიური ანალიზი"}</span>
-                  <span className="simple-expand-arrow">{isExpanded ? "▲" : "▼"}</span>
+                  <div className="simple-element-strip-left">
+                    <span className="simple-element-strip-glyph" aria-hidden="true">{elem.symbol}</span>
+                    <div className="simple-element-strip-title-box">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="simple-element-strip-name">{elem.name}</h3>
+                        <span className="simple-element-strip-badge">{elem.temperament}</span>
+                      </div>
+                      <p className="simple-element-strip-focus">{elem.focus}</p>
+                    </div>
+                  </div>
+
+                  <div className="simple-element-strip-right">
+                    <div className="simple-element-strip-zodiacs">
+                      {elem.signs.map((s) => (
+                        <span key={s.name} className="simple-strip-chip" title={s.name}>
+                          <b>{s.symbol}</b> <span>{s.name}</span>
+                        </span>
+                      ))}
+                    </div>
+                    <div className="simple-element-strip-action">
+                      <span className="simple-strip-action-text">{isExpanded ? "დახურვა" : "ანალიზი"}</span>
+                      <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
+                    </div>
+                  </div>
                 </button>
 
+                {/* Smooth Expandable Drawer */}
                 {isExpanded && (
-                  <div className="simple-element-drawer">
-                    <ElementTemperamentSummary element={elem.id} />
+                  <div className="simple-element-strip-drawer">
+                    <div className="simple-drawer-inner">
+                      <div className="simple-drawer-lede-row">
+                        <div className="flex items-center gap-2 text-xs font-bold text-slate-300 dark:text-zinc-300">
+                          <BookOpen className="h-4 w-4 shrink-0 text-slate-400" />
+                          <span>{guide.title}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setModalElement(elem.id)}
+                          className="simple-drawer-modal-btn"
+                          title="გახსენი სრულ ეკრანზე"
+                        >
+                          სრული ფანჯარა ↗
+                        </button>
+                      </div>
+
+                      <div className="simple-drawer-content mt-3 text-xs leading-relaxed space-y-3">
+                        <p className="simple-drawer-short font-medium text-slate-300 dark:text-zinc-200">
+                          {guide.short}
+                        </p>
+                        
+                        <div className="simple-drawer-grid grid gap-3 sm:grid-cols-2 pt-2 border-t border-zinc-700/30">
+                          <div className="simple-drawer-card">
+                            <h4 className="font-bold text-slate-100 dark:text-white mb-1">ფსიქოლოგიური სუბსტრატი</h4>
+                            <p className="text-slate-300 dark:text-zinc-300 leading-normal">{guide.psychologicalSubstrate}</p>
+                          </div>
+                          <div className="simple-drawer-card">
+                            <h4 className="font-bold text-slate-100 dark:text-white mb-1">ასტროლოგიური კონვერსია</h4>
+                            <p className="text-slate-300 dark:text-zinc-300 leading-normal">{guide.astrologicalConversion}</p>
+                          </div>
+                        </div>
+
+                        <div className="simple-drawer-card simple-drawer-card-shadow pt-2 border-t border-zinc-700/30">
+                          <h4 className="font-bold text-slate-100 dark:text-white mb-1">ჩრდილოვანი ასპექტი და რისკები</h4>
+                          <p className="text-slate-300 dark:text-zinc-300 leading-normal">{guide.negativeAspect}</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -165,7 +190,45 @@ export default function SimplePage() {
         </div>
       </section>
 
-      {/* 3. Celestial Bodies Horizon Ribbon */}
+      {/* Full Top-Level Modal Dialog for Maximum Mobile Clarity (Overflow Safe) */}
+      {modalElement && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto overscroll-contain animate-fadeIn"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setModalElement(null)}
+        >
+          <div
+            className="simple-modal-card relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-zinc-700 bg-zinc-950 p-5 sm:p-7 text-left text-zinc-100 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">
+                  {ELEMENT_STRIPS.find((e) => e.id === modalElement)?.symbol}
+                </span>
+                <h3 className="text-lg sm:text-xl font-bold">
+                  {ELEMENT_STRIPS.find((e) => e.id === modalElement)?.name} — {ELEMENT_STRIPS.find((e) => e.id === modalElement)?.temperament}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalElement(null)}
+                className="rounded-lg border border-zinc-700 bg-zinc-900 p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                aria-label="დახურვა"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs sm:text-sm leading-relaxed text-zinc-300">
+              <ElementTemperamentDetails element={modalElement} showTitle={false} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Celestial Bodies Ribbon */}
       <section id="planets" className="simple-section">
         <div className="simple-section-header">
           <div>
@@ -198,7 +261,7 @@ export default function SimplePage() {
           <div className="simple-planet-detail-card">
             <div className="simple-planet-detail-header">
               <span className="simple-planet-detail-glyph">{activePlanet.glyph}</span>
-              <div>
+              <div className="flex-1 min-w-0">
                 <h4 className="simple-planet-detail-name">{activePlanet.name}</h4>
                 <p className="simple-planet-detail-role">{activePlanet.role}</p>
               </div>
@@ -215,7 +278,7 @@ export default function SimplePage() {
         )}
       </section>
 
-      {/* 4. Calculator Workspace */}
+      {/* 3. Calculator Workspace */}
       <section id="calculator" className="simple-section simple-calc-section">
         <div className="simple-section-header">
           <div>
@@ -227,7 +290,7 @@ export default function SimplePage() {
           </p>
         </div>
 
-        {/* Minimalist segmented tabs */}
+        {/* Minimalist Monochrome Segmented Tabs */}
         <div className="simple-tab-nav" role="tablist">
           {TABS.map((item) => {
             const Icon = item.icon;
@@ -261,7 +324,7 @@ export default function SimplePage() {
         </div>
       </section>
 
-      {/* 5. Architectural Methodology Highlights */}
+      {/* 4. Architectural Methodology Highlights */}
       <section id="method" className="simple-section">
         <div className="simple-section-header">
           <div>
@@ -277,7 +340,7 @@ export default function SimplePage() {
           <div className="simple-method-card">
             <span className="simple-method-num">01</span>
             <div className="simple-method-icon-wrap">
-              <Check className="h-4 w-4 text-emerald-400" />
+              <Check className="h-4 w-4" />
             </div>
             <h3 className="simple-method-title">Swiss Ephemeris</h3>
             <p className="simple-method-text">
@@ -288,7 +351,7 @@ export default function SimplePage() {
           <div className="simple-method-card">
             <span className="simple-method-num">02</span>
             <div className="simple-method-icon-wrap">
-              <Layers className="h-4 w-4 text-sky-400" />
+              <Layers className="h-4 w-4" />
             </div>
             <h3 className="simple-method-title">სახლების სისტემები</h3>
             <p className="simple-method-text">
@@ -299,7 +362,7 @@ export default function SimplePage() {
           <div className="simple-method-card">
             <span className="simple-method-num">03</span>
             <div className="simple-method-icon-wrap">
-              <Orbit className="h-4 w-4 text-violet-400" />
+              <Orbit className="h-4 w-4" />
             </div>
             <h3 className="simple-method-title">ასპექტების მატრიცა</h3>
             <p className="simple-method-text">
@@ -310,7 +373,7 @@ export default function SimplePage() {
           <div className="simple-method-card">
             <span className="simple-method-num">04</span>
             <div className="simple-method-icon-wrap">
-              <ShieldCheck className="h-4 w-4 text-amber-400" />
+              <ShieldCheck className="h-4 w-4" />
             </div>
             <h3 className="simple-method-title">პირადი სამუშაო სივრცე</h3>
             <p className="simple-method-text">
