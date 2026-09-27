@@ -85,9 +85,11 @@ export default function AdminCalculationViewer({
       if (event.key === "Escape") onClose();
     };
 
+    document.documentElement.classList.add("chart-reader-open");
     document.body.style.overflow = "hidden";
     document.addEventListener("keydown", closeOnEscape);
     return () => {
+      document.documentElement.classList.remove("chart-reader-open");
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", closeOnEscape);
     };

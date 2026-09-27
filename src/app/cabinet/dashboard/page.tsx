@@ -149,8 +149,10 @@ export default function DashboardPage() {
     if (!selected) return;
 
     const previousOverflow = document.body.style.overflow;
+    document.documentElement.classList.add("chart-reader-open");
     document.body.style.overflow = "hidden";
     return () => {
+      document.documentElement.classList.remove("chart-reader-open");
       document.body.style.overflow = previousOverflow;
     };
   }, [selected]);

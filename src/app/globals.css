@@ -5020,7 +5020,7 @@ canvas {
   justify-content: flex-end !important;
   width: 100% !important;
   height: 0 !important;
-  margin: 0 !important;
+  margin: -0.65rem 0 0.25rem 0 !important;
   padding: 0 !important;
   overflow: visible !important;
   pointer-events: none !important;
@@ -5030,25 +5030,26 @@ canvas {
   .interpretation-close-row {
     top: 0 !important;
     right: 0 !important;
+    margin: -0.95rem 0 0.25rem 0 !important;
   }
 }
 
-/* Close button ("დახურვა") - positioned at extreme top-right corner edge */
+/* Close button ("დახურვა") - positioned higher at extreme top-right corner edge, slightly smaller */
 .interpretation-close-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
-  min-height: 2.1rem;
-  padding: 0.3rem 0.75rem 0.3rem 0.4rem;
+  gap: 0.28rem;
+  min-height: 1.85rem;
+  padding: 0.2rem 0.6rem 0.2rem 0.3rem;
   border: 1px solid rgba(251, 191, 36, 0.5);
   border-radius: 9999px;
   color: #fef3c7;
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(49, 46, 129, 0.92));
-  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.75), 0 0 16px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.75), 0 0 12px rgba(245, 158, 11, 0.25);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 800;
   line-height: 1;
   white-space: nowrap;
@@ -5056,7 +5057,7 @@ canvas {
   pointer-events: auto;
   transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
   margin: 0 !important;
-  transform: translate(0.45rem, -0.4rem);
+  transform: translate(0.35rem, -0.15rem);
 }
 
 .interpretation-close-button:hover,
@@ -5064,19 +5065,19 @@ canvas {
   border-color: rgba(253, 230, 138, 0.9);
   color: #ffffff;
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(79, 70, 229, 0.95));
-  box-shadow: 0 10px 30px -4px rgba(245, 158, 11, 0.45), inset 0 1px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.45), inset 0 1px rgba(255, 255, 255, 0.2);
   outline: none;
-  transform: translateY(-1px) scale(1.03);
+  transform: translate(0.35rem, -0.15rem) scale(1.04);
 }
 
 .interpretation-close-button:active {
-  transform: translateY(0) scale(0.96);
+  transform: translate(0.35rem, -0.15rem) scale(0.96);
 }
 
 .interpretation-close-icon {
   display: inline-grid;
-  width: 1.45rem;
-  height: 1.45rem;
+  width: 1.25rem;
+  height: 1.25rem;
   place-items: center;
   border: 1px solid rgba(251, 191, 36, 0.4);
   border-radius: 9999px;
@@ -5093,8 +5094,8 @@ canvas {
 }
 
 .interpretation-close-label {
-  padding-inline: 0.1rem 0.15rem;
-  letter-spacing: 0.02em;
+  padding-inline: 0.06rem 0.1rem;
+  letter-spacing: 0.015em;
 }
 
 /* Shared neutral glass hierarchy for chart-view and chart-builder surfaces. */
@@ -7054,14 +7055,20 @@ html.mode-ultra .chart-delete-dialog :where(.text-slate-100, .text-slate-200, .t
     top: 0 !important;
     z-index: 70 !important;
     height: 0 !important;
-    padding-inline: 0.55rem !important;
+    margin-top: -0.45rem !important;
+    padding-inline: 0.35rem !important;
   }
 
   .interpretation-close-button {
-    width: 2.35rem;
-    min-height: 2.35rem;
-    padding: 0.25rem;
-    transform: translateY(0.35rem) !important;
+    width: 2rem !important;
+    min-height: 2rem !important;
+    padding: 0.18rem !important;
+    transform: none !important;
+  }
+
+  .interpretation-close-button:hover,
+  .interpretation-close-button:focus-visible {
+    transform: scale(1.05) !important;
   }
 
   .interpretation-close-label {
@@ -7158,5 +7165,27 @@ html.mode-ultra .chart-delete-dialog :where(.text-slate-100, .text-slate-200, .t
      below its rounded frame. Match the light page surface in ultra mode. */
   html.mode-ultra .site-header {
     background: #f1f5f9 !important;
+  }
+}
+
+/* When a chart is open on a phone, keep the navigation chrome fixed above the
+   reader. Removing the header's bottom padding makes the reader touch the
+   navigation shell instead of revealing the dashboard behind it. */
+@media (max-width: 640px) {
+  html.chart-reader-open .site-header {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    left: 0 !important;
+    z-index: 120 !important;
+    padding-bottom: 0 !important;
+  }
+
+  html.chart-reader-open .chart-view-panel,
+  html.chart-reader-open .admin-calculation-viewer {
+    top: var(--site-header-height, 4rem) !important;
+    height: calc(100dvh - var(--site-header-height, 4rem)) !important;
+    z-index: 110 !important;
+    overscroll-behavior: contain;
   }
 }
