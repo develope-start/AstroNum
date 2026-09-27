@@ -176,18 +176,24 @@ export default function TransitCalculator() {
             }`}
             onFocusCapture={() => inputMode !== "interval" && activateMode("interval")}
           >
-            <div className="flex items-start justify-center gap-2 text-center">
-              <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-purple-300/30 bg-purple-500/15 text-purple-300">
+            <div className="transit-panel-heading">
+              <div className="transit-panel-heading-icon flex h-7 w-7 items-center justify-center rounded-xl border border-purple-300/30 bg-purple-500/15 text-purple-300">
                 <Clock className="h-4 w-4" />
               </div>
-              <div className="min-w-0">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის ინტერვალი</p>
-                <p className="mx-auto mt-0.5 max-w-[34rem] text-[0.65rem] leading-relaxed text-slate-400">ძველი წელთაღრიცხვის 10 000 წლიდან ახალი წელთაღრიცხვის 10 000 წლამდე</p>
+              <div className="transit-panel-heading-copy">
+                <p className="transit-panel-title text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის ინტერვალი</p>
+                <p className="transit-panel-description text-[0.65rem] leading-relaxed text-slate-400">ძველი წელთაღრიცხვის 10 000 წლიდან ახალი წელთაღრიცხვის 10 000 წლამდე</p>
               </div>
             </div>
-            <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-              <SharedWideDateInput label="დან" value={transitStartDate} onChange={setTransitStartDate} onActivate={() => activateMode("interval")} />
-              <SharedWideDateInput label="მდე" value={transitEndDate} onChange={setTransitEndDate} onActivate={() => activateMode("interval")} />
+            <div className="transit-range-fields">
+              <div className="transit-range-field">
+                <span className="transit-range-label">დაწყება</span>
+                <SharedWideDateInput label="დაწყების თარიღი" value={transitStartDate} onChange={setTransitStartDate} onActivate={() => activateMode("interval")} />
+              </div>
+              <div className="transit-range-field">
+                <span className="transit-range-label">დასასრული</span>
+                <SharedWideDateInput label="დასასრულის თარიღი" value={transitEndDate} onChange={setTransitEndDate} onActivate={() => activateMode("interval")} />
+              </div>
             </div>
             <p className="mx-auto max-w-xl text-center text-[0.65rem] leading-relaxed text-slate-500">შეგიძლიათ გამოიყენოთ კალენდრის ამოსქროლავი არჩევა ან პირდაპირ ჩაწეროთ თარიღი. ძველი წელთაღრიცხვისთვის გამოიყენეთ მინუსი, მაგალითად: -10000-01-01.</p>
           </div>
@@ -196,11 +202,11 @@ export default function TransitCalculator() {
             className={`transit-date-panel flex w-full flex-col items-center justify-center gap-2.5 rounded-2xl p-3 transition-all sm:p-4 ${inputMode === "date" ? "transit-date-active" : "transit-date-inactive"}`}
             onFocusCapture={() => inputMode !== "date" && activateMode("date")}
           >
-            <div className="flex items-center justify-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
+            <div className="transit-panel-heading">
+              <div className="transit-panel-heading-icon flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
                 <Calendar className="h-4 w-4 text-amber-400" />
               </div>
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის თარიღი:</label>
+              <label className="transit-panel-title text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის თარიღი</label>
             </div>
 
             <SharedWideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={setTransitDate} onActivate={() => activateMode("date")} />

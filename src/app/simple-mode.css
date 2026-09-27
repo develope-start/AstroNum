@@ -85,8 +85,8 @@ html.simple-document .nav-action {
 html.simple-document .nav-version-btn:hover,
 html.simple-document .nav-quiet-action:hover,
 html.simple-document .nav-action:hover {
-  background: #111 !important;
-  color: #fff !important;
+  background: #e8edf0 !important;
+  color: #111 !important;
 }
 
 /* Shared document surfaces */
@@ -233,6 +233,12 @@ html.simple-document .interpretation-paragraph { color: #111 !important; line-he
 html.simple-document .interpretation-paragraph strong { color: #111 !important; text-decoration: underline; text-shadow: none !important; }
 html.simple-document .interpretation-focus-highlight { outline-color: #111 !important; }
 
+html.simple-document :where(.transit-panel-title, .transit-panel-description, .transit-range-label) {
+  color: #111 !important;
+}
+
+html.simple-document .transit-range-field { gap: 0.35rem; }
+
 /* Administration and account pages */
 html.simple-document :where(.admin-page, .cabinet-page) :where(table, th, td) {
   border-color: #111 !important;
@@ -245,6 +251,153 @@ html.simple-document .admin-page :where(.admin-control-button-danger, button[cla
 }
 
 html.simple-document .admin-page :where(.admin-control-button-danger, button[class*="border-rose"], button[class*="border-red"]):hover { background: #9b1c1c !important; color: #fff !important; }
+
+/* Every functional surface uses the same paper palette. These selectors cover
+   the legacy utility colours used by forms, charts, cabinets, and admin views. */
+html.simple-document :where(
+  .app-home,
+  .simple-page,
+  .cabinet-page,
+  .admin-page,
+  .chart-view-panel,
+  .admin-calculation-dialog,
+  .chart-delete-dialog,
+  .calendar-popup,
+  .time-picker-popup,
+  .place-suggestions
+) :where(
+  [class*="bg-[#"],
+  [class*="bg-slate-"],
+  [class*="bg-zinc-"],
+  [class*="bg-purple-"],
+  [class*="bg-violet-"],
+  [class*="bg-indigo-"],
+  [class*="bg-sky-"],
+  [class*="bg-cyan-"],
+  [class*="bg-blue-"],
+  [class*="bg-amber-"],
+  [class*="bg-orange-"],
+  [class*="bg-emerald-"],
+  [class*="bg-green-"],
+  [class*="bg-rose-"],
+  [class*="bg-pink-"],
+  [class*="bg-fuchsia-"],
+  [class*="bg-black"],
+  [class*="bg-ink"],
+  [class*="bg-gradient"],
+  [class*="from-"],
+  [class*="via-"],
+  [class*="to-"]
+) {
+  background-color: #fff !important;
+  background-image: none !important;
+  color: #111 !important;
+  box-shadow: none !important;
+}
+
+html.simple-document :where(
+  .app-home,
+  .simple-page,
+  .cabinet-page,
+  .admin-page,
+  .chart-view-panel,
+  .admin-calculation-dialog,
+  .chart-delete-dialog,
+  .calendar-popup,
+  .time-picker-popup,
+  .place-suggestions
+) :where(
+  [class*="text-slate-"],
+  [class*="text-zinc-"],
+  [class*="text-amber-"],
+  [class*="text-orange-"],
+  [class*="text-purple-"],
+  [class*="text-violet-"],
+  [class*="text-indigo-"],
+  [class*="text-sky-"],
+  [class*="text-cyan-"],
+  [class*="text-blue-"],
+  [class*="text-emerald-"],
+  [class*="text-green-"],
+  [class*="text-pink-"],
+  [class*="text-fuchsia-"],
+  [class*="text-white"]
+) { color: #111 !important; text-shadow: none !important; }
+
+html.simple-document :where(
+  .app-home,
+  .simple-page,
+  .cabinet-page,
+  .admin-page,
+  .chart-view-panel,
+  .admin-calculation-dialog,
+  .chart-delete-dialog,
+  .calendar-popup,
+  .time-picker-popup,
+  .place-suggestions
+) :where(button, [role="button"]) {
+  border-color: #aeb8bf !important;
+  background-color: #fff !important;
+  background-image: none !important;
+  color: #111 !important;
+  box-shadow: none !important;
+}
+
+html.simple-document :where(
+  .app-home,
+  .simple-page,
+  .cabinet-page,
+  .admin-page,
+  .chart-view-panel,
+  .admin-calculation-dialog,
+  .chart-delete-dialog,
+  .calendar-popup,
+  .time-picker-popup,
+  .place-suggestions
+) :where(button, [role="button"]):hover {
+  background-color: #edf1f3 !important;
+  color: #111 !important;
+}
+
+html.simple-document :where(button[class*="ring-2"], button[aria-pressed="true"], .calendar-day-option.is-selected, .time-picker-option.is-selected) {
+  border-color: #8e9aa2 !important;
+  background: #e2e8eb !important;
+  color: #111 !important;
+  box-shadow: inset 0 0 0 1px #c4cdd2 !important;
+  transform: none !important;
+}
+
+html.simple-document :where(.interpretation-accordion-summary, .chart-details-accordion > summary, .chart-subsection > summary, .chart-map-section > summary, .admin-page details > summary) {
+  border-color: #c7d0d5 !important;
+  background: #f3f6f7 !important;
+  color: #111 !important;
+}
+
+html.simple-document :where(.calendar-popup, .time-picker-popup, .place-suggestions, .chart-view-panel, .admin-calculation-dialog, .chart-delete-dialog) {
+  border-color: #aeb8bf !important;
+  background: #fff !important;
+  color: #111 !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16) !important;
+}
+
+html.simple-document :where(.calendar-day-option, .time-picker-option, .place-suggestion-option):hover { background: #e8eef0 !important; }
+html.simple-document :where(input, select, textarea, .wide-date-editor, .time-editor) { border-color: #aeb8bf !important; background: #fff !important; color: #111 !important; }
+html.simple-document :where(option) { background: #fff; color: #111; }
+
+/* The chart view follows the same paper treatment: a readable monochrome
+   wheel rather than a dark card inside an otherwise light document. */
+html.simple-document .chart-wheel-wrap svg :where(circle, rect) {
+  fill: #fff !important;
+  stroke: #111 !important;
+  filter: none !important;
+}
+
+html.simple-document .chart-wheel-wrap svg line { stroke: #75828a !important; }
+html.simple-document .chart-wheel-wrap svg text {
+  fill: #111 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
 
 @media (max-width: 640px) {
   html.simple-document main { padding-inline: 10px !important; }
