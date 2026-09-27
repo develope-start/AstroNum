@@ -16,7 +16,6 @@ html.simple-document body.app-body {
 }
 
 html.simple-document body.app-body > div.pointer-events-none,
-html.simple-document .star-field,
 html.simple-document .brand-stardust-orbit,
 html.simple-document .brand-burst-container,
 html.simple-document .nav-toggle-orb-wrap,
