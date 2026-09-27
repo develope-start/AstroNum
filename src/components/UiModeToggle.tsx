@@ -21,12 +21,12 @@ function applyUiMode(mode: UiMode, returnMode: FullMode) {
   const fullMode = mode === "simple" ? returnMode : mode;
   const isLight = fullMode === "light";
 
-  root.classList.toggle("mode-ultra", isLight);
-  root.classList.toggle("mode-simple", mode === "simple");
-  root.classList.toggle("mode-simple-light", mode === "simple" && isLight);
-  root.classList.toggle("light", isLight);
-  root.classList.toggle("dark", !isLight);
-  root.setAttribute("data-ui-theme", isLight ? "light" : "dark");
+  root.classList.toggle("simple-document", mode === "simple");
+  root.classList.toggle("mode-ultra", mode !== "simple" && isLight);
+  root.classList.remove("mode-simple", "mode-simple-light");
+  root.classList.toggle("light", mode !== "simple" && isLight);
+  root.classList.toggle("dark", mode !== "simple" && !isLight);
+  root.setAttribute("data-ui-theme", mode === "simple" ? "simple" : (isLight ? "light" : "dark"));
 }
 
 function persistUiMode(mode: UiMode, returnMode: FullMode) {
@@ -54,7 +54,10 @@ function clearStoredMode() {
 export default function UiModeToggle() {
   const pathname = usePathname();
 
-  const [mode, setMode] = useState<UiMode>(() => pathname?.startsWith("/simple") ? "simple" : "dark");
+  const [mode, setMode] = useState<UiMode>(() => {
+    if (pathname?.startsWith("/simple")) return "simple";
+    return typeof document !== "undefined" && document.documentElement.classList.contains("simple-document") ? "simple" : "dark";
+  });
   const [returnMode, setReturnMode] = useState<FullMode>("dark");
   const expiryTimerRef = useRef<number | null>(null);
 
@@ -74,7 +77,8 @@ export default function UiModeToggle() {
   };
 
   useEffect(() => {
-    let savedMode: UiMode = pathname?.startsWith("/simple") ? "simple" : "dark";
+    const isSimplePath = pathname?.startsWith("/simple") ?? false;
+    let savedMode: UiMode = isSimplePath ? "simple" : "dark";
     let savedReturnMode: FullMode = "dark";
     let expiresAt = 0;
 
@@ -84,7 +88,7 @@ export default function UiModeToggle() {
       const isLegacyMode = saved === "classic" || saved === "ultra";
       const isValid = !savedExpiresAt || savedExpiresAt > Date.now();
 
-      if (isValid && (saved === "dark" || saved === "light" || saved === "simple")) {
+      if (!isSimplePath && isValid && (saved === "dark" || saved === "light" || saved === "simple")) {
         savedMode = saved;
         savedReturnMode = readFullMode(localStorage.getItem(RETURN_MODE_KEY));
         expiresAt = savedExpiresAt;
@@ -144,22 +148,23 @@ export default function UiModeToggle() {
 
   return (
     <div className="nav-mode-controls" aria-label="საიტის ვიზუალური რეჟიმები">
-      {/* Light / Dark Mode Button - Preserved with original colors and orb */}
-      <button
-        type="button"
-        onClick={changeTheme}
-        className={`nav-mode-orb-btn group ${nextThemeMode === "light" ? "is-light-target" : "is-dark-target"}`}
-        aria-label={`${nextThemeLabel} რეჟიმზე გადასვლა`}
-        title={`${nextThemeLabel} რეჟიმზე გადასვლა`}
-      >
-        <span className="nav-toggle-orb-wrap" aria-hidden="true">
-          <span className={`nav-toggle-ping ${nextThemeMode === "light" ? "nav-toggle-ping-blue" : "nav-toggle-ping-red"}`} />
-          <span className={`nav-toggle-orb ${nextThemeMode === "light" ? "nav-toggle-orb-blue" : "nav-toggle-orb-red"}`} />
-        </span>
-        <span className={`nav-toggle-label ${nextThemeMode === "light" ? "nav-toggle-label-blue" : "nav-toggle-label-red"}`}>
-          {nextThemeLabel}
-        </span>
-      </button>
+      {mode !== "simple" && (
+        <button
+          type="button"
+          onClick={changeTheme}
+          className={`nav-mode-orb-btn group ${nextThemeMode === "light" ? "is-light-target" : "is-dark-target"}`}
+          aria-label={`${nextThemeLabel} რეჟიმზე გადასვლა`}
+          title={`${nextThemeLabel} რეჟიმზე გადასვლა`}
+        >
+          <span className="nav-toggle-orb-wrap" aria-hidden="true">
+            <span className={`nav-toggle-ping ${nextThemeMode === "light" ? "nav-toggle-ping-blue" : "nav-toggle-ping-red"}`} />
+            <span className={`nav-toggle-orb ${nextThemeMode === "light" ? "nav-toggle-orb-blue" : "nav-toggle-orb-red"}`} />
+          </span>
+          <span className={`nav-toggle-label ${nextThemeMode === "light" ? "nav-toggle-label-blue" : "nav-toggle-label-red"}`}>
+            {nextThemeLabel}
+          </span>
+        </button>
+      )}
 
       {/* Single Toggle Button: One button to switch between Simple and Advanced */}
       <button

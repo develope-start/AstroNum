@@ -20,6 +20,7 @@ import "@fontsource/noto-serif-georgian/latin-600.css";
 import "@fontsource/noto-serif-georgian/latin-700.css";
 import "@fontsource/noto-serif-georgian/latin-800.css";
 import "./globals.css";
+import "./simple-mode.css";
 import Nav from "@/components/Nav";
 
 export const metadata: Metadata = {
@@ -39,14 +40,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 const expiresAt = Number(localStorage.getItem('astronum_ui_mode_expires') || 0);
                 const valid = !expiresAt || expiresAt > Date.now();
                 const mode = valid ? savedMode : 'dark';
-                const returnMode = localStorage.getItem('astronum_ui_return_mode') === 'light' ? 'light' : 'dark';
-                const isSimple = mode === 'simple';
-                const isLight = isSimple ? returnMode === 'light' : mode === 'light' || mode === 'ultra';
-                document.documentElement.classList.toggle('mode-ultra', isLight);
-                document.documentElement.classList.toggle('mode-simple', isSimple);
-                document.documentElement.classList.toggle('mode-simple-light', isSimple && isLight);
-                document.documentElement.classList.toggle('light', isLight);
-                document.documentElement.classList.toggle('dark', !isLight);
+                const isSimple = mode === 'simple' || window.location.pathname.startsWith('/simple');
+                const isLight = mode === 'light' || mode === 'ultra';
+                document.documentElement.classList.toggle('simple-document', isSimple);
+                document.documentElement.classList.toggle('mode-ultra', !isSimple && isLight);
+                document.documentElement.classList.remove('mode-simple', 'mode-simple-light');
+                document.documentElement.classList.toggle('light', !isSimple && isLight);
+                document.documentElement.classList.toggle('dark', !isSimple && !isLight);
                 document.documentElement.setAttribute('data-ui-theme', isSimple ? 'simple' : (isLight ? 'light' : 'dark'));
               } catch (e) {}
             `,

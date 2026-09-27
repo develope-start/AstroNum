@@ -1,0 +1,255 @@
+/*
+ * Simple Mode is intentionally kept separate from the visual system in
+ * globals.css. It presents the same React tree and state as Advanced Mode,
+ * with the visual language of a straightforward document-style web app.
+ */
+
+html.simple-document {
+  background: #fff;
+  color-scheme: light;
+}
+
+html.simple-document body.app-body {
+  background: #fff !important;
+  color: #111 !important;
+  font-family: Arial, "Noto Sans Georgian", sans-serif;
+}
+
+html.simple-document body.app-body > div.pointer-events-none,
+html.simple-document .star-field,
+html.simple-document .brand-stardust-orbit,
+html.simple-document .brand-burst-container,
+html.simple-document .nav-toggle-orb-wrap,
+html.simple-document .nav-version-dot,
+html.simple-document .hero-orbit-card > .zodiac-wheel,
+html.simple-document .hero-orbit-card > .element-frame {
+  display: none !important;
+}
+
+html.simple-document ::selection { background: #111; color: #fff; }
+html.simple-document :where(button, a, input, select, textarea, summary):focus-visible {
+  outline: 2px solid #111 !important;
+  outline-offset: 2px;
+}
+
+/* Page and navigation */
+html.simple-document .site-header {
+  position: static;
+  border-bottom: 1px solid #111;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+html.simple-document .nav-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html.simple-document main {
+  max-width: 1100px !important;
+  margin: 0 auto;
+  padding: 20px 16px 48px !important;
+}
+
+html.simple-document .brand-mark-container,
+html.simple-document .brand-mark {
+  width: auto;
+  height: auto;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+html.simple-document .brand-mark svg { color: #111 !important; }
+html.simple-document .brand-title-row :where(span, sup),
+html.simple-document .brand-georgia-map { color: #111 !important; fill: #111 !important; }
+html.simple-document .brand-title-row .text-violet-300 { color: #111 !important; }
+
+html.simple-document .nav-mode-controls { gap: 6px; }
+html.simple-document .nav-version-btn,
+html.simple-document .nav-quiet-action,
+html.simple-document .nav-action {
+  min-height: 32px;
+  border: 1px solid #111 !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  color: #111 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html.simple-document .nav-version-btn:hover,
+html.simple-document .nav-quiet-action:hover,
+html.simple-document .nav-action:hover {
+  background: #111 !important;
+  color: #fff !important;
+}
+
+/* Shared document surfaces */
+html.simple-document :where(.glass-panel, .app-section, .simple-calc-frame, .chart-map-section, .chart-view-interpretation, .admin-calculation-interpretation, .admin-page section, .admin-page article, .admin-page details, .cabinet-page .glass-panel) {
+  border: 1px solid #111 !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  color: #111 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html.simple-document :where(h1, h2, h3, h4, p, span, label, legend, summary, dt, dd, li) {
+  color: inherit;
+  text-shadow: none !important;
+}
+
+html.simple-document :where(.text-white, .text-slate-50, .text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500, .text-amber-100, .text-amber-200, .text-amber-300, .text-amber-400, .text-violet-200, .text-violet-300, .text-purple-200, .text-purple-300, .text-sky-200, .text-sky-300, .text-cyan-200, .text-cyan-300) {
+  color: #111 !important;
+}
+
+html.simple-document :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea, .wide-date-editor, .time-editor) {
+  min-height: 36px;
+  border: 1px solid #555 !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  color: #111 !important;
+  box-shadow: none !important;
+}
+
+html.simple-document :where(input, textarea)::placeholder { color: #666 !important; opacity: 1; }
+html.simple-document :where(.wide-date-editor input, .time-editor input) { color: #111 !important; }
+
+html.simple-document :where(button, .button-primary, .button-secondary) {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html.simple-document :where(button[class*="bg-gradient"], button[class*="from-"], .primary-action, .secondary-action, .admin-control-button, .admin-control-button-secondary) {
+  border: 1px solid #111 !important;
+  background: #fff !important;
+  color: #111 !important;
+}
+
+html.simple-document :where(button[class*="bg-gradient"], button[class*="from-"], .primary-action, .secondary-action, .admin-control-button, .admin-control-button-secondary):hover {
+  background: #111 !important;
+  color: #fff !important;
+}
+
+html.simple-document :where(button[class*="bg-gradient"], button[class*="from-"]) :where(span, svg) { color: inherit !important; }
+
+/* Home and calculator */
+html.simple-document .hero-grid {
+  display: block !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+html.simple-document .hero-grid > div:first-child { margin-bottom: 20px; }
+html.simple-document .hero-kicker { color: #444 !important; }
+html.simple-document .hero-title { color: #111 !important; font-family: Georgia, "Noto Serif Georgian", serif; }
+html.simple-document .hero-title em,
+html.simple-document .hero-lead { color: #222 !important; }
+
+html.simple-document .hero-orbit-card {
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html.simple-document .celestial-system {
+  position: static !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+html.simple-document .celestial-system :where(.celestial-star-noise, .celestial-orbit, .celestial-constellation-ring, .celestial-ruler-ring, .celestial-earth, .celestial-earth-halo, .celestial-info-card) { display: none !important; }
+
+html.simple-document .celestial-element-panel {
+  position: static !important;
+  display: grid !important;
+  min-height: 0 !important;
+  width: auto !important;
+  padding: 10px !important;
+  gap: 8px !important;
+  border: 1px solid #111 !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  color: #111 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+html.simple-document .celestial-element-panel:hover,
+html.simple-document .celestial-element-panel:focus-visible { background: #f2f2f2 !important; }
+html.simple-document .celestial-element-heading,
+html.simple-document .celestial-element-row { position: static !important; color: #111 !important; }
+html.simple-document .celestial-element-symbol,
+html.simple-document .celestial-element-items span { border: 0 !important; background: transparent !important; color: #111 !important; box-shadow: none !important; }
+
+html.simple-document .celestial-temperament-card { border: 1px solid #111 !important; border-radius: 0 !important; background: #fff !important; box-shadow: none !important; }
+
+html.simple-document .app-section { margin-top: 20px; padding: 16px !important; }
+html.simple-document .section-heading { border-bottom: 1px solid #111 !important; }
+html.simple-document .tab-button { border-radius: 0 !important; color: #111 !important; }
+html.simple-document .tab-button.is-active { border-bottom-color: #111 !important; background: #111 !important; color: #fff !important; }
+
+/* Interpretation stays compact and folded under its headings. */
+html.simple-document .interpretation-toolbar {
+  padding-bottom: 10px;
+  border-color: #111 !important;
+  color: #111 !important;
+}
+
+html.simple-document .interpretation-toolbar :where(div, span) { background: transparent !important; color: #111 !important; box-shadow: none !important; }
+html.simple-document .interpretation-accordion,
+html.simple-document .chart-details-accordion,
+html.simple-document .chart-subsection {
+  border: 1px solid #111 !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+html.simple-document :where(.interpretation-accordion-summary, .chart-details-accordion > summary, .chart-subsection > summary) {
+  min-height: 40px;
+  padding: 10px 12px !important;
+  background: #f2f2f2 !important;
+  color: #111 !important;
+}
+
+html.simple-document .interpretation-accordion[open] > summary,
+html.simple-document .chart-details-accordion[open] > summary,
+html.simple-document .chart-subsection[open] > summary { border-bottom: 1px solid #111; }
+html.simple-document .interpretation-accordion-body { padding: 12px !important; }
+html.simple-document .interpretation-paragraph { color: #111 !important; line-height: 1.75; }
+html.simple-document .interpretation-paragraph strong { color: #111 !important; text-decoration: underline; text-shadow: none !important; }
+html.simple-document .interpretation-focus-highlight { outline-color: #111 !important; }
+
+/* Administration and account pages */
+html.simple-document :where(.admin-page, .cabinet-page) :where(table, th, td) {
+  border-color: #111 !important;
+  color: #111 !important;
+}
+
+html.simple-document .admin-page :where(.admin-control-button-danger, button[class*="border-rose"], button[class*="border-red"]) {
+  border-color: #9b1c1c !important;
+  color: #9b1c1c !important;
+}
+
+html.simple-document .admin-page :where(.admin-control-button-danger, button[class*="border-rose"], button[class*="border-red"]):hover { background: #9b1c1c !important; color: #fff !important; }
+
+@media (max-width: 640px) {
+  html.simple-document main { padding-inline: 10px !important; }
+  html.simple-document .celestial-system { grid-template-columns: minmax(0, 1fr); }
+  html.simple-document .nav-shell { padding-inline: 10px !important; }
+  html.simple-document .hero-actions { flex-wrap: wrap; }
+}
