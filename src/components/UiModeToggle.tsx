@@ -159,28 +159,16 @@ export default function UiModeToggle() {
         </span>
       </button>
 
-      {/* Identical Sized Dual Buttons: SIMPLE & ADVANCED */}
-      <div className="nav-version-group" role="group" aria-label="დიზაინის ვერსია">
-        <Link
-          href="/simple"
-          className={`nav-version-btn nav-btn-simple ${isSimpleRoute ? "is-active" : ""}`}
-          aria-current={isSimpleRoute ? "page" : undefined}
-          title="Simple დიზაინის გვერდზე გადასვლა"
-        >
-          <span className="nav-version-dot" aria-hidden="true" />
-          <span>SIMPLE</span>
-        </Link>
-
-        <Link
-          href="/"
-          className={`nav-version-btn nav-btn-advanced ${!isSimpleRoute ? "is-active" : ""}`}
-          aria-current={!isSimpleRoute ? "page" : undefined}
-          title="Advanced დიზაინზე გადასვლა"
-        >
-          <span className="nav-version-dot" aria-hidden="true" />
-          <span>ADVANCED</span>
-        </Link>
-      </div>
+      {/* Single Toggle Button: One button to switch between Simple and Advanced */}
+      <Link
+        href={isSimpleRoute ? "/" : "/simple"}
+        className={`nav-version-btn ${isSimpleRoute ? "nav-btn-advanced" : "nav-btn-simple"}`}
+        title={isSimpleRoute ? "Advanced დიზაინზე გადასვლა" : "Simple დიზაინზე გადასვლა"}
+        aria-label={isSimpleRoute ? "Advanced დიზაინზე გადასვლა" : "Simple დიზაინზე გადასვლა"}
+      >
+        <span className="nav-version-dot" aria-hidden="true" />
+        <span>{isSimpleRoute ? "ADVANCED" : "SIMPLE"}</span>
+      </Link>
     </div>
   );
 }
