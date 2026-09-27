@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Activity, Check, Flame, Heart, Layers, Orbit, ShieldCheck, Sun, Wind, Mountain, Droplet, ChevronDown, X, BookOpen, Sparkles } from "lucide-react";
+import { Activity, Check, Flame, Heart, Layers, Orbit, ShieldCheck, Sun, Wind, Mountain, Droplet, ChevronDown, X, BookOpen } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
 import SynastryCalculator from "@/components/SynastryCalculator";
@@ -12,10 +12,34 @@ import { ELEMENT_TEMPERAMENTS, type ElementTemperamentId } from "@/lib/elementTe
 type Tab = "natal" | "synastry" | "transit" | "advanced";
 
 const TABS = [
-  { id: "natal", label: "ნატალური", hint: "დაბადების რუკა — პირადი სტრუქტურისა და პოტენციალის ანალიზი", icon: Sun },
-  { id: "synastry", label: "სინასტრია", hint: "ორი რუკის შედარება — ურთიერთქმედების ძლიერი და რთული წერტილები", icon: Heart },
-  { id: "transit", label: "ტრანზიტები", hint: "მიმდინარე ციური მოძრაობა ნატალურ რუკასთან მიმართებით", icon: Activity },
-  { id: "advanced", label: "გაფართოებული", hint: "პროგრესიები, Return-ები, Solar Arc, დაბნელებები და ჰარმონიკები", icon: Orbit },
+  {
+    id: "natal",
+    label: "ნატალური რუკა",
+    tag: "პირადი ანალიზი",
+    hint: "დაბადების რუკა — პირადი სტრუქტურისა და პოტენციალის ანალიზი",
+    icon: Sun,
+  },
+  {
+    id: "synastry",
+    label: "სინასტრია",
+    tag: "თავსებადობა",
+    hint: "ორი რუკის შედარება — ურთიერთქმედების ძლიერი და რთული წერტილები",
+    icon: Heart,
+  },
+  {
+    id: "transit",
+    label: "ტრანზიტები",
+    tag: "დროის დინამიკა",
+    hint: "მიმდინარე ციური მოძრაობა ნატალურ რუკასთან მიმართებით",
+    icon: Activity,
+  },
+  {
+    id: "advanced",
+    label: "გაფართოებული",
+    tag: "პროგნოზირება",
+    hint: "პროგრესიები, Return-ები, Solar Arc, დაბნელებები და ჰარმონიკები",
+    icon: Orbit,
+  },
 ] as const;
 
 const CELESTIAL_BODIES = [
@@ -99,7 +123,6 @@ export default function SimplePage() {
 
         <div className="simple-element-strips-list space-y-2.5">
           {ELEMENT_STRIPS.map((elem) => {
-            const Icon = elem.icon;
             const isExpanded = expandedElement === elem.id;
             const guide = ELEMENT_TEMPERAMENTS[elem.id];
 
@@ -193,7 +216,7 @@ export default function SimplePage() {
       {/* Full Top-Level Modal Dialog for Maximum Mobile Clarity (Overflow Safe) */}
       {modalElement && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto overscroll-contain animate-fadeIn"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto overscroll-contain"
           role="dialog"
           aria-modal="true"
           onClick={() => setModalElement(null)}
@@ -214,7 +237,7 @@ export default function SimplePage() {
               <button
                 type="button"
                 onClick={() => setModalElement(null)}
-                className="rounded-lg border border-zinc-700 bg-zinc-900 p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                className="rounded-lg border border-zinc-700 bg-zinc-900 p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 active:scale-95"
                 aria-label="დახურვა"
               >
                 <X className="h-5 w-5" />
@@ -290,8 +313,8 @@ export default function SimplePage() {
           </p>
         </div>
 
-        {/* Minimalist Monochrome Segmented Tabs */}
-        <div className="simple-tab-nav" role="tablist">
+        {/* 2-Row Responsive Grid of Tab Buttons */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5 my-4" role="tablist" aria-label="ანალიზის მეთოდები">
           {TABS.map((item) => {
             const Icon = item.icon;
             const isSelected = tab === item.id;
@@ -299,13 +322,39 @@ export default function SimplePage() {
               <button
                 key={item.id}
                 type="button"
-                className={`simple-tab-btn ${isSelected ? "is-active" : ""}`}
-                onClick={() => setTab(item.id)}
                 role="tab"
                 aria-selected={isSelected}
+                onClick={() => setTab(item.id)}
+                className={`simple-nav-card group relative flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-150 text-left active:scale-[0.98] ${
+                  isSelected
+                    ? "simple-nav-card-active shadow-md"
+                    : "simple-nav-card-inactive hover:border-zinc-400 dark:hover:border-zinc-500"
+                }`}
               >
-                <Icon className="h-4 w-4" />
-                <span>{item.label}</span>
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`p-2.5 rounded-xl transition-colors ${
+                    isSelected 
+                      ? "simple-nav-card-icon-active" 
+                      : "simple-nav-card-icon-inactive"
+                  }`}>
+                    <Icon className="h-5 w-5 shrink-0" />
+                  </div>
+                  <div>
+                    <span className="block text-sm sm:text-base font-bold leading-tight">
+                      {item.label}
+                    </span>
+                    <span className="block text-[11px] sm:text-xs opacity-70 mt-0.5 font-medium">
+                      {item.tag}
+                    </span>
+                  </div>
+                </div>
+                <div className={`hidden sm:flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-full border ${
+                  isSelected 
+                    ? "border-current opacity-90 font-bold" 
+                    : "border-transparent opacity-0 group-hover:opacity-60"
+                }`}>
+                  {isSelected ? "აქტიური" : "არჩევა"}
+                </div>
               </button>
             );
           })}
@@ -316,7 +365,7 @@ export default function SimplePage() {
           <span>{activeTab.hint}</span>
         </div>
 
-        <div className="simple-calc-frame">
+        <div className="simple-calc-frame mt-4">
           {tab === "natal" && <NatalCalculator />}
           {tab === "synastry" && <SynastryCalculator />}
           {tab === "transit" && <TransitCalculator />}
