@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export type UiMode = "dark" | "light" | "simple";
@@ -23,6 +22,8 @@ function applyUiMode(mode: UiMode, returnMode: FullMode) {
   const isLight = fullMode === "light";
 
   root.classList.toggle("mode-ultra", isLight);
+  root.classList.toggle("mode-simple", mode === "simple");
+  root.classList.toggle("mode-simple-light", mode === "simple" && isLight);
   root.classList.toggle("light", isLight);
   root.classList.toggle("dark", !isLight);
   root.setAttribute("data-ui-theme", isLight ? "light" : "dark");
@@ -52,9 +53,8 @@ function clearStoredMode() {
 
 export default function UiModeToggle() {
   const pathname = usePathname();
-  const isSimpleRoute = pathname?.startsWith("/simple") ?? false;
 
-  const [mode, setMode] = useState<UiMode>("dark");
+  const [mode, setMode] = useState<UiMode>(() => pathname?.startsWith("/simple") ? "simple" : "dark");
   const [returnMode, setReturnMode] = useState<FullMode>("dark");
   const expiryTimerRef = useRef<number | null>(null);
 
@@ -74,7 +74,7 @@ export default function UiModeToggle() {
   };
 
   useEffect(() => {
-    let savedMode: UiMode = "dark";
+    let savedMode: UiMode = pathname?.startsWith("/simple") ? "simple" : "dark";
     let savedReturnMode: FullMode = "dark";
     let expiresAt = 0;
 
@@ -120,24 +120,26 @@ export default function UiModeToggle() {
     };
   }, []);
 
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      document.documentElement.classList.toggle("mode-simple", isSimpleRoute);
-    }
-  }, [isSimpleRoute]);
-
   const activeFullMode: FullMode = mode === "simple" ? returnMode : mode;
   const nextThemeLabel = activeFullMode === "dark" ? "LIGHT" : "DARK";
   const nextThemeMode: FullMode = activeFullMode === "dark" ? "light" : "dark";
 
   const changeTheme = () => {
     const nextReturnMode = nextThemeMode;
-    const nextMode: UiMode = isSimpleRoute ? "simple" : nextReturnMode;
+    const nextMode: UiMode = mode === "simple" ? "simple" : nextReturnMode;
     setReturnMode(nextReturnMode);
     setMode(nextMode);
     scheduleExpiry(persistUiMode(nextMode, nextReturnMode));
     applyUiMode(nextMode, nextReturnMode);
     window.dispatchEvent(new CustomEvent("astronum-ui-mode-changed", { detail: { mode: nextMode, returnMode: nextReturnMode } }));
+  };
+
+  const changeVersion = () => {
+    const nextMode: UiMode = mode === "simple" ? activeFullMode : "simple";
+    setMode(nextMode);
+    scheduleExpiry(persistUiMode(nextMode, returnMode));
+    applyUiMode(nextMode, returnMode);
+    window.dispatchEvent(new CustomEvent("astronum-ui-mode-changed", { detail: { mode: nextMode, returnMode } }));
   };
 
   return (
@@ -160,15 +162,16 @@ export default function UiModeToggle() {
       </button>
 
       {/* Single Toggle Button: One button to switch between Simple and Advanced */}
-      <Link
-        href={isSimpleRoute ? "/" : "/simple"}
-        className={`nav-version-btn ${isSimpleRoute ? "nav-btn-advanced" : "nav-btn-simple"}`}
-        title={isSimpleRoute ? "Advanced დიზაინზე გადასვლა" : "Simple დიზაინზე გადასვლა"}
-        aria-label={isSimpleRoute ? "Advanced დიზაინზე გადასვლა" : "Simple დიზაინზე გადასვლა"}
+      <button
+        type="button"
+        onClick={changeVersion}
+        className={`nav-version-btn ${mode === "simple" ? "nav-btn-advanced" : "nav-btn-simple"}`}
+        title={mode === "simple" ? "Advanced დიზაინზე გადასვლა" : "Simple დიზაინზე გადასვლა"}
+        aria-label={mode === "simple" ? "Advanced დიზაინზე გადასვლა" : "Simple დიზაინზე გადასვლა"}
       >
         <span className="nav-version-dot" aria-hidden="true" />
-        <span>{isSimpleRoute ? "ADVANCED" : "SIMPLE"}</span>
-      </Link>
+        <span>{mode === "simple" ? "ADVANCED" : "SIMPLE"}</span>
+      </button>
     </div>
   );
 }

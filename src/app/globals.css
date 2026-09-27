@@ -8774,3 +8774,494 @@ html.mode-ultra .time-picker-popup .time-picker-grid {
   border-color: #cbd5e1 !important;
   background: #f8fafc !important;
 }
+
+/* ==========================================================================
+   LIGHT SIMPLE CALCULATOR WORKSPACE
+   Replace dark utility surfaces inside the shared calculators, especially the
+   chart/map result section, while keeping the chart wheel itself intact.
+   ========================================================================== */
+html.mode-simple.mode-simple-light body.app-body {
+  background:
+    radial-gradient(circle at 8% 8%, rgba(251, 146, 60, 0.12), transparent 28rem),
+    radial-gradient(circle at 92% 18%, rgba(125, 211, 252, 0.15), transparent 30rem),
+    linear-gradient(145deg, #f8fafc 0%, #f5f7fb 52%, #fffaf5 100%) !important;
+}
+
+html.mode-simple.mode-simple-light .simple-page {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.56), rgba(248, 250, 252, 0.28));
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame {
+  padding: clamp(0.65rem, 2vw, 1.1rem);
+  border: 1px solid #dbe3ec;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 58%, #fffaf5 100%);
+  box-shadow: 0 18px 46px -30px rgba(30, 41, 59, 0.42);
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame .glass-panel,
+html.mode-simple.mode-simple-light .simple-calc-frame fieldset.glass-panel {
+  border-color: #d4dee9 !important;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 62%, #fffaf5 100%) !important;
+  color: #334155 !important;
+  box-shadow: 0 14px 34px -24px rgba(30, 41, 59, 0.34) !important;
+  backdrop-filter: none !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame input:not([type="checkbox"]):not([type="radio"]),
+html.mode-simple.mode-simple-light .simple-calc-frame select,
+html.mode-simple.mode-simple-light .simple-calc-frame textarea,
+html.mode-simple.mode-simple-light .simple-calc-frame .wide-date-editor,
+html.mode-simple.mode-simple-light .simple-calc-frame .time-editor {
+  border-color: #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #172033 !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.95), 0 5px 14px -12px rgba(15, 23, 42, 0.5) !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame input::placeholder,
+html.mode-simple.mode-simple-light .simple-calc-frame textarea::placeholder {
+  color: #64748b !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame label,
+html.mode-simple.mode-simple-light .simple-calc-frame :where(.text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500) {
+  color: #334155 !important;
+  text-shadow: none !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame :where(.text-amber-200, .text-amber-300, .text-amber-400) {
+  color: #92400e !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame :where(.text-purple-200, .text-purple-300, .text-violet-200, .text-violet-300, .text-sky-200, .text-sky-300, .text-cyan-200, .text-cyan-300) {
+  color: #4338ca !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame [class*="bg-[#"],
+html.mode-simple.mode-simple-light .simple-calc-frame [class*="from-[#130"],
+html.mode-simple.mode-simple-light .simple-calc-frame [class*="to-[#090"],
+html.mode-simple.mode-simple-light .simple-calc-frame [class*="to-[#080"],
+html.mode-simple.mode-simple-light .simple-calc-frame [class*="bg-slate-950"],
+html.mode-simple.mode-simple-light .simple-calc-frame [class*="bg-purple-950"] {
+  border-color: #d4dee9 !important;
+  background: linear-gradient(145deg, #ffffff, #f8fafc) !important;
+  color: #334155 !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame pre {
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+}
+
+/* Chart/map result: a light frame around the dark-data visualization with
+   readable title, details and interpretation layers. */
+html.mode-simple.mode-simple-light .simple-calc-frame .chart-map-section {
+  overflow: hidden;
+  border-color: #c5d2df !important;
+  background: linear-gradient(145deg, #ffffff 0%, #f2f6fa 58%, #fff8ef 100%) !important;
+  color: #172033 !important;
+  box-shadow: 0 18px 38px -24px rgba(30, 41, 59, 0.34) !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame .chart-map-section > summary {
+  border-bottom-color: #d7e0e9 !important;
+  background: linear-gradient(100deg, #fff7ed 0%, #f8fafc 52%, #eff6ff 100%) !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame .chart-map-section > summary :where(.text-amber-300, .text-amber-100) {
+  color: #92400e !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame .chart-map-section > div {
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%) !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame .chart-details-accordion,
+html.mode-simple.mode-simple-light .simple-calc-frame .chart-subsection,
+html.mode-simple.mode-simple-light .simple-calc-frame .interpretation-accordion,
+html.mode-simple.mode-simple-light .simple-calc-frame .element-balance-indicator,
+html.mode-simple.mode-simple-light .simple-calc-frame [data-export-element-balance] {
+  border-color: #cbd5e1 !important;
+  background: linear-gradient(145deg, #ffffff, #f1f5f9) !important;
+  color: #334155 !important;
+  box-shadow: 0 8px 22px -18px rgba(15, 23, 42, 0.42) !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame .interpretation-accordion-summary,
+html.mode-simple.mode-simple-light .simple-calc-frame .chart-details-accordion > summary,
+html.mode-simple.mode-simple-light .simple-calc-frame .chart-subsection > summary {
+  border-bottom-color: #e2e8f0 !important;
+  background: linear-gradient(105deg, #eef2f7, #ffffff) !important;
+  color: #172033 !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame .interpretation-accordion-title,
+html.mode-simple.mode-simple-light .simple-calc-frame .element-balance-title,
+html.mode-simple.mode-simple-light .simple-calc-frame .chart-details-accordion > summary span,
+html.mode-simple.mode-simple-light .simple-calc-frame .chart-subsection > summary {
+  color: #172033 !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame .element-balance-ascendant {
+  border-color: #c4b5fd !important;
+  background: #eef2ff !important;
+  color: #4338ca !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame .interpretation-content,
+html.mode-simple.mode-simple-light .simple-calc-frame .interpretation-content p,
+html.mode-simple.mode-simple-light .simple-calc-frame .interpretation-paragraph,
+html.mode-simple.mode-simple-light .simple-calc-frame .interpretation-accordion-body {
+  color: #334155 !important;
+}
+
+html.mode-simple.mode-simple-light .simple-calc-frame .combined-chart-table-launch {
+  border-color: #93c5fd !important;
+  background: linear-gradient(105deg, #eff6ff, #eef2ff) !important;
+  color: #1e3a8a !important;
+}
+
+@media (max-width: 640px) {
+  html.mode-simple.mode-simple-light .simple-calc-frame {
+    padding: 0.45rem;
+    border-radius: 0.95rem;
+  }
+
+  html.mode-simple.mode-simple-light .simple-calc-frame .chart-map-section > summary {
+    padding-inline: 2.6rem !important;
+  }
+}
+
+/* ============================================================================
+   ADMIN LIGHT WORKSPACE
+   A single contrast system for every admin surface, filter, status, action and
+   calculation viewer. It deliberately replaces legacy dark utility classes
+   instead of relying on each page to remember the light theme.
+   ============================================================================ */
+html.mode-ultra .admin-page {
+  --admin-ink: #172033;
+  --admin-body: #334155;
+  --admin-muted: #64748b;
+  --admin-border: #d5dee8;
+  --admin-border-strong: #b9c7d6;
+  --admin-surface: #ffffff;
+  --admin-surface-soft: #f8fafc;
+  color: var(--admin-body) !important;
+}
+
+html.mode-ultra .admin-page > .admin-page-header {
+  border-bottom-color: #d7e0e9 !important;
+}
+
+html.mode-ultra .admin-page section,
+html.mode-ultra .admin-page article,
+html.mode-ultra .admin-page details,
+html.mode-ultra .admin-page .admin-account-info,
+html.mode-ultra .admin-page .admin-stats-card,
+html.mode-ultra .admin-page .admin-history-section,
+html.mode-ultra .admin-page .admin-collapsible-section,
+html.mode-ultra .admin-page .admin-trash-section {
+  border-color: var(--admin-border) !important;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 68%, #fffaf5 100%) !important;
+  color: var(--admin-body) !important;
+  box-shadow: 0 12px 28px -22px rgba(15, 23, 42, 0.42) !important;
+  backdrop-filter: none !important;
+}
+
+html.mode-ultra .admin-page .admin-collapsible-section,
+html.mode-ultra .admin-page .admin-trash-section {
+  overflow: hidden;
+}
+
+html.mode-ultra .admin-page h1,
+html.mode-ultra .admin-page h2,
+html.mode-ultra .admin-page h3,
+html.mode-ultra .admin-page h4 {
+  color: var(--admin-ink) !important;
+  background-image: none !important;
+  -webkit-text-fill-color: var(--admin-ink) !important;
+  text-shadow: none !important;
+}
+
+html.mode-ultra .admin-page :where(.text-parchment, .text-parchment-bright, .text-parchment-dim, .text-brass, .text-brass-2, .text-ember, .text-line, .text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500) {
+  color: var(--admin-body) !important;
+}
+
+html.mode-ultra .admin-page :where(.text-amber-200, .text-amber-300, .text-amber-400, .text-orange-300, .text-orange-400, .text-yellow-300, .text-yellow-400) {
+  color: #9a5518 !important;
+}
+
+html.mode-ultra .admin-page :where(.text-cyan-200, .text-cyan-300, .text-cyan-400, .text-sky-200, .text-sky-300, .text-sky-400, .text-blue-200, .text-blue-300, .text-blue-400) {
+  color: #075985 !important;
+}
+
+html.mode-ultra .admin-page :where(.text-emerald-200, .text-emerald-300, .text-emerald-400, .text-teal-200, .text-teal-300, .text-green-300, .text-green-400) {
+  color: #047857 !important;
+}
+
+html.mode-ultra .admin-page :where(.text-rose-200, .text-rose-300, .text-rose-400, .text-red-300, .text-red-400) {
+  color: #be123c !important;
+}
+
+html.mode-ultra .admin-page :where(.text-purple-200, .text-purple-300, .text-purple-400, .text-violet-200, .text-violet-300, .text-violet-400, .text-fuchsia-300, .text-fuchsia-400, .text-indigo-300, .text-indigo-400) {
+  color: #6d28d9 !important;
+}
+
+html.mode-ultra .admin-page :where(.border-line, [class*="border-line/"], [class*="border-slate-"], [class*="border-parchment"]) {
+  border-color: var(--admin-border) !important;
+}
+
+html.mode-ultra .admin-page input:not([type="checkbox"]):not([type="radio"]),
+html.mode-ultra .admin-page select,
+html.mode-ultra .admin-page textarea {
+  min-height: 2.55rem;
+  border: 1px solid var(--admin-border-strong) !important;
+  border-radius: 0.75rem !important;
+  background: #ffffff !important;
+  color: var(--admin-ink) !important;
+  caret-color: #7a4a2b !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.95), 0 5px 16px -14px rgba(15, 23, 42, 0.6) !important;
+}
+
+html.mode-ultra .admin-page input:not([type="checkbox"]):not([type="radio"]):hover,
+html.mode-ultra .admin-page select:hover,
+html.mode-ultra .admin-page textarea:hover {
+  border-color: #94a3b8 !important;
+}
+
+html.mode-ultra .admin-page input:not([type="checkbox"]):not([type="radio"]):focus,
+html.mode-ultra .admin-page select:focus,
+html.mode-ultra .admin-page textarea:focus {
+  border-color: #7a4a2b !important;
+  box-shadow: 0 0 0 3px rgba(122, 74, 43, 0.14), 0 8px 18px -16px rgba(122, 74, 43, 0.6) !important;
+  outline: none !important;
+}
+
+html.mode-ultra .admin-page input::placeholder,
+html.mode-ultra .admin-page textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
+html.mode-ultra .admin-page option {
+  background: #ffffff !important;
+  color: var(--admin-ink) !important;
+}
+
+html.mode-ultra .admin-page label,
+html.mode-ultra .admin-page summary,
+html.mode-ultra .admin-page dt,
+html.mode-ultra .admin-page dd,
+html.mode-ultra .admin-page p,
+html.mode-ultra .admin-page li {
+  color: var(--admin-body) !important;
+}
+
+/* Dark utility surfaces authored for the original admin theme. */
+html.mode-ultra .admin-page :where([class*="bg-ink"], [class*="bg-slate-950"], [class*="bg-slate-900"], [class*="bg-slate-800"], [class*="bg-slate-700"], [class*="bg-[#120826"], [class*="bg-[#0d0a18"]) {
+  border-color: var(--admin-border) !important;
+  background: linear-gradient(145deg, #ffffff, #f1f5f9) !important;
+  color: var(--admin-body) !important;
+}
+
+/* Status families retain their meaning, but use light tinted chips instead of
+   near-black fills so labels remain legible in every admin list. */
+html.mode-ultra .admin-page :where([class*="bg-emerald-950"], [class*="bg-emerald-500/10"], [class*="bg-green-950"]) {
+  border-color: #86efac !important;
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+}
+
+html.mode-ultra .admin-page :where([class*="bg-rose-950"], [class*="bg-red-950"], [class*="bg-rose-500/10"], [class*="bg-red-500/5"]) {
+  border-color: #fda4af !important;
+  background: #fff1f2 !important;
+  color: #be123c !important;
+}
+
+html.mode-ultra .admin-page :where([class*="bg-purple-950"], [class*="bg-purple-500/10"], [class*="bg-fuchsia-950"], [class*="bg-indigo-950"]) {
+  border-color: #c4b5fd !important;
+  background: #f5f3ff !important;
+  color: #6d28d9 !important;
+}
+
+html.mode-ultra .admin-page :where([class*="bg-cyan-950"], [class*="bg-cyan-500/10"], [class*="bg-sky-950"], [class*="bg-sky-500/10"], [class*="bg-blue-950"]) {
+  border-color: #7dd3fc !important;
+  background: #eff6ff !important;
+  color: #075985 !important;
+}
+
+html.mode-ultra .admin-page :where([class*="bg-amber-950"], [class*="bg-amber-500/10"], [class*="bg-orange-950"]) {
+  border-color: #fcd34d !important;
+  background: #fffbeb !important;
+  color: #92400e !important;
+}
+
+html.mode-ultra .admin-page :where([class*="bg-fuchsia-950"], [class*="bg-fuchsia-500/15"]) {
+  border-color: #f0abfc !important;
+  background: #fdf4ff !important;
+  color: #a21caf !important;
+}
+
+html.mode-ultra .admin-page :where([class*="bg-emerald-950"], [class*="bg-rose-950"], [class*="bg-purple-950"], [class*="bg-cyan-950"], [class*="bg-sky-950"], [class*="bg-amber-950"], [class*="bg-fuchsia-950"]) :where(.text-white, .text-slate-100, .text-slate-200, .text-slate-300, .text-amber-200, .text-amber-300, .text-cyan-200, .text-cyan-300, .text-emerald-200, .text-emerald-300, .text-purple-200, .text-purple-300, .text-rose-200, .text-rose-300) {
+  color: inherit !important;
+}
+
+/* Main actions stay dark enough to read white text; secondary controls use
+   the light surface system above. */
+html.mode-ultra .admin-page button,
+html.mode-ultra .admin-page a {
+  color: var(--admin-body);
+}
+
+html.mode-ultra .admin-page button[class*="from-amber-400"],
+html.mode-ultra .admin-page button[class*="from-amber-500"] {
+  border-color: #60351f !important;
+  background: linear-gradient(135deg, #8b5e3c, #60351f) !important;
+  color: #ffffff !important;
+}
+
+html.mode-ultra .admin-page :where(button[class*="from-slate-950"], a[class*="from-slate-950"], button[class*="from-slate-900"], a[class*="from-slate-900"]) {
+  background: #ffffff !important;
+  color: var(--admin-body) !important;
+  box-shadow: 0 8px 18px -14px rgba(15, 23, 42, 0.5) !important;
+}
+
+html.mode-ultra .admin-page :where(button[class*="from-slate-950"], a[class*="from-slate-950"], button[class*="from-slate-900"], a[class*="from-slate-900"]) :where(.text-transparent, [class*="bg-clip-text"]) {
+  background-image: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  color: inherit !important;
+}
+
+html.mode-ultra .admin-page .admin-control-button,
+html.mode-ultra .admin-page .admin-control-button-secondary,
+html.mode-ultra .admin-page .admin-header-actions > a,
+html.mode-ultra .admin-page .admin-header-actions > button {
+  min-height: 2.35rem;
+  border-color: #b9c7d6 !important;
+  background: #ffffff !important;
+  color: #334155 !important;
+  box-shadow: 0 6px 16px -14px rgba(15, 23, 42, 0.55) !important;
+}
+
+html.mode-ultra .admin-page .admin-control-button:hover,
+html.mode-ultra .admin-page .admin-control-button-secondary:hover,
+html.mode-ultra .admin-page .admin-header-actions > a:hover,
+html.mode-ultra .admin-page .admin-header-actions > button:hover {
+  border-color: #7a4a2b !important;
+  background: #fff7ed !important;
+  color: #7a4a2b !important;
+}
+
+html.mode-ultra .admin-page .admin-control-button-danger,
+html.mode-ultra .admin-page button[class*="border-rose"],
+html.mode-ultra .admin-page button[class*="border-red"] {
+  border-color: #fb7185 !important;
+  background: #fff1f2 !important;
+  color: #be123c !important;
+}
+
+html.mode-ultra .admin-page .admin-control-button-danger:hover,
+html.mode-ultra .admin-page button[class*="border-rose"]:hover,
+html.mode-ultra .admin-page button[class*="border-red"]:hover {
+  background: #ffe4e6 !important;
+  color: #9f1239 !important;
+}
+
+html.mode-ultra .admin-page .admin-collapsible-summary,
+html.mode-ultra .admin-page .admin-trash-summary,
+html.mode-ultra .admin-page details > summary {
+  color: var(--admin-ink) !important;
+  border-color: #dbe3ec !important;
+}
+
+html.mode-ultra .admin-page .admin-section-total,
+html.mode-ultra .admin-page .admin-summary-count,
+html.mode-ultra .admin-page .admin-id-label {
+  color: #64748b !important;
+}
+
+html.mode-ultra .admin-page .admin-id-value-registered {
+  border-color: #67e8f9 !important;
+  background: #ecfeff !important;
+  color: #0e7490 !important;
+}
+
+html.mode-ultra .admin-page .admin-id-value-guest {
+  color: #9f1239 !important;
+}
+
+html.mode-ultra .admin-page .admin-filter-match {
+  border-radius: 0.25rem;
+  background: #fef08a !important;
+  color: #422006 !important;
+}
+
+html.mode-ultra .admin-page .admin-account-info {
+  border-color: #86efac !important;
+  background: linear-gradient(135deg, #f0fdf4, #ffffff 58%, #eff6ff) !important;
+}
+
+html.mode-ultra .admin-page .admin-stat-item {
+  border-color: #d5dee8 !important;
+  color: var(--admin-body) !important;
+}
+
+/* Admin calculation viewer and confirmation dialogs share the same readable
+   surface, including the controls rendered by child components. */
+html.mode-ultra .admin-page .admin-calculation-dialog,
+html.mode-ultra .admin-page .chart-delete-dialog,
+html.mode-ultra .admin-page .admin-calculation-details,
+html.mode-ultra .admin-page .admin-calculation-interpretation {
+  border-color: var(--admin-border) !important;
+  background: linear-gradient(145deg, #ffffff, #f1f5f9) !important;
+  color: var(--admin-body) !important;
+}
+
+html.mode-ultra .admin-page .admin-calculation-dialog h2,
+html.mode-ultra .admin-page .admin-calculation-dialog h3,
+html.mode-ultra .admin-page .admin-calculation-dialog p,
+html.mode-ultra .admin-page .admin-calculation-dialog span {
+  color: var(--admin-body) !important;
+  text-shadow: none !important;
+}
+
+html.mode-ultra .admin-page .admin-calculation-dialog h2,
+html.mode-ultra .admin-page .admin-calculation-dialog h3 {
+  color: var(--admin-ink) !important;
+}
+
+html.mode-ultra .admin-page .admin-calculation-dialog .text-amber-300,
+html.mode-ultra .admin-page .admin-calculation-dialog .text-amber-200 {
+  color: #92400e !important;
+}
+
+html.mode-ultra .admin-page .admin-calculation-dialog .interpretation-close-button {
+  border-color: #c4b5fd !important;
+  background: #f5f3ff !important;
+  color: #5b21b6 !important;
+  box-shadow: 0 8px 18px -14px rgba(91, 33, 182, 0.42) !important;
+}
+
+html.mode-ultra .admin-page .admin-calculation-dialog .interpretation-close-button :where(.text-slate-200, .text-white) {
+  color: #5b21b6 !important;
+}
+
+@media (max-width: 640px) {
+  html.mode-ultra .admin-page {
+    padding-inline: 0.65rem;
+  }
+
+  html.mode-ultra .admin-page section,
+  html.mode-ultra .admin-page article,
+  html.mode-ultra .admin-page details {
+    border-radius: 0.9rem !important;
+  }
+
+  html.mode-ultra .admin-page .admin-header-actions > a,
+  html.mode-ultra .admin-page .admin-header-actions > button {
+    width: 100%;
+    justify-content: center;
+  }
+}
