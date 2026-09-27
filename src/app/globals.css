@@ -430,9 +430,6 @@ svg {
   margin: 0 auto;
 }
 
-.app-home .hero-orbit-card > .zodiac-aura,
-.app-home .hero-orbit-card > .element-frame,
-.app-home .hero-orbit-card > .zodiac-wheel,
 .app-home .hero-orbit-card > .orbit-ring,
 .app-home .hero-orbit-card > .orbit-core,
 .app-home .hero-orbit-card > .orbit-dot,
@@ -742,9 +739,6 @@ svg {
   filter: blur(1px);
 }
 
-.hero-orbit-card > .zodiac-aura,
-.hero-orbit-card > .element-frame,
-.hero-orbit-card > .zodiac-wheel,
 .hero-orbit-card > .orbit-ring,
 .hero-orbit-card > .orbit-core,
 .hero-orbit-card > .orbit-dot,
@@ -2376,9 +2370,6 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   margin: 0 auto;
 }
 
-.app-home .hero-orbit-card > .zodiac-aura,
-.app-home .hero-orbit-card > .element-frame,
-.app-home .hero-orbit-card > .zodiac-wheel,
 .app-home .hero-orbit-card > .orbit-ring,
 .app-home .hero-orbit-card > .orbit-core,
 .app-home .hero-orbit-card > .orbit-dot,
@@ -7400,10 +7391,6 @@ html.mode-simple .star-field {
 
 html.mode-simple .brand-stardust-orbit,
 html.mode-simple .brand-burst-container,
-html.mode-simple .celestial-star-noise,
-html.mode-simple .constellation-art,
-html.mode-simple .hero-orbit-card::before,
-html.mode-simple .hero-orbit-card::after,
 html.mode-simple body > .pointer-events-none.fixed {
   display: none !important;
 }
