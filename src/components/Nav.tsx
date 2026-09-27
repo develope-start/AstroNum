@@ -36,17 +36,21 @@ export default function Nav() {
   useEffect(() => {
     const header = document.querySelector<HTMLElement>(".site-header");
     if (!header) return;
+    const shell = header.querySelector<HTMLElement>(".nav-shell");
 
     const updateHeaderHeight = () => {
+      const headerBottom = header.getBoundingClientRect().bottom;
+      const shellBottom = shell?.getBoundingClientRect().bottom ?? headerBottom;
       document.documentElement.style.setProperty(
         "--site-header-height",
-        `${header.getBoundingClientRect().height}px`,
+        `${Math.max(0, shellBottom)}px`,
       );
     };
 
     updateHeaderHeight();
     const observer = new ResizeObserver(updateHeaderHeight);
     observer.observe(header);
+    if (shell) observer.observe(shell);
 
     return () => {
       observer.disconnect();
