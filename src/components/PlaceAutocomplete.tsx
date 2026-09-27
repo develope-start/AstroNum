@@ -286,7 +286,7 @@ export default function PlaceAutocomplete({
           className="place-suggestions overflow-y-auto rounded-2xl border-2 border-amber-400 bg-[#0a0422] p-2 shadow-[0_25px_90px_rgba(0,0,0,1)] ring-4 ring-amber-500/30 backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150"
         >
           {localHits.length > 0 && (
-            <div className="flex items-center justify-center gap-1.5 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 border-b border-amber-500/30 bg-purple-950/60 rounded-xl mb-1">
+            <div className="place-suggestions-header flex items-center justify-center gap-1.5 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 border-b border-amber-500/30 bg-purple-950/60 rounded-xl mb-1">
               <MapPin className="h-3.5 w-3.5 text-amber-400 shrink-0" />
               <span>საქართველოს ქალაქები</span>
             </div>
@@ -299,14 +299,14 @@ export default function PlaceAutocomplete({
                 e.preventDefault();
                 selectHit(h);
               }}
-              className="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/30 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
+              className="place-suggestion-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/30 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
             >
               <span className="truncate max-w-[170px] sm:max-w-[260px]">{h.label}</span>
-              <span className="text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/70 px-2 py-0.5 rounded-md shrink-0">Asia/Tbilisi</span>
+              <span className="place-suggestion-meta text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/70 px-2 py-0.5 rounded-md shrink-0">Asia/Tbilisi</span>
             </button>
           ))}
           {remoteHits.length > 0 && (
-            <div className="mt-2 border-t border-amber-500/30 pt-2 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 flex items-center justify-center gap-1.5 bg-purple-950/60 rounded-xl mb-1">
+            <div className="place-suggestions-header mt-2 border-t border-amber-500/30 pt-2 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 flex items-center justify-center gap-1.5 bg-purple-950/60 rounded-xl mb-1">
               <Globe className="h-3.5 w-3.5 text-amber-400 shrink-0" />
               <span>სხვა შედეგები</span>
             </div>
@@ -319,10 +319,10 @@ export default function PlaceAutocomplete({
                 e.preventDefault();
                 selectHit(h);
               }}
-              className="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/30 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
+              className="place-suggestion-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/30 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
             >
               <span className="truncate max-w-[160px] sm:max-w-[240px]">{h.label}</span>
-              <span className="text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/70 px-2 py-0.5 rounded-md shrink-0">{h.timezone || "მსოფლიო"}</span>
+              <span className="place-suggestion-meta text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/70 px-2 py-0.5 rounded-md shrink-0">{h.timezone || "მსოფლიო"}</span>
             </button>
           ))}
         </div>,

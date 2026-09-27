@@ -270,7 +270,7 @@ export default function WideDateInput({ label = "თარიღი", value, onC
         </button>
 
         {calendarOpen && calendarPosition && typeof document !== "undefined" && createPortal(
-          <div ref={calendarPopupRef} style={{ position: "fixed", top: calendarPosition.top, left: calendarPosition.left, width: calendarPosition.width, maxHeight: calendarPosition.maxHeight, overflowY: "auto", zIndex: 1000 }} className="rounded-2xl border border-amber-400/35 bg-[#0a0422]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.75)] ring-1 ring-purple-300/10 backdrop-blur-xl">
+          <div ref={calendarPopupRef} style={{ position: "fixed", top: calendarPosition.top, left: calendarPosition.left, width: calendarPosition.width, maxHeight: calendarPosition.maxHeight, overflowY: "auto", zIndex: 1000 }} className="calendar-popup rounded-2xl border border-amber-400/35 bg-[#0a0422]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.75)] ring-1 ring-purple-300/10 backdrop-blur-xl">
             <div className="mb-3 flex items-center justify-between gap-2">
               <button type="button" onClick={() => moveCalendarMonth(-1)} className="rounded-lg border border-slate-400/20 p-1.5 text-slate-300 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200" aria-label="წინა თვე"><ChevronLeft className="h-4 w-4" /></button>
               <button type="button" onClick={goToToday} className="rounded-lg border border-slate-400/20 bg-slate-300/5 px-2.5 py-1 text-[0.65rem] font-bold text-slate-300 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200">ახლა</button>
@@ -280,24 +280,24 @@ export default function WideDateInput({ label = "თარიღი", value, onC
             <div className="mb-3 grid grid-cols-[1fr_auto] gap-2">
               <label className="text-[0.6rem] font-bold uppercase tracking-wider text-slate-400">
                 წელი
-                <input type="text" value={calendarYearDraft} onChange={(event) => { const next = event.target.value; if (!/^-?\d*$/.test(next)) return; setCalendarYearDraft(next); if (next && next !== "-") { const numeric = Number(next); if (numeric >= MIN_WIDE_YEAR && numeric <= MAX_WIDE_YEAR) setCalendarYear(numeric); } }} onBlur={() => setCalendarYearDraft(String(calendarYear))} className="mt-1 w-full rounded-lg border border-slate-500/30 bg-[#080418] px-2 py-1.5 text-sm font-bold text-amber-200 outline-none focus:border-amber-400" inputMode="text" maxLength={6} />
+                <input type="text" value={calendarYearDraft} onChange={(event) => { const next = event.target.value; if (!/^-?\d*$/.test(next)) return; setCalendarYearDraft(next); if (next && next !== "-") { const numeric = Number(next); if (numeric >= MIN_WIDE_YEAR && numeric <= MAX_WIDE_YEAR) setCalendarYear(numeric); } }} onBlur={() => setCalendarYearDraft(String(calendarYear))} className="calendar-popup-control mt-1 w-full rounded-lg border border-slate-500/30 bg-[#080418] px-2 py-1.5 text-sm font-bold text-amber-200 outline-none focus:border-amber-400" inputMode="text" maxLength={6} />
               </label>
               <label className="text-[0.6rem] font-bold uppercase tracking-wider text-slate-400">
                 თვე
-                <select value={calendarMonth} onChange={(event) => setCalendarMonth(Number(event.target.value))} className="mt-1 rounded-lg border border-slate-500/30 bg-[#080418] px-2 py-2 text-sm font-bold text-amber-200 outline-none focus:border-amber-400">
+                <select value={calendarMonth} onChange={(event) => setCalendarMonth(Number(event.target.value))} className="calendar-popup-control mt-1 rounded-lg border border-slate-500/30 bg-[#080418] px-2 py-2 text-sm font-bold text-amber-200 outline-none focus:border-amber-400">
                   {Array.from({ length: 12 }, (_, index) => <option key={index + 1} value={index + 1}>{String(index + 1).padStart(2, "0")}</option>)}
                 </select>
               </label>
             </div>
 
-            <div className="mb-1 grid grid-cols-7 gap-1 text-center text-[0.6rem] font-bold text-slate-500">
+            <div className="calendar-weekdays mb-1 grid grid-cols-7 gap-1 text-center text-[0.6rem] font-bold text-slate-500">
               {['კვ', 'ორშ', 'სამ', 'ოთხ', 'ხუთ', 'პარ', 'შაბ'].map((day) => <span key={day}>{day}</span>)}
             </div>
             <div className="grid grid-cols-7 gap-1">
               {Array.from({ length: calendarLeadingDays }, (_, index) => <span key={`empty-${index}`} className="h-8" />)}
               {calendarDays.map((day) => {
                 const selected = selectedDate?.year === calendarYear && selectedDate.month === calendarMonth && selectedDate.day === day;
-                return <button key={day} type="button" onClick={() => selectCalendarDate(calendarYear, calendarMonth, day)} className={`h-8 rounded-lg text-xs font-bold transition ${selected ? "bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.45)]" : "text-slate-200 hover:bg-amber-400/15 hover:text-amber-200"}`}>{String(day).padStart(2, "0")}</button>;
+                return <button key={day} type="button" onClick={() => selectCalendarDate(calendarYear, calendarMonth, day)} className={`calendar-day-option h-8 rounded-lg text-xs font-bold transition ${selected ? "is-selected bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.45)]" : "text-slate-200 hover:bg-amber-400/15 hover:text-amber-200"}`}>{String(day).padStart(2, "0")}</button>;
               })}
             </div>
           </div>,

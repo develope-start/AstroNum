@@ -245,7 +245,7 @@ export default function TimeSelect({
         </button>
 
         {pickerOpen && pickerPosition && typeof document !== "undefined" && createPortal(
-          <div ref={pickerPopupRef} style={{ position: "fixed", top: pickerPosition.top, left: pickerPosition.left, width: pickerPosition.width, maxHeight: pickerPosition.maxHeight, overflowY: "auto", zIndex: 1000 }} className="rounded-2xl border border-amber-400/35 bg-[#0a0422]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.75)] ring-1 ring-purple-300/10 backdrop-blur-xl">
+          <div ref={pickerPopupRef} style={{ position: "fixed", top: pickerPosition.top, left: pickerPosition.left, width: pickerPosition.width, maxHeight: pickerPosition.maxHeight, overflowY: "auto", zIndex: 1000 }} className="time-picker-popup rounded-2xl border border-amber-400/35 bg-[#0a0422]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.75)] ring-1 ring-purple-300/10 backdrop-blur-xl">
             <div className="mb-3 flex items-center justify-between gap-2">
               <span className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-slate-400">24-საათიანი დრო</span>
               <button type="button" onClick={selectCurrentTime} className="rounded-lg border border-slate-400/20 bg-slate-300/5 px-2.5 py-1 text-[0.65rem] font-bold text-slate-300 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200">ახლა</button>
@@ -253,14 +253,14 @@ export default function TimeSelect({
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <p className="mb-1 text-center text-[0.6rem] font-bold uppercase tracking-wider text-slate-500">საათი</p>
-                <div className="grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-xl border border-slate-500/20 bg-[#080418] p-1.5">
-                  {Array.from({ length: 24 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerHour(index)} className={`h-8 rounded-lg text-xs font-bold transition ${pickerHour === index ? "bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.35)]" : "text-slate-200 hover:bg-amber-400/15 hover:text-amber-200"}`}>{String(index).padStart(2, "0")}</button>)}
+                <div className="time-picker-grid grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-xl border border-slate-500/20 bg-[#080418] p-1.5">
+                  {Array.from({ length: 24 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerHour(index)} className={`time-picker-option h-8 rounded-lg text-xs font-bold transition ${pickerHour === index ? "is-selected bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.35)]" : "text-slate-200 hover:bg-amber-400/15 hover:text-amber-200"}`}>{String(index).padStart(2, "0")}</button>)}
                 </div>
               </div>
               <div>
                 <p className="mb-1 text-center text-[0.6rem] font-bold uppercase tracking-wider text-slate-500">წუთი</p>
-                <div className="grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-xl border border-slate-500/20 bg-[#080418] p-1.5">
-                  {Array.from({ length: 60 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerMinute(index)} className={`h-8 rounded-lg text-xs font-bold transition ${pickerMinute === index ? "bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.35)]" : "text-slate-200 hover:bg-amber-400/15 hover:text-amber-200"}`}>{String(index).padStart(2, "0")}</button>)}
+                <div className="time-picker-grid grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-xl border border-slate-500/20 bg-[#080418] p-1.5">
+                  {Array.from({ length: 60 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerMinute(index)} className={`time-picker-option h-8 rounded-lg text-xs font-bold transition ${pickerMinute === index ? "is-selected bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.35)]" : "text-slate-200 hover:bg-amber-400/15 hover:text-amber-200"}`}>{String(index).padStart(2, "0")}</button>)}
                 </div>
               </div>
             </div>
