@@ -5012,26 +5012,27 @@ canvas {
 /* Close button row: positioned in the extreme top right corner of the window container, follows when scrolling */
 .interpretation-close-row {
   position: sticky !important;
-  top: 0.25rem !important;
-  right: 0.25rem !important;
+  top: 0 !important;
+  right: 0 !important;
   z-index: 60 !important;
   display: flex !important;
   justify-content: flex-end !important;
   width: 100% !important;
   height: 0 !important;
-  margin: 0 0 0.5rem 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
   overflow: visible !important;
   pointer-events: none !important;
 }
 
 @media (min-width: 641px) {
   .interpretation-close-row {
-    top: 0.5rem !important;
-    right: 0.5rem !important;
+    top: 0 !important;
+    right: 0 !important;
   }
 }
 
-/* Close button ("დახურვა") - positioned cleanly at top-right corner */
+/* Close button ("დახურვა") - positioned at extreme top-right corner edge */
 .interpretation-close-button {
   display: inline-flex;
   align-items: center;
@@ -5053,7 +5054,8 @@ canvas {
   cursor: pointer;
   pointer-events: auto;
   transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
-  margin-right: 0.15rem;
+  margin: 0 !important;
+  transform: translate(0.45rem, -0.4rem);
 }
 
 .interpretation-close-button:hover,
