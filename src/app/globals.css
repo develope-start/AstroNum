@@ -9669,3 +9669,296 @@ html.mode-simple:not(.mode-simple-light) .admin-page .admin-calculation-dialog .
     border-radius: 0.9rem !important;
   }
 }
+
+/* ======================================================================
+   SIMPLE MODE — cohesive page layouts (content preserved)
+   ====================================================================== */
+html.mode-simple {
+  --simple-page-bg: #f4f6f8;
+  --simple-surface: #ffffff;
+  --simple-surface-raised: #f8fafc;
+  --simple-border: #d8e0e8;
+  --simple-text: #1e293b;
+  --simple-muted: #526174;
+  --simple-accent: #9a5b16;
+  --simple-focus: #2563eb;
+}
+
+html.mode-simple:not(.mode-simple-light) {
+  --simple-page-bg: #111827;
+  --simple-surface: #1b2637;
+  --simple-surface-raised: #222f43;
+  --simple-border: #3c4b61;
+  --simple-text: #edf2f7;
+  --simple-muted: #c0cad8;
+  --simple-accent: #f2bd68;
+  --simple-focus: #7dd3fc;
+}
+
+html.mode-simple body.app-body {
+  background: var(--simple-page-bg) !important;
+  color: var(--simple-text);
+}
+
+html.mode-simple :where(button, a, input, select, textarea, summary):focus-visible {
+  outline: 3px solid var(--simple-focus) !important;
+  outline-offset: 3px;
+}
+
+/* The old zodiac wheel and corner glyph frames duplicate the active celestial
+   composition. Keep the central Earth, constellations and four element cards. */
+.hero-orbit-card > .zodiac-wheel,
+.hero-orbit-card > .element-frame {
+  display: none !important;
+}
+
+/* A clear two-column desktop hero; the original title and actions remain
+   available in Simple mode instead of being discarded with display:none. */
+html.mode-simple .app-home .hero-grid {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.72fr) minmax(0, 1.55fr);
+  align-items: center;
+  gap: clamp(1rem, 3vw, 3.25rem);
+  padding: clamp(1rem, 3vw, 2.5rem) 0;
+}
+
+html.mode-simple .app-home .hero-grid > div:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: clamp(0.5rem, 2vw, 1.75rem);
+}
+
+html.mode-simple .app-home .hero-title {
+  margin: 0;
+  color: var(--simple-text);
+  font-size: clamp(2rem, 4.3vw, 3.8rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-shadow: none;
+}
+
+html.mode-simple .app-home .hero-title em { color: var(--simple-accent); }
+html.mode-simple .app-home .hero-kicker { color: var(--simple-muted); }
+html.mode-simple .app-home .hero-lead {
+  max-width: 34rem;
+  margin: 0;
+  color: var(--simple-muted);
+  font-size: clamp(0.92rem, 1.25vw, 1.05rem);
+  line-height: 1.75;
+}
+
+html.mode-simple .app-home .hero-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+html.mode-simple .app-home .hero-orbit-card {
+  min-height: clamp(27rem, 48vw, 43rem);
+  border: 1px solid var(--simple-border);
+  border-radius: 1.5rem;
+  background: radial-gradient(ellipse at center, rgba(100, 116, 139, 0.12), transparent 68%), var(--simple-surface);
+  box-shadow: 0 18px 54px -38px rgba(15, 23, 42, 0.65);
+}
+
+/* Restore all explanatory copy that earlier Simple rules hid. Spacing and
+   hierarchy, not content removal, keep the page concise and scannable. */
+html.mode-simple .simple-hero-badge,
+html.mode-simple .simple-hero-lead,
+html.mode-simple .simple-hero-actions,
+html.mode-simple .simple-section-desc,
+html.mode-simple .simple-tab-hint,
+html.mode-simple .simple-method-text,
+html.mode-simple .simple-hero-title span,
+html.mode-simple .simple-element-focus {
+  display: revert;
+}
+
+html.mode-simple .simple-page {
+  max-width: 82rem;
+  padding: clamp(0.75rem, 2.5vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+  color: var(--simple-text);
+}
+
+html.mode-simple .simple-hero {
+  align-items: flex-start;
+  max-width: 54rem;
+  margin: 0;
+  gap: 0.8rem;
+  text-align: left;
+}
+
+html.mode-simple .simple-hero-title {
+  color: var(--simple-text);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+html.mode-simple .simple-hero-title span { color: var(--simple-accent); }
+html.mode-simple .simple-hero-lead,
+html.mode-simple .simple-section-desc,
+html.mode-simple .simple-method-text,
+html.mode-simple .simple-tab-hint { color: var(--simple-muted); }
+html.mode-simple .simple-hero-lead { max-width: 54rem; line-height: 1.7; }
+
+html.mode-simple .simple-quick-nav {
+  position: sticky;
+  top: 0.5rem;
+  justify-content: flex-start;
+  width: 100%;
+  overflow-x: auto;
+  border-color: var(--simple-border);
+  background: color-mix(in srgb, var(--simple-surface) 94%, transparent);
+  backdrop-filter: blur(12px);
+  scrollbar-width: thin;
+}
+
+html.mode-simple .simple-quick-nav a {
+  min-height: 2.65rem;
+  color: var(--simple-muted);
+}
+
+html.mode-simple .simple-quick-nav a:hover,
+html.mode-simple .simple-quick-nav a:focus-visible {
+  color: var(--simple-text);
+  background: var(--simple-surface-raised);
+}
+
+html.mode-simple .simple-section { gap: 1rem; scroll-margin-top: 4.5rem; }
+html.mode-simple .simple-section-header {
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--simple-border);
+}
+html.mode-simple .simple-section-title,
+html.mode-simple .simple-element-name,
+html.mode-simple .simple-method-title { color: var(--simple-text); }
+html.mode-simple .simple-section-desc {
+  max-width: 34rem;
+  margin: 0;
+  line-height: 1.65;
+}
+
+html.mode-simple .simple-elements-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.65rem, 1.5vw, 1rem);
+}
+
+html.mode-simple .simple-element-card,
+html.mode-simple .simple-method-card,
+html.mode-simple .simple-planet-detail-card,
+html.mode-simple .simple-calc-frame {
+  border: 1px solid var(--simple-border);
+  border-radius: 1rem;
+  background: var(--simple-surface);
+  color: var(--simple-text);
+  box-shadow: 0 12px 32px -26px rgba(15, 23, 42, 0.65);
+}
+
+html.mode-simple .simple-element-card { padding: clamp(0.8rem, 1.5vw, 1.15rem); }
+html.mode-simple .simple-element-focus,
+html.mode-simple .simple-method-text { line-height: 1.65; }
+html.mode-simple .simple-element-kicker,
+html.mode-simple .simple-chip-label,
+html.mode-simple .simple-method-num { color: var(--simple-muted); }
+html.mode-simple .simple-chip {
+  border-color: var(--simple-border);
+  background: var(--simple-surface-raised);
+  color: var(--simple-text);
+}
+html.mode-simple .simple-tab-nav {
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--simple-border);
+  border-radius: 0.9rem;
+  background: var(--simple-surface);
+}
+html.mode-simple .simple-tab-btn { min-height: 2.8rem; color: var(--simple-muted); }
+html.mode-simple .simple-methods-grid { gap: 0.8rem; }
+html.mode-simple .simple-method-card { padding: 1rem; }
+html.mode-simple .simple-method-text { display: block; margin-top: 0.4rem; }
+
+/* Cabinet and administration: calm panels, clear hierarchy, readable forms. */
+html.mode-simple :where(.cabinet-page, .admin-page) {
+  color: var(--simple-text);
+  line-height: 1.55;
+}
+
+html.mode-simple .cabinet-page .glass-panel,
+html.mode-simple .admin-page :where(section, article, details, .glass-panel, .admin-account-info, .admin-stats-card, .admin-history-section, .admin-collapsible-section, .admin-trash-section) {
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface) !important;
+  color: var(--simple-text);
+  box-shadow: 0 12px 32px -26px rgba(15, 23, 42, 0.6) !important;
+  backdrop-filter: none !important;
+}
+
+html.mode-simple :where(.cabinet-page, .admin-page) :where(h1, h2, h3, h4) {
+  color: var(--simple-text) !important;
+  text-shadow: none !important;
+}
+
+html.mode-simple :where(.cabinet-page, .admin-page) :where(p, label, dt, dd, li, summary) {
+  text-shadow: none !important;
+}
+
+html.mode-simple :where(.cabinet-page, .admin-page) :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  min-height: 2.75rem;
+  border-color: var(--simple-border) !important;
+  border-radius: 0.65rem;
+  background: var(--simple-surface-raised) !important;
+  color: var(--simple-text) !important;
+}
+
+html.mode-simple :where(.cabinet-page, .admin-page) :where(input, textarea)::placeholder { color: var(--simple-muted) !important; opacity: 0.85; }
+html.mode-simple :where(.cabinet-page, .admin-page) :where(button, a) { min-height: 2.55rem; }
+html.mode-simple .cabinet-page > .glass-panel:first-child,
+html.mode-simple .admin-page > .admin-page-header {
+  border-radius: 1rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+html.mode-simple.mode-simple-light :where(.cabinet-page, .admin-page) :where(p, label, dt, dd, li, summary, span) {
+  color: #3b4a5e;
+}
+html.mode-simple.mode-simple-light :where(.cabinet-page, .admin-page) :where(a, button) { color: #334155; }
+html.mode-simple.mode-simple-light :where(.cabinet-page, .admin-page) :where(.text-amber-200, .text-amber-300, .text-amber-400, .text-orange-300, .text-orange-400) { color: #8a4b0b !important; }
+html.mode-simple.mode-simple-light :where(.cabinet-page, .admin-page) :where(.text-emerald-200, .text-emerald-300, .text-emerald-400, .text-green-300, .text-green-400) { color: #166534 !important; }
+html.mode-simple.mode-simple-light :where(.cabinet-page, .admin-page) :where(.text-rose-200, .text-rose-300, .text-rose-400, .text-red-300, .text-red-400) { color: #b42335 !important; }
+
+html.mode-simple:not(.mode-simple-light) :where(.cabinet-page, .admin-page) :where(p, label, dt, dd, li, summary, span) {
+  color: #c5cfdd;
+}
+html.mode-simple:not(.mode-simple-light) :where(.cabinet-page, .admin-page) :where(a, button) { color: #e5edf6; }
+
+@media (max-width: 760px) {
+  html.mode-simple .app-home .hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+  html.mode-simple .app-home .hero-grid > div:first-child {
+    padding: 0.5rem 0.2rem;
+    gap: 0.65rem;
+  }
+  html.mode-simple .app-home .hero-orbit-card {
+    min-height: clamp(23rem, 105vw, 34rem);
+    border-radius: 1.1rem;
+  }
+  html.mode-simple .simple-section-header { align-items: flex-start; flex-direction: column; }
+  html.mode-simple .simple-quick-nav { top: 0.25rem; }
+  html.mode-simple .simple-methods-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html.mode-simple :where(.cabinet-page, .admin-page) { padding-inline: 0.2rem; }
+}
+
+@media (max-width: 480px) {
+  html.mode-simple .simple-page { padding-inline: 0.15rem; gap: 1.5rem; }
+  html.mode-simple .simple-elements-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  html.mode-simple .simple-element-card { padding: 0.7rem; }
+  html.mode-simple .simple-element-chips-row { align-items: flex-start; flex-direction: column; }
+  html.mode-simple .simple-methods-grid { grid-template-columns: minmax(0, 1fr); }
+  html.mode-simple .simple-calc-frame { padding: 0.55rem; }
+  html.mode-simple .app-home .celestial-element-panel { transform: scale(0.9); }
+  html.mode-simple .app-home .celestial-system { transform: scale(0.9); transform-origin: center; }
+}
