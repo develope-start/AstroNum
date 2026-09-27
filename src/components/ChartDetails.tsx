@@ -192,6 +192,24 @@ function CombinedChartTable({
 
   return (
     <>
+      {/* Keep the complete table in the chart DOM even while the modal is closed.
+       * The export action opens/reads a cloned DOM tree, so conditionally
+       * mounting this table made it impossible to copy the full chart. */}
+      <div hidden data-chart-export-copy="combined-table" aria-hidden="true">
+        <table>
+          <thead>
+            <tr><th>კატეგორია</th><th>ობიექტი / კავშირი</th><th>ნიშანი / გრადუსი</th><th>სახლი</th><th>ტიპი</th><th>ორბი</th><th>ფაზა</th><th>მოკლე ინტერპრეტაცია</th></tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => (
+              <tr key={`copy-${row.category}-${row.object}-${index}`}>
+                <td>{row.category}</td><td>{row.object}</td><td>{row.position}</td><td>{row.house}</td>
+                <td>{row.type}</td><td>{row.orbit}</td><td>{row.phase}</td><td>{row.meaning}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <button type="button" className="combined-chart-table-launch" onClick={() => { setOpen(true); setZoom(1); }}>
         <Table2 className="h-4 w-4" />
         <span>სრული ცხრილი</span>
@@ -260,7 +278,7 @@ export default function ChartDetails({
         </div>
       </section>
 
-      {detailsOpen && <div id="chart-details-accordion" className="chart-details-accordion">
+      <div id="chart-details-accordion" className="chart-details-accordion" hidden={!detailsOpen}>
         <div className="space-y-3 p-3 sm:p-5">
           <details className="chart-subsection"><summary>პლანეტები და დამატებითი წერტილები</summary><div className="chart-table-wrap"><table className="chart-data-table"><thead><tr><th>ობიექტი</th><th>ზოდიაქო / გრადუსი</th><th>სახლი</th></tr></thead><tbody>{planets.map((planet) => <tr key={planet.name}><td data-label="ობიექტი">{rowButton(DISPLAY_NAMES[planet.name] ?? planet.name, { type: "planet", key: planet.name })}</td><td data-label="ზოდიაქო / გრადუსი">{degreeLabel(planet.longitude)}</td><td data-label="სახლი">{rowButton(`${planetHouses[planet.name] ?? "—"}`, { type: "house", key: String(planetHouses[planet.name] ?? "") })}</td></tr>)}</tbody></table></div></details>
 
@@ -274,7 +292,7 @@ export default function ChartDetails({
 
           <div className="rounded-xl border border-slate-500/20 bg-slate-950/25 p-3 text-xs leading-relaxed text-slate-400">MC: {degreeLabel(mc)} · მაჟორული ხაზები ბორბალზე უწყვეტია, მინორული — წყვეტილი. ჩანაწერზე დაჭერით შესაბამის ინტერპრეტაციაზე გადახვალთ.</div>
         </div>
-      </div>}
+      </div>
     </div>
   );
 }

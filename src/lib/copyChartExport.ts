@@ -143,6 +143,11 @@ function plainTextFromClone(clone: HTMLElement) {
 function prepareHtmlClone(root: HTMLElement, images: ExportImage[]) {
   const clone = root.cloneNode(true) as HTMLElement;
   clone.querySelectorAll("[data-copy-exclude], .chart-view-actions, .interpretation-close-button, .combined-chart-table-launch, script, style").forEach((node) => node.remove());
+  // Closed/conditionally hidden sections are part of the chart export too.
+  // Remove the DOM hiding attribute only from the detached copy, never from
+  // the live page, so every table and interpretation block is included.
+  clone.querySelectorAll("[hidden]").forEach((node) => node.removeAttribute("hidden"));
+  clone.querySelectorAll("[aria-hidden='true']").forEach((node) => node.removeAttribute("aria-hidden"));
   clone.querySelectorAll("details").forEach((details) => details.setAttribute("open", ""));
   clone.querySelectorAll("button").forEach((button) => {
     const text = button.textContent?.trim() ?? "";
@@ -200,32 +205,6 @@ function prepareHtmlClone(root: HTMLElement, images: ExportImage[]) {
   return clone;
 }
 
-async function makeCompositePng(images: ExportImage[]) {
-  if (!images.length) return null;
-  const width = 1400;
-  const gap = 42;
-  const scale = width / Math.max(...images.map((image) => image.width));
-  const heights = images.map((image) => Math.max(80, Math.round(image.height * Math.min(1, scale))));
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = images.reduce((sum, _, index) => sum + heights[index] + gap, gap);
-  const context = canvas.getContext("2d");
-  if (!context) return null;
-  context.fillStyle = "#080418";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  let y = gap / 2;
-  for (const [index, imageData] of images.entries()) {
-    const image = await imageFromSvg(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${imageData.width}" height="${imageData.height}"><image href="${imageData.dataUrl}" width="100%" height="100%" preserveAspectRatio="none" /></svg>`,
-      imageData.width,
-      imageData.height,
-    );
-    context.drawImage(image, 0, y, width, heights[index]!);
-    y += heights[index]! + gap;
-  }
-  return await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
-}
-
 export async function copyChartExport(root: HTMLElement) {
   const wheelSvg = root.querySelector<SVGSVGElement>(".chart-wheel-wrap svg");
   const images: ExportImage[] = [];
@@ -240,15 +219,18 @@ export async function copyChartExport(root: HTMLElement) {
   const clone = prepareHtmlClone(root, images);
   const plainText = plainTextFromClone(clone);
   const html = `<div style="font-family:Arial,sans-serif;color:#172033;line-height:1.55;">${clone.innerHTML}</div>`;
-  const composite = await makeCompositePng(images);
 
   if (navigator.clipboard?.write && typeof ClipboardItem !== "undefined") {
     try {
+      // Keep HTML as the rich clipboard representation. A single top-level
+      // image/png item makes editors such as Word/Docs paste only the image
+      // (and discard the interpretation text and tables). Images are already
+      // embedded in the HTML clone, so all of them remain available alongside
+      // the complete text and table markup.
       const payload: Record<string, Blob> = {
         "text/plain": new Blob([plainText], { type: "text/plain" }),
         "text/html": new Blob([html], { type: "text/html" }),
       };
-      if (composite) payload["image/png"] = composite;
       await navigator.clipboard.write([new ClipboardItem(payload)]);
       return;
     } catch {
