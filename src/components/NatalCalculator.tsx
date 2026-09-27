@@ -201,7 +201,7 @@ export default function NatalCalculator() {
         </div>
       )}
 
-      <div data-chart-export-root="true" className="space-y-4 sm:space-y-6">
+      <div data-chart-export-root="true" className="chart-builder-result space-y-4 sm:space-y-6">
       {/* Chart Wheel Display */}
       {wheel && (
         <ChartMapSection

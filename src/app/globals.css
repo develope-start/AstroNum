@@ -6971,3 +6971,183 @@ html.mode-ultra .admin-page :where([class*="bg-cyan-950"], [class*="bg-sky-950"]
 html.mode-ultra .chart-delete-dialog :where(.text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-white) {
   color: #f8fafc !important;
 }
+
+/* Final chart-reader geometry.
+   The chart reader is a true viewport surface on every device. On phones the
+   site header remains the only page chrome above it; the reader itself owns
+   the remaining viewport and scrolls independently. */
+.chart-view-panel,
+.admin-calculation-viewer {
+  isolation: isolate;
+  overscroll-behavior: contain;
+}
+
+.chart-view-panel > .chart-view-wheel,
+.admin-calculation-dialog > .admin-calculation-wheel {
+  scroll-margin-top: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .site-header {
+    z-index: 120 !important;
+  }
+
+  .chart-builder-result {
+    width: 100% !important;
+    margin-top: 0.75rem !important;
+    gap: 0.9rem !important;
+  }
+
+  .chart-builder-result > .chart-map-section {
+    margin-top: 0 !important;
+  }
+
+  .chart-builder-result > .chart-map-section > div {
+    padding-top: 0 !important;
+  }
+
+  .chart-builder-result > .chart-map-section .chart-wheel-wrap {
+    margin-top: -0.4rem !important;
+    padding-top: 0 !important;
+  }
+
+  .chart-view-panel,
+  .admin-calculation-viewer {
+    top: var(--site-header-height, 4rem) !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: calc(100dvh - var(--site-header-height, 4rem)) !important;
+    min-height: 0 !important;
+    padding: 0 0 max(1.25rem, env(safe-area-inset-bottom)) !important;
+    border-top: 1px solid rgba(245, 158, 11, 0.28) !important;
+    border-radius: 0 !important;
+    background: #05020f !important;
+    box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.32) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-calculation-viewer {
+    display: block !important;
+  }
+
+  .admin-calculation-dialog {
+    width: 100% !important;
+    min-height: 100% !important;
+    padding: 0 0 max(1.25rem, env(safe-area-inset-bottom)) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    background: #05020f !important;
+    box-shadow: none !important;
+  }
+
+  /* Keep the close control in the chrome area without consuming a second
+     header band or covering the title/content below it. */
+  .chart-view-panel > .interpretation-close-row,
+  .admin-calculation-dialog > .interpretation-close-row {
+    top: 0 !important;
+    z-index: 70 !important;
+    height: 0 !important;
+    padding-inline: 0.55rem !important;
+  }
+
+  .interpretation-close-button {
+    width: 2.35rem;
+    min-height: 2.35rem;
+    padding: 0.25rem;
+    transform: translateY(0.35rem) !important;
+  }
+
+  .interpretation-close-label {
+    display: none;
+  }
+
+  /* Reduce the empty bands around the reader while retaining comfortable
+     touch targets for the title, copy action and accordions. */
+  .chart-view-panel > .flex.flex-col.items-center,
+  .admin-calculation-dialog > .flex.flex-col.items-center {
+    gap: 0.35rem !important;
+    margin-top: 0 !important;
+    padding: 0.65rem 2.9rem 0.7rem !important;
+  }
+
+  .chart-view-panel > .chart-view-details,
+  .admin-calculation-dialog > .admin-calculation-details {
+    margin-top: 0.65rem !important;
+    margin-inline: 0.65rem !important;
+    padding: 0.75rem !important;
+  }
+
+  .chart-view-panel > .chart-view-actions {
+    margin-top: 0.65rem !important;
+    margin-inline: 0.65rem !important;
+    padding: 0.45rem !important;
+  }
+
+  .chart-view-panel > .chart-view-wheel,
+  .admin-calculation-dialog > .admin-calculation-wheel {
+    width: 100% !important;
+    margin-top: 0.15rem !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+  }
+
+  .chart-view-wheel > .chart-map-section > div,
+  .admin-calculation-wheel > .chart-map-section > div {
+    padding-top: 0 !important;
+  }
+
+  .chart-view-wheel .chart-wheel-wrap,
+  .admin-calculation-wheel .chart-wheel-wrap {
+    margin-top: -0.45rem !important;
+    padding-top: 0 !important;
+  }
+
+  .chart-view-wheel .chart-details,
+  .admin-calculation-wheel .chart-details {
+    margin-top: 0.35rem !important;
+  }
+
+  .chart-view-panel > .chart-view-interpretation,
+  .admin-calculation-dialog > .admin-calculation-interpretation {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0.45rem 0 0 !important;
+    padding: 0.75rem 0.65rem 1.5rem !important;
+    border-radius: 1rem !important;
+  }
+
+  .chart-view-interpretation > h3,
+  .admin-calculation-interpretation > h3 {
+    margin-bottom: 0.75rem !important;
+    padding-bottom: 0.65rem !important;
+    font-size: clamp(1.05rem, 5vw, 1.35rem) !important;
+    line-height: 1.35 !important;
+  }
+
+  .chart-view-interpretation .interpretation-content,
+  .admin-calculation-interpretation .interpretation-content {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .chart-view-interpretation .interpretation-content .interpretation-paragraph,
+  .admin-calculation-interpretation .interpretation-content .interpretation-paragraph {
+    font-size: 0.98rem !important;
+    line-height: 1.78 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html.mode-ultra .chart-view-panel,
+  html.mode-ultra .admin-calculation-viewer,
+  html.mode-ultra .admin-calculation-dialog {
+    background: #f8fafc !important;
+    border-top-color: #d6dee8 !important;
+    box-shadow: 0 -12px 36px rgba(15, 23, 42, 0.12) !important;
+  }
+}
