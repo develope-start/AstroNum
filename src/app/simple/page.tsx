@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Activity, ArrowRight, Check, Compass, Flame, Heart, Layers, Moon, Orbit, ShieldCheck, Sparkles, Sun, Wind, Mountain, Droplet } from "lucide-react";
+import { Activity, Check, Flame, Heart, Layers, Orbit, ShieldCheck, Sun, Wind, Mountain, Droplet } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
 import SynastryCalculator from "@/components/SynastryCalculator";
 import TransitCalculator from "@/components/TransitCalculator";
 import ElementTemperamentSummary from "@/components/ElementTemperamentSummary";
-import { ELEMENT_TEMPERAMENTS, type ElementTemperamentId } from "@/lib/elementTemperaments";
+import type { ElementTemperamentId } from "@/lib/elementTemperaments";
 
 type Tab = "natal" | "synastry" | "transit" | "advanced";
 
@@ -88,43 +88,7 @@ export default function SimplePage() {
 
   return (
     <div className="simple-page">
-      {/* 1. Sleek Minimal Hero */}
-      <section className="simple-hero">
-        <div className="simple-hero-badge">
-          <span className="simple-hero-dot" />
-          <span>ASTRONUM SIMPLE · MINIMALIST WORKSPACE</span>
-        </div>
-
-        <h1 className="simple-hero-title">
-          თქვენი რუკა.<br />
-          <span>სუფთა, მკაფიო სივრცეში.</span>
-        </h1>
-
-        <p className="simple-hero-lead">
-          მკაფიო, დახვეწილი და მინიმალისტური სამუშაო სივრცე ნატალური, სინასტრიული და ტრანზიტული რუკებისთვის — ყველა გამოთვლა ეფუძნება შვეიცარული ეფემერიდის ზუსტ მათემატიკურ მოდელს ყოველგვარი ვიზუალური ხმაურის გარეშე.
-        </p>
-
-        <div className="simple-hero-actions">
-          <a href="#calculator" className="simple-btn-primary">
-            <Compass className="h-4 w-4" />
-            <span>რუკის შექმნა</span>
-            <ArrowRight className="h-4 w-4 opacity-70" />
-          </a>
-          <a href="#method" className="simple-btn-secondary">
-            <Sparkles className="h-4 w-4" />
-            <span>როგორ მუშაობს</span>
-          </a>
-        </div>
-      </section>
-
-      <nav className="simple-quick-nav" aria-label="მარტივი რეჟიმის ნავიგაცია">
-        <a href="#elements">სტიქიები</a>
-        <a href="#planets">მნათობები</a>
-        <a href="#calculator">გამოთვლა</a>
-        <a href="#method">მეთოდი</a>
-      </nav>
-
-      {/* 2. Minimalist Four Elements Bento Grid */}
+      {/* The Simple route begins directly with useful information. */}
       <section id="elements" className="simple-section">
         <div className="simple-section-header">
           <div>

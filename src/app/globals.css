@@ -9712,50 +9712,349 @@ html.mode-simple :where(button, a, input, select, textarea, summary):focus-visib
   display: none !important;
 }
 
-/* A clear two-column desktop hero; the original title and actions remain
-   available in Simple mode instead of being discarded with display:none. */
+/* Home in Simple is a task-first board: the four elements precede the
+   calculator. Marketing copy and the orbit scene are intentionally absent. */
 html.mode-simple .app-home .hero-grid {
-  display: grid;
-  grid-template-columns: minmax(15rem, 0.72fr) minmax(0, 1.55fr);
-  align-items: center;
-  gap: clamp(1rem, 3vw, 3.25rem);
-  padding: clamp(1rem, 3vw, 2.5rem) 0;
+  display: block !important;
+  min-height: 0 !important;
+  padding: clamp(0.35rem, 1.5vw, 1rem) 0 clamp(1.15rem, 2.4vw, 2rem) !important;
 }
 
 html.mode-simple .app-home .hero-grid > div:first-child {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: clamp(0.5rem, 2vw, 1.75rem);
+  display: none !important;
 }
 
-html.mode-simple .app-home .hero-title {
+html.mode-simple .app-home .hero-orbit-card {
+  width: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple .app-home .hero-orbit-card::before,
+html.mode-simple .app-home .hero-orbit-card::after,
+html.mode-simple .app-home .celestial-system::before,
+html.mode-simple .app-home .celestial-system::after,
+html.mode-simple .app-home :where(.celestial-star-noise, .celestial-orbit, .celestial-constellation-ring, .celestial-ruler-ring, .celestial-earth, .celestial-earth-halo, .celestial-info-card, .orbit-ring, .orbit-core, .orbit-dot, .hero-orbit-meta) {
+  display: none !important;
+}
+
+html.mode-simple .app-home .celestial-system {
+  position: relative !important;
+  inset: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.6rem, 1.4vw, 1rem) !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  perspective: none !important;
+}
+
+html.mode-simple .app-home .celestial-element-panel {
+  position: relative !important;
+  inset: auto !important;
+  display: flex !important;
+  width: auto !important;
+  min-height: 10.25rem !important;
+  padding: clamp(0.85rem, 1.8vw, 1.2rem) !important;
+  gap: 0.75rem !important;
+  overflow: visible !important;
+  border: 1px solid var(--simple-border) !important;
+  border-radius: 1rem !important;
+  background: var(--simple-surface) !important;
+  box-shadow: 0 12px 28px -24px rgba(15, 23, 42, 0.72) !important;
+  color: var(--simple-text) !important;
+  text-align: left !important;
+  transform: none !important;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease !important;
+}
+
+html.mode-simple .app-home .celestial-element-panel:hover,
+html.mode-simple .app-home .celestial-element-panel:focus-visible,
+html.mode-simple .app-home .celestial-element-panel.is-info-open {
+  border-color: var(--element-text, var(--simple-focus)) !important;
+  background: var(--simple-surface) !important;
+  box-shadow: 0 16px 32px -24px rgba(15, 23, 42, 0.72) !important;
+  transform: translateY(-2px) !important;
+}
+
+html.mode-simple .app-home .celestial-element-heading {
+  position: static !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.6rem !important;
+  color: var(--simple-text) !important;
+  transform: none !important;
+}
+
+html.mode-simple .app-home .celestial-element-heading strong {
+  color: var(--simple-text) !important;
+  font-size: clamp(1rem, 1.45vw, 1.18rem) !important;
+}
+
+html.mode-simple .app-home .celestial-element-kicker,
+html.mode-simple .app-home .celestial-element-label { color: var(--simple-muted) !important; }
+
+html.mode-simple .app-home .celestial-element-symbol {
+  display: inline-grid !important;
+  width: 2.35rem !important;
+  height: 2.35rem !important;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  font-size: 1.45rem !important;
+}
+
+html.mode-simple .app-home .celestial-element-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.6rem !important;
+  margin: 0 !important;
+}
+
+html.mode-simple .app-home .celestial-element-items { gap: 0.28rem !important; }
+html.mode-simple .app-home .celestial-element-items span {
+  width: 1.8rem !important;
+  height: 1.8rem !important;
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface-raised) !important;
+  color: var(--simple-text) !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple .app-home .celestial-temperament-card {
+  position: static !important;
+  display: none !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  margin-top: 0.15rem !important;
+  border: 1px solid var(--simple-border) !important;
+  border-radius: 0.8rem !important;
+  background: var(--simple-surface-raised) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+html.mode-simple .app-home .celestial-temperament-card.is-visible {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+html.mode-simple .app-home .celestial-temperament-content { color: var(--simple-text) !important; }
+html.mode-simple .app-home .celestial-temperament-content :where(strong, p, span) {
+  color: var(--simple-text) !important;
+  text-shadow: none !important;
+}
+html.mode-simple .app-home .celestial-temperament-content :where(.celestial-temperament-kicker, .celestial-temperament-note) {
+  color: var(--simple-muted) !important;
+}
+html.mode-simple .app-home .celestial-temperament-close {
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface) !important;
+  color: var(--simple-text) !important;
+}
+
+/* The calculator becomes the single primary workspace after the element grid. */
+html.mode-simple .app-home .app-section {
+  width: min(100%, 76rem);
+  margin: 0 auto;
+  padding: clamp(1rem, 2.2vw, 1.5rem);
+  border: 1px solid var(--simple-border);
+  border-radius: 1.2rem;
+  background: var(--simple-surface);
+  box-shadow: 0 18px 40px -34px rgba(15, 23, 42, 0.72);
+}
+
+html.mode-simple .app-home .section-heading {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--simple-border);
+}
+
+html.mode-simple .app-home .section-heading .hero-kicker,
+html.mode-simple .app-home .section-heading p,
+html.mode-simple .app-home > .home-features {
+  display: none !important;
+}
+
+html.mode-simple .app-home .section-heading h2 {
   margin: 0;
   color: var(--simple-text);
-  font-size: clamp(2rem, 4.3vw, 3.8rem);
-  line-height: 1.08;
-  letter-spacing: -0.035em;
-  text-shadow: none;
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  letter-spacing: -0.02em;
 }
 
-html.mode-simple .app-home .hero-title em { color: var(--simple-accent); }
-html.mode-simple .app-home .hero-kicker { color: var(--simple-muted); }
-html.mode-simple .app-home .hero-lead {
-  max-width: 34rem;
-  margin: 0;
-  color: var(--simple-muted);
-  font-size: clamp(0.92rem, 1.25vw, 1.05rem);
-  line-height: 1.75;
-}
-
-html.mode-simple .app-home .hero-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; }
-html.mode-simple .app-home .hero-orbit-card {
-  min-height: clamp(27rem, 48vw, 43rem);
+html.mode-simple .app-home .mode-switcher {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
+  padding: 0.3rem;
   border: 1px solid var(--simple-border);
-  border-radius: 1.5rem;
-  background: radial-gradient(ellipse at center, rgba(100, 116, 139, 0.12), transparent 68%), var(--simple-surface);
-  box-shadow: 0 18px 54px -38px rgba(15, 23, 42, 0.65);
+  border-radius: 0.85rem;
+  background: var(--simple-surface-raised);
+}
+
+html.mode-simple .app-home .mode-switcher button {
+  min-height: 3.15rem;
+  border: 0 !important;
+  border-radius: 0.62rem;
+  background: transparent !important;
+  color: var(--simple-muted) !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple .app-home .mode-switcher button[data-active="true"] {
+  background: var(--simple-surface) !important;
+  color: var(--simple-text) !important;
+  box-shadow: 0 4px 12px -9px rgba(15, 23, 42, 0.55) !important;
+}
+
+html.mode-simple .app-home .mode-switcher + div {
+  min-height: 1.25rem;
+  margin-top: 0.65rem !important;
+  color: var(--simple-muted) !important;
+}
+
+/* Form control contract: visible label, clear entered text, and a neutral
+   surface in both Simple palettes. Portalled menus are covered separately. */
+html.mode-simple :where(.app-home, .simple-page) fieldset.glass-panel,
+html.mode-simple :where(.app-home, .simple-page) .glass-panel {
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface) !important;
+  color: var(--simple-text) !important;
+  box-shadow: 0 14px 34px -28px rgba(15, 23, 42, 0.65) !important;
+}
+
+html.mode-simple :where(.app-home, .simple-page) :where(label, legend) {
+  color: var(--simple-text) !important;
+  text-shadow: none !important;
+}
+
+html.mode-simple :where(.app-home, .simple-page) :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface-raised) !important;
+  color: var(--simple-text) !important;
+  caret-color: var(--simple-focus) !important;
+  text-shadow: none !important;
+}
+
+html.mode-simple :where(.app-home, .simple-page) :where(input, textarea)::placeholder {
+  color: var(--simple-muted) !important;
+  opacity: 0.88 !important;
+}
+
+html.mode-simple :where(.app-home, .simple-page) :where(select, option) {
+  color: var(--simple-text) !important;
+  background: var(--simple-surface-raised) !important;
+}
+
+html.mode-simple .wide-date-editor,
+html.mode-simple .time-editor {
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface-raised) !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple .wide-date-editor :where(input, span),
+html.mode-simple .time-editor :where(input, span) {
+  color: var(--simple-text) !important;
+}
+
+html.mode-simple .wide-date-editor input::placeholder,
+html.mode-simple .time-editor input::placeholder { color: var(--simple-muted) !important; }
+
+html.mode-simple :where(.wide-date-editor, .time-editor):focus-within {
+  border-color: var(--simple-focus) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--simple-focus) 18%, transparent) !important;
+}
+
+html.mode-simple :where(.place-map-button, .wide-date-editor button, .time-editor button) {
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface) !important;
+  color: var(--simple-text) !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple :where(.place-suggestions, .calendar-popup, .time-picker-popup) {
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface) !important;
+  color: var(--simple-text) !important;
+  box-shadow: 0 22px 52px -28px rgba(15, 23, 42, 0.7) !important;
+  backdrop-filter: none !important;
+}
+
+html.mode-simple :where(.calendar-popup, .time-picker-popup) :where(label, p, span) {
+  color: var(--simple-muted) !important;
+}
+
+html.mode-simple :where(.calendar-popup, .time-picker-popup) :where(input, select) {
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface-raised) !important;
+  color: var(--simple-text) !important;
+}
+
+html.mode-simple :where(.place-suggestions-header, .time-picker-grid) {
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface-raised) !important;
+  color: var(--simple-text) !important;
+}
+
+html.mode-simple :where(.place-suggestion-option, .calendar-day-option, .time-picker-option) {
+  color: var(--simple-text) !important;
+}
+
+html.mode-simple :where(.place-suggestion-option, .calendar-day-option, .time-picker-option):hover {
+  background: color-mix(in srgb, var(--simple-focus) 12%, var(--simple-surface)) !important;
+  color: var(--simple-text) !important;
+}
+
+html.mode-simple :where(.calendar-day-option, .time-picker-option).is-selected {
+  background: var(--simple-focus) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple .place-suggestion-meta {
+  background: color-mix(in srgb, var(--simple-focus) 12%, var(--simple-surface-raised)) !important;
+  color: var(--simple-text) !important;
+}
+
+html.mode-simple .place-map-panel {
+  border-color: var(--simple-border) !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple .place-map-panel > div:last-child {
+  background: var(--simple-surface-raised) !important;
+  color: var(--simple-text) !important;
+}
+
+html.mode-simple :where(.chart-map-section, .chart-view-interpretation, .admin-calculation-interpretation) {
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface) !important;
+  color: var(--simple-text) !important;
+  box-shadow: 0 14px 34px -28px rgba(15, 23, 42, 0.65) !important;
+}
+
+html.mode-simple :where(.chart-map-section, .chart-view-interpretation, .admin-calculation-interpretation) :where(h1, h2, h3, h4, p, span) {
+  color: var(--simple-text) !important;
+  text-shadow: none !important;
 }
 
 /* Restore all explanatory copy that earlier Simple rules hid. Spacing and
@@ -9959,6 +10258,6 @@ html.mode-simple:not(.mode-simple-light) :where(.cabinet-page, .admin-page) :whe
   html.mode-simple .simple-element-chips-row { align-items: flex-start; flex-direction: column; }
   html.mode-simple .simple-methods-grid { grid-template-columns: minmax(0, 1fr); }
   html.mode-simple .simple-calc-frame { padding: 0.55rem; }
-  html.mode-simple .app-home .celestial-element-panel { transform: scale(0.9); }
-  html.mode-simple .app-home .celestial-system { transform: scale(0.9); transform-origin: center; }
+  html.mode-simple .app-home .celestial-element-panel { transform: none !important; }
+  html.mode-simple .app-home .celestial-system { transform: none !important; }
 }
