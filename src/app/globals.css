@@ -7275,7 +7275,7 @@ html.mode-ultra .chart-delete-dialog :where(.text-slate-100, .text-slate-200, .t
 
 @media (max-width: 640px) {
   .nav-mode-controls {
-    gap: clamp(0.75rem, 6vw, 5.2rem);
+    gap: 5.2rem;
   }
 }
 
@@ -7438,7 +7438,7 @@ html.mode-simple.mode-simple-light .hero-orbit-card {
 
 @media (max-width: 480px) {
   .nav-mode-controls {
-    gap: 0.25rem;
+    gap: 4.4rem;
   }
 
   .nav-mode-orb-btn,
