@@ -4,6 +4,8 @@ import { computeSecondaryProgression } from "@/lib/astro/progressions";
 import { generateSecondaryProgressionInterpretation } from "@/lib/interpretations/natal";
 import { isWideDate } from "@/lib/astro/wideDate";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
+import { isValidPersonInput } from "@/lib/astro/inputSchemas";
+import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 
 const calculationSchema = z.object({
   ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
@@ -31,8 +33,11 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const limiter = rateLimit(getRateLimitKey(req, "chart:progression"), 30, 5 * 60 * 1000);
+  if (!limiter.allowed) return NextResponse.json({ error: "Too many chart requests. Try again later." }, { status: 429, headers: { "Retry-After": String(limiter.retryAfterSeconds) } });
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "არასწორი მონაცემები" }, { status: 400 });
+  if (!isValidPersonInput(parsed.data.natal)) return NextResponse.json({ error: "Invalid chart input" }, { status: 400 });
   try {
     const { natal, targetDate, houseSystem, calculation } = parsed.data;
     const progression = computeSecondaryProgression({ ...natal, calculation }, targetDate, houseSystem);

@@ -5,6 +5,7 @@ import { hashPassword, verifyPassword, signSession, SESSION_COOKIE, asRole, isCo
 import { getRequestInfo } from "@/lib/requestInfo";
 import { twelveHoursAgo } from "@/lib/calculationHistory";
 import { allocatePublicId, ensureAdminIds, ensureUserPublicId } from "@/lib/publicIds";
+import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 
 const schema = z.object({
   identifier: z.string().min(1).optional(),
@@ -13,6 +14,10 @@ const schema = z.object({
 }).refine((value) => Boolean(value.identifier?.trim() || value.email?.trim()), "Username ან ელფოსტა სავალდებულოა");
 
 export async function POST(req: NextRequest) {
+  const limiter = rateLimit(getRateLimitKey(req, "auth:login"), 12, 15 * 60 * 1000);
+  if (!limiter.allowed) {
+    return NextResponse.json({ error: "Too many login attempts. Try again later." }, { status: 429, headers: { "Retry-After": String(limiter.retryAfterSeconds) } });
+  }
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {

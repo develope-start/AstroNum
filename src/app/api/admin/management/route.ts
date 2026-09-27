@@ -194,7 +194,10 @@ export async function GET(req: NextRequest) {
       };
     }),
     deletedCalculations: deletedCalculations.map(({ dataJson, ...item }) => {
-      const data = parseJsonObject(dataJson) as { userId?: string | null };
+      const rawData = parseJsonObject(dataJson) as { userId?: string | null; resultJson?: unknown; interpretation?: unknown };
+      // The admin list only needs editable metadata. Large calculation and
+      // interpretation blobs are loaded by the dedicated view endpoint.
+      const { resultJson: _resultJson, interpretation: _interpretation, ...data } = rawData;
       const userEmail = data.userId
         ? users.find((user) => user.id === data.userId)?.email ?? deletedUsers.find((user) => user.id === data.userId)?.email ?? null
         : null;

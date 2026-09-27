@@ -5,6 +5,7 @@ import { hashPassword, signSession, SESSION_COOKIE, asRole, isConfiguredPrimaryA
 import { getRequestInfo } from "@/lib/requestInfo";
 import { twelveHoursAgo } from "@/lib/calculationHistory";
 import { allocatePublicId, ensureAdminIds, numberFromPublicId } from "@/lib/publicIds";
+import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 
 const schema = z.object({
   name: z.string().trim().min(1, "სახელი სავალდებულოა").max(120),
@@ -14,6 +15,10 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const limiter = rateLimit(getRateLimitKey(req, "auth:register"), 5, 60 * 60 * 1000);
+  if (!limiter.allowed) {
+    return NextResponse.json({ error: "Too many registration attempts. Try again later." }, { status: 429, headers: { "Retry-After": String(limiter.retryAfterSeconds) } });
+  }
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {

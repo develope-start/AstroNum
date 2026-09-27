@@ -15,6 +15,8 @@ import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/i
 import { eclipticToSign } from "@/lib/astro/signs";
 import { calculateAngularity, calculateDeclinationContacts, calculateFixedStarContacts, calculateTraditionalDignities } from "@/lib/astro/advanced";
 import { appendElementBalanceInterpretation, ensureInterpretationFoundationLast } from "@/lib/interpretations/elementBalance";
+import { isValidPersonInput } from "@/lib/astro/inputSchemas";
+import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 
 const calculationSchema = z.object({
   ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
@@ -41,12 +43,17 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const limiter = rateLimit(getRateLimitKey(req, "chart:natal"), 30, 5 * 60 * 1000);
+  if (!limiter.allowed) return NextResponse.json({ error: "Too many chart requests. Try again later." }, { status: 429, headers: { "Retry-After": String(limiter.retryAfterSeconds) } });
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "არასწორი მონაცემები" }, { status: 400 });
   }
   const data = parsed.data;
+  if (!isValidPersonInput(data)) {
+    return NextResponse.json({ error: "Invalid chart input" }, { status: 400 });
+  }
 
   let result;
   try {

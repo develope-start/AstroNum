@@ -38,7 +38,10 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({ entries, source: "interpretation-library" }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json(
+      { entries, source: "interpretation-library" },
+      { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" } },
+    );
   } catch {
     // The page has a curated local fallback, so a temporary database outage must not hide the UI.
     return NextResponse.json({ entries: {}, source: "local-fallback" }, { headers: { "Cache-Control": "no-store" } });

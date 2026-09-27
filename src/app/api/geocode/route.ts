@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { searchPlaces } from "@/lib/astro/geo";
+import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 
 export async function GET(req: NextRequest) {
+  const limiter = rateLimit(getRateLimitKey(req, "geocode:search"), 60, 60 * 1000);
+  if (!limiter.allowed) {
+    return NextResponse.json({ error: "Too many location searches. Try again later." }, { status: 429, headers: { "Retry-After": String(limiter.retryAfterSeconds) } });
+  }
   const q = req.nextUrl.searchParams.get("q");
   const limitParam = req.nextUrl.searchParams.get("limit");
   const limit = limitParam ? Math.min(10, Math.max(1, parseInt(limitParam, 10) || 6)) : 6;

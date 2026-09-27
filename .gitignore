@@ -1,5 +1,9 @@
 node_modules/
 .next/
+.vercel/
+*.tsbuildinfo
+coverage/
+playwright-report/
 dev.db
 dev.db-journal
 .env

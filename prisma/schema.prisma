@@ -70,6 +70,8 @@ model Chart {
   interpretation String // ქართული ინტერპრეტაციის ტექსტი
 
   createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }
 
 // ყველა წარმატებული გამოთვლის აუდიტის ჩანაწერი. userId შეიძლება იყოს null,
@@ -123,6 +125,9 @@ model Calculation {
   createdAt   DateTime @default(now())
 
   @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([userId, type, createdAt])
+  @@index([ipAddress, userAgent, createdAt])
 }
 
 model AccountEvent {
@@ -152,6 +157,7 @@ model ActionToken {
 
   @@index([userId])
   @@index([expiresAt])
+  @@index([type, expiresAt])
 }
 
 model IdSequence {
@@ -232,6 +238,8 @@ model DeletedUser {
   chartsJson        String
   calculationsJson  String
   accountEventsJson String
+
+  @@index([deletedAt])
 }
 
 // ადმინისტრატორის ურნა — ცალკე წაშლილი სტუმრის ან ცალკეული რუკის ჩანაწერი.
@@ -242,4 +250,6 @@ model DeletedCalculation {
   summary    String
   dataJson   String
   deletedAt  DateTime @default(now())
+
+  @@index([deletedAt])
 }

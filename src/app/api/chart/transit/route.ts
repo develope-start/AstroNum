@@ -9,6 +9,8 @@ import { tryRecordCalculation } from "@/lib/calculationHistory";
 import { allocateMapNumber } from "@/lib/publicIds";
 import { compareWideDates, formatWideDateDisplay, isWideDate, wideDateToUtcDate } from "@/lib/astro/wideDate";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
+import { isValidPersonInput } from "@/lib/astro/inputSchemas";
+import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 import { aspectLibraryInsight } from "@/lib/interpretations/library";
 import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/interpretations/libraryStore";
 
@@ -45,10 +47,15 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const limiter = rateLimit(getRateLimitKey(req, "chart:transit"), 20, 5 * 60 * 1000);
+  if (!limiter.allowed) return NextResponse.json({ error: "Too many chart requests. Try again later." }, { status: 429, headers: { "Retry-After": String(limiter.retryAfterSeconds) } });
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "არასწორი მონაცემები" }, { status: 400 });
+  }
+  if (!isValidPersonInput(parsed.data.natal)) {
+    return NextResponse.json({ error: "Invalid chart input" }, { status: 400 });
   }
   const { natal, transitDate, houseSystem, save, label, calculation: calculationOptions } = parsed.data;
   const transitStartDate = parsed.data.transitStartDate ?? transitDate;

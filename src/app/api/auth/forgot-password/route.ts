@@ -3,16 +3,26 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { ACTION_TYPES, createActionToken } from "@/lib/actionTokens";
 import { actionEmailHtml, getAppUrl, sendEmail } from "@/lib/email";
+import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 
-const schema = z.object({ email: z.string().email("ელფოსტის ფორმატი არასწორია") });
+const schema = z.object({ email: z.string().trim().email("ელფოსტის ფორმატი არასწორია").max(254) });
+const genericMessage = "თუ ანგარიში არსებობს, აღდგენის ბმული ელფოსტაზე გაიგზავნება";
 
 export async function POST(req: NextRequest) {
+  const limiter = rateLimit(getRateLimitKey(req, "auth:forgot-password"), 5, 15 * 60 * 1000);
+  if (!limiter.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Try again later." },
+      { status: 429, headers: { "Retry-After": String(limiter.retryAfterSeconds) } },
+    );
+  }
+
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
 
-  const email = parsed.data.email.trim().toLowerCase();
+  const email = parsed.data.email.toLowerCase();
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) return NextResponse.json({ message: "თუ ანგარიში არსებობს, აღდგენის ბმული ელფოსტაზე გაიგზავნება" });
+  if (!user) return NextResponse.json({ message: genericMessage });
 
   const token = await createActionToken({ userId: user.id, type: ACTION_TYPES.PASSWORD_RESET, expiresInMinutes: 30 });
   const link = `${getAppUrl(req)}/cabinet/confirm?token=${encodeURIComponent(token)}&action=reset`;
@@ -27,5 +37,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "აღდგენის წერილის გაგზავნა ვერ მოხერხდა" }, { status: 503 });
   }
 
-  return NextResponse.json({ message: "თუ ანგარიში არსებობს, აღდგენის ბმული ელფოსტაზე გაიგზავნა" });
+  return NextResponse.json({ message: genericMessage });
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { ACTION_TYPES, getValidActionToken, parseTokenPayload } from "@/lib/actionTokens";
+import { ACTION_TYPES, consumeActionToken, getValidActionToken, parseTokenPayload } from "@/lib/actionTokens";
 import { asRole, SESSION_COOKIE, signSession } from "@/lib/auth";
 import { calculationWithoutInterpretationSelect } from "@/lib/calculationSelect";
 
@@ -44,11 +44,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "ეს მეილი წაშლილ ანგარიშს ეკუთვნის და აღდგენამდე ვერ გამოიყენება" }, { status: 409 });
     }
 
-    await prisma.$transaction([
-      prisma.user.update({ where: { id: user.id }, data: { email: newEmail } }),
-      prisma.accountEvent.create({ data: { userId: user.id, type: "EMAIL_CHANGED", emailSnapshot: newEmail, oldEmail: user.email, newEmail } }),
-      prisma.actionToken.update({ where: { id: actionToken.id }, data: { usedAt: new Date() } }),
-    ]);
+    const completed = await prisma.$transaction(async (tx) => {
+      if (!(await consumeActionToken(tx, actionToken.id))) return false;
+      await tx.user.update({ where: { id: user.id }, data: { email: newEmail } });
+      await tx.accountEvent.create({ data: { userId: user.id, type: "EMAIL_CHANGED", emailSnapshot: newEmail, oldEmail: user.email, newEmail } });
+      return true;
+    });
+    if (!completed) return NextResponse.json({ error: "ბმული ვადაგასულია ან უკვე გამოყენებულია" }, { status: 400 });
     const response = NextResponse.json({ message: "ელფოსტა წარმატებით შეიცვალა" });
     response.cookies.set(SESSION_COOKIE, signSession({ userId: user.id, email: newEmail, role: asRole(user.role) }), {
       httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 30,
@@ -58,11 +60,13 @@ export async function POST(req: NextRequest) {
 
   if (actionToken.type === ACTION_TYPES.PASSWORD_CHANGE) {
     if (!payload.passwordHash) return NextResponse.json({ error: "ცვლილების მონაცემები ვერ მოიძებნა" }, { status: 400 });
-    await prisma.$transaction([
-      prisma.user.update({ where: { id: user.id }, data: { passwordHash: payload.passwordHash } }),
-      prisma.accountEvent.create({ data: { userId: user.id, type: "PASSWORD_CHANGED", emailSnapshot: user.email } }),
-      prisma.actionToken.update({ where: { id: actionToken.id }, data: { usedAt: new Date() } }),
-    ]);
+    const completed = await prisma.$transaction(async (tx) => {
+      if (!(await consumeActionToken(tx, actionToken.id))) return false;
+      await tx.user.update({ where: { id: user.id }, data: { passwordHash: payload.passwordHash } });
+      await tx.accountEvent.create({ data: { userId: user.id, type: "PASSWORD_CHANGED", emailSnapshot: user.email } });
+      return true;
+    });
+    if (!completed) return NextResponse.json({ error: "ბმული ვადაგასულია ან უკვე გამოყენებულია" }, { status: 400 });
     return NextResponse.json({ message: "პაროლი წარმატებით შეიცვალა" });
   }
 
@@ -79,8 +83,8 @@ export async function POST(req: NextRequest) {
       ? "ACCOUNT_AND_CHARTS_DELETED"
       : "ACCOUNT_DELETED";
 
-    await prisma.$transaction(async (tx) => {
-      await tx.actionToken.update({ where: { id: actionToken.id }, data: { usedAt: new Date() } });
+    const completed = await prisma.$transaction(async (tx) => {
+      if (!(await consumeActionToken(tx, actionToken.id))) return false;
       await tx.accountEvent.deleteMany({ where: { userId: user.id, type: { startsWith: "CHART_DELETED" } } });
       await tx.accountEvent.create({ data: { userId: user.id, type: deletionType, emailSnapshot: user.email } });
       const accountEvents = await tx.accountEvent.findMany({ where: { userId: user.id } });
@@ -102,7 +106,9 @@ export async function POST(req: NextRequest) {
       });
       await tx.calculation.deleteMany({ where: { userId: user.id } });
       await tx.user.delete({ where: { id: user.id } });
+      return true;
     });
+    if (!completed) return NextResponse.json({ error: "ბმული ვადაგასულია ან უკვე გამოყენებულია" }, { status: 400 });
     const response = NextResponse.json({ message: "კაბინეტი წაიშალა" });
     response.cookies.set(SESSION_COOKIE, "", { path: "/", maxAge: 0 });
     return response;

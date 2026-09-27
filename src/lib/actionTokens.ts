@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "crypto";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 
 export const ACTION_TYPES = {
@@ -41,6 +42,15 @@ export async function getValidActionToken(token: string, type?: string) {
   if (!actionToken || actionToken.usedAt || actionToken.expiresAt.getTime() <= Date.now()) return null;
   if (type && actionToken.type !== type) return null;
   return actionToken;
+}
+
+/** Atomically claims a token inside a transaction so parallel requests cannot reuse it. */
+export async function consumeActionToken(tx: Prisma.TransactionClient, id: string): Promise<boolean> {
+  const result = await tx.actionToken.updateMany({
+    where: { id, usedAt: null, expiresAt: { gt: new Date() } },
+    data: { usedAt: new Date() },
+  });
+  return result.count === 1;
 }
 
 export function parseTokenPayload(payload: string | null): Record<string, string> {
