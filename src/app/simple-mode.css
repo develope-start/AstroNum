@@ -146,7 +146,8 @@ html.simple-document .hero-grid {
   padding: 0 !important;
 }
 
-html.simple-document .hero-grid > div:first-child { margin-bottom: 20px; }
+/* Simple Mode starts directly with the usable workspace. */
+html.simple-document .hero-grid > div:first-child { display: none !important; }
 html.simple-document .hero-kicker { color: #444 !important; }
 html.simple-document .hero-title { color: #111 !important; font-family: Georgia, "Noto Serif Georgian", serif; }
 html.simple-document .hero-title em,
@@ -165,7 +166,7 @@ html.simple-document .celestial-system {
   position: static !important;
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px !important;
+  gap: 6px !important;
   overflow: visible !important;
   background: transparent !important;
 }
@@ -177,8 +178,8 @@ html.simple-document .celestial-element-panel {
   display: grid !important;
   min-height: 0 !important;
   width: auto !important;
-  padding: 10px !important;
-  gap: 8px !important;
+  padding: 9px 10px !important;
+  gap: 6px !important;
   border: 1px solid #111 !important;
   border-radius: 0 !important;
   background: #fff !important;
@@ -188,15 +189,97 @@ html.simple-document .celestial-element-panel {
 }
 
 html.simple-document .celestial-element-panel:hover,
-html.simple-document .celestial-element-panel:focus-visible { background: #f2f2f2 !important; }
+html.simple-document .celestial-element-panel:focus-visible { background: #eef9fa !important; border-color: #8bd3d9 !important; }
 html.simple-document .celestial-element-heading,
 html.simple-document .celestial-element-row { position: static !important; color: #111 !important; }
 html.simple-document .celestial-element-symbol,
 html.simple-document .celestial-element-items span { border: 0 !important; background: transparent !important; color: #111 !important; box-shadow: none !important; }
 
-html.simple-document .celestial-temperament-card { border: 1px solid #111 !important; border-radius: 0 !important; background: #fff !important; box-shadow: none !important; }
+html.simple-document .celestial-element-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1000 !important;
+  display: block !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  border: 0 !important;
+  background: rgba(15, 23, 42, 0.16) !important;
+  backdrop-filter: blur(2px);
+}
 
-html.simple-document .app-section { margin-top: 20px; padding: 16px !important; }
+html.simple-document .celestial-temperament-card {
+  display: none !important;
+  border: 1px solid #9caab1 !important;
+  border-radius: 2px !important;
+  background: #fff !important;
+  box-shadow: 0 14px 38px rgba(15, 23, 42, 0.18) !important;
+}
+
+html.simple-document .celestial-temperament-card.is-visible,
+html.simple-document .celestial-temperament-card.is-pinned {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  z-index: 1001 !important;
+  display: block !important;
+  width: min(620px, calc(100vw - 28px)) !important;
+  max-width: calc(100vw - 28px) !important;
+  max-height: min(78dvh, 640px) !important;
+  margin: 0 !important;
+  padding: 18px 20px !important;
+  overflow: auto !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+html.simple-document .celestial-temperament-content {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  overflow: visible !important;
+  max-height: none !important;
+  padding: 0 !important;
+  color: #111 !important;
+  text-align: left !important;
+}
+
+html.simple-document .celestial-temperament-content :where(strong, p, span) {
+  display: block !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  color: #111 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  text-shadow: none !important;
+  white-space: normal !important;
+  overflow: visible !important;
+}
+
+html.simple-document .celestial-temperament-content strong { font-size: 1.05rem !important; line-height: 1.4 !important; }
+html.simple-document .celestial-temperament-content p,
+html.simple-document .celestial-temperament-lede { font-size: 0.9rem !important; line-height: 1.7 !important; }
+html.simple-document .celestial-temperament-kicker,
+html.simple-document .celestial-temperament-note { color: #53636b !important; font-size: 0.75rem !important; line-height: 1.55 !important; }
+html.simple-document .celestial-temperament-element-icon { display: inline-block !important; margin-right: 0.45rem !important; font-size: 1.35rem !important; line-height: 1 !important; }
+html.simple-document .celestial-temperament-close {
+  position: sticky !important;
+  top: -6px !important;
+  z-index: 2 !important;
+  float: right;
+  display: grid !important;
+  width: 30px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  margin: 0 0 8px 10px !important;
+  place-items: center;
+  border: 1px solid #aeb8bf !important;
+  background: #fff !important;
+  color: #111 !important;
+}
+
+html.simple-document .app-section { margin-top: 12px; padding: 14px !important; }
 html.simple-document .section-heading { border-bottom: 1px solid #111 !important; }
 html.simple-document .tab-button { border-radius: 0 !important; color: #111 !important; }
 html.simple-document .tab-button.is-active { border-bottom-color: #111 !important; background: #111 !important; color: #fff !important; }
