@@ -475,7 +475,7 @@ export default function DashboardPage() {
 
       {/* Selected Opened Chart View Modal / Card */}
       {selected && (
-        <div id="chart-view" data-chart-export-root="true" className="chart-view-panel fixed inset-0 z-[100] h-[100dvh] min-w-0 overflow-y-auto overscroll-contain bg-[#05020f]/95 p-2 sm:p-8 backdrop-blur-md space-y-5 transition-all">
+        <div id="chart-view" data-chart-export-root="true" className="chart-view-panel fixed inset-0 z-[100] h-[100dvh] min-w-0 overflow-y-auto overscroll-contain bg-[#05020f]/95 p-2 sm:p-8 backdrop-blur-md transition-all">
           
           {/* Premium Fixed Top-Right Close Button */}
           <div className="interpretation-close-row">

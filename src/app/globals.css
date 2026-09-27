@@ -5766,55 +5766,164 @@ html.mode-ultra .constellation-art circle {
   fill: #3b82f6 !important;
 }
 
-/* 4 Element panels - Crisp, High-Contrast Frosted Glass */
+/* ==========================================================================
+   4 Celestial Element Panels (Light / Ultra Mode)
+   Refined, soft, luminous celestial glassmorphism matching the gold-parchment aesthetic
+   ========================================================================== */
 html.mode-ultra .celestial-element-panel {
-  backdrop-filter: blur(22px) !important;
-  -webkit-backdrop-filter: blur(22px) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
   border-radius: 1.25rem !important;
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              background 260ms cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-html.mode-ultra .celestial-element-panel-fire {
-  border: 1px solid rgba(244, 63, 94, 0.35) !important;
-  background: linear-gradient(145deg, rgba(255, 241, 242, 0.92), rgba(254, 226, 226, 0.96)) !important;
-  box-shadow: 0 8px 24px -8px rgba(244, 63, 94, 0.22) !important;
+html.mode-ultra .celestial-element-panel::before {
+  display: none !important;
 }
-html.mode-ultra .celestial-element-panel-fire strong { color: #9f1239 !important; }
-html.mode-ultra .celestial-element-panel-fire .celestial-element-kicker { color: #e11d48 !important; }
-html.mode-ultra .celestial-element-panel-fire .celestial-element-symbol { color: #e11d48 !important; }
-html.mode-ultra .celestial-element-panel-fire .celestial-element-items b { color: #be123c !important; }
 
-html.mode-ultra .celestial-element-panel-earth {
-  border: 1px solid rgba(16, 185, 129, 0.35) !important;
-  background: linear-gradient(145deg, rgba(240, 253, 244, 0.92), rgba(220, 252, 231, 0.96)) !important;
-  box-shadow: 0 8px 24px -8px rgba(16, 185, 129, 0.22) !important;
+html.mode-ultra .celestial-element-panel strong,
+html.mode-ultra .celestial-element-panel span,
+html.mode-ultra .celestial-element-panel b,
+html.mode-ultra .celestial-element-panel .celestial-element-kicker,
+html.mode-ultra .celestial-element-panel .celestial-element-label {
+  text-shadow: none !important;
 }
-html.mode-ultra .celestial-element-panel-earth strong { color: #065f46 !important; }
-html.mode-ultra .celestial-element-panel-earth .celestial-element-kicker { color: #059669 !important; }
-html.mode-ultra .celestial-element-panel-earth .celestial-element-symbol { color: #059669 !important; }
-html.mode-ultra .celestial-element-panel-earth .celestial-element-items b { color: #047857 !important; }
 
-html.mode-ultra .celestial-element-panel-air {
-  border: 1px solid rgba(56, 189, 248, 0.4) !important;
-  background: linear-gradient(145deg, rgba(240, 249, 255, 0.92), rgba(224, 242, 254, 0.96)) !important;
-  box-shadow: 0 8px 24px -8px rgba(14, 165, 233, 0.22) !important;
+html.mode-ultra .celestial-element-heading strong {
+  font-weight: 800 !important;
 }
-html.mode-ultra .celestial-element-panel-air strong { color: #0369a1 !important; }
-html.mode-ultra .celestial-element-panel-air .celestial-element-kicker { color: #0284c7 !important; }
-html.mode-ultra .celestial-element-panel-air .celestial-element-symbol { color: #0284c7 !important; }
-html.mode-ultra .celestial-element-panel-air .celestial-element-items b { color: #0284c7 !important; }
-
-html.mode-ultra .celestial-element-panel-water {
-  border: 1px solid rgba(99, 102, 241, 0.35) !important;
-  background: linear-gradient(145deg, rgba(238, 242, 255, 0.92), rgba(224, 231, 255, 0.96)) !important;
-  box-shadow: 0 8px 24px -8px rgba(99, 102, 241, 0.22) !important;
-}
-html.mode-ultra .celestial-element-panel-water strong { color: #3730a3 !important; }
-html.mode-ultra .celestial-element-panel-water .celestial-element-kicker { color: #4f46e5 !important; }
-html.mode-ultra .celestial-element-panel-water .celestial-element-symbol { color: #4f46e5 !important; }
-html.mode-ultra .celestial-element-panel-water .celestial-element-items b { color: #4338ca !important; }
 
 html.mode-ultra .celestial-element-label {
   color: #64748b !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.04em !important;
+}
+
+html.mode-ultra .celestial-element-items span {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(203, 213, 225, 0.75) !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
+  transition: all 180ms ease !important;
+}
+
+html.mode-ultra .celestial-element-panel:hover .celestial-element-items span,
+html.mode-ultra .celestial-element-panel:focus-within .celestial-element-items span,
+html.mode-ultra .celestial-element-panel.is-info-open .celestial-element-items span {
+  background: rgba(255, 255, 255, 0.96) !important;
+}
+
+html.mode-ultra .celestial-element-items span:hover {
+  background: #ffffff !important;
+  transform: translateY(-1.5px) !important;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.1) !important;
+}
+
+/* --- FIRE (ცეცხლი) --- */
+html.mode-ultra .celestial-element-panel-fire {
+  border: 1px solid rgba(244, 63, 94, 0.28) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 245, 246, 0.9) 50%, rgba(254, 226, 226, 0.72) 100%) !important;
+  box-shadow: 0 10px 26px -8px rgba(225, 29, 72, 0.13), 0 2px 8px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 0 14px rgba(254, 205, 211, 0.16) !important;
+}
+html.mode-ultra .celestial-element-panel-fire:hover,
+html.mode-ultra .celestial-element-panel-fire:focus-within {
+  transform: translateY(-3px) !important;
+  border-color: rgba(244, 63, 94, 0.48) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 241, 242, 0.95) 50%, rgba(254, 226, 226, 0.85) 100%) !important;
+  box-shadow: 0 16px 36px -8px rgba(225, 29, 72, 0.22), 0 0 20px rgba(251, 113, 133, 0.16), inset 0 1px 0 #ffffff !important;
+}
+html.mode-ultra .celestial-element-panel-fire strong { color: #881337 !important; }
+html.mode-ultra .celestial-element-panel-fire .celestial-element-kicker { color: #e11d48 !important; }
+html.mode-ultra .celestial-element-panel-fire .celestial-element-symbol {
+  background: rgba(255, 241, 242, 0.94) !important;
+  border: 1px solid rgba(244, 63, 94, 0.32) !important;
+  color: #e11d48 !important;
+  box-shadow: 0 2px 8px -2px rgba(225, 29, 72, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+html.mode-ultra .celestial-element-panel-fire .celestial-element-items b { color: #be123c !important; }
+html.mode-ultra .celestial-element-panel-fire .celestial-element-items span { border-color: rgba(244, 63, 94, 0.22) !important; }
+html.mode-ultra .celestial-element-panel-fire .celestial-element-items span:hover { border-color: rgba(244, 63, 94, 0.5) !important; }
+
+/* --- EARTH (მიწა) --- */
+html.mode-ultra .celestial-element-panel-earth {
+  border: 1px solid rgba(16, 185, 129, 0.28) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 253, 244, 0.9) 50%, rgba(220, 252, 231, 0.72) 100%) !important;
+  box-shadow: 0 10px 26px -8px rgba(16, 185, 129, 0.13), 0 2px 8px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 0 14px rgba(167, 243, 208, 0.16) !important;
+}
+html.mode-ultra .celestial-element-panel-earth:hover,
+html.mode-ultra .celestial-element-panel-earth:focus-within {
+  transform: translateY(-3px) !important;
+  border-color: rgba(16, 185, 129, 0.48) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 253, 244, 0.95) 50%, rgba(220, 252, 231, 0.85) 100%) !important;
+  box-shadow: 0 16px 36px -8px rgba(16, 185, 129, 0.22), 0 0 20px rgba(52, 211, 153, 0.16), inset 0 1px 0 #ffffff !important;
+}
+html.mode-ultra .celestial-element-panel-earth strong { color: #064e3b !important; }
+html.mode-ultra .celestial-element-panel-earth .celestial-element-kicker { color: #059669 !important; }
+html.mode-ultra .celestial-element-panel-earth .celestial-element-symbol {
+  background: rgba(240, 253, 244, 0.94) !important;
+  border: 1px solid rgba(16, 185, 129, 0.32) !important;
+  color: #059669 !important;
+  box-shadow: 0 2px 8px -2px rgba(16, 185, 129, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+html.mode-ultra .celestial-element-panel-earth .celestial-element-items b { color: #047857 !important; }
+html.mode-ultra .celestial-element-panel-earth .celestial-element-items span { border-color: rgba(16, 185, 129, 0.22) !important; }
+html.mode-ultra .celestial-element-panel-earth .celestial-element-items span:hover { border-color: rgba(16, 185, 129, 0.5) !important; }
+
+/* --- AIR (ჰაერი) --- */
+html.mode-ultra .celestial-element-panel-air {
+  border: 1px solid rgba(14, 165, 233, 0.28) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 249, 255, 0.9) 50%, rgba(224, 242, 254, 0.72) 100%) !important;
+  box-shadow: 0 10px 26px -8px rgba(14, 165, 233, 0.13), 0 2px 8px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 0 14px rgba(186, 230, 253, 0.16) !important;
+}
+html.mode-ultra .celestial-element-panel-air:hover,
+html.mode-ultra .celestial-element-panel-air:focus-within {
+  transform: translateY(-3px) !important;
+  border-color: rgba(14, 165, 233, 0.48) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 249, 255, 0.95) 50%, rgba(224, 242, 254, 0.85) 100%) !important;
+  box-shadow: 0 16px 36px -8px rgba(14, 165, 233, 0.22), 0 0 20px rgba(56, 189, 248, 0.16), inset 0 1px 0 #ffffff !important;
+}
+html.mode-ultra .celestial-element-panel-air strong { color: #0369a1 !important; }
+html.mode-ultra .celestial-element-panel-air .celestial-element-kicker { color: #0284c7 !important; }
+html.mode-ultra .celestial-element-panel-air .celestial-element-symbol {
+  background: rgba(240, 249, 255, 0.94) !important;
+  border: 1px solid rgba(14, 165, 233, 0.32) !important;
+  color: #0284c7 !important;
+  box-shadow: 0 2px 8px -2px rgba(14, 165, 233, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+html.mode-ultra .celestial-element-panel-air .celestial-element-items b { color: #0284c7 !important; }
+html.mode-ultra .celestial-element-panel-air .celestial-element-items span { border-color: rgba(14, 165, 233, 0.22) !important; }
+html.mode-ultra .celestial-element-panel-air .celestial-element-items span:hover { border-color: rgba(14, 165, 233, 0.5) !important; }
+
+/* --- WATER (წყალი) --- */
+html.mode-ultra .celestial-element-panel-water {
+  border: 1px solid rgba(139, 92, 246, 0.28) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 243, 255, 0.9) 50%, rgba(237, 233, 254, 0.72) 100%) !important;
+  box-shadow: 0 10px 26px -8px rgba(124, 58, 237, 0.13), 0 2px 8px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 0 14px rgba(221, 214, 254, 0.16) !important;
+}
+html.mode-ultra .celestial-element-panel-water:hover,
+html.mode-ultra .celestial-element-panel-water:focus-within {
+  transform: translateY(-3px) !important;
+  border-color: rgba(139, 92, 246, 0.48) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 243, 255, 0.95) 50%, rgba(237, 233, 254, 0.85) 100%) !important;
+  box-shadow: 0 16px 36px -8px rgba(124, 58, 237, 0.22), 0 0 20px rgba(167, 139, 250, 0.16), inset 0 1px 0 #ffffff !important;
+}
+html.mode-ultra .celestial-element-panel-water strong { color: #3730a3 !important; }
+html.mode-ultra .celestial-element-panel-water .celestial-element-kicker { color: #7c3aed !important; }
+html.mode-ultra .celestial-element-panel-water .celestial-element-symbol {
+  background: rgba(245, 243, 255, 0.94) !important;
+  border: 1px solid rgba(139, 92, 246, 0.32) !important;
+  color: #7c3aed !important;
+  box-shadow: 0 2px 8px -2px rgba(124, 58, 237, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+html.mode-ultra .celestial-element-panel-water .celestial-element-items b { color: #6d28d9 !important; }
+html.mode-ultra .celestial-element-panel-water .celestial-element-items span { border-color: rgba(139, 92, 246, 0.22) !important; }
+html.mode-ultra .celestial-element-panel-water .celestial-element-items span:hover { border-color: rgba(139, 92, 246, 0.5) !important; }
+
+/* Open / Active State */
+html.mode-ultra .celestial-element-panel.is-info-open {
+  z-index: 35 !important;
 }
 
 /* Planet Rulers on the Orbit Ring: NEVER OVERRIDE .celestial-ruler transform! */
@@ -5854,21 +5963,54 @@ html.mode-ultra .celestial-info-tags {
   font-weight: 750 !important;
 }
 
-/* Temperament popup modal */
+/* Temperament popup modal in Light Mode */
 html.mode-ultra .celestial-temperament-card {
   border: 1px solid rgba(203, 213, 225, 0.85) !important;
   background: rgba(255, 255, 255, 0.97) !important;
   backdrop-filter: blur(28px) saturate(180%) !important;
-  box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.16) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.16), 0 4px 16px rgba(15, 23, 42, 0.05), inset 0 1px 0 #ffffff !important;
   color: #0f172a !important;
 }
 
+html.mode-ultra .celestial-temperament-card strong,
+html.mode-ultra .celestial-temperament-card h1,
+html.mode-ultra .celestial-temperament-card h2,
+html.mode-ultra .celestial-temperament-card h3 {
+  color: #0f172a !important;
+}
+
+html.mode-ultra .celestial-temperament-card p,
+html.mode-ultra .celestial-temperament-lede {
+  color: #334155 !important;
+  line-height: 1.62 !important;
+}
+
 html.mode-ultra .celestial-temperament-content {
-  color: #1e293b !important;
+  color: #334155 !important;
+}
+
+html.mode-ultra .celestial-temperament-note {
+  background: rgba(248, 250, 252, 0.95) !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  color: #475569 !important;
+  border-radius: 0.75rem !important;
 }
 
 html.mode-ultra .celestial-temperament-close {
-  color: #64748b !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  background: rgba(241, 245, 249, 0.95) !important;
+  color: #475569 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+  transition: all 180ms ease !important;
+}
+
+html.mode-ultra .celestial-temperament-close:hover {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+  transform: scale(1.05) !important;
 }
 
 /* 2.5 Mode Switcher Tabs in Light Mode */
@@ -6416,85 +6558,7 @@ html.mode-ultra .admin-page h3 {
   color: #172033 !important;
 }
 
-html.mode-ultra .celestial-temperament-card {
-  border-color: #475569 !important;
-  background: linear-gradient(145deg, #1e293b, #0f172a) !important;
-  color: #f8fafc !important;
-  box-shadow: 0 25px 60px -18px rgba(15, 23, 42, 0.42) !important;
-}
-
-html.mode-ultra .celestial-temperament-card strong,
-html.mode-ultra .celestial-temperament-card h1,
-html.mode-ultra .celestial-temperament-card h2,
-html.mode-ultra .celestial-temperament-card h3,
-html.mode-ultra .celestial-temperament-card p,
-html.mode-ultra .celestial-temperament-card span,
-html.mode-ultra .celestial-temperament-content,
-html.mode-ultra .celestial-temperament-lede {
-  color: #f8fafc !important;
-}
-
-html.mode-ultra .celestial-temperament-card p,
-html.mode-ultra .celestial-temperament-lede {
-  color: #cbd5e1 !important;
-}
-
-html.mode-ultra .celestial-temperament-close {
-  border-color: #64748b !important;
-  background: #334155 !important;
-  color: #f8fafc !important;
-}
-
-/* Darker element cards keep their identity on the luminous home surface. */
-html.mode-ultra .celestial-element-panel-fire,
-html.mode-ultra .celestial-element-panel-earth,
-html.mode-ultra .celestial-element-panel-air,
-html.mode-ultra .celestial-element-panel-water {
-  color: #f8fafc !important;
-  box-shadow: 0 16px 34px -18px rgba(15, 23, 42, 0.34), inset 0 1px rgba(255, 255, 255, 0.14) !important;
-}
-
-html.mode-ultra .celestial-element-panel-fire {
-  border-color: #be123c !important;
-  background: linear-gradient(145deg, #881337, #4c0519) !important;
-}
-
-html.mode-ultra .celestial-element-panel-earth {
-  border-color: #059669 !important;
-  background: linear-gradient(145deg, #065f46, #022c22) !important;
-}
-
-html.mode-ultra .celestial-element-panel-air {
-  border-color: #0284c7 !important;
-  background: linear-gradient(145deg, #075985, #082f49) !important;
-}
-
-html.mode-ultra .celestial-element-panel-water {
-  border-color: #6366f1 !important;
-  background: linear-gradient(145deg, #3730a3, #1e1b4b) !important;
-}
-
-html.mode-ultra .celestial-element-panel-fire strong,
-html.mode-ultra .celestial-element-panel-earth strong,
-html.mode-ultra .celestial-element-panel-air strong,
-html.mode-ultra .celestial-element-panel-water strong,
-html.mode-ultra .celestial-element-panel-fire .celestial-element-items b,
-html.mode-ultra .celestial-element-panel-earth .celestial-element-items b,
-html.mode-ultra .celestial-element-panel-air .celestial-element-items b,
-html.mode-ultra .celestial-element-panel-water .celestial-element-items b {
-  color: #ffffff !important;
-}
-
-html.mode-ultra .celestial-element-panel-fire .celestial-element-kicker,
-html.mode-ultra .celestial-element-panel-earth .celestial-element-kicker,
-html.mode-ultra .celestial-element-panel-air .celestial-element-kicker,
-html.mode-ultra .celestial-element-panel-water .celestial-element-kicker,
-html.mode-ultra .celestial-element-panel-fire .celestial-element-symbol,
-html.mode-ultra .celestial-element-panel-earth .celestial-element-symbol,
-html.mode-ultra .celestial-element-panel-air .celestial-element-symbol,
-html.mode-ultra .celestial-element-panel-water .celestial-element-symbol {
-  color: #dbeafe !important;
-}
+/* Element panels and temperament cards in Light Mode are styled in the Celestial Elements section above */
 
 html.mode-ultra button[class*="bg-blue"],
 html.mode-ultra a[class*="bg-blue"],
@@ -7186,6 +7250,177 @@ html.mode-ultra .chart-delete-dialog :where(.text-slate-100, .text-slate-200, .t
     top: var(--site-header-height, 4rem) !important;
     height: calc(100dvh - var(--site-header-height, 4rem)) !important;
     z-index: 110 !important;
+    margin: 0 !important;
+    padding-top: 0 !important;
     overscroll-behavior: contain;
+  }
+
+  html.chart-reader-open .chart-view-panel > .interpretation-close-row,
+  html.chart-reader-open .chart-view-panel > .flex.flex-col.items-center,
+  html.chart-reader-open .admin-calculation-dialog > .interpretation-close-row,
+  html.chart-reader-open .admin-calculation-dialog > .flex.flex-col.items-center {
+    margin-top: 0 !important;
+  }
+}
+
+/* Three-state visual mode controls. The theme button always names the mode
+   it will activate, while the second button switches between the full and
+   simplified visual systems. */
+.nav-mode-controls {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.nav-mode-orb-btn.is-light-target {
+  border-color: rgba(56, 189, 248, 0.7);
+  background: rgba(6, 16, 36, 0.9);
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.42), inset 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.nav-mode-orb-btn.is-dark-target {
+  border-color: rgba(239, 68, 68, 0.65);
+  background: rgba(35, 12, 22, 0.88);
+  box-shadow: 0 0 22px rgba(239, 68, 68, 0.38), inset 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.nav-simple-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  min-height: 2rem;
+  padding: 0.35rem 0.62rem;
+  overflow: hidden;
+  border: 1px solid rgba(167, 139, 250, 0.58);
+  border-radius: 9999px;
+  color: #c4b5fd;
+  background: rgba(30, 20, 60, 0.86);
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.3), inset 0 1px rgba(255, 255, 255, 0.12);
+  font-size: 0.62rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  touch-action: manipulation;
+}
+
+.nav-simple-toggle:hover,
+.nav-simple-toggle:focus-visible {
+  border-color: #c4b5fd;
+  color: #f5f3ff;
+  box-shadow: 0 0 26px rgba(139, 92, 246, 0.55), inset 0 1px rgba(255, 255, 255, 0.2);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.nav-simple-toggle.is-simple {
+  border-color: rgba(52, 211, 153, 0.7);
+  color: #6ee7b7;
+  background: rgba(6, 48, 40, 0.9);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.35), inset 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.nav-simple-ping {
+  position: absolute;
+  inset: 0.12rem;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(196, 181, 253, 0.28), transparent 65%);
+  animation: simple-beep-pulse 1.9s ease-out infinite;
+}
+
+.nav-simple-toggle.is-simple .nav-simple-ping {
+  background: radial-gradient(circle at 50% 50%, rgba(110, 231, 183, 0.3), transparent 65%);
+}
+
+.nav-simple-indicator,
+.nav-simple-label {
+  position: relative;
+  z-index: 1;
+}
+
+.nav-simple-indicator {
+  display: inline-grid;
+  width: 1rem;
+  height: 1rem;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 9999px;
+  font-size: 0.55rem;
+}
+
+@keyframes simple-beep-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.94); }
+  50% { opacity: 0.9; transform: scale(1.08); }
+}
+
+/* Simple mode keeps all controls and information available, but removes the
+   heavy glass, star-field and ornamental layers for a calmer interface. */
+html.mode-simple .star-field {
+  background-image: none !important;
+}
+
+html.mode-simple .brand-stardust-orbit,
+html.mode-simple .brand-burst-container,
+html.mode-simple .celestial-star-noise,
+html.mode-simple .constellation-art,
+html.mode-simple .hero-orbit-card::before,
+html.mode-simple .hero-orbit-card::after,
+html.mode-simple body > .pointer-events-none.fixed {
+  display: none !important;
+}
+
+html.mode-simple .nav-shell,
+html.mode-simple .glass-panel,
+html.mode-simple .hero-orbit-card,
+html.mode-simple .chart-map-section,
+html.mode-simple .chart-view-panel,
+html.mode-simple .admin-calculation-viewer,
+html.mode-simple .chart-view-interpretation,
+html.mode-simple .admin-calculation-interpretation {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) body.app-body {
+  background: #111827 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .nav-shell,
+html.mode-simple:not(.mode-simple-light) .glass-panel,
+html.mode-simple:not(.mode-simple-light) .hero-orbit-card {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+html.mode-simple.mode-simple-light body.app-body {
+  background: #f8fafc !important;
+}
+
+html.mode-simple.mode-simple-light .nav-shell,
+html.mode-simple.mode-simple-light .glass-panel,
+html.mode-simple.mode-simple-light .hero-orbit-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+@media (max-width: 480px) {
+  .nav-mode-controls {
+    gap: 0.25rem;
+  }
+
+  .nav-mode-orb-btn,
+  .nav-simple-toggle {
+    min-height: 1.85rem;
+    padding-inline: 0.48rem;
+  }
+
+  .nav-simple-toggle {
+    gap: 0.25rem;
+    font-size: 0.56rem;
   }
 }

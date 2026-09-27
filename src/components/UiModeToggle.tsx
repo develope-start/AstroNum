@@ -1,113 +1,174 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export type UiMode = "classic" | "ultra";
+export type UiMode = "dark" | "light" | "simple";
+type FullMode = "dark" | "light";
+
+const MODE_KEY = "astronum_ui_mode";
+const RETURN_MODE_KEY = "astronum_ui_return_mode";
+const EXPIRES_KEY = "astronum_ui_mode_expires";
+const MODE_TTL = 12 * 60 * 60 * 1000;
+
+function readFullMode(value: string | null): FullMode {
+  return value === "light" || value === "ultra" ? "light" : "dark";
+}
+
+function applyUiMode(mode: UiMode, returnMode: FullMode) {
+  const root = document.documentElement;
+  const fullMode = mode === "simple" ? returnMode : mode;
+  const isLight = fullMode === "light";
+
+  root.classList.toggle("mode-ultra", isLight);
+  root.classList.toggle("mode-simple", mode === "simple");
+  root.classList.toggle("mode-simple-light", mode === "simple" && isLight);
+  root.classList.toggle("light", isLight);
+  root.classList.toggle("dark", !isLight);
+  root.setAttribute("data-ui-theme", mode === "simple" ? "simple" : fullMode);
+}
+
+function persistUiMode(mode: UiMode, returnMode: FullMode) {
+  const expiresAt = Date.now() + MODE_TTL;
+  try {
+    localStorage.setItem(MODE_KEY, mode);
+    localStorage.setItem(RETURN_MODE_KEY, returnMode);
+    localStorage.setItem(EXPIRES_KEY, String(expiresAt));
+  } catch {
+    // Ignore storage errors; the current page can still use the selected mode.
+  }
+  return expiresAt;
+}
+
+function clearStoredMode() {
+  try {
+    localStorage.removeItem(MODE_KEY);
+    localStorage.removeItem(RETURN_MODE_KEY);
+    localStorage.removeItem(EXPIRES_KEY);
+  } catch {
+    // Ignore storage errors.
+  }
+}
 
 export default function UiModeToggle() {
-  const [mode, setMode] = useState<UiMode>("classic");
-  const [mounted, setMounted] = useState(false);
+  const [mode, setMode] = useState<UiMode>("dark");
+  const [returnMode, setReturnMode] = useState<FullMode>("dark");
+  const expiryTimerRef = useRef<number | null>(null);
+
+  const expireMode = () => {
+    setMode("dark");
+    setReturnMode("dark");
+    clearStoredMode();
+    applyUiMode("dark", "dark");
+    window.dispatchEvent(new CustomEvent("astronum-ui-mode-changed", { detail: { mode: "dark" } }));
+  };
+
+  const scheduleExpiry = (expiresAt: number) => {
+    if (expiryTimerRef.current) window.clearTimeout(expiryTimerRef.current);
+    expiryTimerRef.current = expiresAt > Date.now()
+      ? window.setTimeout(expireMode, expiresAt - Date.now())
+      : null;
+  };
 
   useEffect(() => {
-    setMounted(true);
+    let savedMode: UiMode = "dark";
+    let savedReturnMode: FullMode = "dark";
+    let expiresAt = 0;
+
     try {
-      const savedMode = localStorage.getItem("astronum_ui_mode") as UiMode | null;
-      if (savedMode === "ultra") {
-        setMode("ultra");
-        document.documentElement.classList.add("mode-ultra", "light");
-        document.documentElement.classList.remove("dark");
-        document.documentElement.setAttribute("data-ui-theme", "ultra");
-      } else {
-        setMode("classic");
-        document.documentElement.classList.remove("mode-ultra", "light");
-        document.documentElement.classList.add("dark");
-        document.documentElement.removeAttribute("data-ui-theme");
+      const saved = localStorage.getItem(MODE_KEY);
+      const savedExpiresAt = Number(localStorage.getItem(EXPIRES_KEY) ?? 0);
+      const isLegacyMode = saved === "classic" || saved === "ultra";
+      const isValid = !savedExpiresAt || savedExpiresAt > Date.now();
+
+      if (isValid && (saved === "dark" || saved === "light" || saved === "simple")) {
+        savedMode = saved;
+        savedReturnMode = readFullMode(localStorage.getItem(RETURN_MODE_KEY));
+        expiresAt = savedExpiresAt;
+      } else if (isValid && isLegacyMode) {
+        savedMode = readFullMode(saved);
+        savedReturnMode = savedMode;
+        expiresAt = persistUiMode(savedMode, savedReturnMode);
+      } else if (savedExpiresAt && !isValid) {
+        clearStoredMode();
       }
     } catch {
-      // localStorage unavailable or restricted
+      // Keep the first-visit default: Dark mode.
     }
 
-    const handleExternalChange = (e: Event) => {
-      const detail = (e as CustomEvent<{ mode?: UiMode }>).detail;
-      if (detail?.mode && (detail.mode === "classic" || detail.mode === "ultra")) {
-        setMode(detail.mode);
-      }
+    setMode(savedMode);
+    setReturnMode(savedReturnMode);
+    applyUiMode(savedMode, savedReturnMode);
+    scheduleExpiry(expiresAt);
+
+    const handleExternalChange = (event: Event) => {
+      const detail = (event as CustomEvent<{ mode?: UiMode; returnMode?: FullMode }>).detail;
+      if (!detail?.mode || !["dark", "light", "simple"].includes(detail.mode)) return;
+      const nextReturnMode = detail.returnMode === "light" ? "light" : "dark";
+      setMode(detail.mode);
+      setReturnMode(nextReturnMode);
+      applyUiMode(detail.mode, nextReturnMode);
     };
 
     window.addEventListener("astronum-ui-mode-changed", handleExternalChange);
-    return () => window.removeEventListener("astronum-ui-mode-changed", handleExternalChange);
+    return () => {
+      if (expiryTimerRef.current) window.clearTimeout(expiryTimerRef.current);
+      window.removeEventListener("astronum-ui-mode-changed", handleExternalChange);
+    };
   }, []);
 
-  const toggleMode = () => {
-    const nextMode: UiMode = mode === "classic" ? "ultra" : "classic";
+  const activeFullMode: FullMode = mode === "simple" ? returnMode : mode;
+  const nextThemeLabel = activeFullMode === "dark" ? "LIGHT" : "DARK";
+  const nextThemeMode: FullMode = activeFullMode === "dark" ? "light" : "dark";
+
+  const changeTheme = () => {
+    const nextReturnMode = nextThemeMode;
+    const nextMode: UiMode = mode === "simple" ? "simple" : nextReturnMode;
+    setReturnMode(nextReturnMode);
     setMode(nextMode);
-
-    try {
-      localStorage.setItem("astronum_ui_mode", nextMode);
-    } catch {
-      // ignore storage errors
-    }
-
-    if (nextMode === "ultra") {
-      document.documentElement.classList.add("mode-ultra", "light");
-      document.documentElement.classList.remove("dark");
-      document.documentElement.setAttribute("data-ui-theme", "ultra");
-    } else {
-      document.documentElement.classList.remove("mode-ultra", "light");
-      document.documentElement.classList.add("dark");
-      document.documentElement.removeAttribute("data-ui-theme");
-    }
-
-    window.dispatchEvent(
-      new CustomEvent("astronum-ui-mode-changed", { detail: { mode: nextMode } }),
-    );
+    scheduleExpiry(persistUiMode(nextMode, nextReturnMode));
+    applyUiMode(nextMode, nextReturnMode);
+    window.dispatchEvent(new CustomEvent("astronum-ui-mode-changed", { detail: { mode: nextMode, returnMode: nextReturnMode } }));
   };
 
-  const isUltra = mounted && mode === "ultra";
+  const toggleSimple = () => {
+    const nextMode: UiMode = mode === "simple" ? returnMode : "simple";
+    const nextReturnMode = mode === "simple" ? returnMode : activeFullMode;
+    setMode(nextMode);
+    setReturnMode(nextReturnMode);
+    scheduleExpiry(persistUiMode(nextMode, nextReturnMode));
+    applyUiMode(nextMode, nextReturnMode);
+    window.dispatchEvent(new CustomEvent("astronum-ui-mode-changed", { detail: { mode: nextMode, returnMode: nextReturnMode } }));
+  };
 
   return (
-    <button
-      type="button"
-      onClick={toggleMode}
-      role="switch"
-      aria-checked={isUltra}
-      aria-label={
-        isUltra
-          ? "ლურჯი ბურთულა: ჩართულია ახალი ღია Neo-Glass დიზაინი (დააჭირეთ ბნელზე დასაბრუნებლად)"
-          : "წითელი ბურთულა: ჩართულია კლასიკური ბნელი დიზაინი (დააჭირეთ ახალ ღია დიზაინზე გადასასვლელად)"
-      }
-      title={
-        isUltra
-          ? "🔵 ახალი ღია Neo-Glass დიზაინი (დააჭირეთ ბნელ რეჟიმზე დასაბრუნებლად)"
-          : "🔴 კლასიკური ბნელი რეჟიმი (დააჭირეთ ახალ ღია Neo-Glass დიზაინზე გადასასვლელად)"
-      }
-      className={`nav-mode-orb-btn group ${isUltra ? "is-ultra" : "is-classic"}`}
-    >
-      {/* Visual Beep Glow Pulse Beacon Orb */}
-      <span className="nav-toggle-orb-wrap" aria-hidden="true">
-        {/* Pulsing Sonar / Beep Glow Wave */}
-        <span
-          className={`nav-toggle-ping ${
-            isUltra ? "nav-toggle-ping-blue" : "nav-toggle-ping-red"
-          }`}
-        />
-
-        {/* Solid Luminous Radiant Bead */}
-        <span
-          className={`nav-toggle-orb ${
-            isUltra ? "nav-toggle-orb-blue" : "nav-toggle-orb-red"
-          }`}
-        />
-      </span>
-
-      {/* Mode Badge Label */}
-      <span
-        className={`nav-toggle-label ${
-          isUltra ? "nav-toggle-label-blue" : "nav-toggle-label-red"
-        }`}
+    <div className="nav-mode-controls" aria-label="საიტის ვიზუალური რეჟიმები">
+      <button
+        type="button"
+        onClick={changeTheme}
+        className={`nav-mode-orb-btn group ${nextThemeMode === "light" ? "is-light-target" : "is-dark-target"}`}
+        aria-label={`${nextThemeLabel} რეჟიმზე გადასვლა`}
+        title={`${nextThemeLabel} რეჟიმზე გადასვლა`}
       >
-        {isUltra ? "LIGHT" : "DARK"}
-      </span>
-    </button>
+        <span className="nav-toggle-orb-wrap" aria-hidden="true">
+          <span className={`nav-toggle-ping ${nextThemeMode === "light" ? "nav-toggle-ping-blue" : "nav-toggle-ping-red"}`} />
+          <span className={`nav-toggle-orb ${nextThemeMode === "light" ? "nav-toggle-orb-blue" : "nav-toggle-orb-red"}`} />
+        </span>
+        <span className={`nav-toggle-label ${nextThemeMode === "light" ? "nav-toggle-label-blue" : "nav-toggle-label-red"}`}>
+          {nextThemeLabel}
+        </span>
+      </button>
+
+      <button
+        type="button"
+        onClick={toggleSimple}
+        className={`nav-simple-toggle group ${mode === "simple" ? "is-simple" : "is-advanced"}`}
+        aria-label={mode === "simple" ? "Advanced დიზაინზე დაბრუნება" : "Simple დიზაინზე გადასვლა"}
+        title={mode === "simple" ? "Advanced დიზაინზე დაბრუნება" : "Simple დიზაინზე გადასვლა"}
+      >
+        <span className="nav-simple-ping" aria-hidden="true" />
+        <span className="nav-simple-indicator" aria-hidden="true">{mode === "simple" ? "A" : "S"}</span>
+        <span className="nav-simple-label">{mode === "simple" ? "ADVANCED" : "SIMPLE"}</span>
+      </button>
+    </div>
   );
 }
