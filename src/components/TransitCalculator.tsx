@@ -150,12 +150,31 @@ export default function TransitCalculator() {
         </div>
 
         <div className="glass-panel relative z-10 flex min-w-0 w-full flex-col justify-center space-y-5 overflow-hidden rounded-2xl border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 p-4 text-center shadow-xl backdrop-blur-2xl sm:rounded-[28px] sm:p-7 lg:col-span-5 lg:h-full">
+          <div className="transit-mode-switch" role="group" aria-label="ტრანზიტის პერიოდის არჩევა">
+            <button
+              type="button"
+              className={`transit-mode-option ${inputMode === "date" ? "is-active" : ""}`}
+              aria-pressed={inputMode === "date"}
+              onClick={() => activateMode("date")}
+            >
+              <Calendar className="h-4 w-4" aria-hidden="true" />
+              <span>ერთი თარიღი</span>
+            </button>
+            <button
+              type="button"
+              className={`transit-mode-option ${inputMode === "interval" ? "is-active" : ""}`}
+              aria-pressed={inputMode === "interval"}
+              onClick={() => activateMode("interval")}
+            >
+              <Clock className="h-4 w-4" aria-hidden="true" />
+              <span>თარიღების პერიოდი</span>
+            </button>
+          </div>
           <div
             className={`transit-interval-panel mx-auto w-full max-w-2xl space-y-3 rounded-2xl border border-purple-400/20 bg-purple-950/25 p-3.5 text-left transition-all sm:p-4 ${
               inputMode === "interval" ? "transit-interval-selected" : ""
             }`}
-            onPointerDown={() => inputMode !== "interval" && activateMode("interval")}
-            aria-disabled={inputMode !== "interval"}
+            onFocusCapture={() => inputMode !== "interval" && activateMode("interval")}
           >
             <div className="flex items-start justify-center gap-2 text-center">
               <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-purple-300/30 bg-purple-500/15 text-purple-300">
@@ -175,8 +194,7 @@ export default function TransitCalculator() {
 
           <div
             className={`transit-date-panel flex w-full flex-col items-center justify-center gap-2.5 rounded-2xl p-3 transition-all sm:p-4 ${inputMode === "date" ? "transit-date-active" : "transit-date-inactive"}`}
-            onPointerDown={() => inputMode !== "date" && activateMode("date")}
-            aria-disabled={inputMode !== "date"}
+            onFocusCapture={() => inputMode !== "date" && activateMode("date")}
           >
             <div className="flex items-center justify-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">

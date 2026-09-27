@@ -245,11 +245,21 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
         return terms.every((term) => content.includes(term));
       });
       if (!target) return;
+      let parentDetails = target.closest("details") as HTMLDetailsElement | null;
+      while (parentDetails) {
+        parentDetails.open = true;
+        parentDetails = parentDetails.parentElement?.closest("details") ?? null;
+      }
       target.classList.add("interpretation-focus-highlight");
       focusedNodeRef.current = target;
-      const parentDetails = target.closest("details") as HTMLDetailsElement | null;
-      if (parentDetails) parentDetails.open = true;
-      window.setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "center" }), 40);
+      window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+        if (!target.isConnected) return;
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (target.tagName !== "SUMMARY" && !target.hasAttribute("tabindex")) {
+          target.setAttribute("tabindex", "-1");
+          target.focus({ preventScroll: true });
+        }
+      }));
     };
     const handleDocumentClick = (event: MouseEvent) => {
       if (!focusedNodeRef.current) return;
@@ -314,9 +324,27 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
       if (!element || !(element in ELEMENT_NAMES)) return;
       const elementId = element as ElementId;
       setFocusedElement(elementId);
-      window.setTimeout(() => {
-        document.getElementById(`element-interpretation-${elementId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 60);
+      let frames = 0;
+      const revealAndScroll = () => {
+        const target = document.getElementById(`element-interpretation-${elementId}`);
+        if (target) {
+          let details = target.closest("details") as HTMLDetailsElement | null;
+          while (details) {
+            details.open = true;
+            details = details.parentElement?.closest("details") ?? null;
+          }
+          window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+            if (!target.isConnected) return;
+            target.scrollIntoView({ behavior: "smooth", block: "center" });
+            target.setAttribute("tabindex", "-1");
+            target.focus({ preventScroll: true });
+          }));
+        } else if (frames < 8) {
+          frames += 1;
+          window.requestAnimationFrame(revealAndScroll);
+        }
+      };
+      window.requestAnimationFrame(revealAndScroll);
     };
 
     window.addEventListener("focus-element-interpretation", handleElementFocus);

@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { Activity, ArrowRight, Check, Compass, Heart, Orbit, Sparkles, Sun } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
@@ -75,6 +75,8 @@ export default function HomePage() {
   const [hoveredCelestial, setHoveredCelestial] = useState<CelestialTarget>(null);
   const [selectedCelestial, setSelectedCelestial] = useState<CelestialTarget>(null);
   const [selectedElementInfo, setSelectedElementInfo] = useState<ElementTemperamentId | null>(null);
+  const elementTriggerRef = useRef<HTMLElement | null>(null);
+  const elementCloseRef = useRef<HTMLButtonElement>(null);
   const layoutElementInfo = selectedElementInfo;
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
   const activeCelestial = selectedCelestial ?? hoveredCelestial;
@@ -90,6 +92,46 @@ export default function HomePage() {
       return isSameElement ? null : elementId;
     });
   };
+
+  useEffect(() => {
+    if (!selectedElementInfo) {
+      elementTriggerRef.current?.focus();
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+    const scrollbarGap = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+    const bodyPaddingRight = Number.parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
+    document.body.style.overflow = "hidden";
+    if (scrollbarGap) document.body.style.paddingRight = `${bodyPaddingRight + scrollbarGap}px`;
+    elementCloseRef.current?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setSelectedElementInfo(null);
+      }
+      if (event.key !== "Tab") return;
+      const dialog = document.querySelector<HTMLElement>(".celestial-temperament-card.is-visible");
+      const focusable = dialog?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])');
+      if (!focusable?.length) return;
+      const first = focusable[0]!;
+      const last = focusable[focusable.length - 1]!;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedElementInfo]);
 
   return (
     <div className="app-home">
@@ -123,10 +165,18 @@ export default function HomePage() {
                 key={element.id}
                 className={`celestial-element-panel celestial-element-panel-${element.id}${selectedElementInfo === element.id ? " is-info-open" : ""}`}
                 aria-label={`${element.name} სტიქია`}
+                aria-expanded={selectedElementInfo === element.id}
+                role="group"
                 data-info-placement={element.id === "fire" || element.id === "earth" ? "below" : "above"}
                 tabIndex={0}
                 onClick={(event) => {
                   event.stopPropagation();
+                  elementTriggerRef.current = event.currentTarget;
+                  toggleElementInfo(element.id);
+                }}
+                onKeyDown={(event) => {
+                  if (event.target !== event.currentTarget || (event.key !== "Enter" && event.key !== " ")) return;
+                  event.preventDefault();
                   toggleElementInfo(element.id);
                 }}
               >
@@ -151,6 +201,9 @@ export default function HomePage() {
                 </div>
                 <div
                   className={`celestial-temperament-card celestial-temperament-card-${element.id} celestial-temperament-card-${element.id === "fire" || element.id === "earth" ? "below" : "above"}${selectedElementInfo === element.id ? " is-visible is-pinned" : ""}`}
+                  role={selectedElementInfo === element.id ? "dialog" : undefined}
+                  aria-modal={selectedElementInfo === element.id ? true : undefined}
+                  aria-label={selectedElementInfo === element.id ? `${element.name} სტიქიის განმარტება` : undefined}
                   onClick={(event) => event.stopPropagation()}
                   onWheel={(event) => event.stopPropagation()}
                   onPointerDown={(event) => event.stopPropagation()}
@@ -158,6 +211,7 @@ export default function HomePage() {
                     <button
                       type="button"
                       className="celestial-temperament-close"
+                      ref={selectedElementInfo === element.id ? elementCloseRef : undefined}
                       aria-label="ინფორმაციის დახურვა"
                       onClick={(event) => {
                         event.stopPropagation();
@@ -172,6 +226,17 @@ export default function HomePage() {
                 </div>
               </section>
             ))}
+            {layoutElementInfo && (
+              <button
+                type="button"
+                className="celestial-element-overlay"
+                aria-label="სტიქიის განმარტების დახურვა"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setSelectedElementInfo(null);
+                }}
+              />
+            )}
             <div className="celestial-orbit celestial-orbit-wide" aria-hidden="true" />
             <div className="celestial-orbit celestial-orbit-inner" aria-hidden="true" />
             <div className="celestial-constellation-ring" aria-hidden="true">

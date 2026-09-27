@@ -9550,7 +9550,7 @@ html.mode-simple .admin-page > .admin-page-header {
   padding: clamp(1rem, 2vw, 1.5rem);
 }
 
-html.mode-simple.mode-simple-light :where(.cabinet-page, .admin-page) :where(p, label, dt, dd, li, summary, span) {
+html.mode-simple.mode-simple-light :where(.cabinet-page, .admin-page) :where(p, label, dt, dd, li) {
   color: #3b4a5e;
 }
 html.mode-simple.mode-simple-light :where(.cabinet-page, .admin-page) :where(a, button) { color: #334155; }
@@ -9558,10 +9558,238 @@ html.mode-simple.mode-simple-light :where(.cabinet-page, .admin-page) :where(.te
 html.mode-simple.mode-simple-light :where(.cabinet-page, .admin-page) :where(.text-emerald-200, .text-emerald-300, .text-emerald-400, .text-green-300, .text-green-400) { color: #166534 !important; }
 html.mode-simple.mode-simple-light :where(.cabinet-page, .admin-page) :where(.text-rose-200, .text-rose-300, .text-rose-400, .text-red-300, .text-red-400) { color: #b42335 !important; }
 
-html.mode-simple:not(.mode-simple-light) :where(.cabinet-page, .admin-page) :where(p, label, dt, dd, li, summary, span) {
+html.mode-simple:not(.mode-simple-light) :where(.cabinet-page, .admin-page) :where(p, label, dt, dd, li) {
   color: #c5cfdd;
 }
 html.mode-simple:not(.mode-simple-light) :where(.cabinet-page, .admin-page) :where(a, button) { color: #e5edf6; }
+
+/* Warm, low-noise Simple Mode palette and consistent controls. */
+html.mode-simple {
+  --simple-page-bg: #f3f1ed;
+  --simple-surface: #fbfaf7;
+  --simple-surface-raised: #eeece6;
+  --simple-border: #d8d4cb;
+  --simple-border-hover: #b9b2a6;
+  --simple-text: #292722;
+  --simple-muted: #625e55;
+  --simple-accent: #70543a;
+  --simple-focus: #8b6844;
+  color-scheme: light;
+}
+
+html.mode-simple:not(.mode-simple-light) {
+  --simple-page-bg: #252320;
+  --simple-surface: #2e2b27;
+  --simple-surface-raised: #39352f;
+  --simple-border: #514b42;
+  --simple-border-hover: #72685b;
+  --simple-text: #f1eee8;
+  --simple-muted: #c1baae;
+  --simple-accent: #d1b18b;
+  --simple-focus: #d0aa7d;
+  color-scheme: dark;
+}
+
+html.mode-simple,
+html.mode-simple body,
+html.mode-simple body.app-body {
+  background: var(--simple-page-bg) !important;
+  color: var(--simple-text) !important;
+  font-family: var(--font-body), Arial, sans-serif;
+}
+
+html.mode-simple .star-field { background-image: none !important; }
+html.mode-simple :where(.glass-panel, .simple-element-card, .simple-method-card, .simple-planet-detail-card, .simple-calc-frame, .admin-page section, .admin-page article, .admin-page details) {
+  border-color: var(--simple-border) !important;
+  background: var(--simple-surface) !important;
+  color: var(--simple-text) !important;
+  box-shadow: 0 8px 22px -20px rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: none !important;
+}
+
+html.mode-simple :where(h1, h2, h3, h4, p, label, legend, summary) { text-shadow: none !important; }
+html.mode-simple :where(.simple-section-desc, .simple-element-strip-focus, .simple-planet-detail-role, .simple-method-text) { color: var(--simple-muted) !important; }
+html.mode-simple :where(button, a) { transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease; }
+html.mode-simple :where(button, a):hover { transform: none !important; }
+
+html.mode-simple :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  min-height: 2.75rem;
+  border: 1px solid var(--simple-border) !important;
+  border-radius: 0.65rem !important;
+  background: var(--simple-surface-raised) !important;
+  color: var(--simple-text) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+html.mode-simple :where(input, textarea)::placeholder { color: var(--simple-muted) !important; opacity: 0.9 !important; }
+html.mode-simple :where(input, select, textarea):focus { border-color: var(--simple-focus) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--simple-focus) 20%, transparent) !important; }
+
+html.mode-simple .simple-page { gap: clamp(1.25rem, 2vw, 1.9rem); }
+html.mode-simple .simple-section { gap: 0.8rem; }
+html.mode-simple .simple-section-header { padding-bottom: 0.65rem; }
+html.mode-simple .simple-section-title { letter-spacing: 0; }
+html.mode-simple .simple-element-strips-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.5rem; }
+html.mode-simple .simple-element-strip { border-radius: 0.8rem; background: var(--simple-surface) !important; }
+html.mode-simple .simple-element-strip-header {
+  min-height: 4rem;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  gap: 0.65rem;
+  background: transparent !important;
+}
+html.mode-simple .simple-element-strip-header:hover { background: var(--simple-surface-raised) !important; }
+html.mode-simple .simple-element-strip-left { gap: 0.7rem; }
+html.mode-simple .simple-element-strip-glyph { width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border-radius: 0.7rem; background: var(--simple-surface-raised); }
+html.mode-simple .simple-element-strip-glyph svg { width: 1.2rem; height: 1.2rem; stroke-width: 1.8; }
+html.mode-simple .element-icon-fire { color: #c77d48 !important; }
+html.mode-simple .element-icon-earth { color: #81906b !important; }
+html.mode-simple .element-icon-air { color: #7794a4 !important; }
+html.mode-simple .element-icon-water { color: #648ca0 !important; }
+html.mode-simple .simple-element-strip-name { font-size: 0.98rem; }
+html.mode-simple .simple-element-strip-focus { margin-top: 0.1rem; font-size: 0.78rem; line-height: 1.45; }
+html.mode-simple .simple-element-strip-right { flex: 0 0 auto; }
+html.mode-simple .simple-element-strip-zodiacs { display: flex !important; flex-wrap: wrap; justify-content: flex-end; gap: 0.25rem; }
+html.mode-simple .simple-element-strip-action { color: var(--simple-muted) !important; gap: 0.4rem; }
+html.mode-simple .simple-strip-chip { border-color: var(--simple-border) !important; background: var(--simple-surface-raised) !important; color: var(--simple-muted) !important; }
+html.mode-simple .simple-strip-action-text { font-size: 0.72rem; }
+
+html.mode-simple .simple-element-overlay { padding: max(0.75rem, env(safe-area-inset-top)) 0.75rem max(0.75rem, env(safe-area-inset-bottom)); background: rgb(18 17 15 / 0.76); backdrop-filter: blur(4px); }
+html.mode-simple.mode-simple-light .simple-element-overlay { background: rgb(35 32 27 / 0.52); }
+html.mode-simple .simple-element-dialog { max-height: min(88dvh, 54rem); border: 1px solid var(--simple-border) !important; border-radius: 1rem; background: var(--simple-surface) !important; color: var(--simple-text) !important; box-shadow: 0 24px 70px rgb(0 0 0 / 0.28) !important; }
+html.mode-simple .simple-element-dialog > div:first-child { border-color: var(--simple-border) !important; }
+html.mode-simple .simple-element-dialog-copy :where(p, li, h2, h3, h4, span) { color: inherit; line-height: 1.7; }
+html.mode-simple .simple-element-dialog .simple-detail-close { flex: 0 0 auto; width: 2.5rem; height: 2.5rem; min-height: 2.5rem; display: grid; place-items: center; border: 1px solid var(--simple-border); border-radius: 0.65rem; background: var(--simple-surface-raised); color: var(--simple-text); }
+
+html.mode-simple .simple-planet-ribbon { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.4rem; }
+html.mode-simple .simple-planet-pill { width: 100%; min-height: 2.8rem; justify-content: flex-start; border-color: var(--simple-border) !important; border-radius: 0.7rem !important; background: var(--simple-surface) !important; color: var(--simple-text) !important; box-shadow: none !important; }
+html.mode-simple:not(.mode-simple-light) .simple-planet-pill.is-selected { background: var(--simple-surface-raised) !important; border-color: var(--simple-focus) !important; color: var(--simple-text) !important; }
+html.mode-simple.mode-simple-light .simple-planet-pill.is-selected { background: var(--simple-surface-raised) !important; border-color: var(--simple-focus) !important; color: var(--simple-text) !important; }
+html.mode-simple .simple-planet-glyph { color: var(--simple-muted) !important; }
+
+html.mode-simple .transit-mode-switch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.4rem; width: 100%; max-width: 42rem; margin-inline: auto; padding: 0.25rem; border: 1px solid var(--simple-border); border-radius: 0.75rem; background: var(--simple-surface-raised); }
+html.mode-simple .transit-mode-option { display: flex; align-items: center; justify-content: center; gap: 0.45rem; min-height: 2.75rem; padding: 0.45rem 0.65rem; border: 1px solid transparent; border-radius: 0.55rem; background: transparent; color: var(--simple-muted); font-size: 0.82rem; font-weight: 700; line-height: 1.35; }
+html.mode-simple .transit-mode-option.is-active { border-color: var(--simple-border); background: var(--simple-surface); color: var(--simple-text); box-shadow: 0 2px 6px rgb(0 0 0 / 0.08); }
+html.mode-simple .transit-interval-panel,
+html.mode-simple .transit-date-panel,
+html.mode-simple .transit-date-panel.transit-date-active,
+html.mode-simple .transit-interval-panel.transit-interval-selected,
+html.mode-simple .transit-date-panel.transit-date-inactive { opacity: 1; filter: none; animation: none; border: 1px solid var(--simple-border) !important; border-radius: 0.8rem !important; background: var(--simple-surface) !important; box-shadow: none !important; }
+html.mode-simple .transit-interval-panel :where(p, label),
+html.mode-simple .transit-date-panel :where(p, label) { color: var(--simple-text) !important; }
+html.mode-simple .transit-interval-panel > :last-child,
+html.mode-simple .transit-date-panel > :last-child { color: var(--simple-muted) !important; }
+html.mode-simple .simple-calc-frame { padding: clamp(0.55rem, 1.4vw, 1rem); }
+
+html.mode-simple .interpretation-content { color: var(--simple-text); }
+html.mode-simple .interpretation-toolbar { border-color: var(--simple-border) !important; color: var(--simple-muted) !important; }
+html.mode-simple .interpretation-accordion { border-color: var(--simple-border) !important; border-radius: 0.8rem !important; background: var(--simple-surface) !important; box-shadow: none !important; }
+html.mode-simple .interpretation-accordion-summary { min-height: 3rem; padding: 0.75rem 0.9rem; color: var(--simple-text) !important; }
+html.mode-simple .interpretation-accordion-icon,
+html.mode-simple .interpretation-accordion-chevron { color: var(--simple-muted) !important; }
+html.mode-simple .interpretation-accordion-body { padding: 0.15rem 0.9rem 0.9rem; }
+html.mode-simple .interpretation-paragraph { color: var(--simple-text) !important; font-size: 0.95rem; line-height: 1.8; }
+html.mode-simple .interpretation-paragraph strong { color: var(--simple-accent) !important; text-shadow: none !important; }
+html.mode-simple .interpretation-focus-highlight { outline: 2px solid var(--simple-focus); outline-offset: 4px; border-radius: 0.2rem; }
+
+html.mode-simple :where(.admin-page, .cabinet-page) { line-height: 1.6; }
+html.mode-simple .admin-page :where(table) { border-collapse: separate; border-spacing: 0; }
+html.mode-simple .admin-page :where(th, td) { border-color: var(--simple-border) !important; color: var(--simple-text) !important; }
+html.mode-simple .admin-page :where(section, article, details, .admin-stats-card, .admin-account-info, .admin-history-section, .admin-collapsible-section, .admin-trash-section) { border-radius: 0.85rem !important; }
+html.mode-simple .admin-page :where(.admin-control-button, .admin-control-button-secondary, .admin-header-actions > a, .admin-header-actions > button) { border-radius: 0.65rem !important; box-shadow: none !important; }
+html.mode-simple .admin-page :where(.admin-control-button, .admin-control-button-secondary) { border-color: var(--simple-border) !important; background: var(--simple-surface-raised) !important; color: var(--simple-text) !important; }
+html.mode-simple .admin-page :where(.admin-control-button-danger, button[class*="border-rose"], button[class*="border-red"]) { border-color: #a95555 !important; background: color-mix(in srgb, #a95555 14%, var(--simple-surface)) !important; color: #c96d6d !important; }
+html.mode-simple.mode-simple-light .admin-page :where(.admin-control-button-danger, button[class*="border-rose"], button[class*="border-red"]) { color: #a33d3d !important; }
+html.mode-simple .simple-element-strip-badge { border-color: var(--simple-border) !important; background: var(--simple-surface-raised) !important; color: var(--simple-muted) !important; }
+html.mode-simple:not(.mode-simple-light) .simple-nav-card-active { border-color: #d4c9b8 !important; background: #e2ddd4 !important; color: #292722 !important; box-shadow: none !important; }
+html.mode-simple:not(.mode-simple-light) .simple-nav-card-active .simple-nav-card-icon-active { background: #292722 !important; color: #f3f1ed !important; }
+html.mode-simple.mode-simple-light .simple-nav-card-active { border-color: #514638 !important; background: #514638 !important; color: #fbfaf7 !important; box-shadow: none !important; }
+html.mode-simple.mode-simple-light .simple-nav-card-active .simple-nav-card-icon-active { background: #fbfaf7 !important; color: #514638 !important; }
+html.mode-simple .simple-calc-frame button[class*="from-amber-400"],
+html.mode-simple .simple-calc-frame button[class*="from-amber-500"] { border-color: #6b523a !important; background: #6b523a !important; color: #fff !important; box-shadow: none !important; }
+html.mode-simple .simple-calc-frame button[class*="from-amber-400"] :where(span, svg),
+html.mode-simple .simple-calc-frame button[class*="from-amber-500"] :where(span, svg) { color: inherit !important; }
+html.mode-simple .simple-calc-frame button[class*="from-amber-400"]:hover,
+html.mode-simple .simple-calc-frame button[class*="from-amber-500"]:hover { background: #57422f !important; }
+
+/* The home element selector uses a stable single-column list. Explanations
+   sit above the page in a fixed layer, so opening one never shifts the list. */
+html.mode-simple .app-home .celestial-system {
+  grid-template-columns: minmax(0, 1fr) !important;
+  width: min(100%, 54rem) !important;
+  margin-inline: auto !important;
+  gap: 0.45rem !important;
+}
+html.mode-simple .app-home .celestial-element-panel {
+  display: grid !important;
+  grid-template-columns: minmax(8rem, 1.05fr) minmax(0, 1fr) minmax(0, 1fr) !important;
+  align-items: center !important;
+  min-height: 4rem !important;
+  padding: 0.6rem 0.8rem !important;
+  gap: 0.5rem 0.8rem !important;
+  border-radius: 0.75rem !important;
+  cursor: pointer;
+}
+html.mode-simple .app-home .celestial-element-panel:hover,
+html.mode-simple .app-home .celestial-element-panel:focus-visible,
+html.mode-simple .app-home .celestial-element-panel.is-info-open { transform: none !important; }
+html.mode-simple .app-home .celestial-element-heading { min-width: 0; }
+html.mode-simple .app-home .celestial-element-heading strong { font-size: 0.95rem !important; }
+html.mode-simple .app-home .celestial-element-symbol { color: var(--simple-muted) !important; filter: none; border: 0 !important; background: var(--simple-surface-raised) !important; }
+html.mode-simple .app-home .celestial-element-row { min-width: 0; gap: 0.35rem !important; }
+html.mode-simple .app-home .celestial-element-label { font-size: 0.68rem; }
+html.mode-simple .app-home .celestial-element-items { display: flex; flex-wrap: wrap; }
+html.mode-simple .app-home .celestial-element-items span { flex: 0 0 auto; width: 1.65rem !important; height: 1.65rem !important; }
+html.mode-simple .app-home .celestial-element-items b { color: var(--simple-muted) !important; }
+html.mode-simple .app-home .celestial-element-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9998 !important;
+  display: block !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: rgb(18 17 15 / 0.76) !important;
+  backdrop-filter: blur(4px);
+  cursor: default;
+}
+html.mode-simple.mode-simple-light .app-home .celestial-element-overlay { background: rgb(35 32 27 / 0.52) !important; }
+html.mode-simple .app-home .celestial-element-panel.is-info-open { z-index: 9999 !important; }
+html.mode-simple .app-home .celestial-element-panel > .celestial-temperament-card.is-visible {
+  position: fixed !important;
+  inset: 50% auto auto 50% !important;
+  z-index: 10000 !important;
+  display: block !important;
+  width: min(48rem, calc(100vw - 1.5rem)) !important;
+  max-width: min(48rem, calc(100vw - 1.5rem)) !important;
+  max-height: min(84dvh, 52rem) !important;
+  margin: 0 !important;
+  padding: 1.2rem !important;
+  overflow: auto !important;
+  border: 1px solid var(--simple-border) !important;
+  border-radius: 1rem !important;
+  background: var(--simple-surface) !important;
+  color: var(--simple-text) !important;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 0.3) !important;
+  transform: translate(-50%, -50%) !important;
+}
+html.mode-simple .app-home .celestial-temperament-content { line-height: 1.75; }
+html.mode-simple .app-home .celestial-temperament-close { position: sticky; top: 0; z-index: 1; float: right; min-height: 2.5rem; background: var(--simple-surface-raised) !important; }
+
+@media (max-width: 640px) {
+  html.mode-simple .simple-element-strip-header { align-items: flex-start; flex-wrap: wrap; padding: 0.7rem; }
+  html.mode-simple .simple-element-strip-right { align-self: stretch; width: 100%; margin-left: 3.1rem; justify-content: space-between; }
+  html.mode-simple .simple-element-strip-focus { max-width: 100%; }
+  html.mode-simple .transit-mode-option { flex-direction: column; gap: 0.2rem; font-size: 0.72rem; }
+  html.mode-simple .simple-planet-detail-header { align-items: flex-start; }
+  html.mode-simple .app-home .celestial-element-panel { grid-template-columns: minmax(0, 1fr) auto !important; }
+  html.mode-simple .app-home .celestial-element-heading { grid-column: 1 / -1; }
+  html.mode-simple .app-home .celestial-element-row { justify-content: flex-start !important; }
+  html.mode-simple .app-home .celestial-element-label { width: 5.2rem; flex: 0 0 auto; }
+  html.mode-simple .app-home .celestial-element-items { flex-wrap: wrap; }
+  html.mode-simple .app-home .celestial-element-panel > .celestial-temperament-card.is-visible { padding: 0.9rem !important; }
+}
 
 @media (max-width: 760px) {
   html.mode-simple .app-home .hero-grid {

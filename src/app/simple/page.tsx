@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Activity, Check, Flame, Heart, Layers, Orbit, ShieldCheck, Sun, Wind, Mountain, Droplet, ChevronDown, X, BookOpen } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Activity, Check, Flame, Heart, Layers, Orbit, ShieldCheck, Sun, Wind, Mountain, Droplet, X } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
 import SynastryCalculator from "@/components/SynastryCalculator";
 import TransitCalculator from "@/components/TransitCalculator";
 import ElementTemperamentDetails from "@/components/ElementTemperamentDetails";
-import { ELEMENT_TEMPERAMENTS, type ElementTemperamentId } from "@/lib/elementTemperaments";
+import type { ElementTemperamentId } from "@/lib/elementTemperaments";
 
 type Tab = "natal" | "synastry" | "transit" | "advanced";
 
@@ -101,11 +101,54 @@ const ELEMENT_STRIPS = [
 export default function SimplePage() {
   const [tab, setTab] = useState<Tab>("natal");
   const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
-  const [expandedElement, setExpandedElement] = useState<ElementTemperamentId | null>(null);
   const [modalElement, setModalElement] = useState<ElementTemperamentId | null>(null);
+  const modalCloseRef = useRef<HTMLButtonElement>(null);
+  const elementTriggerRef = useRef<HTMLButtonElement | null>(null);
 
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
   const activePlanet = CELESTIAL_BODIES.find((p) => p.id === selectedPlanet);
+  const activeElement = modalElement ? ELEMENT_STRIPS.find((element) => element.id === modalElement) : null;
+  const ActiveElementIcon = activeElement?.icon;
+
+  useEffect(() => {
+    if (!modalElement) {
+      elementTriggerRef.current?.focus();
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+    const scrollbarGap = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+    const bodyPaddingRight = Number.parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
+    document.body.style.overflow = "hidden";
+    if (scrollbarGap) document.body.style.paddingRight = `${bodyPaddingRight + scrollbarGap}px`;
+    modalCloseRef.current?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setModalElement(null);
+      }
+      if (event.key !== "Tab") return;
+      const dialog = document.querySelector<HTMLElement>(".simple-element-dialog");
+      const focusable = dialog?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])');
+      if (!focusable?.length) return;
+      const first = focusable[0]!;
+      const last = focusable[focusable.length - 1]!;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [modalElement]);
 
   return (
     <div className="simple-page">
@@ -123,23 +166,24 @@ export default function SimplePage() {
 
         <div className="simple-element-strips-list space-y-2.5">
           {ELEMENT_STRIPS.map((elem) => {
-            const isExpanded = expandedElement === elem.id;
-            const guide = ELEMENT_TEMPERAMENTS[elem.id];
-
             return (
               <div
                 key={elem.id}
-                className={`simple-element-strip ${isExpanded ? "is-expanded" : ""}`}
+                className="simple-element-strip"
               >
                 {/* Clickable Header Bar */}
                 <button
                   type="button"
-                  onClick={() => setExpandedElement(isExpanded ? null : elem.id)}
+                  onClick={(event) => {
+                    elementTriggerRef.current = event.currentTarget;
+                    setModalElement(elem.id);
+                  }}
                   className="simple-element-strip-header"
-                  aria-expanded={isExpanded}
+                  aria-haspopup="dialog"
+                  aria-expanded={modalElement === elem.id}
                 >
                   <div className="simple-element-strip-left">
-                    <span className="simple-element-strip-glyph" aria-hidden="true">{elem.symbol}</span>
+                    <span className={`simple-element-strip-glyph element-icon-${elem.id}`} aria-hidden="true"><elem.icon /></span>
                     <div className="simple-element-strip-title-box">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="simple-element-strip-name">{elem.name}</h3>
@@ -158,55 +202,12 @@ export default function SimplePage() {
                       ))}
                     </div>
                     <div className="simple-element-strip-action">
-                      <span className="simple-strip-action-text">{isExpanded ? "დახურვა" : "ანალიზი"}</span>
-                      <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
+                      <span className="simple-strip-action-text">ანალიზი</span>
+                      <span aria-hidden="true">↗</span>
                     </div>
                   </div>
                 </button>
 
-                {/* Smooth Expandable Drawer */}
-                {isExpanded && (
-                  <div className="simple-element-strip-drawer">
-                    <div className="simple-drawer-inner">
-                      <div className="simple-drawer-lede-row">
-                        <div className="flex items-center gap-2 text-xs font-bold text-slate-300 dark:text-zinc-300">
-                          <BookOpen className="h-4 w-4 shrink-0 text-slate-400" />
-                          <span>{guide.title}</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setModalElement(elem.id)}
-                          className="simple-drawer-modal-btn"
-                          title="გახსენი სრულ ეკრანზე"
-                        >
-                          სრული ფანჯარა ↗
-                        </button>
-                      </div>
-
-                      <div className="simple-drawer-content mt-3 text-xs leading-relaxed space-y-3">
-                        <p className="simple-drawer-short font-medium text-slate-300 dark:text-zinc-200">
-                          {guide.short}
-                        </p>
-                        
-                        <div className="simple-drawer-grid grid gap-3 sm:grid-cols-2 pt-2 border-t border-zinc-700/30">
-                          <div className="simple-drawer-card">
-                            <h4 className="font-bold text-slate-100 dark:text-white mb-1">ფსიქოლოგიური სუბსტრატი</h4>
-                            <p className="text-slate-300 dark:text-zinc-300 leading-normal">{guide.psychologicalSubstrate}</p>
-                          </div>
-                          <div className="simple-drawer-card">
-                            <h4 className="font-bold text-slate-100 dark:text-white mb-1">ასტროლოგიური კონვერსია</h4>
-                            <p className="text-slate-300 dark:text-zinc-300 leading-normal">{guide.astrologicalConversion}</p>
-                          </div>
-                        </div>
-
-                        <div className="simple-drawer-card simple-drawer-card-shadow pt-2 border-t border-zinc-700/30">
-                          <h4 className="font-bold text-slate-100 dark:text-white mb-1">ჩრდილოვანი ასპექტი და რისკები</h4>
-                          <p className="text-slate-300 dark:text-zinc-300 leading-normal">{guide.negativeAspect}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             );
           })}
@@ -216,35 +217,35 @@ export default function SimplePage() {
       {/* Full Top-Level Modal Dialog for Maximum Mobile Clarity (Overflow Safe) */}
       {modalElement && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto overscroll-contain"
+          className="simple-element-overlay fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 overflow-y-auto overscroll-contain"
           role="dialog"
           aria-modal="true"
+          aria-labelledby="simple-element-dialog-title"
           onClick={() => setModalElement(null)}
         >
           <div
-            className="simple-modal-card relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-zinc-700 bg-zinc-950 p-5 sm:p-7 text-left text-zinc-100 shadow-2xl"
+            className="simple-modal-card simple-element-dialog relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-5 sm:p-7 text-left"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+            <div className="flex items-center justify-between gap-4 border-b pb-3 mb-4">
               <div className="flex items-center gap-2">
-                <span className="text-xl">
-                  {ELEMENT_STRIPS.find((e) => e.id === modalElement)?.symbol}
-                </span>
-                <h3 className="text-lg sm:text-xl font-bold">
-                  {ELEMENT_STRIPS.find((e) => e.id === modalElement)?.name} — {ELEMENT_STRIPS.find((e) => e.id === modalElement)?.temperament}
+                {ActiveElementIcon && <ActiveElementIcon className={`h-5 w-5 element-icon-${modalElement}`} aria-hidden="true" />}
+                <h3 id="simple-element-dialog-title" className="text-lg sm:text-xl font-bold">
+                  {activeElement?.name} — {activeElement?.temperament}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setModalElement(null)}
-                className="rounded-lg border border-zinc-700 bg-zinc-900 p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 active:scale-95"
+                ref={modalCloseRef}
+                className="simple-detail-close"
                 aria-label="დახურვა"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="space-y-4 text-xs sm:text-sm leading-relaxed text-zinc-300">
+            <div className="simple-element-dialog-copy space-y-4 text-xs sm:text-sm leading-relaxed">
               <ElementTemperamentDetails element={modalElement} showTitle={false} />
             </div>
           </div>
