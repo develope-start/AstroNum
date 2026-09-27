@@ -6980,6 +6980,7 @@ html.mode-ultra .chart-delete-dialog :where(.text-slate-100, .text-slate-200, .t
 .chart-view-panel,
 .admin-calculation-viewer {
   isolation: isolate;
+  z-index: 110 !important;
   overscroll-behavior: contain;
 }
 
