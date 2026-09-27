@@ -7274,8 +7274,16 @@ html.mode-ultra .chart-delete-dialog :where(.text-slate-100, .text-slate-200, .t
 }
 
 @media (max-width: 640px) {
+  .nav-mode-controls-wrap {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
   .nav-mode-controls {
-    gap: 5.2rem;
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
   }
 }
 
@@ -7438,7 +7446,7 @@ html.mode-simple.mode-simple-light .hero-orbit-card {
 
 @media (max-width: 480px) {
   .nav-mode-controls {
-    gap: 4.4rem;
+    gap: 0.5rem;
   }
 
   .nav-mode-orb-btn,
@@ -8164,5 +8172,495 @@ html.mode-ultra .simple-method-icon-wrap {
     font-size: 0.54rem;
     padding: 0 0.35rem;
     gap: 0.2rem;
+  }
+}
+
+/* ==========================================================================
+   SIMPLE MODE REFINEMENT
+   Compact navigation, paired element cards and strong readable contrast.
+   ========================================================================== */
+html.mode-simple .simple-page {
+  max-width: 78rem;
+  padding: 0.55rem 0.75rem 3.5rem;
+  gap: 2rem;
+}
+
+html.mode-simple .simple-hero {
+  max-width: 52rem;
+  margin: 0 auto;
+  gap: 0;
+}
+
+html.mode-simple .simple-hero-badge,
+html.mode-simple .simple-hero-lead,
+html.mode-simple .simple-hero-actions,
+html.mode-simple .simple-section-desc,
+html.mode-simple .simple-tab-hint,
+html.mode-simple .simple-method-text {
+  display: none;
+}
+
+html.mode-simple .simple-hero-title {
+  font-size: clamp(1.65rem, 3.2vw, 2.35rem);
+  line-height: 1.15;
+}
+
+html.mode-simple .simple-hero-title span {
+  display: none;
+}
+
+html.mode-simple .simple-quick-nav {
+  position: sticky;
+  top: 0.6rem;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0.3rem;
+  border: 1px solid #334155;
+  border-radius: 0.85rem;
+  background: rgba(15, 23, 42, 0.94);
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.2);
+  backdrop-filter: blur(14px);
+}
+
+html.mode-simple .simple-quick-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.38rem 0.75rem;
+  border-radius: 0.58rem;
+  color: #cbd5e1;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+html.mode-simple .simple-quick-nav a:hover,
+html.mode-simple .simple-quick-nav a:focus-visible {
+  color: #ffffff;
+  background: #334155;
+  outline: none;
+  transform: translateY(-1px);
+}
+
+html.mode-simple .simple-section {
+  gap: 0.8rem;
+  scroll-margin-top: 4.5rem;
+}
+
+html.mode-simple .simple-section-header {
+  gap: 0.25rem;
+}
+
+html.mode-simple .simple-tag {
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+}
+
+html.mode-simple .simple-section-title {
+  font-size: clamp(1.15rem, 2.1vw, 1.55rem);
+  line-height: 1.25;
+}
+
+html.mode-simple .simple-elements-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+html.mode-simple .simple-element-card {
+  min-width: 0;
+  padding: 0.85rem;
+  gap: 0.55rem;
+  border-radius: 0.9rem;
+  background: #172033;
+  border-color: #334155;
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.16);
+}
+
+html.mode-simple .simple-element-card:hover,
+html.mode-simple .simple-element-card.is-expanded {
+  border-color: #64748b;
+  box-shadow: 0 12px 26px rgba(2, 6, 23, 0.25);
+}
+
+html.mode-simple .simple-element-top {
+  gap: 0.55rem;
+}
+
+html.mode-simple .simple-element-symbol-box {
+  width: 2.15rem;
+  height: 2.15rem;
+  flex: 0 0 auto;
+  border-radius: 0.65rem;
+}
+
+html.mode-simple .simple-element-meta {
+  min-width: 0;
+}
+
+html.mode-simple .simple-element-kicker {
+  display: block;
+  overflow: hidden;
+  color: #cbd5e1;
+  font-size: 0.56rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html.mode-simple .simple-element-name {
+  font-size: 1rem;
+}
+
+html.mode-simple .simple-element-focus {
+  display: none;
+}
+
+html.mode-simple .simple-element-chips-row {
+  gap: 0.22rem;
+}
+
+html.mode-simple .simple-chip-label {
+  color: #94a3b8;
+  font-size: 0.55rem;
+}
+
+html.mode-simple .simple-chips {
+  gap: 0.25rem;
+}
+
+html.mode-simple .simple-chip {
+  max-width: 100%;
+  padding: 0.16rem 0.38rem;
+  border-color: #475569;
+  background: #243047;
+  color: #e2e8f0;
+  font-size: 0.64rem;
+  line-height: 1.25;
+}
+
+html.mode-simple .simple-chip b {
+  color: #ffffff;
+}
+
+html.mode-simple .simple-element-expand-btn {
+  padding: 0.4rem 0.55rem;
+  border-color: #475569;
+  background: #243047;
+  color: #e2e8f0;
+  font-size: 0.65rem;
+}
+
+html.mode-simple .simple-element-drawer {
+  margin-top: 0.45rem;
+  padding-top: 0.55rem;
+  border-color: #475569;
+}
+
+html.mode-simple .simple-planet-ribbon {
+  gap: 0.35rem;
+  padding-bottom: 0.2rem;
+}
+
+html.mode-simple .simple-planet-pill {
+  padding: 0.42rem 0.68rem;
+  border-color: #475569;
+  background: #172033;
+  color: #cbd5e1;
+  font-size: 0.72rem;
+}
+
+html.mode-simple .simple-planet-pill.is-selected {
+  border-color: #fb923c;
+  background: #7c2d12;
+  color: #ffedd5;
+}
+
+html.mode-simple .simple-planet-detail-card {
+  padding: 0.75rem 0.9rem;
+  border-color: #fb923c;
+  background: #172033;
+}
+
+html.mode-simple .simple-tab-nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  gap: 0.3rem;
+  padding: 0.3rem;
+  border-radius: 0.9rem;
+  background: #172033;
+  border-color: #334155;
+}
+
+html.mode-simple .simple-tab-btn {
+  justify-content: center;
+  min-width: 0;
+  padding: 0.55rem 0.45rem;
+  border-radius: 0.6rem;
+  color: #cbd5e1;
+  font-size: 0.72rem;
+}
+
+html.mode-simple .simple-tab-btn:hover {
+  color: #ffffff;
+  background: #334155;
+}
+
+html.mode-simple .simple-tab-btn.is-active {
+  color: #ffffff;
+  background: #c2410c;
+}
+
+html.mode-simple .simple-methods-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+html.mode-simple .simple-method-card {
+  min-width: 0;
+  padding: 0.85rem;
+  gap: 0.45rem;
+  border-radius: 0.9rem;
+  background: #172033;
+  border-color: #334155;
+}
+
+html.mode-simple .simple-method-title {
+  font-size: 0.88rem;
+  line-height: 1.3;
+}
+
+html.mode-simple .simple-method-num {
+  color: #94a3b8;
+}
+
+html.mode-simple.mode-simple-light .simple-quick-nav {
+  border-color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
+}
+
+html.mode-simple.mode-simple-light .simple-quick-nav a {
+  color: #334155;
+}
+
+html.mode-simple.mode-simple-light .simple-quick-nav a:hover,
+html.mode-simple.mode-simple-light .simple-quick-nav a:focus-visible {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+html.mode-simple.mode-simple-light .simple-section-title,
+html.mode-simple.mode-simple-light .simple-planet-detail-name,
+html.mode-simple.mode-simple-light .simple-element-name,
+html.mode-simple.mode-simple-light .simple-method-title {
+  color: #0f172a;
+}
+
+html.mode-simple.mode-simple-light .simple-element-card,
+html.mode-simple.mode-simple-light .simple-method-card,
+html.mode-simple.mode-simple-light .simple-tab-nav,
+html.mode-simple.mode-simple-light .simple-planet-pill,
+html.mode-simple.mode-simple-light .simple-planet-detail-card {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+}
+
+html.mode-simple.mode-simple-light .simple-element-kicker,
+html.mode-simple.mode-simple-light .simple-chip-label,
+html.mode-simple.mode-simple-light .simple-method-num {
+  color: #475569;
+}
+
+html.mode-simple.mode-simple-light .simple-chip,
+html.mode-simple.mode-simple-light .simple-element-expand-btn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+html.mode-simple.mode-simple-light .simple-chip b {
+  color: #0f172a;
+}
+
+html.mode-simple.mode-simple-light .simple-tab-btn {
+  color: #475569;
+}
+
+html.mode-simple.mode-simple-light .simple-tab-btn:hover {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+html.mode-simple.mode-simple-light .simple-tab-btn.is-active {
+  color: #ffffff;
+  background: #c2410c;
+}
+
+@media (max-width: 520px) {
+  html.mode-simple .simple-page {
+    padding-inline: 0.5rem;
+    gap: 1.4rem;
+  }
+
+  html.mode-simple .simple-quick-nav {
+    position: static;
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  html.mode-simple .simple-quick-nav a {
+    flex: 1 0 auto;
+    padding-inline: 0.62rem;
+  }
+
+  html.mode-simple .simple-element-card {
+    padding: 0.68rem;
+  }
+
+  html.mode-simple .simple-element-symbol-box {
+    width: 1.9rem;
+    height: 1.9rem;
+    font-size: 1rem;
+  }
+
+  html.mode-simple .simple-element-name {
+    font-size: 0.88rem;
+  }
+
+  html.mode-simple .simple-element-chips-row:nth-of-type(3) {
+    display: none;
+  }
+
+  html.mode-simple .simple-chip {
+    font-size: 0.58rem;
+  }
+
+  html.mode-simple .simple-methods-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  html.mode-simple .simple-method-title {
+    font-size: 0.78rem;
+  }
+}
+
+/* ==========================================================================
+   ADMIN LIGHT MODE CONTRAST PASS
+   Keep the management workspace quiet, dense and readable on white surfaces.
+   ========================================================================== */
+html.mode-ultra .admin-page {
+  color: #334155 !important;
+}
+
+html.mode-ultra .admin-page .text-transparent {
+  background-image: none !important;
+  -webkit-text-fill-color: #172033 !important;
+  color: #172033 !important;
+  text-shadow: none !important;
+}
+
+html.mode-ultra .admin-page :where(.text-parchment, .text-parchment-bright, .text-parchment-dim, .text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500) {
+  color: #334155 !important;
+  text-shadow: none !important;
+}
+
+html.mode-ultra .admin-page :where(.text-amber-200, .text-amber-300, .text-amber-400, .text-brass-2) {
+  color: #92400e !important;
+}
+
+html.mode-ultra .admin-page :where(.text-cyan-200, .text-cyan-300, .text-cyan-400, .text-sky-200, .text-sky-300, .text-sky-400) {
+  color: #0369a1 !important;
+}
+
+html.mode-ultra .admin-page :where(.text-emerald-200, .text-emerald-300, .text-emerald-400) {
+  color: #047857 !important;
+}
+
+html.mode-ultra .admin-page :where(.text-rose-200, .text-rose-300, .text-rose-400, .text-red-300, .text-red-400) {
+  color: #be123c !important;
+}
+
+html.mode-ultra .admin-page section,
+html.mode-ultra .admin-page article,
+html.mode-ultra .admin-page details,
+html.mode-ultra .admin-page .admin-stats-card,
+html.mode-ultra .admin-page .admin-account-info {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.07) !important;
+}
+
+html.mode-ultra .admin-page .admin-account-info {
+  background: #ecfdf5 !important;
+  border-color: #86efac !important;
+}
+
+html.mode-ultra .admin-page .admin-stat-item,
+html.mode-ultra .admin-page .admin-history-section,
+html.mode-ultra .admin-page details > summary {
+  border-color: #e2e8f0 !important;
+}
+
+html.mode-ultra .admin-page input,
+html.mode-ultra .admin-page select,
+html.mode-ultra .admin-page textarea {
+  border-color: #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #172033 !important;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+
+html.mode-ultra .admin-page input::placeholder,
+html.mode-ultra .admin-page textarea::placeholder {
+  color: #64748b !important;
+}
+
+html.mode-ultra .admin-page button:not([class*="bg-rose"]):not([class*="bg-red"]):not([class*="bg-amber"]):not([class*="bg-purple"]):not([class*="bg-cyan"]):not([class*="bg-indigo"]):not([class*="from-"]),
+html.mode-ultra .admin-page a[class*="border-line"] {
+  color: #334155 !important;
+}
+
+html.mode-ultra .admin-page :where(button[class*="bg-rose"], button[class*="bg-red"], button[class*="bg-amber"], button[class*="bg-purple"], button[class*="bg-cyan"], button[class*="bg-indigo"], button[class*="from-"]) {
+  color: #ffffff !important;
+}
+
+html.mode-ultra .admin-page a[class*="bg-gradient"],
+html.mode-ultra .admin-page button[class*="bg-gradient"] {
+  color: #ffffff !important;
+}
+
+html.mode-ultra .admin-page mark,
+html.mode-ultra .admin-page .admin-filter-match {
+  background: #fef3c7 !important;
+  color: #78350f !important;
+  box-shadow: 0 0 0 1px #fbbf24 !important;
+}
+
+@media (max-width: 640px) {
+  html.mode-simple .simple-section-title {
+    font-size: 1.1rem;
+  }
+
+  html.mode-ultra .admin-page .admin-page-header {
+    gap: 0.75rem;
+    margin-bottom: 1.25rem !important;
+    padding-bottom: 0.8rem;
+  }
+
+  html.mode-ultra .admin-page .admin-account-info {
+    margin-bottom: 1.25rem !important;
+    padding: 0.9rem !important;
   }
 }

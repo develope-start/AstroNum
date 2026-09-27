@@ -162,7 +162,7 @@ export default function Nav() {
           </Link>
 
           {/* Center Beep Glow Mode Toggle Orb */}
-          <div className="flex items-center justify-center shrink-0">
+          <div className="nav-mode-controls-wrap flex items-center justify-center shrink-0">
             <UiModeToggle />
           </div>
 

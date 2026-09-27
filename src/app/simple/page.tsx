@@ -117,8 +117,15 @@ export default function SimplePage() {
         </div>
       </section>
 
+      <nav className="simple-quick-nav" aria-label="მარტივი რეჟიმის ნავიგაცია">
+        <a href="#elements">სტიქიები</a>
+        <a href="#planets">მნათობები</a>
+        <a href="#calculator">გამოთვლა</a>
+        <a href="#method">მეთოდი</a>
+      </nav>
+
       {/* 2. Minimalist Four Elements Bento Grid */}
-      <section className="simple-section">
+      <section id="elements" className="simple-section">
         <div className="simple-section-header">
           <div>
             <span className="simple-tag">სტიქიები და ტემპერამენტები</span>
@@ -195,7 +202,7 @@ export default function SimplePage() {
       </section>
 
       {/* 3. Celestial Bodies Horizon Ribbon */}
-      <section className="simple-section">
+      <section id="planets" className="simple-section">
         <div className="simple-section-header">
           <div>
             <span className="simple-tag">ციური სხეულები</span>
