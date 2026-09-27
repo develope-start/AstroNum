@@ -5672,6 +5672,7 @@ html.mode-ultra .hero-title {
 
 html.mode-ultra .hero-title em {
   background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #2563eb 100%) !important;
+  background-clip: text !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.2)) !important;
