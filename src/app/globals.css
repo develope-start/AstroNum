@@ -9265,3 +9265,420 @@ html.mode-ultra .admin-page .admin-calculation-dialog .interpretation-close-butt
     justify-content: center;
   }
 }
+
+/* ============================================================================
+   DARK SIMPLE WORKSPACE
+   A readable dark palette shared by the home page, account cabinet and every
+   administration surface. Simple mode is calm and compact, but never low
+   contrast: controls use layered navy surfaces, clear borders and visible
+   focus states instead of near-black-on-black styling.
+   ============================================================================ */
+html.mode-simple:not(.mode-simple-light) {
+  --simple-dark-bg: #0b1220;
+  --simple-dark-surface: #172235;
+  --simple-dark-surface-soft: #1d2b40;
+  --simple-dark-input: #101b2d;
+  --simple-dark-border: #43556d;
+  --simple-dark-border-soft: #304158;
+  --simple-dark-ink: #f8fafc;
+  --simple-dark-body: #d7e0ec;
+  --simple-dark-muted: #a8b6c9;
+  --simple-dark-accent: #7dd3fc;
+  --simple-dark-warm: #fdba74;
+  color-scheme: dark;
+}
+
+html.mode-simple:not(.mode-simple-light) body.app-body {
+  background:
+    radial-gradient(circle at 8% 2%, rgba(56, 189, 248, 0.11), transparent 28rem),
+    radial-gradient(circle at 94% 18%, rgba(129, 140, 248, 0.13), transparent 30rem),
+    linear-gradient(145deg, #0b1220 0%, #101a2d 52%, #151727 100%) !important;
+  color: var(--simple-dark-body) !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .star-field {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 50% -10%, rgba(56, 189, 248, 0.1), transparent 42%) !important;
+  opacity: 0.65;
+}
+
+html.mode-simple:not(.mode-simple-light) .nav-shell,
+html.mode-simple:not(.mode-simple-light) .glass-panel,
+html.mode-simple:not(.mode-simple-light) .hero-orbit-card,
+html.mode-simple:not(.mode-simple-light) .simple-element-card,
+html.mode-simple:not(.mode-simple-light) .simple-method-card,
+html.mode-simple:not(.mode-simple-light) .simple-tab-nav,
+html.mode-simple:not(.mode-simple-light) .simple-planet-detail-card {
+  border-color: var(--simple-dark-border) !important;
+  background: linear-gradient(145deg, #1b2a40 0%, #172235 64%, #20243b 100%) !important;
+  color: var(--simple-dark-body) !important;
+  box-shadow: 0 16px 38px -26px rgba(0, 0, 0, 0.9), inset 0 1px rgba(255, 255, 255, 0.055) !important;
+  backdrop-filter: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-page,
+html.mode-simple:not(.mode-simple-light) .app-home,
+html.mode-simple:not(.mode-simple-light) .cabinet-page,
+html.mode-simple:not(.mode-simple-light) .admin-page {
+  color: var(--simple-dark-body) !important;
+}
+
+/* Shared form controls: applies to the calculator, authentication, cabinet
+   settings, user management and admin filters in one place. */
+html.mode-simple:not(.mode-simple-light) input:not([type="checkbox"]):not([type="radio"]),
+html.mode-simple:not(.mode-simple-light) select,
+html.mode-simple:not(.mode-simple-light) textarea,
+html.mode-simple:not(.mode-simple-light) .glass-input,
+html.mode-simple:not(.mode-simple-light) .wide-date-editor,
+html.mode-simple:not(.mode-simple-light) .time-editor {
+  border-color: var(--simple-dark-border) !important;
+  background: linear-gradient(145deg, #142238, #101b2d) !important;
+  color: var(--simple-dark-ink) !important;
+  caret-color: var(--simple-dark-accent) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.045), 0 8px 18px -16px rgba(0, 0, 0, 0.9) !important;
+}
+
+html.mode-simple:not(.mode-simple-light) input:not([type="checkbox"]):not([type="radio"]):hover,
+html.mode-simple:not(.mode-simple-light) select:hover,
+html.mode-simple:not(.mode-simple-light) textarea:hover,
+html.mode-simple:not(.mode-simple-light) .glass-input:hover,
+html.mode-simple:not(.mode-simple-light) .wide-date-editor:hover,
+html.mode-simple:not(.mode-simple-light) .time-editor:hover {
+  border-color: #64748b !important;
+  background: #17263c !important;
+}
+
+html.mode-simple:not(.mode-simple-light) input:not([type="checkbox"]):not([type="radio"]):focus,
+html.mode-simple:not(.mode-simple-light) select:focus,
+html.mode-simple:not(.mode-simple-light) textarea:focus,
+html.mode-simple:not(.mode-simple-light) .glass-input:focus,
+html.mode-simple:not(.mode-simple-light) .wide-date-editor:focus-within,
+html.mode-simple:not(.mode-simple-light) .time-editor:focus-within {
+  border-color: var(--simple-dark-accent) !important;
+  background: #17283f !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16), 0 10px 24px -18px rgba(56, 189, 248, 0.65) !important;
+  outline: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) input::placeholder,
+html.mode-simple:not(.mode-simple-light) textarea::placeholder {
+  color: #9aabc0 !important;
+  opacity: 1 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) option {
+  background: #142238 !important;
+  color: #f8fafc !important;
+}
+
+html.mode-simple:not(.mode-simple-light) input[type="checkbox"],
+html.mode-simple:not(.mode-simple-light) input[type="radio"] {
+  accent-color: #38bdf8 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .wide-date-editor input,
+html.mode-simple:not(.mode-simple-light) .time-editor input {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #f8fafc !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .wide-date-editor > span,
+html.mode-simple:not(.mode-simple-light) .time-editor > span,
+html.mode-simple:not(.mode-simple-light) .wide-date-editor svg,
+html.mode-simple:not(.mode-simple-light) .time-editor svg,
+html.mode-simple:not(.mode-simple-light) .wide-date-editor button,
+html.mode-simple:not(.mode-simple-light) .time-editor button {
+  color: #7dd3fc !important;
+}
+
+/* Text utility colors authored for the full dark theme are lifted to the
+   readable side of the palette when Simple mode removes visual decoration. */
+html.mode-simple:not(.mode-simple-light) :where(.text-slate-100, .text-slate-200) {
+  color: #f8fafc !important;
+}
+
+html.mode-simple:not(.mode-simple-light) :where(.text-slate-300, .text-slate-400) {
+  color: #d0dbea !important;
+}
+
+html.mode-simple:not(.mode-simple-light) :where(.text-slate-500, .text-parchment-dim, .text-parchment) {
+  color: #a8b6c9 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) :where(.text-amber-200, .text-amber-300, .text-amber-400, .text-orange-300, .text-orange-400) {
+  color: #fdba74 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) :where(.text-cyan-200, .text-cyan-300, .text-cyan-400, .text-sky-200, .text-sky-300, .text-sky-400, .text-blue-200, .text-blue-300, .text-blue-400) {
+  color: #7dd3fc !important;
+}
+
+html.mode-simple:not(.mode-simple-light) :where(.text-emerald-200, .text-emerald-300, .text-emerald-400, .text-green-300, .text-green-400) {
+  color: #86efac !important;
+}
+
+html.mode-simple:not(.mode-simple-light) :where(.text-rose-200, .text-rose-300, .text-rose-400, .text-red-300, .text-red-400) {
+  color: #fda4af !important;
+}
+
+html.mode-simple:not(.mode-simple-light) :where(.text-purple-200, .text-purple-300, .text-purple-400, .text-violet-200, .text-violet-300, .text-violet-400, .text-fuchsia-300, .text-fuchsia-400) {
+  color: #c4b5fd !important;
+}
+
+/* Home page and the compact calculator workspace. */
+html.mode-simple:not(.mode-simple-light) .hero-kicker,
+html.mode-simple:not(.mode-simple-light) .hero-lead,
+html.mode-simple:not(.mode-simple-light) .section-heading p,
+html.mode-simple:not(.mode-simple-light) .home-feature p,
+html.mode-simple:not(.mode-simple-light) .simple-section-desc {
+  color: #a8b6c9 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .hero-title,
+html.mode-simple:not(.mode-simple-light) .section-heading h2,
+html.mode-simple:not(.mode-simple-light) .home-feature h3,
+html.mode-simple:not(.mode-simple-light) .simple-section-title,
+html.mode-simple:not(.mode-simple-light) .simple-element-name,
+html.mode-simple:not(.mode-simple-light) .simple-method-title {
+  color: #f8fafc !important;
+  text-shadow: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .hero-title em {
+  color: #7dd3fc !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .home-feature {
+  border-top-color: #40516a !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-calc-frame {
+  padding: clamp(0.55rem, 1.5vw, 1rem);
+  border: 1px solid #40516a;
+  border-radius: 1.15rem;
+  background: linear-gradient(145deg, rgba(23, 34, 53, 0.92), rgba(15, 25, 42, 0.94)) !important;
+  box-shadow: 0 18px 44px -28px rgba(0, 0, 0, 0.9) !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-calc-frame .glass-panel,
+html.mode-simple:not(.mode-simple-light) .simple-calc-frame fieldset.glass-panel {
+  border-color: #43556d !important;
+  background: linear-gradient(145deg, #1b2a40, #172235) !important;
+  color: #d7e0ec !important;
+  box-shadow: 0 14px 34px -25px rgba(0, 0, 0, 0.9) !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-chip,
+html.mode-simple:not(.mode-simple-light) .simple-element-expand-btn,
+html.mode-simple:not(.mode-simple-light) .simple-planet-pill,
+html.mode-simple:not(.mode-simple-light) .simple-tab-btn {
+  border-color: #52647b !important;
+  background: #1d2b40 !important;
+  color: #d7e0ec !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-chip b,
+html.mode-simple:not(.mode-simple-light) .simple-planet-glyph {
+  color: #f8fafc !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-tab-btn:hover,
+html.mode-simple:not(.mode-simple-light) .simple-element-expand-btn:hover,
+html.mode-simple:not(.mode-simple-light) .simple-planet-pill:hover {
+  border-color: #7dd3fc !important;
+  background: #263a55 !important;
+  color: #f8fafc !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .simple-tab-btn.is-active,
+html.mode-simple:not(.mode-simple-light) .simple-planet-pill.is-selected {
+  border-color: #fb923c !important;
+  background: linear-gradient(135deg, #9a3412, #c2410c) !important;
+  color: #fff7ed !important;
+}
+
+/* Account cabinet: the form is intentionally slightly warmer than the main
+   workspace, with one obvious primary action and quiet secondary controls. */
+html.mode-simple:not(.mode-simple-light) .cabinet-page .glass-panel {
+  border-color: #53657d !important;
+  background: linear-gradient(145deg, #1b2a40 0%, #172235 62%, #26223c 100%) !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .cabinet-page h1,
+html.mode-simple:not(.mode-simple-light) .cabinet-page h2,
+html.mode-simple:not(.mode-simple-light) .cabinet-page h3 {
+  color: #f8fafc !important;
+  text-shadow: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .cabinet-page label {
+  color: #d7e0ec !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .cabinet-page button:not([class*="from-amber-400"]),
+html.mode-simple:not(.mode-simple-light) .cabinet-page a {
+  color: #cbd5e1 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .cabinet-page button:not([class*="from-amber-400"]):hover,
+html.mode-simple:not(.mode-simple-light) .cabinet-page a:hover {
+  color: #f8fafc !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .cabinet-page button[class*="from-amber-400"] {
+  border-color: #fb923c !important;
+  background: linear-gradient(135deg, #f97316, #c2410c) !important;
+  color: #fff7ed !important;
+}
+
+/* Dark Simple Admin: readable hierarchy and purposeful status colors. */
+html.mode-simple:not(.mode-simple-light) .admin-page {
+  --simple-admin-surface: #172235;
+  --simple-admin-surface-soft: #1d2b40;
+  --simple-admin-border: #43556d;
+  color: #d7e0ec !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page > .admin-page-header {
+  border-bottom-color: #40516a !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page section,
+html.mode-simple:not(.mode-simple-light) .admin-page article,
+html.mode-simple:not(.mode-simple-light) .admin-page details,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-account-info,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-stats-card,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-history-section,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-collapsible-section,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-trash-section {
+  border-color: var(--simple-admin-border) !important;
+  background: linear-gradient(145deg, #1b2a40 0%, #172235 70%, #20243b 100%) !important;
+  color: #d7e0ec !important;
+  box-shadow: 0 14px 34px -26px rgba(0, 0, 0, 0.92) !important;
+  backdrop-filter: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page h1,
+html.mode-simple:not(.mode-simple-light) .admin-page h2,
+html.mode-simple:not(.mode-simple-light) .admin-page h3,
+html.mode-simple:not(.mode-simple-light) .admin-page h4 {
+  color: #f8fafc !important;
+  background-image: none !important;
+  -webkit-text-fill-color: #f8fafc !important;
+  text-shadow: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page label,
+html.mode-simple:not(.mode-simple-light) .admin-page summary,
+html.mode-simple:not(.mode-simple-light) .admin-page dt,
+html.mode-simple:not(.mode-simple-light) .admin-page dd,
+html.mode-simple:not(.mode-simple-light) .admin-page p,
+html.mode-simple:not(.mode-simple-light) .admin-page li {
+  color: #d7e0ec !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page :where([class*="bg-ink"], [class*="bg-slate-950"], [class*="bg-slate-900"], [class*="bg-slate-800"], [class*="bg-slate-700"], [class*="bg-[#120826"], [class*="bg-[#0d0a18"]) {
+  border-color: #43556d !important;
+  background: #101b2d !important;
+  color: #d7e0ec !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page button,
+html.mode-simple:not(.mode-simple-light) .admin-page a {
+  color: #d7e0ec;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-control-button,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-control-button-secondary,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-header-actions > a,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-header-actions > button {
+  border-color: #5a6d86 !important;
+  background: #1d2b40 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 8px 18px -16px rgba(0, 0, 0, 0.95) !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-control-button:hover,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-control-button-secondary:hover,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-header-actions > a:hover,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-header-actions > button:hover {
+  border-color: #7dd3fc !important;
+  background: #263a55 !important;
+  color: #ffffff !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page button[class*="border-rose"],
+html.mode-simple:not(.mode-simple-light) .admin-page button[class*="border-red"],
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-control-button-danger {
+  border-color: #fb7185 !important;
+  background: #4c1d2a !important;
+  color: #fecdd3 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page button[class*="border-rose"]:hover,
+html.mode-simple:not(.mode-simple-light) .admin-page button[class*="border-red"]:hover,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-control-button-danger:hover {
+  background: #881337 !important;
+  color: #fff1f2 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-collapsible-summary,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-trash-summary,
+html.mode-simple:not(.mode-simple-light) .admin-page details > summary {
+  color: #f8fafc !important;
+  border-color: #40516a !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-section-total,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-summary-count,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-id-label {
+  color: #a8b6c9 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-id-value-registered {
+  border-color: #22d3ee !important;
+  background: #123747 !important;
+  color: #a5f3fc !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-filter-match {
+  background: #713f12 !important;
+  color: #fef3c7 !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-calculation-dialog,
+html.mode-simple:not(.mode-simple-light) .admin-page .chart-delete-dialog,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-calculation-details,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-calculation-interpretation {
+  border-color: #43556d !important;
+  background: linear-gradient(145deg, #172235, #101b2d) !important;
+  color: #d7e0ec !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-calculation-dialog h2,
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-calculation-dialog h3 {
+  color: #f8fafc !important;
+  text-shadow: none !important;
+}
+
+html.mode-simple:not(.mode-simple-light) .admin-page .admin-calculation-dialog .interpretation-close-button {
+  border-color: #7c3aed !important;
+  background: #2e1b55 !important;
+  color: #ddd6fe !important;
+}
+
+@media (max-width: 640px) {
+  html.mode-simple:not(.mode-simple-light) .admin-page {
+    padding-inline: 0.65rem;
+  }
+
+  html.mode-simple:not(.mode-simple-light) .admin-page section,
+  html.mode-simple:not(.mode-simple-light) .admin-page article,
+  html.mode-simple:not(.mode-simple-light) .admin-page details {
+    border-radius: 0.9rem !important;
+  }
+}
