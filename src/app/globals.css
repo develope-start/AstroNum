@@ -7152,4 +7152,11 @@ html.mode-ultra .chart-delete-dialog :where(.text-slate-100, .text-slate-200, .t
     border-top-color: #d6dee8 !important;
     box-shadow: 0 -12px 36px rgba(15, 23, 42, 0.12) !important;
   }
+
+  /* The mobile header used the dark page surface as a solid backdrop. That
+     surface leaked around the light navigation shell, especially above and
+     below its rounded frame. Match the light page surface in ultra mode. */
+  html.mode-ultra .site-header {
+    background: #f1f5f9 !important;
+  }
 }
