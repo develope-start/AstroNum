@@ -101,42 +101,52 @@ export default function TimeSelect({
       }
       updatePosition();
     });
-    const delayedUpdate = window.setTimeout(updatePosition, 220);
-    window.addEventListener("scroll", updatePosition, true);
+
     window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
     return () => {
       window.cancelAnimationFrame(animationFrame);
-      window.clearTimeout(delayedUpdate);
-      window.removeEventListener("scroll", updatePosition, true);
       window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
     };
   }, [pickerOpen]);
+
+  function notifyDraft(h: string, m: string) {
+    if (!onDraftChange) return;
+    const cleanHour = h.trim();
+    const cleanMinute = m.trim();
+    if (!cleanHour && !cleanMinute) {
+      onDraftChange("");
+      return;
+    }
+    const safeHour = cleanHour ? cleanHour.padStart(2, "0") : "12";
+    const safeMinute = cleanMinute ? cleanMinute.padStart(2, "0") : "00";
+    onDraftChange(`${safeHour}:${safeMinute}`);
+  }
+
+  function commitValue(h: string, m: string) {
+    if (isCompleteTime(h, m)) {
+      const normalizedHour = h.padStart(2, "0");
+      const normalizedMinute = m.padStart(2, "0");
+      setHour(normalizedHour);
+      setMinute(normalizedMinute);
+      setPickerHour(Number(normalizedHour));
+      setPickerMinute(Number(normalizedMinute));
+      onChange(`${normalizedHour}:${normalizedMinute}`);
+    }
+  }
 
   function focusField(event: React.FocusEvent<HTMLInputElement>) {
     editingRef.current = true;
     event.currentTarget.select();
   }
 
-  function commit(nextHour = hour, nextMinute = minute) {
-    if (!isCompleteTime(nextHour, nextMinute)) return;
-    const formattedHour = nextHour.padStart(2, "0");
-    const formattedMinute = nextMinute.padStart(2, "0");
-    setHour(formattedHour);
-    setMinute(formattedMinute);
-    onChange(`${formattedHour}:${formattedMinute}`);
-  }
-
-  function notifyDraft(nextHour: string, nextMinute: string) {
-    if (!onDraftChange) return;
-    if (nextHour) onDraftChange(nextMinute ? `${nextHour}:${nextMinute}` : nextHour);
-    else onDraftChange(nextMinute);
-  }
-
   function finishEditing() {
-    commit();
     window.setTimeout(() => {
       const active = document.activeElement;
-      if (active !== hourRef.current && active !== minuteRef.current) editingRef.current = false;
+      if (active === hourRef.current || active === minuteRef.current) return;
+      editingRef.current = false;
+      commitValue(hour, minute);
     }, 0);
   }
 
@@ -145,18 +155,19 @@ export default function TimeSelect({
       setPickerOpen(false);
       return;
     }
-    const currentHour = Number(hour);
-    const currentMinute = Number(minute);
-    const nextHour = Number.isInteger(currentHour) && currentHour >= 0 && currentHour <= 23 ? currentHour : new Date().getHours();
-    const nextMinute = Number.isInteger(currentMinute) && currentMinute >= 0 && currentMinute <= 59 ? currentMinute : new Date().getMinutes();
-    const nextHourText = String(nextHour).padStart(2, "0");
-    const nextMinuteText = String(nextMinute).padStart(2, "0");
+    const current = parseTime(value);
+    const validHour = Number.isInteger(Number(current.hour)) && Number(current.hour) >= 0 && Number(current.hour) <= 23;
+    const validMinute = Number.isInteger(Number(current.minute)) && Number(current.minute) >= 0 && Number(current.minute) <= 59;
+    const fallbackDate = new Date();
+    const nextHour = validHour ? Number(current.hour) : fallbackDate.getHours();
+    const nextMinute = validMinute ? Number(current.minute) : fallbackDate.getMinutes();
     setPickerHour(nextHour);
     setPickerMinute(nextMinute);
-    if (!isCompleteTime(hour, minute)) {
+    if (!isCompleteTime(current.hour, current.minute)) {
+      const nextHourText = String(nextHour).padStart(2, "0");
+      const nextMinuteText = String(nextMinute).padStart(2, "0");
       setHour(nextHourText);
       setMinute(nextMinuteText);
-      editingRef.current = false;
       onChange(`${nextHourText}:${nextMinuteText}`);
     }
     setPickerOpen(true);
@@ -164,18 +175,22 @@ export default function TimeSelect({
 
   function selectPickerHour(nextHour: number) {
     setPickerHour(nextHour);
-    setHour(String(nextHour).padStart(2, "0"));
-    notifyDraft(String(nextHour).padStart(2, "0"), minute);
+    const nextHourText = String(nextHour).padStart(2, "0");
+    const nextMinuteText = (minute || String(pickerMinute)).padStart(2, "0");
+    setHour(nextHourText);
+    setMinute(nextMinuteText);
+    editingRef.current = false;
+    onChange(`${nextHourText}:${nextMinuteText}`);
   }
 
   function selectPickerMinute(nextMinute: number) {
-    const nextHour = String(pickerHour).padStart(2, "0");
-    const nextMinuteText = String(nextMinute).padStart(2, "0");
     setPickerMinute(nextMinute);
-    setHour(nextHour);
+    const nextHourText = (hour || String(pickerHour)).padStart(2, "0");
+    const nextMinuteText = String(nextMinute).padStart(2, "0");
+    setHour(nextHourText);
     setMinute(nextMinuteText);
     editingRef.current = false;
-    onChange(`${nextHour}:${nextMinuteText}`);
+    onChange(`${nextHourText}:${nextMinuteText}`);
     setPickerOpen(false);
   }
 
@@ -197,13 +212,13 @@ export default function TimeSelect({
   const partial = hour === "" || minute === "" || hour === "0" || minute === "0";
   const valid = isCompleteTime(hour, minute);
   const border = valid
-    ? "border-cyan-400/40 focus-within:border-cyan-400 focus-within:shadow-[0_0_25px_rgba(56,189,248,0.25)]"
+    ? "border-sky-400/40 focus-within:border-sky-400 focus-within:shadow-[0_0_25px_rgba(56,189,248,0.25)]"
     : partial
-      ? "border-slate-500/40 focus-within:border-cyan-400/60"
+      ? "border-white/10 focus-within:border-sky-400/60"
       : "border-rose-500/50";
 
   return (
-    <div className={`time-editor grid min-h-[54px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto] items-center gap-1 rounded-xl border bg-[#070a16] p-1.5 shadow-inner transition-all sm:min-h-[62px] sm:gap-2 sm:rounded-2xl sm:p-2.5 ${border}`}>
+    <div className={`time-editor grid min-h-[54px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto] items-center gap-1 rounded-2xl border bg-[#070914] p-2 shadow-inner transition-all sm:min-h-[60px] sm:gap-2 sm:p-2.5 ${border}`}>
       <input
         ref={hourRef}
         type="text"
@@ -219,9 +234,9 @@ export default function TimeSelect({
         spellCheck={false}
         maxLength={2}
         aria-label="საათი"
-        className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono text-cyan-200 outline-none transition-colors placeholder:text-slate-500 placeholder:font-medium caret-cyan-400 focus:border-cyan-400/30 focus:bg-white/[0.02]"
+        className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-0 text-center text-[clamp(0.85rem,2.6vw,1.15rem)] font-bold font-mono text-white outline-none transition-colors placeholder:text-slate-400 placeholder:font-medium caret-sky-400 focus:border-sky-400/30 focus:bg-white/[0.02]"
       />
-      <span className="select-none text-lg font-black text-cyan-400/70">:</span>
+      <span className="select-none text-lg font-black text-sky-400">:</span>
       <input
         ref={minuteRef}
         type="text"
@@ -237,30 +252,30 @@ export default function TimeSelect({
         spellCheck={false}
         maxLength={2}
         aria-label="წუთი"
-        className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono text-cyan-200 outline-none transition-colors placeholder:text-slate-500 placeholder:font-medium caret-cyan-400 focus:border-cyan-400/30 focus:bg-white/[0.02]"
+        className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-0 text-center text-[clamp(0.85rem,2.6vw,1.15rem)] font-bold font-mono text-white outline-none transition-colors placeholder:text-slate-400 placeholder:font-medium caret-sky-400 focus:border-sky-400/30 focus:bg-white/[0.02]"
       />
       <div ref={pickerRef} className="time-picker-trigger relative flex shrink-0 items-center justify-center">
-        <button type="button" onClick={togglePicker} className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-white/[0.04] text-cyan-300 shadow-sm transition-colors hover:border-cyan-400/40 hover:bg-cyan-500/15 sm:h-9 sm:w-9 cursor-pointer" aria-label="დროის არჩევა" aria-expanded={pickerOpen}>
-          <Clock className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
+        <button type="button" onClick={togglePicker} className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-white/[0.04] text-sky-300 shadow-sm transition-colors hover:border-sky-400/50 hover:bg-sky-500/15 cursor-pointer" aria-label="დროის არჩევა" aria-expanded={pickerOpen}>
+          <Clock className="h-4 w-4 text-sky-400" aria-hidden="true" />
         </button>
 
         {pickerOpen && pickerPosition && typeof document !== "undefined" && createPortal(
-          <div ref={pickerPopupRef} style={{ position: "fixed", top: pickerPosition.top, left: pickerPosition.left, width: pickerPosition.width, maxHeight: pickerPosition.maxHeight, overflowY: "auto", zIndex: 1000 }} className="time-picker-popup rounded-2xl border border-white/15 bg-[#090d20]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.85)] ring-1 ring-cyan-500/20 backdrop-blur-2xl">
+          <div ref={pickerPopupRef} style={{ position: "fixed", top: pickerPosition.top, left: pickerPosition.left, width: pickerPosition.width, maxHeight: pickerPosition.maxHeight, overflowY: "auto", zIndex: 1000 }} className="time-picker-popup rounded-3xl border border-white/20 bg-[#060813]/98 p-4 text-white shadow-[0_20px_70px_rgba(0,0,0,0.9)] ring-1 ring-sky-500/30 backdrop-blur-2xl">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <span className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-slate-400">24-საათიანი დრო</span>
-              <button type="button" onClick={selectCurrentTime} className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.65rem] font-bold text-slate-300 transition hover:border-cyan-400/40 hover:bg-cyan-400/10 hover:text-cyan-200 cursor-pointer">ახლა</button>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-300">24-საათიანი დრო</span>
+              <button type="button" onClick={selectCurrentTime} className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-bold text-slate-200 transition hover:border-sky-400/40 hover:bg-sky-400/10 hover:text-white cursor-pointer">ახლა</button>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className="mb-1 text-center text-[0.6rem] font-bold uppercase tracking-wider text-slate-400">საათი</p>
-                <div className="time-picker-grid grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-xl border border-white/10 bg-[#070a16] p-1.5">
-                  {Array.from({ length: 24 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerHour(index)} className={`time-picker-option h-8 rounded-lg text-xs font-bold transition cursor-pointer ${pickerHour === index ? "is-selected bg-gradient-to-r from-cyan-400 to-violet-500 text-slate-950 shadow-[0_0_15px_rgba(56,189,248,0.5)] font-black" : "text-slate-200 hover:bg-cyan-400/15 hover:text-cyan-200"}`}>{String(index).padStart(2, "0")}</button>)}
+                <p className="mb-1 text-center text-xs font-bold uppercase tracking-wider text-slate-300">საათი</p>
+                <div className="time-picker-grid grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-2xl border border-white/10 bg-[#070914] p-2">
+                  {Array.from({ length: 24 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerHour(index)} className={`time-picker-option h-8 rounded-xl text-xs font-bold transition cursor-pointer ${pickerHour === index ? "is-selected bg-gradient-to-r from-sky-400 to-indigo-500 text-white shadow-[0_0_15px_rgba(56,189,248,0.5)] font-black" : "text-slate-200 hover:bg-sky-400/15 hover:text-white"}`}>{String(index).padStart(2, "0")}</button>)}
                 </div>
               </div>
               <div>
-                <p className="mb-1 text-center text-[0.6rem] font-bold uppercase tracking-wider text-slate-400">წუთი</p>
-                <div className="time-picker-grid grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-xl border border-white/10 bg-[#070a16] p-1.5">
-                  {Array.from({ length: 60 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerMinute(index)} className={`time-picker-option h-8 rounded-lg text-xs font-bold transition cursor-pointer ${pickerMinute === index ? "is-selected bg-gradient-to-r from-cyan-400 to-violet-500 text-slate-950 shadow-[0_0_15px_rgba(56,189,248,0.5)] font-black" : "text-slate-200 hover:bg-cyan-400/15 hover:text-cyan-200"}`}>{String(index).padStart(2, "0")}</button>)}
+                <p className="mb-1 text-center text-xs font-bold uppercase tracking-wider text-slate-300">წუთი</p>
+                <div className="time-picker-grid grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-2xl border border-white/10 bg-[#070914] p-2">
+                  {Array.from({ length: 60 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerMinute(index)} className={`time-picker-option h-8 rounded-xl text-xs font-bold transition cursor-pointer ${pickerMinute === index ? "is-selected bg-gradient-to-r from-sky-400 to-indigo-500 text-white shadow-[0_0_15px_rgba(56,189,248,0.5)] font-black" : "text-slate-200 hover:bg-sky-400/15 hover:text-white"}`}>{String(index).padStart(2, "0")}</button>)}
                 </div>
               </div>
             </div>

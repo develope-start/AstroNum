@@ -8,8 +8,7 @@ import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 import { useEffect } from "react";
-
-import { X } from "lucide-react";
+import { X, Calendar, Clock, MapPin } from "lucide-react";
 
 export type CalculationViewData = {
   mapNumber?: string | null;
@@ -96,10 +95,10 @@ export default function AdminCalculationViewer({
   }, [onClose]);
 
   return (
-    <div className="admin-calculation-viewer fixed inset-0 z-50 flex h-[100dvh] w-full items-stretch justify-center overflow-hidden overscroll-contain bg-black/85 p-0">
-      <div data-chart-export-root="true" className="admin-calculation-dialog relative min-h-0 min-w-0 h-full w-full overflow-y-auto overscroll-contain border border-slate-400/50 bg-[#0d0a18] p-2 sm:p-8 shadow-[0_0_35px_rgba(148,163,184,0.28)]">
+    <div className="admin-calculation-viewer fixed inset-0 z-50 flex h-[100dvh] w-full items-stretch justify-center overflow-hidden overscroll-contain bg-[#060813]/95 backdrop-blur-2xl p-0">
+      <div data-chart-export-root="true" className="admin-calculation-dialog relative min-h-0 min-w-0 h-full w-full overflow-y-auto overscroll-contain p-3 sm:p-8">
         
-        {/* Premium Fixed Top-Right Close Button */}
+        {/* Top-Right Close Button */}
         <div className="interpretation-close-row">
           <button
             type="button"
@@ -107,62 +106,78 @@ export default function AdminCalculationViewer({
             className="interpretation-close-button pointer-events-auto group"
             title="ფანჯრის დახურვა"
           >
-            <span className="interpretation-close-icon"><X className="h-3.5 w-3.5" /></span>
+            <span className="interpretation-close-icon"><X className="h-4 w-4" /></span>
             <span className="interpretation-close-label">
               დახურვა
             </span>
           </button>
         </div>
 
-        <div className="flex flex-col items-center gap-1 border-b border-slate-500/30 pb-4 text-center">
-          <h2 className="text-2xl font-bold text-slate-100 sm:text-3xl">
-            {TYPE_LABEL[calculation.type] ?? `${calculation.type} რუკა`} — {calculation.name1}{calculation.name2 ? ` & ${calculation.name2}` : ""}
-          </h2>
-          <p className="text-sm font-bold text-amber-300">რუკის ნომერი: {calculation.mapNumber ?? "—"}</p>
-          <p className="text-xs text-slate-400">შედგენის დრო: {new Date(calculation.createdAt).toLocaleString("ka-GE")}</p>
-        </div>
+        <div className="max-w-5xl mx-auto space-y-6 pt-10 pb-16">
+          {/* Header Row */}
+          <div className="flex flex-col items-center gap-2 border-b border-white/10 pb-5 text-center">
+            <div className="telemetry-badge inline-flex items-center gap-2">
+              <span className="live-beacon"></span>
+              <span className="telemetry-badge-text">{TYPE_LABEL[calculation.type] ?? calculation.type}</span>
+            </div>
+            <h2 className="font-display text-2xl font-extrabold text-white sm:text-3xl">
+              {TYPE_LABEL[calculation.type] ?? `${calculation.type} რუკა`} — {calculation.name1}{calculation.name2 ? ` & ${calculation.name2}` : ""}
+            </h2>
+            <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-semibold">
+              <span className="text-sky-300 bg-sky-500/10 border border-sky-400/25 px-3 py-1 rounded-full">
+                რუკის ნომერი: {calculation.mapNumber ?? "—"}
+              </span>
+              <span className="text-slate-400">
+                შედგენის დრო: {new Date(calculation.createdAt).toLocaleString("ka-GE")}
+              </span>
+            </div>
+          </div>
 
-        <div className="admin-calculation-details mt-5 grid min-w-0 gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-3 text-sm text-slate-200 sm:grid-cols-2 sm:p-4">
-          <p className="text-center sm:col-span-2"><span className="text-slate-400">რუკის ნომერი:</span> {calculation.mapNumber ?? "—"}</p>
-          <p><span className="text-slate-400">პირველი პროფილი:</span> {calculation.name1}</p>
-          <p><span className="text-slate-400">დაბადება:</span> {formatWideDateDisplay(calculation.date1)} {calculation.time1}</p>
-          <p><span className="text-slate-400">ადგილი:</span> {calculation.place1}</p>
-          {calculation.name2 && <p><span className="text-slate-400">მეორე პროფილი:</span> {calculation.name2}</p>}
-          {calculation.date2 && <p><span className="text-slate-400">მეორე დაბადება:</span> {formatWideDateDisplay(calculation.date2)} {calculation.time2}</p>}
-          {calculation.place2 && <p><span className="text-slate-400">მეორე ადგილი:</span> {calculation.place2}</p>}
-          {calculation.transitDate && <p><span className="text-slate-400">ტრანზიტის თარიღი:</span> {formatWideDateDisplay(calculation.transitDate)}</p>}
-          <p><span className="text-slate-400">სახლთა სისტემა:</span> {calculation.houseSystem}</p>
-        </div>
+          {/* Full Chart Details */}
+          <div className="admin-calculation-details grid min-w-0 gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs text-slate-200 sm:grid-cols-2 sm:p-5 backdrop-blur-md">
+            <p><span className="text-slate-400">პირველი პროფილი:</span> <strong className="text-white ml-1">{calculation.name1}</strong></p>
+            <p><span className="text-slate-400">დაბადება:</span> <strong className="text-sky-300 ml-1">{formatWideDateDisplay(calculation.date1)} {calculation.time1}</strong></p>
+            <p><span className="text-slate-400">ადგილი:</span> <strong className="text-slate-200 ml-1">{calculation.place1}</strong></p>
+            {calculation.name2 && <p><span className="text-slate-400">მეორე პროფილი:</span> <strong className="text-white ml-1">{calculation.name2}</strong></p>}
+            {calculation.date2 && <p><span className="text-slate-400">მეორე დაბადება:</span> <strong className="text-sky-300 ml-1">{formatWideDateDisplay(calculation.date2)} {calculation.time2}</strong></p>}
+            {calculation.place2 && <p><span className="text-slate-400">მეორე ადგილი:</span> <strong className="text-slate-200 ml-1">{calculation.place2}</strong></p>}
+            {calculation.transitDate && <p><span className="text-slate-400">ტრანზიტის თარიღი:</span> <strong className="text-purple-300 ml-1">{formatWideDateDisplay(calculation.transitDate)}</strong></p>}
+            <p><span className="text-slate-400">სახლთა სისტემა:</span> <strong className="text-slate-200 ml-1">{calculation.houseSystem}</strong></p>
+          </div>
 
-        <div className="flex justify-end pt-3">
-          <ChartExportButton className="flex items-center justify-center gap-1.5 rounded-full border border-amber-400/40 bg-purple-950/60 px-4 py-2 text-xs font-bold text-amber-300 transition-all hover:bg-amber-400 hover:text-slate-950 cursor-pointer" />
-        </div>
+          {/* Export Action */}
+          <div className="flex justify-end pt-2">
+            <ChartExportButton className="flex items-center justify-center gap-2 rounded-xl border border-sky-400/40 bg-sky-500/15 px-5 py-2.5 text-xs font-bold text-sky-200 hover:bg-sky-400 hover:text-slate-950 transition-all cursor-pointer shadow-[0_0_15px_rgba(56,189,248,0.2)]" />
+          </div>
 
-        {wheel && (
-          <ChartMapSection
-            className="admin-calculation-wheel mx-auto my-6 min-w-0 w-full max-w-3xl"
-            ascendant={wheel.ascendant}
-            mc={wheel.mc}
-            houseCusps={wheel.houseCusps}
-            planets={wheel.planets}
-            aspects={wheel.aspects}
-            fixedStars={wheel.fixedStars}
-            planetHouses={wheel.planetHouses}
-          />
-        )}
+          {wheel && (
+            <ChartMapSection
+              className="admin-calculation-wheel mx-auto my-4 min-w-0 w-full max-w-3xl"
+              ascendant={wheel.ascendant}
+              mc={wheel.mc}
+              houseCusps={wheel.houseCusps}
+              planets={wheel.planets}
+              aspects={wheel.aspects}
+              fixedStars={wheel.fixedStars}
+              planetHouses={wheel.planetHouses}
+            />
+          )}
 
-        {wheel && (
-          <ElementBalanceGuide
-            planets={wheel.planets}
-            ascendant={wheel.ascendant}
-          />
-        )}
+          {wheel && (
+            <ElementBalanceGuide
+              planets={wheel.planets}
+              ascendant={wheel.ascendant}
+            />
+          )}
 
-        <div className="admin-calculation-interpretation mt-6 min-w-0 border-t border-slate-500/30 pt-5">
-            <h3 className="mb-4 border-b border-slate-500/30 pb-3 text-center text-xl font-bold text-slate-200 sm:text-2xl">ასტროლოგიური ინტერპრეტაცია &amp; ანალიზი</h3>
-          {calculation.interpretation ? (
-            <InterpretationText text={calculation.interpretation} viewMetadata={calculation.viewMetadata ?? undefined} />
-          ) : <p className="text-sm text-slate-400">ამ ჩანაწერისთვის ინტერპრეტაცია ვერ მოიძებნა.</p>}
+          <div className="admin-calculation-interpretation min-w-0 border-t border-white/10 pt-6">
+            <h3 className="font-display mb-4 border-b border-white/10 pb-3 text-center text-xl font-bold text-white sm:text-2xl">
+              ასტროლოგიური <span className="bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">ინტერპრეტაცია &amp; ანალიზი</span>
+            </h3>
+            {calculation.interpretation ? (
+              <InterpretationText text={calculation.interpretation} viewMetadata={calculation.viewMetadata ?? undefined} />
+            ) : <p className="text-sm text-slate-400 text-center py-6">ამ ჩანაწერისთვის ინტერპრეტაცია ვერ მოიძებნა.</p>}
+          </div>
         </div>
       </div>
     </div>

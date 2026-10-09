@@ -23,7 +23,7 @@ function renderInline(text: string) {
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
-        <strong key={i} className="font-extrabold text-cyan-200 drop-shadow-[0_0_10px_rgba(56,189,248,0.35)]">
+        <strong key={i} className="font-extrabold text-sky-300 drop-shadow-[0_0_10px_rgba(56,189,248,0.35)]">
           {renderWholeWords(keepGeorgianWordsTogether(part.slice(2, -2)), `strong-${i}`)}
         </strong>
       );
@@ -50,7 +50,7 @@ function formatViewDate(value: string | null | undefined, includeTime = false) {
   if (!value) return "ჯერ არ უნახავს";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleString("en-US", includeTime
+  return date.toLocaleString("ka-GE", includeTime
     ? { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" }
     : { year: "numeric", month: "long", day: "numeric" });
 }
@@ -168,11 +168,11 @@ function InterpretationSectionView({
       className={`interpretation-accordion ${isAngularHouse ? "interpretation-angular-house" : ""}`}
     >
       <summary className="interpretation-accordion-summary">
-        <span className="interpretation-accordion-icon"><Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-300" /></span>
-        <span className="interpretation-accordion-title">{section.heading}</span>
-        <span className="interpretation-accordion-chevron" aria-hidden="true">
-          <ChevronDown className="h-4 w-4" />
+        <span className="flex h-7 w-7 items-center justify-center rounded-xl border border-sky-400/30 bg-sky-500/15 text-sky-300 shrink-0">
+          <Sparkles className="h-4 w-4 text-sky-300" />
         </span>
+        <span className="interpretation-accordion-title flex-1 text-left">{section.heading}</span>
+        <ChevronDown className="interpretation-accordion-chevron h-4 w-4 text-sky-400 shrink-0" />
       </summary>
       <div className="interpretation-accordion-body">
         {section.blocks.map((block, index) => {
@@ -241,9 +241,9 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
           const content = (node.textContent ?? "").toLowerCase();
           return terms.every((term) => content.includes(term));
         }) ?? accordions.find((node) => {
-        const content = (node.textContent ?? "").toLowerCase();
-        return terms.every((term) => content.includes(term));
-      });
+          const content = (node.textContent ?? "").toLowerCase();
+          return terms.every((term) => content.includes(term));
+        });
       if (!target) return;
       let parentDetails = target.closest("details") as HTMLDetailsElement | null;
       while (parentDetails) {
@@ -281,12 +281,6 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
 
   const fallbackViewedAt = new Date().toISOString();
 
-  function handleCopy() {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-
   const { preface, sections } = splitInterpretation(text);
   const orderedSections = [...sections];
 
@@ -307,9 +301,7 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
   );
   orderedSections.splice(0, orderedSections.length, ...reorderedTechnicalSections);
 
-  // The methodology/foundation is always the final section. This also keeps
-  // newly added interpretation sections above it without depending on the
-  // order in which the server or an older cached record generated them.
+  // The methodology/foundation is always the final section.
   if (foundationSections.length) {
     for (let index = orderedSections.length - 1; index >= 0; index -= 1) {
       if (isFoundationSection(orderedSections[index]!.heading)) orderedSections.splice(index, 1);
@@ -352,23 +344,22 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
   }, []);
 
   return (
-    <>
-      <div className="interpretation-content space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden">
-      {/* Header bar with reading metadata & quick actions */}
+    <div className="interpretation-content space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden">
+      {/* Header bar with reading metadata */}
       <div className="interpretation-toolbar flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3 border-b border-white/10 pb-3 sm:pb-4 text-xs font-semibold text-slate-300 w-full">
         <div className="interpretation-meta flex flex-wrap items-center gap-2 sm:gap-4 max-w-full">
-          <div className="flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-500/10 px-3 py-1 sm:px-4 sm:py-1.5 text-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.2)] max-w-full">
-            <BookOpen className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
-            <span className="text-[0.7rem] sm:text-xs font-bold">ასტროლოგიური ინტერპრეტაცია</span>
+          <div className="flex items-center gap-1.5 rounded-full border border-sky-400/40 bg-sky-500/10 px-3.5 py-1.5 text-sky-200 shadow-[0_0_15px_rgba(56,189,248,0.2)] max-w-full">
+            <BookOpen className="h-3.5 w-3.5 text-sky-400 shrink-0" />
+            <span className="text-[0.72rem] sm:text-xs font-bold">ასტროლოგიური ინტერპრეტაცია</span>
           </div>
-          <div className="flex items-center gap-1.5 text-slate-300 text-[0.7rem] sm:text-xs">
-            <Clock className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
-            <span>კითხვის სავარაუდო დრო: დაახლოებით {readingMinutes} წუთი</span>
+          <div className="flex items-center gap-1.5 text-slate-300 text-[0.72rem] sm:text-xs">
+            <Clock className="h-3.5 w-3.5 text-sky-400 shrink-0" />
+            <span>კითხვის დრო: დაახლოებით {readingMinutes} წთ</span>
           </div>
           {viewMetadata?.mode === "ADMIN" ? (
-            <div className="flex flex-col gap-1 text-slate-300 text-[0.7rem] sm:text-xs">
+            <div className="flex flex-col gap-1 text-slate-300 text-[0.72rem] sm:text-xs">
               <span className="flex items-center gap-1.5">
-                <Calendar className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
+                <Calendar className="h-3.5 w-3.5 text-sky-400 shrink-0" />
                 მომხმარებლის ბოლო ნახვა: {formatViewDate(viewMetadata.userLastViewedAt, true)}
               </span>
               <span className="pl-5">
@@ -379,30 +370,12 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 text-slate-300 text-[0.7rem] sm:text-xs">
-              <Calendar className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
+            <div className="flex items-center gap-1.5 text-slate-300 text-[0.72rem] sm:text-xs">
+              <Calendar className="h-3.5 w-3.5 text-sky-400 shrink-0" />
               <span>ნახვის თარიღი: {formatViewDate(viewMetadata?.viewedAt ?? fallbackViewedAt)}</span>
             </div>
           )}
         </div>
-
-        {false && <button
-          onClick={handleCopy}
-          type="button"
-          className="interpretation-copy flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-[#080418] px-3.5 py-1 sm:px-4 sm:py-1.5 text-[0.7rem] sm:text-xs font-bold text-amber-300 transition-all hover:scale-105 hover:border-amber-400 shrink-0"
-        >
-          {copied ? (
-            <>
-              <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-              <span className="text-emerald-400">დაკოპირებულია!</span>
-            </>
-          ) : (
-            <>
-              <Copy className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-              <span>კოპირება</span>
-            </>
-          )}
-        </button>}
       </div>
 
       {/* Main interpretation blocks */}
@@ -423,7 +396,6 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
           />
         ))}
       </div>
-      </div>
-    </>
+    </div>
   );
 }
