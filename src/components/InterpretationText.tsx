@@ -23,7 +23,7 @@ function renderInline(text: string) {
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
-        <strong key={i} className="font-extrabold text-sky-300 drop-shadow-[0_0_10px_rgba(56,189,248,0.35)]">
+        <strong key={i} className="font-bold text-white tracking-normal">
           {renderWholeWords(keepGeorgianWordsTogether(part.slice(2, -2)), `strong-${i}`)}
         </strong>
       );
@@ -168,11 +168,11 @@ function InterpretationSectionView({
       className={`interpretation-accordion ${isAngularHouse ? "interpretation-angular-house" : ""}`}
     >
       <summary className="interpretation-accordion-summary">
-        <span className="flex h-7 w-7 items-center justify-center rounded-xl border border-sky-400/30 bg-sky-500/15 text-sky-300 shrink-0">
-          <Sparkles className="h-4 w-4 text-sky-300" />
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-indigo-400/30 bg-indigo-500/15 text-indigo-300 shrink-0">
+          <Sparkles className="h-4 w-4 text-indigo-300" />
         </span>
         <span className="interpretation-accordion-title flex-1 text-left">{section.heading}</span>
-        <ChevronDown className="interpretation-accordion-chevron h-4 w-4 text-sky-400 shrink-0" />
+        <ChevronDown className="interpretation-accordion-chevron h-4 w-4 text-slate-400 shrink-0" />
       </summary>
       <div className="interpretation-accordion-body">
         {section.blocks.map((block, index) => {

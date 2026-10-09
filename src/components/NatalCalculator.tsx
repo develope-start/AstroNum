@@ -235,11 +235,22 @@ export default function NatalCalculator() {
 
         {/* Full Width Interpretation Block */}
         {interpretation && (
-          <div className="glass-panel interpretation-container rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-white/10 bg-[#090d1e]/90 backdrop-blur-2xl text-left w-full">
-            <h3 className="mb-4 border-b border-white/10 pb-3 text-center text-xl font-bold bg-gradient-to-r from-cyan-300 via-violet-300 to-pink-300 bg-clip-text text-transparent sm:text-2xl">
-              ასტროლოგიური ინტერპრეტაცია &amp; ანალიზი
-            </h3>
-            <p className="mb-4 text-center text-sm font-bold tracking-wide text-cyan-300">რუკის ნომერი: {mapNumber ?? "—"}</p>
+          <div className="glass-panel interpretation-container rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-2xl border-white/10 bg-[#0b0f19]/95 backdrop-blur-2xl text-left w-full">
+            <div className="mb-6 border-b border-white/10 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-normal">
+                  ასტროლოგიური ინტერპრეტაცია &amp; ანალიზი
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                  დეტალური პირადი ანალიზი და ასტროლოგიური პოზიციების გაშიფვრა
+                </p>
+              </div>
+              {mapNumber && (
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1 text-xs font-semibold text-indigo-300 self-start sm:self-auto">
+                  <span>რუკის ნომერი: {mapNumber}</span>
+                </div>
+              )}
+            </div>
             <InterpretationText text={interpretation} />
           </div>
         )}

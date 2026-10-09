@@ -194,14 +194,19 @@ export default function AdvancedCalculator() {
       </div>
       
       {result && (
-        <div className="glass-panel rounded-2xl p-4 text-left sm:rounded-[28px] sm:p-7 border-white/10 bg-[#090d1e]/90">
-          <h3 className="mb-4 text-lg font-black bg-gradient-to-r from-cyan-300 via-violet-300 to-pink-300 bg-clip-text text-transparent">
-            {modeLabels[mode]}
-          </h3>
+        <div className="glass-panel interpretation-container rounded-2xl p-5 text-left sm:rounded-3xl sm:p-8 border-white/10 bg-[#0b0f19]/95 shadow-2xl">
+          <div className="mb-6 border-b border-white/10 pb-4">
+            <h3 className="text-xl sm:text-2xl font-bold text-white tracking-normal">
+              {modeLabels[mode]}
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              გაფართოებული ასტროლოგიური მოდულის გამოთვლის შედეგები
+            </p>
+          </div>
           {typeof result.interpretation === "string" ? (
             <InterpretationText text={result.interpretation} />
           ) : (
-            <pre className="max-h-[38rem] overflow-auto whitespace-pre-wrap break-words rounded-xl bg-[#060814]/90 p-4 text-xs leading-relaxed text-slate-200 border border-white/10 shadow-inner">
+            <pre className="max-h-[38rem] overflow-auto whitespace-pre-wrap break-words rounded-xl bg-[#060814]/90 p-4 text-xs leading-relaxed text-slate-200 border border-white/10 shadow-inner font-mono">
               {JSON.stringify(compactResult, null, 2)}
             </pre>
           )}
