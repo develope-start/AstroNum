@@ -64,8 +64,6 @@ export default function NatalCalculator() {
       const hasExpandedPointSet = cached.wheel?.planets?.some((planet) => requiredPoints.has(planet.name)) &&
         [...requiredPoints].every((name) => cached.wheel?.planets?.some((planet) => planet.name === name));
       if (cached.wheel && !hasExpandedPointSet) {
-        // Do not silently show a pre-expansion chart without the lunar points.
-        // The next calculation will write a complete cache entry.
         clearGuestCache("natal");
         setInterpretation(null);
         setWheel(null);
@@ -149,7 +147,7 @@ export default function NatalCalculator() {
         </div>
 
         {/* House System Filter & Action Card */}
-        <div className="glass-panel relative z-10 space-y-5 rounded-2xl sm:rounded-[28px] p-4 sm:p-7 border-amber-500/25 bg-gradient-to-b from-[#130938]/90 to-[#09041a]/95 backdrop-blur-2xl shadow-xl text-center w-full lg:col-span-5 lg:h-full flex flex-col justify-center">
+        <div className="glass-panel relative z-10 space-y-5 rounded-2xl sm:rounded-[28px] p-4 sm:p-7 border-white/10 bg-[#090d1e]/85 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.15)] text-center w-full lg:col-span-5 lg:h-full flex flex-col justify-center">
           <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} />
 
           <CalculationSettings value={calculation} onChange={setCalculation} />
@@ -158,7 +156,7 @@ export default function NatalCalculator() {
             <button
               onClick={() => calculate(false)}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 py-3.5 px-6 text-xs sm:text-sm font-extrabold text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03] hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] disabled:opacity-50 cursor-pointer"
+              className="calc-submit-btn w-full flex items-center justify-center gap-2 rounded-full py-3.5 px-6 text-xs sm:text-sm font-extrabold text-slate-950 transition-all disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -177,9 +175,9 @@ export default function NatalCalculator() {
               <button
                 onClick={() => calculate(true)}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 py-3 px-6 text-xs sm:text-sm font-bold text-amber-300 shadow-[0_0_18px_rgba(245,158,11,0.2)] transition-all hover:scale-[1.03] hover:border-amber-400 cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] py-3 px-6 text-xs sm:text-sm font-bold text-cyan-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-all hover:bg-white/[0.08] hover:border-cyan-400/40 cursor-pointer"
               >
-                <Bookmark className="h-4 w-4 text-amber-400" />
+                <Bookmark className="h-4 w-4 text-cyan-400" />
                 <span>შენახვა</span>
               </button>
             )}
@@ -188,61 +186,63 @@ export default function NatalCalculator() {
       </div>
 
       {error && (
-        <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 px-4 py-3.5 sm:px-5 sm:py-4 text-xs font-semibold text-rose-300 shadow-lg">
+        <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 px-4 py-3.5 sm:px-5 sm:py-4 text-xs font-semibold text-rose-300 shadow-lg backdrop-blur-xl">
           <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {saved && (
-        <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3.5 sm:px-5 sm:py-4 text-xs font-semibold text-emerald-300 shadow-lg">
+        <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3.5 sm:px-5 sm:py-4 text-xs font-semibold text-emerald-300 shadow-lg backdrop-blur-xl">
           <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
           <span>✓ წარმატებით შენახულია კაბინეტში!</span>
         </div>
       )}
 
       <div data-chart-export-root="true" className="chart-builder-result space-y-4 sm:space-y-6">
-      {/* Chart Wheel Display */}
-      {wheel && (
-        <ChartMapSection
-          title="ზოდიაქალური წრე"
-          className="w-full"
-          ascendant={wheel.ascendant}
-          mc={wheel.mc}
-          houseCusps={wheel.houseCusps}
-          planets={wheel.planets}
-          aspects={wheel.aspects}
-          fixedStars={wheel.fixedStars}
-          planetHouses={wheel.planetHouses}
-        />
-      )}
+        {/* Chart Wheel Display */}
+        {wheel && (
+          <ChartMapSection
+            title="ზოდიაქალური წრე"
+            className="w-full"
+            ascendant={wheel.ascendant}
+            mc={wheel.mc}
+            houseCusps={wheel.houseCusps}
+            planets={wheel.planets}
+            aspects={wheel.aspects}
+            fixedStars={wheel.fixedStars}
+            planetHouses={wheel.planetHouses}
+          />
+        )}
 
-      {wheel && <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />}
+        {wheel && <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />}
 
-      {(wheel || interpretation) && (
-        <div className="flex justify-end">
-          <ChartExportButton className="flex items-center justify-center gap-1.5 rounded-full border border-amber-400/40 bg-purple-950/60 px-4 py-2 text-xs font-bold text-amber-300 transition-all hover:bg-amber-400 hover:text-slate-950 cursor-pointer" />
-        </div>
-      )}
+        {(wheel || interpretation) && (
+          <div className="flex justify-end">
+            <ChartExportButton className="flex items-center justify-center gap-1.5 rounded-full border border-cyan-400/40 bg-gradient-to-r from-cyan-950/60 via-indigo-950/60 to-purple-950/60 px-5 py-2.5 text-xs font-bold text-cyan-200 shadow-[0_0_20px_rgba(56,189,248,0.25)] transition-all hover:bg-cyan-400 hover:text-slate-950 cursor-pointer" />
+          </div>
+        )}
 
-      {!me && interpretation && (
-        <div className="flex items-start justify-center gap-2.5 rounded-2xl border border-amber-500/30 bg-purple-950/40 p-3.5 sm:p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center">
-          <Info className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
-          <p>
-            დაურეგისტრირებელი მომხმარებელი — ეს შედეგი შენახული იქნება ამ მოწყობილობაზე 12 საათის განმავლობაში. მუდმივი
-            შენახვისთვის გახსენით <a href="/cabinet" className="font-bold text-amber-300 underline decoration-amber-400/50">კაბინეტი</a>.
-          </p>
-        </div>
-      )}
+        {!me && interpretation && (
+          <div className="flex items-start justify-center gap-2.5 rounded-2xl border border-cyan-500/30 bg-[#0a0e22]/80 p-3.5 sm:p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center shadow-lg">
+            <Info className="h-4 w-4 text-cyan-300 shrink-0 mt-0.5" />
+            <p>
+              დაურეგისტრირებელი მომხმარებელი — ეს შედეგი შენახული იქნება ამ მოწყობილობაზე 12 საათის განმავლობაში. მუდმივი
+              შენახვისთვის გახსენით <a href="/cabinet" className="font-bold text-cyan-300 underline decoration-cyan-400/50">კაბინეტი</a>.
+            </p>
+          </div>
+        )}
 
-      {/* Full Width Interpretation Block */}
-      {interpretation && (
-        <div className="glass-panel rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl text-left w-full">
-          <h3 className="mb-4 border-b border-slate-300/25 pb-3 text-center text-xl font-bold text-amber-300 sm:text-2xl">ასტროლოგიური ინტერპრეტაცია &amp; ანალიზი</h3>
-          <p className="mb-4 text-center text-sm font-bold tracking-wide text-amber-300">რუკის ნომერი: {mapNumber ?? "—"}</p>
-          <InterpretationText text={interpretation} />
-        </div>
-      )}
+        {/* Full Width Interpretation Block */}
+        {interpretation && (
+          <div className="glass-panel interpretation-container rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-white/10 bg-[#090d1e]/90 backdrop-blur-2xl text-left w-full">
+            <h3 className="mb-4 border-b border-white/10 pb-3 text-center text-xl font-bold bg-gradient-to-r from-cyan-300 via-violet-300 to-pink-300 bg-clip-text text-transparent sm:text-2xl">
+              ასტროლოგიური ინტერპრეტაცია &amp; ანალიზი
+            </h3>
+            <p className="mb-4 text-center text-sm font-bold tracking-wide text-cyan-300">რუკის ნომერი: {mapNumber ?? "—"}</p>
+            <InterpretationText text={interpretation} />
+          </div>
+        )}
       </div>
     </div>
   );

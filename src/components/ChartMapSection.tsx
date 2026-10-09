@@ -29,13 +29,13 @@ export default function ChartMapSection({
   planetHouses: Record<string, number>;
 }) {
   return (
-    <details open className={`chart-map-section overflow-hidden rounded-2xl border border-slate-300/30 bg-[#0d0626]/95 shadow-2xl ${className}`}>
-      <summary className="relative flex cursor-pointer list-none items-center justify-center gap-3 border-b border-slate-300/20 px-10 py-3 text-center outline-none sm:px-14 sm:py-4 [&::-webkit-details-marker]:hidden">
+    <details open className={`chart-map-section overflow-hidden rounded-2xl sm:rounded-[28px] border border-white/10 bg-[#090d1e]/90 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] ${className}`}>
+      <summary className="relative flex cursor-pointer list-none items-center justify-center gap-3 border-b border-white/10 px-10 py-3.5 text-center outline-none sm:px-14 sm:py-4.5 [&::-webkit-details-marker]:hidden transition hover:bg-white/[0.02]">
         <span className="min-w-0 flex-1">
-          <span className="block text-xl font-black text-amber-300 sm:text-3xl">{title}</span>
-          {subtitle && <span className="mt-1 block text-sm font-semibold text-amber-100 sm:text-base">{subtitle}</span>}
+          <span className="block text-xl font-black bg-gradient-to-r from-cyan-300 via-violet-300 to-pink-300 bg-clip-text text-transparent sm:text-3xl">{title}</span>
+          {subtitle && <span className="mt-1 block text-sm font-semibold text-slate-300 sm:text-base">{subtitle}</span>}
         </span>
-        <ChevronDown className="chart-map-section-chevron absolute right-3 h-5 w-5 shrink-0 text-amber-300 transition-transform sm:right-6" aria-hidden="true" />
+        <ChevronDown className="chart-map-section-chevron absolute right-3 h-5 w-5 shrink-0 text-cyan-300 transition-transform sm:right-6" aria-hidden="true" />
       </summary>
       <div className="p-2 text-center sm:p-6">
         <ChartWheel

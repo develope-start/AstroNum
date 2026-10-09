@@ -197,13 +197,13 @@ export default function TimeSelect({
   const partial = hour === "" || minute === "" || hour === "0" || minute === "0";
   const valid = isCompleteTime(hour, minute);
   const border = valid
-    ? "border-amber-500/25 focus-within:border-amber-400/70 focus-within:shadow-[0_0_18px_rgba(245,158,11,0.18)]"
+    ? "border-cyan-400/40 focus-within:border-cyan-400 focus-within:shadow-[0_0_25px_rgba(56,189,248,0.25)]"
     : partial
-      ? "border-slate-500/50 focus-within:border-emerald-300/60"
+      ? "border-slate-500/40 focus-within:border-cyan-400/60"
       : "border-rose-500/50";
 
   return (
-    <div className={`time-editor grid min-h-[54px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto] items-center gap-1 rounded-xl border bg-[#080418] p-1.5 transition-all sm:min-h-[62px] sm:gap-2 sm:rounded-2xl sm:p-2.5 ${border}`}>
+    <div className={`time-editor grid min-h-[54px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto] items-center gap-1 rounded-xl border bg-[#070a16] p-1.5 shadow-inner transition-all sm:min-h-[62px] sm:gap-2 sm:rounded-2xl sm:p-2.5 ${border}`}>
       <input
         ref={hourRef}
         type="text"
@@ -219,9 +219,9 @@ export default function TimeSelect({
         spellCheck={false}
         maxLength={2}
         aria-label="საათი"
-        className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono text-amber-300 outline-none transition-colors placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 focus:border-violet-300/25 focus:bg-white/[0.025]"
+        className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono text-cyan-200 outline-none transition-colors placeholder:text-slate-500 placeholder:font-medium caret-cyan-400 focus:border-cyan-400/30 focus:bg-white/[0.02]"
       />
-      <span className="select-none text-lg font-black text-amber-300/80">:</span>
+      <span className="select-none text-lg font-black text-cyan-400/70">:</span>
       <input
         ref={minuteRef}
         type="text"
@@ -237,30 +237,30 @@ export default function TimeSelect({
         spellCheck={false}
         maxLength={2}
         aria-label="წუთი"
-        className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono text-amber-300 outline-none transition-colors placeholder:text-slate-400/70 placeholder:font-medium caret-amber-400 focus:border-violet-300/25 focus:bg-white/[0.025]"
+        className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-0 text-center text-[clamp(0.78rem,2.6vw,1.125rem)] font-black font-mono text-cyan-200 outline-none transition-colors placeholder:text-slate-500 placeholder:font-medium caret-cyan-400 focus:border-cyan-400/30 focus:bg-white/[0.02]"
       />
       <div ref={pickerRef} className="time-picker-trigger relative flex shrink-0 items-center justify-center">
-        <button type="button" onClick={togglePicker} className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-400/35 bg-purple-950/60 text-amber-300 shadow-sm transition-colors hover:border-amber-300 hover:bg-purple-900 sm:h-9 sm:w-9" aria-label="დროის არჩევა" aria-expanded={pickerOpen}>
+        <button type="button" onClick={togglePicker} className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-white/[0.04] text-cyan-300 shadow-sm transition-colors hover:border-cyan-400/40 hover:bg-cyan-500/15 sm:h-9 sm:w-9 cursor-pointer" aria-label="დროის არჩევა" aria-expanded={pickerOpen}>
           <Clock className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
         </button>
 
         {pickerOpen && pickerPosition && typeof document !== "undefined" && createPortal(
-          <div ref={pickerPopupRef} style={{ position: "fixed", top: pickerPosition.top, left: pickerPosition.left, width: pickerPosition.width, maxHeight: pickerPosition.maxHeight, overflowY: "auto", zIndex: 1000 }} className="time-picker-popup rounded-2xl border border-amber-400/35 bg-[#0a0422]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.75)] ring-1 ring-purple-300/10 backdrop-blur-xl">
+          <div ref={pickerPopupRef} style={{ position: "fixed", top: pickerPosition.top, left: pickerPosition.left, width: pickerPosition.width, maxHeight: pickerPosition.maxHeight, overflowY: "auto", zIndex: 1000 }} className="time-picker-popup rounded-2xl border border-white/15 bg-[#090d20]/98 p-3 text-slate-200 shadow-[0_20px_70px_rgba(0,0,0,0.85)] ring-1 ring-cyan-500/20 backdrop-blur-2xl">
             <div className="mb-3 flex items-center justify-between gap-2">
               <span className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-slate-400">24-საათიანი დრო</span>
-              <button type="button" onClick={selectCurrentTime} className="rounded-lg border border-slate-400/20 bg-slate-300/5 px-2.5 py-1 text-[0.65rem] font-bold text-slate-300 transition hover:border-amber-300/50 hover:bg-amber-400/10 hover:text-amber-200">ახლა</button>
+              <button type="button" onClick={selectCurrentTime} className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.65rem] font-bold text-slate-300 transition hover:border-cyan-400/40 hover:bg-cyan-400/10 hover:text-cyan-200 cursor-pointer">ახლა</button>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <p className="mb-1 text-center text-[0.6rem] font-bold uppercase tracking-wider text-slate-500">საათი</p>
-                <div className="time-picker-grid grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-xl border border-slate-500/20 bg-[#080418] p-1.5">
-                  {Array.from({ length: 24 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerHour(index)} className={`time-picker-option h-8 rounded-lg text-xs font-bold transition ${pickerHour === index ? "is-selected bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.35)]" : "text-slate-200 hover:bg-amber-400/15 hover:text-amber-200"}`}>{String(index).padStart(2, "0")}</button>)}
+                <p className="mb-1 text-center text-[0.6rem] font-bold uppercase tracking-wider text-slate-400">საათი</p>
+                <div className="time-picker-grid grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-xl border border-white/10 bg-[#070a16] p-1.5">
+                  {Array.from({ length: 24 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerHour(index)} className={`time-picker-option h-8 rounded-lg text-xs font-bold transition cursor-pointer ${pickerHour === index ? "is-selected bg-gradient-to-r from-cyan-400 to-violet-500 text-slate-950 shadow-[0_0_15px_rgba(56,189,248,0.5)] font-black" : "text-slate-200 hover:bg-cyan-400/15 hover:text-cyan-200"}`}>{String(index).padStart(2, "0")}</button>)}
                 </div>
               </div>
               <div>
-                <p className="mb-1 text-center text-[0.6rem] font-bold uppercase tracking-wider text-slate-500">წუთი</p>
-                <div className="time-picker-grid grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-xl border border-slate-500/20 bg-[#080418] p-1.5">
-                  {Array.from({ length: 60 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerMinute(index)} className={`time-picker-option h-8 rounded-lg text-xs font-bold transition ${pickerMinute === index ? "is-selected bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.35)]" : "text-slate-200 hover:bg-amber-400/15 hover:text-amber-200"}`}>{String(index).padStart(2, "0")}</button>)}
+                <p className="mb-1 text-center text-[0.6rem] font-bold uppercase tracking-wider text-slate-400">წუთი</p>
+                <div className="time-picker-grid grid max-h-48 grid-cols-4 gap-1 overflow-y-auto rounded-xl border border-white/10 bg-[#070a16] p-1.5">
+                  {Array.from({ length: 60 }, (_, index) => <button key={index} type="button" onClick={() => selectPickerMinute(index)} className={`time-picker-option h-8 rounded-lg text-xs font-bold transition cursor-pointer ${pickerMinute === index ? "is-selected bg-gradient-to-r from-cyan-400 to-violet-500 text-slate-950 shadow-[0_0_15px_rgba(56,189,248,0.5)] font-black" : "text-slate-200 hover:bg-cyan-400/15 hover:text-cyan-200"}`}>{String(index).padStart(2, "0")}</button>)}
                 </div>
               </div>
             </div>

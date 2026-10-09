@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { readApiResponse } from "@/lib/apiResponse";
-import { X } from "lucide-react";
+import { X, Shield, Lock, Mail, Trash2, ArrowLeft } from "lucide-react";
 import PasswordField from "@/components/PasswordField";
 
 export default function CabinetSettingsPage() {
@@ -117,119 +117,148 @@ export default function CabinetSettingsPage() {
   }
 
   const inputClass =
-    "w-full rounded-2xl border border-amber-500/25 bg-[#080418] px-4 py-3 text-sm font-semibold text-slate-100 outline-none transition-all placeholder:text-slate-500 focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)]";
+    "w-full rounded-2xl border border-white/10 bg-[#070914] px-4 py-3 text-sm font-semibold text-white outline-none transition-all placeholder:text-slate-500 focus:border-sky-400 focus:shadow-[0_0_24px_rgba(56,189,248,0.25)]";
 
   return (
-    <div className="cabinet-page mx-auto max-w-2xl space-y-6 w-full max-w-full overflow-x-hidden">
-      <div className="glass-panel flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl sm:rounded-[28px] p-5 sm:p-7 border-amber-500/25 bg-gradient-to-r from-[#130a35]/90 via-[#0e0728]/95 to-[#130a35]/90 backdrop-blur-2xl shadow-xl">
+    <div className="cabinet-page mx-auto max-w-2xl space-y-6 w-full max-w-full overflow-x-hidden px-2 sm:px-4 py-4">
+      {/* Header */}
+      <div className="prism-card flex flex-col sm:flex-row items-center justify-between gap-4 rounded-3xl p-6 sm:p-8">
         <div>
-          <h1 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">კაბინეტის პარამეტრები</h1>
-          <p className="mt-1 text-xs text-slate-300">ანგარიშის უსაფრთხოება და მონაცემთა განახლება</p>
+          <div className="telemetry-badge inline-flex items-center gap-2 mb-2">
+            <span className="live-beacon"></span>
+            <span className="telemetry-badge-text">უსაფრთხოება</span>
+          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white">კაბინეტის პარამეტრები</h1>
+          <p className="mt-1 text-xs sm:text-sm text-slate-300/80">ანგარიშის უსაფრთხოება და მონაცემთა განახლება</p>
         </div>
         <button
           onClick={() => router.push("/cabinet/dashboard")}
-          className="flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-500/10 px-4 py-2 text-xs font-bold text-amber-300 transition-all hover:bg-amber-400/20 shrink-0"
+          className="flex items-center gap-2 rounded-xl border border-sky-400/30 bg-sky-500/10 px-4 py-2.5 text-xs font-bold text-sky-200 transition-all hover:bg-sky-400/20 hover:border-sky-400/50 hover:shadow-[0_0_15px_rgba(56,189,248,0.25)] shrink-0"
         >
+          <ArrowLeft className="h-4 w-4" />
           ჩემი რუკები
         </button>
       </div>
 
       {message && (
-        <p className="rounded-2xl border border-emerald-500/40 bg-emerald-950/40 p-4 text-xs font-semibold text-emerald-300 text-center shadow-lg">
+        <p className="rounded-2xl border border-emerald-400/30 bg-emerald-950/40 p-4 text-xs font-semibold text-emerald-300 text-center shadow-lg backdrop-blur-md">
           {message}
         </p>
       )}
       {error && (
-        <p className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-4 text-xs font-semibold text-rose-300 text-center shadow-lg">
+        <p className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-4 text-xs font-semibold text-rose-300 text-center shadow-lg backdrop-blur-md">
           {error}
         </p>
       )}
 
-      <section className="glass-panel rounded-2xl sm:rounded-[28px] p-5 sm:p-7 border-amber-500/25 bg-[#120833]/90 shadow-xl space-y-4">
-        <div>
-          <h2 className="font-display text-lg font-bold text-amber-300">ელფოსტის შეცვლა</h2>
-          <p className="mt-0.5 text-xs text-slate-300">ახალ მისამართზე გამოგეგზავნებათ დადასტურების ბმული.</p>
+      {/* Change Email */}
+      <section className="prism-card rounded-3xl p-6 sm:p-8 space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="p-2.5 rounded-xl bg-sky-500/15 text-sky-300 border border-sky-400/20">
+            <Mail className="h-5 w-5" />
+          </span>
+          <div>
+            <h2 className="font-display text-lg font-bold text-white">ელფოსტის შეცვლა</h2>
+            <p className="text-xs text-slate-400">ახალ მისამართზე გამოგეგზავნებათ დადასტურების ბმული.</p>
+          </div>
         </div>
-        <form onSubmit={changeEmail} className="space-y-3.5">
+        <form onSubmit={changeEmail} className="space-y-4 pt-2">
           <input className={inputClass} type="email" required placeholder="ახალი ელფოსტა" value={email} onChange={(e) => setEmail(e.target.value)} />
           <PasswordField className={inputClass} required autoComplete="current-password" placeholder="მიმდინარე პაროლი" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
           <button
             disabled={loading}
-            className="w-full sm:w-auto rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-6 py-3 text-xs font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all hover:scale-105 disabled:opacity-50 cursor-pointer"
+            className="prism-btn-primary w-full sm:w-auto px-6 py-3 text-xs font-bold text-white cursor-pointer disabled:opacity-50"
           >
             დადასტურების წერილის გაგზავნა
           </button>
         </form>
       </section>
 
-      <section className="glass-panel rounded-2xl sm:rounded-[28px] p-5 sm:p-7 border-amber-500/25 bg-[#120833]/90 shadow-xl space-y-4">
-        <div>
-          <h2 className="font-display text-lg font-bold text-amber-300">პაროლის შეცვლა</h2>
-          <p className="mt-0.5 text-xs text-slate-300">ცვლილება ძალაში შევა ელფოსტაზე მიღებული დადასტურების შემდეგ.</p>
+      {/* Change Password */}
+      <section className="prism-card rounded-3xl p-6 sm:p-8 space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="p-2.5 rounded-xl bg-purple-500/15 text-purple-300 border border-purple-400/20">
+            <Lock className="h-5 w-5" />
+          </span>
+          <div>
+            <h2 className="font-display text-lg font-bold text-white">პაროლის შეცვლა</h2>
+            <p className="text-xs text-slate-400">ცვლილება ძალაში შევა ელფოსტაზე მიღებული დადასტურების შემდეგ.</p>
+          </div>
         </div>
-        <form onSubmit={changePassword} className="space-y-3.5">
+        <form onSubmit={changePassword} className="space-y-4 pt-2">
           <PasswordField className={inputClass} required autoComplete="current-password" placeholder="მიმდინარე პაროლი" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
           <PasswordField className={inputClass} required minLength={8} autoComplete="new-password" placeholder="ახალი პაროლი (მინ. 8 სიმბოლო)" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
           <PasswordField className={inputClass} required minLength={8} autoComplete="new-password" placeholder="გაიმეორეთ ახალი პაროლი" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
           <button
             disabled={loading}
-            className="w-full sm:w-auto rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 px-6 py-3 text-xs font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all hover:scale-105 disabled:opacity-50 cursor-pointer"
+            className="prism-btn-primary w-full sm:w-auto px-6 py-3 text-xs font-bold text-white cursor-pointer disabled:opacity-50"
           >
             პაროლის შეცვლის მოთხოვნა
           </button>
         </form>
       </section>
 
-      {canDeleteAccount && <section className="glass-panel rounded-2xl sm:rounded-[28px] p-5 sm:p-7 border-rose-500/30 bg-rose-950/20 shadow-xl space-y-4">
-        <div>
-          <h2 className="font-display text-lg font-bold text-rose-400">კაბინეტის წაშლა</h2>
-          <p className="mt-0.5 text-xs text-slate-300">
-            ჩაწერეთ მიმდინარე პაროლი. ღილაკზე დაჭერისას ამოხტება დადასტურების ფანჯარა.
-          </p>
-        </div>
-        <form onSubmit={openDeleteModal} className="space-y-3.5">
-          <PasswordField
-            className={inputClass}
-            required
-            autoComplete="current-password"
-            placeholder="მიმდინარე პაროლი"
-            value={deletePassword}
-            onChange={(e) => setDeletePassword(e.target.value)}
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full sm:w-auto rounded-full border border-rose-500/80 bg-rose-950/70 px-6 py-3 text-xs font-bold text-rose-200 shadow-[0_0_20px_rgba(244,63,94,0.35)] transition-all hover:scale-105 hover:bg-rose-900 hover:text-white disabled:opacity-50 cursor-pointer"
-          >
-            კაბინეტის წაშლა
-          </button>
-        </form>
-      </section>}
+      {/* Delete Account */}
+      {canDeleteAccount && (
+        <section className="prism-card rounded-3xl p-6 sm:p-8 space-y-4 border border-rose-500/20 bg-rose-950/10">
+          <div className="flex items-center gap-3">
+            <span className="p-2.5 rounded-xl bg-rose-500/15 text-rose-300 border border-rose-500/30">
+              <Trash2 className="h-5 w-5" />
+            </span>
+            <div>
+              <h2 className="font-display text-lg font-bold text-rose-300">კაბინეტის წაშლა</h2>
+              <p className="text-xs text-slate-400">
+                ჩაწერეთ მიმდინარე პაროლი. ღილაკზე დაჭერისას ამოხტება დადასტურების ფანჯარა.
+              </p>
+            </div>
+          </div>
+          <form onSubmit={openDeleteModal} className="space-y-4 pt-2">
+            <PasswordField
+              className={inputClass}
+              required
+              autoComplete="current-password"
+              placeholder="მიმდინარე პაროლი"
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full sm:w-auto rounded-xl border border-rose-500/60 bg-rose-950/60 px-6 py-3 text-xs font-bold text-rose-200 shadow-[0_0_20px_rgba(244,63,94,0.3)] transition-all hover:bg-rose-900 hover:text-white disabled:opacity-50 cursor-pointer"
+            >
+              კაბინეტის წაშლა
+            </button>
+          </form>
+        </section>
+      )}
 
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div className="relative max-w-md w-full rounded-2xl border border-rose-500/50 bg-[#120826] p-6 shadow-[0_0_50px_rgba(244,63,94,0.4)] space-y-4">
-            <button
-              onClick={() => setShowDeleteModal(false)}
-              type="button"
-              className="sticky top-1 right-1 z-50 float-right mb-2 group inline-flex items-center gap-1.5 rounded-full border border-violet-400/30 bg-gradient-to-r from-slate-900/95 via-[#181c38]/95 to-slate-900/95 px-3.5 py-1.5 text-xs font-bold text-slate-200 shadow-[0_8px_20px_-6px_rgba(99,102,241,0.35)] backdrop-blur-xl transition-all hover:scale-105 hover:border-violet-300/70 hover:text-white hover:shadow-[0_0_24px_rgba(129,140,248,0.55)] active:scale-95 cursor-pointer"
-              title="დახურვა"
-            >
-              <X className="h-3.5 w-3.5 text-violet-300 group-hover:text-white transition-colors shrink-0" />
-              <span className="font-bold tracking-wider text-slate-200 group-hover:text-white transition-colors">დახურვა</span>
-            </button>
-            <div className="flex items-center gap-3 text-rose-400 border-b border-rose-500/30 pb-3">
-              <span className="text-2xl">⚠️</span>
-              <h3 className="font-display text-lg font-bold text-rose-300">კაბინეტის წაშლის დადასტურება</h3>
+          <div className="prism-card relative max-w-md w-full rounded-3xl p-6 border border-rose-500/40 shadow-[0_0_50px_rgba(244,63,94,0.3)] space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3 text-rose-400">
+                <span className="p-2.5 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                  <Shield className="h-5 w-5" />
+                </span>
+                <h3 className="font-display text-lg font-bold text-white">კაბინეტის წაშლა</h3>
+              </div>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                type="button"
+                className="text-slate-400 hover:text-white p-1"
+                aria-label="დახურვა"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
-            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
-              ნამდვილად თანახმა ხართ თუ არა წაშალოთ თქვენი ანგარიში?
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              ნამდვილად თანახმა ხართ თუ არა წაშალოთ თქვენი ანგარიში და მასთან დაკავშირებული მონაცემები?
             </p>
             <div className="flex justify-end gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="rounded-full border border-slate-500/50 bg-slate-800/60 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700/60 cursor-pointer"
+                className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-white/10 cursor-pointer"
               >
                 გაუქმება
               </button>
@@ -237,7 +266,7 @@ export default function CabinetSettingsPage() {
                 type="button"
                 disabled={loading}
                 onClick={confirmDeleteAccount}
-                className="rounded-full border border-rose-500 bg-gradient-to-r from-rose-600 to-red-600 px-5 py-2 text-xs font-black text-white shadow-[0_0_20px_rgba(244,63,94,0.6)] transition-all hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
+                className="rounded-xl border border-rose-500 bg-gradient-to-r from-rose-600 to-pink-600 px-5 py-2 text-xs font-bold text-white shadow-[0_0_20px_rgba(244,63,94,0.5)] transition-all hover:brightness-110 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? "იშლება..." : "თანხმობა, წაშლა"}
               </button>

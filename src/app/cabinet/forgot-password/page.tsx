@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { readApiResponse } from "@/lib/apiResponse";
+import { Mail, KeyRound, ArrowLeft, Loader2 } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -31,30 +33,61 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md pt-4 sm:pt-8 w-full max-w-full sm:max-w-md">
-      <div className="glass-panel rounded-2xl sm:rounded-[32px] p-6 sm:p-9 border-amber-500/25 bg-gradient-to-b from-[#130a35]/90 via-[#0e0728]/95 to-[#080417]/95 backdrop-blur-2xl shadow-2xl w-full text-center space-y-4">
-        <h1 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">პაროლის აღდგენა</h1>
-        <p className="text-xs font-medium text-slate-300">შეიყვანეთ რეგისტრაციისას გამოყენებული ელფოსტა.</p>
+    <div className="mx-auto max-w-md pt-4 sm:pt-8 w-full max-w-full sm:max-w-md px-2">
+      <div className="prism-card rounded-3xl p-6 sm:p-9 w-full text-center space-y-5 shadow-[0_25px_60px_rgba(0,0,0,0.75)]">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-400/30 bg-sky-500/10 text-sky-300 shadow-[0_0_24px_rgba(56,189,248,0.25)]">
+          <KeyRound className="h-6 w-6 text-sky-400" />
+        </div>
+        <div>
+          <div className="telemetry-badge inline-flex items-center gap-2 mb-2">
+            <span className="live-beacon"></span>
+            <span className="telemetry-badge-text">პაროლის აღდგენა</span>
+          </div>
+          <h1 className="font-display text-2xl font-extrabold text-white">პაროლის აღდგენა</h1>
+          <p className="mt-1 text-xs text-slate-300/80">შეიყვანეთ რეგისტრაციისას გამოყენებული ელფოსტა.</p>
+        </div>
+
         <form onSubmit={submit} className="space-y-4 text-left">
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="ელფოსტა"
-            className="w-full rounded-2xl border border-amber-500/25 bg-[#080418] px-4 py-3 text-sm font-semibold text-slate-100 outline-none transition-all placeholder:text-slate-500 focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)]"
-          />
-          {message && <p className="text-xs font-semibold text-emerald-400 text-center">{message}</p>}
-          {error && <p className="text-xs font-semibold text-rose-400 text-center">{error}</p>}
+          <div>
+            <label className="mb-1.5 flex items-center gap-2 text-xs font-bold text-slate-300">
+              <Mail className="h-3.5 w-3.5 text-sky-400" />
+              <span>ელ. ფოსტა</span>
+            </label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+              className="w-full rounded-2xl border border-white/10 bg-[#070914] px-4 py-3 text-sm font-semibold text-white outline-none transition-all placeholder:text-slate-500 focus:border-sky-400 focus:shadow-[0_0_24px_rgba(56,189,248,0.25)]"
+            />
+          </div>
+
+          {message && (
+            <p className="rounded-2xl border border-emerald-400/30 bg-emerald-950/40 p-3 text-xs font-semibold text-emerald-300 text-center backdrop-blur-md">
+              {message}
+            </p>
+          )}
+          {error && (
+            <p className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-3 text-xs font-semibold text-rose-300 text-center backdrop-blur-md">
+              {error}
+            </p>
+          )}
+
           <button
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 py-3.5 text-xs sm:text-sm font-extrabold text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.4)] transition-all hover:scale-105 disabled:opacity-50"
+            className="prism-btn-primary flex w-full items-center justify-center gap-2 py-3.5 text-xs sm:text-sm font-bold text-white transition-all disabled:opacity-50 cursor-pointer"
           >
-            {loading ? "…" : "აღდგენის ბმულის გაგზავნა"}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : "აღდგენის ბმულის გაგზავნა"}
           </button>
-          <a href="/cabinet" className="block text-center text-xs font-medium text-amber-300 underline decoration-amber-400/40 hover:text-amber-200">
+
+          <Link
+            href="/cabinet"
+            className="flex items-center justify-center gap-1.5 text-center text-xs font-semibold text-sky-300 hover:text-sky-200 transition-colors pt-2"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
             უკან შესვლაზე
-          </a>
+          </Link>
         </form>
       </div>
     </div>

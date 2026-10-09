@@ -8,7 +8,7 @@ import ChartMapSection from "@/components/ChartMapSection";
 import type { WheelFixedStar, WheelPlanet } from "@/components/ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
-import { X, Trash2, Eye } from "lucide-react";
+import { X, Trash2, Eye, Compass, User, Clock, Calendar, Sparkles } from "lucide-react";
 import { readApiResponse } from "@/lib/apiResponse";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
@@ -291,25 +291,30 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="cabinet-page mx-auto max-w-5xl space-y-6 w-full max-w-full overflow-x-hidden px-1">
+    <div className="cabinet-page mx-auto max-w-5xl space-y-6 w-full max-w-full overflow-x-hidden px-2 sm:px-4 py-4">
       {/* Dashboard Top Navigation & Status Bar */}
-      <div className="glass-panel flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl sm:rounded-[28px] p-5 sm:p-7 border-amber-500/25 bg-gradient-to-r from-[#130a35]/90 via-[#0e0728]/95 to-[#130a35]/90 backdrop-blur-2xl shadow-xl">
+      <div className="prism-card flex flex-col sm:flex-row items-center justify-between gap-4 rounded-3xl p-6 sm:p-8">
         <div>
-          <h1 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">
-            ჩემი შენახული რუკები
+          <div className="telemetry-badge inline-flex items-center gap-2 mb-2">
+            <span className="live-beacon"></span>
+            <span className="telemetry-badge-text">პირადი კაბინეტი</span>
+          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            შენახული <span className="bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">ასტროლოგიური რუკები</span>
           </h1>
-          <p className="mt-1 text-xs text-slate-300">თქვენი პირადი ასტროლოგიური არქივი და გამოთვლები</p>
+          <p className="mt-1 text-xs sm:text-sm text-slate-300/80">თქვენი პირადი კოსმიური არქივი, გამოთვლები და ანალიტიკა</p>
         </div>
-        <div className="flex flex-wrap items-center gap-3 text-xs font-bold w-full sm:w-auto justify-end">
+        <div className="flex flex-wrap items-center gap-3 text-xs font-semibold w-full sm:w-auto justify-end">
           <a
             href="/cabinet/settings"
-            className="flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-500/10 px-4 py-2 text-amber-300 transition-all hover:bg-amber-400/20"
+            className="flex items-center gap-2 rounded-xl border border-sky-400/30 bg-sky-500/10 px-4 py-2.5 text-sky-200 transition-all hover:bg-sky-400/20 hover:border-sky-400/50 hover:shadow-[0_0_15px_rgba(56,189,248,0.25)]"
           >
+            <Compass className="h-4 w-4 text-sky-400" />
             კაბინეტის მართვა
           </a>
           <button
             onClick={logout}
-            className="flex items-center gap-1.5 rounded-full border border-purple-400/30 bg-purple-950/50 px-4 py-2 text-purple-300 transition-all hover:bg-purple-900/50 cursor-pointer"
+            className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-slate-300 transition-all hover:bg-rose-500/20 hover:border-rose-400/40 hover:text-rose-200 cursor-pointer"
           >
             გასვლა
           </button>
@@ -317,26 +322,26 @@ export default function DashboardPage() {
       </div>
 
       {account && (
-        <div className="glass-panel grid gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-950/20 p-4 text-xs sm:grid-cols-2 lg:grid-cols-5">
-          <div>
-            <p className="text-slate-400">სახელი</p>
-            <p className="mt-1 font-bold text-emerald-200">{account.name || "—"}</p>
+        <div className="prism-card grid gap-4 rounded-3xl p-5 text-xs sm:grid-cols-2 lg:grid-cols-5">
+          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-3.5">
+            <p className="text-slate-400 flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-sky-400" /> სახელი</p>
+            <p className="mt-1 font-bold text-white text-sm">{account.name || "—"}</p>
           </div>
-          <div>
+          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-3.5">
             <p className="text-slate-400">მეილი</p>
-            <p className="mt-1 break-all font-bold text-emerald-200">{account.email}</p>
+            <p className="mt-1 break-all font-bold text-sky-200 text-sm">{account.email}</p>
           </div>
-          <div>
-            <p className="text-slate-400">Username</p>
-            <p className="mt-1 break-all font-bold text-emerald-200">{account.username ? `@${account.username}` : "—"}</p>
+          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-3.5">
+            <p className="text-slate-400">მომხმარებელი</p>
+            <p className="mt-1 break-all font-bold text-purple-200 text-sm">{account.username ? `@${account.username}` : "—"}</p>
           </div>
-          <div>
-            <p className="text-slate-400">კაბინეტის შექმნის დრო</p>
-            <p className="mt-1 font-bold text-emerald-200">{new Date(account.createdAt).toLocaleString("ka-GE")}</p>
+          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-3.5">
+            <p className="text-slate-400 flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-purple-400" /> შექმნის დრო</p>
+            <p className="mt-1 font-semibold text-slate-200">{new Date(account.createdAt).toLocaleDateString("ka-GE")}</p>
           </div>
-          <div>
-            <p className="text-slate-400">ბოლო შესვლის სესიის დარჩენილი დრო</p>
-            <p className="mt-1 font-bold tabular-nums text-amber-300">
+          <div className="rounded-2xl border border-sky-400/20 bg-sky-500/[0.06] p-3.5">
+            <p className="text-sky-300 flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-sky-400" /> სესიის დრო</p>
+            <p className="mt-1 font-bold tabular-nums text-sky-200 text-xs">
               <SessionCountdown expiresAt={account.expiresAt} onExpired={handleSessionExpired} />
             </p>
           </div>
@@ -344,56 +349,62 @@ export default function DashboardPage() {
       )}
 
       {error && (
-        <p className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-4 text-xs font-semibold text-rose-300 text-center">
+        <p className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-4 text-xs font-semibold text-rose-300 text-center backdrop-blur-md">
           {error}
         </p>
       )}
 
       {charts === null && (
-        <div className="glass-panel rounded-2xl p-8 text-center text-xs font-semibold text-amber-300">
-          იტვირთება შენახული რუკები…
+        <div className="prism-card rounded-3xl p-12 text-center text-xs font-semibold text-sky-300 flex flex-col items-center justify-center gap-3">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-sky-400 border-t-transparent"></div>
+          <span>იტვირთება შენახული რუკები…</span>
         </div>
       )}
 
       {charts?.length === 0 && (
-        <div className="glass-panel rounded-2xl sm:rounded-[28px] p-8 text-center space-y-3 border-amber-500/25 bg-[#120833]/90">
-          <p className="text-sm text-slate-300">
-            ჯერ არაფერი შენახულა. გადადით <a href="/#calculator" className="font-bold text-amber-300 underline decoration-amber-400/50">გამომთვლელზე</a>{" "}
+        <div className="prism-card rounded-3xl p-10 text-center space-y-4">
+          <Sparkles className="h-10 w-10 text-sky-400/60 mx-auto" />
+          <p className="text-sm text-slate-300 max-w-md mx-auto">
+            ჯერ არ გაქვთ შენახული რუკები. გადადით <a href="/#calculator" className="font-bold text-sky-300 underline hover:text-sky-200">გამომთვლელზე</a>{" "}
             და დააჭირეთ „შენახვა კაბინეტში".
           </p>
         </div>
       )}
 
       {/* Grid of Saved Charts */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         {charts?.map((c) => {
           const isSelected = selected?.id === c.id;
           return (
             <div
               key={c.id}
-              className={`glass-panel group rounded-2xl p-5 border-amber-500/25 bg-gradient-to-b from-[#130a35]/85 to-[#080417]/95 transition-all hover:border-amber-400/50 hover:shadow-[0_0_25px_rgba(245,158,11,0.2)] flex flex-col justify-between space-y-3 ${
-                isSelected ? "border-amber-400/70 shadow-[0_0_30px_rgba(245,158,11,0.35)] ring-1 ring-amber-400/40" : ""
+              className={`prism-card group rounded-3xl p-6 transition-all duration-300 hover:border-sky-400/40 hover:shadow-[0_0_30px_rgba(56,189,248,0.15)] flex flex-col justify-between space-y-4 ${
+                isSelected ? "border-sky-400 shadow-[0_0_35px_rgba(56,189,248,0.3)] ring-1 ring-sky-400/50" : ""
               }`}
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-amber-300">
-                    {TYPE_LABEL_KA[c.type]}
+                  <span className="rounded-full border border-sky-400/30 bg-sky-500/10 px-3 py-1 text-[0.68rem] font-bold uppercase tracking-wider text-sky-300">
+                    {TYPE_LABEL_KA[c.type] ?? c.type}
                   </span>
-                  <span className="text-[0.68rem] font-medium text-slate-400">
+                  <span className="text-[0.7rem] font-medium text-slate-400">
                     {new Date(c.createdAt).toLocaleDateString("ka-GE")}
                   </span>
                 </div>
-                <p className="mt-2 text-xs font-bold tracking-wide text-amber-300">რუკის ნომერი: {c.mapNumber ?? "—"}</p>
-                <h3 className="font-display mt-2.5 text-lg font-bold text-slate-100 group-hover:text-amber-300 transition-colors">
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="text-[0.7rem] font-bold tracking-wider uppercase text-purple-300 bg-purple-500/10 border border-purple-400/20 px-2 py-0.5 rounded-md">
+                    № {c.mapNumber ?? "—"}
+                  </span>
+                </div>
+                <h3 className="font-display mt-2 text-lg font-bold text-white group-hover:text-sky-300 transition-colors">
                   {c.label}
                 </h3>
-                <p className="mt-1 text-xs text-slate-300">
+                <p className="mt-1 text-xs text-slate-300/80">
                   {c.name1}
                   {c.name2 ? ` & ${c.name2}` : ""}
                 </p>
               </div>
-              <div className="flex items-center gap-3 pt-2 border-t border-amber-500/15 text-xs font-bold">
+              <div className="flex items-center gap-3 pt-3 border-t border-white/10 text-xs font-semibold">
                 <button
                   type="button"
                   onClick={() => {
@@ -404,21 +415,21 @@ export default function DashboardPage() {
                     }
                   }}
                   disabled={loadingChart === c.id}
-                  className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 transition-all cursor-pointer disabled:opacity-50 ${
+                  className={`flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 transition-all cursor-pointer disabled:opacity-50 ${
                     isSelected
-                      ? "bg-amber-400 text-slate-950 font-black shadow-[0_0_20px_rgba(245,158,11,0.65)] ring-2 ring-amber-300 hover:bg-amber-300"
-                      : "bg-amber-500/20 text-amber-300 hover:bg-amber-400 hover:text-slate-950 font-bold"
+                      ? "bg-gradient-to-r from-sky-400 to-indigo-500 text-white font-bold shadow-[0_0_20px_rgba(56,189,248,0.5)]"
+                      : "bg-white/10 text-sky-200 hover:bg-sky-500/20 hover:text-white border border-white/10 hover:border-sky-400/40"
                   }`}
                 >
-                  <Eye className={`h-3.5 w-3.5 ${isSelected ? "text-slate-950 stroke-[2.5]" : ""}`} />
+                  <Eye className={`h-4 w-4 ${isSelected ? "text-white" : "text-sky-400"}`} />
                   <span>{loadingChart === c.id ? "იტვირთება..." : "ნახვა"}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setDeleteTarget(c)}
-                  className="flex items-center gap-1.5 rounded-full bg-rose-950/40 border border-rose-500/30 px-4 py-1.5 text-rose-300 transition-all hover:bg-rose-900/60 cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 px-4 py-2.5 text-rose-300 transition-all hover:bg-rose-500/20 hover:border-rose-400/40 cursor-pointer"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-4 w-4" />
                   <span>წაშლა</span>
                 </button>
               </div>
@@ -429,14 +440,14 @@ export default function DashboardPage() {
 
       {deleteTarget && (
         <div
-          className="chart-delete-modal fixed inset-0 z-[80] flex items-center justify-center p-4"
+          className="chart-delete-modal fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
           role="presentation"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget && !deleting) setDeleteTarget(null);
           }}
         >
           <div
-            className="chart-delete-dialog w-full max-w-md"
+            className="prism-card w-full max-w-md rounded-3xl p-6 border border-rose-500/30 shadow-[0_0_40px_rgba(244,63,94,0.2)]"
             role="dialog"
             aria-modal="true"
             aria-labelledby="delete-chart-title"
@@ -444,27 +455,31 @@ export default function DashboardPage() {
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-3">
-                <span className="chart-delete-icon" aria-hidden="true"><Trash2 className="h-5 w-5" /></span>
+                <span className="p-2.5 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/30" aria-hidden="true">
+                  <Trash2 className="h-5 w-5" />
+                </span>
                 <div>
-                  <h2 id="delete-chart-title" className="font-display text-lg font-semibold text-slate-100">რუკის წაშლა</h2>
+                  <h2 id="delete-chart-title" className="font-display text-lg font-bold text-white">რუკის წაშლა</h2>
                   <p className="mt-1 text-xs leading-relaxed text-slate-400">ეს მოქმედება წაშლის შენახულ რუკას თქვენი კაბინეტიდან.</p>
                 </div>
               </div>
-              <button type="button" onClick={() => setDeleteTarget(null)} disabled={deleting} className="chart-dialog-close" aria-label="ფანჯრის დახურვა">
-                <X className="h-4 w-4" />
+              <button type="button" onClick={() => setDeleteTarget(null)} disabled={deleting} className="text-slate-400 hover:text-white p-1" aria-label="ფანჯრის დახურვა">
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="chart-delete-summary">
-              <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-slate-500">არჩეული რუკა</span>
-              <strong className="mt-1 block truncate text-sm text-slate-200">{deleteTarget.label}</strong>
-              <span className="mt-1 block text-xs text-slate-500">{deleteTarget.mapNumber ?? "რუკის ნომერი მიუთითებელი არ არის"}</span>
+            <div className="my-5 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <span className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-slate-400">არჩეული რუკა</span>
+              <strong className="mt-1 block truncate text-sm text-white">{deleteTarget.label}</strong>
+              <span className="mt-1 block text-xs text-sky-300">№ {deleteTarget.mapNumber ?? "მიუთითებელია"}</span>
             </div>
 
-            <p className="mt-4 text-sm leading-relaxed text-slate-300">ნამდვილად გსურთ ამ რუკის წაშლა?</p>
-            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-              <button type="button" onClick={() => setDeleteTarget(null)} disabled={deleting} className="chart-dialog-secondary">გაუქმება</button>
-              <button type="button" onClick={confirmRemoveChart} disabled={deleting} className="chart-dialog-danger">
+            <p className="text-xs leading-relaxed text-slate-300">ნამდვილად გსურთ ამ რუკის წაშლა?</p>
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button type="button" onClick={() => setDeleteTarget(null)} disabled={deleting} className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-white/10">
+                გაუქმება
+              </button>
+              <button type="button" onClick={confirmRemoveChart} disabled={deleting} className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-[0_0_15px_rgba(244,63,94,0.4)] hover:brightness-110">
                 <Trash2 className="h-4 w-4" />
                 {deleting ? "იშლება…" : "დიახ, წაშლა"}
               </button>
@@ -475,9 +490,9 @@ export default function DashboardPage() {
 
       {/* Selected Opened Chart View Modal / Card */}
       {selected && (
-        <div id="chart-view" data-chart-export-root="true" className="chart-view-panel fixed inset-0 z-[100] h-[100dvh] min-w-0 overflow-y-auto overscroll-contain bg-[#05020f]/95 p-2 sm:p-8 backdrop-blur-md transition-all">
+        <div id="chart-view" data-chart-export-root="true" className="chart-view-panel fixed inset-0 z-[100] h-[100dvh] min-w-0 overflow-y-auto overscroll-contain bg-[#060813]/95 p-3 sm:p-8 backdrop-blur-2xl transition-all">
           
-          {/* Premium Fixed Top-Right Close Button */}
+          {/* Top-Right Close Button */}
           <div className="interpretation-close-row">
             <button
               type="button"
@@ -485,76 +500,82 @@ export default function DashboardPage() {
               className="interpretation-close-button pointer-events-auto group"
               title="ფანჯრის დახურვა"
             >
-              <span className="interpretation-close-icon"><X className="h-3.5 w-3.5" /></span>
+              <span className="interpretation-close-icon"><X className="h-4 w-4" /></span>
               <span className="interpretation-close-label">
                 დახურვა
               </span>
             </button>
           </div>
 
-          {/* Header Row */}
-          <div className="flex min-w-0 flex-col items-center gap-2 border-b border-amber-500/20 pb-4 text-center">
-            <h2 className="font-display text-2xl font-bold text-amber-300 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)] sm:text-3xl">
-              {chartDisplayTitle(selected.type, selected.name1, selected.name2)}
-            </h2>
-            <span className="text-sm font-bold tracking-wide text-amber-300">რუკის ნომერი: {selected.mapNumber ?? "—"}</span>
-          </div>
+          <div className="max-w-5xl mx-auto space-y-6 pt-12 pb-16">
+            {/* Header Row */}
+            <div className="flex min-w-0 flex-col items-center gap-2 border-b border-white/10 pb-5 text-center">
+              <div className="telemetry-badge inline-flex items-center gap-2">
+                <span className="live-beacon"></span>
+                <span className="telemetry-badge-text">{TYPE_LABEL_KA[selected.type] ?? selected.type}</span>
+              </div>
+              <h2 className="font-display text-2xl font-extrabold text-white sm:text-3xl">
+                {chartDisplayTitle(selected.type, selected.name1, selected.name2)}
+              </h2>
+              <span className="text-xs font-bold tracking-wider uppercase text-sky-300 bg-sky-500/10 border border-sky-400/25 px-3 py-1 rounded-full">
+                რუკის ნომერი: {selected.mapNumber ?? "—"}
+              </span>
+            </div>
 
-          {/* Full chart input details, matching the administrator's chart view */}
-          <div className="chart-view-details grid min-w-0 gap-2 rounded-xl border border-slate-500/30 bg-slate-500/5 p-3 text-sm text-slate-200 sm:grid-cols-2 sm:p-4">
-            <p className="text-center sm:col-span-2"><span className="text-slate-400">რუკის ნომერი:</span> {selected.mapNumber ?? "—"}</p>
-            <p><span className="text-slate-400">პირველი პროფილი:</span> {selected.name1}</p>
-            <p><span className="text-slate-400">დაბადება:</span> {formatWideDateDisplay(selected.date1)} {selected.time1}</p>
-            <p><span className="text-slate-400">ადგილი:</span> {selected.place1}</p>
-            {selected.name2 && <p><span className="text-slate-400">მეორე პროფილი:</span> {selected.name2}</p>}
-            {selected.date2 && <p><span className="text-slate-400">მეორე დაბადება:</span> {formatWideDateDisplay(selected.date2)} {selected.time2 ?? ""}</p>}
-            {selected.place2 && <p><span className="text-slate-400">მეორე ადგილი:</span> {selected.place2}</p>}
-            {selected.transitDate && <p><span className="text-slate-400">ტრანზიტის თარიღი:</span> {formatWideDateDisplay(selected.transitDate)}</p>}
-            <p><span className="text-slate-400">სახლთა სისტემა:</span> {selected.houseSystem}</p>
-            <p><span className="text-slate-400">შედგენის დრო:</span> {new Date(selected.createdAt).toLocaleString("ka-GE")}</p>
-          </div>
+            {/* Full chart input details */}
+            <div className="grid min-w-0 gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs text-slate-200 sm:grid-cols-2 sm:p-5 backdrop-blur-md">
+              <p><span className="text-slate-400">პირველი პროფილი:</span> <strong className="text-white ml-1">{selected.name1}</strong></p>
+              <p><span className="text-slate-400">დაბადება:</span> <strong className="text-sky-300 ml-1">{formatWideDateDisplay(selected.date1)} {selected.time1}</strong></p>
+              <p><span className="text-slate-400">ადგილი:</span> <strong className="text-slate-200 ml-1">{selected.place1}</strong></p>
+              {selected.name2 && <p><span className="text-slate-400">მეორე პროფილი:</span> <strong className="text-white ml-1">{selected.name2}</strong></p>}
+              {selected.date2 && <p><span className="text-slate-400">მეორე დაბადება:</span> <strong className="text-sky-300 ml-1">{formatWideDateDisplay(selected.date2)} {selected.time2 ?? ""}</strong></p>}
+              {selected.place2 && <p><span className="text-slate-400">მეორე ადგილი:</span> <strong className="text-slate-200 ml-1">{selected.place2}</strong></p>}
+              {selected.transitDate && <p><span className="text-slate-400">ტრანზიტის თარიღი:</span> <strong className="text-purple-300 ml-1">{formatWideDateDisplay(selected.transitDate)}</strong></p>}
+              <p><span className="text-slate-400">სახლთა სისტემა:</span> <strong className="text-slate-200 ml-1">{selected.houseSystem}</strong></p>
+              <p><span className="text-slate-400">შედგენის დრო:</span> <span className="text-slate-400 ml-1">{new Date(selected.createdAt).toLocaleString("ka-GE")}</span></p>
+            </div>
 
-          {/* Action Toolbar: Light Moss Green Glow Button (ღია ჭაობისფერი გლოუ) & Copy Button */}
-          <div className="chart-view-actions flex flex-col items-stretch gap-2.5 bg-purple-950/40 p-3 rounded-2xl border border-amber-500/20 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-            {/* Copy Button */}
-            <ChartExportButton className="flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/40 bg-purple-950/60 px-4 py-2 text-center text-xs sm:w-auto sm:text-sm font-bold text-amber-300 hover:bg-amber-400 hover:text-slate-950 transition-all cursor-pointer" />
-          </div>
+            {/* Action Toolbar */}
+            <div className="flex flex-col items-stretch gap-3 bg-white/[0.02] p-3.5 rounded-2xl border border-white/10 sm:flex-row sm:flex-wrap sm:items-center">
+              <ChartExportButton className="flex w-full items-center justify-center gap-2 rounded-xl border border-sky-400/40 bg-sky-500/15 px-5 py-2.5 text-center text-xs sm:w-auto sm:text-sm font-bold text-sky-200 hover:bg-sky-400 hover:text-slate-950 transition-all cursor-pointer shadow-[0_0_15px_rgba(56,189,248,0.2)]" />
+            </div>
 
-          {/* Large Zodiac Chart Wheel Display (Visible right before interpretations when toggled) */}
-          {selected.result && (
-            <ChartMapSection
-              title="ზოდიაქალური წრე"
-              className="chart-view-wheel mx-auto my-4 w-full max-w-3xl"
-              ascendant={selected.result.ascendant}
-              mc={selected.result.mc}
-              houseCusps={selected.result.houseCusps}
-              planets={selected.result.planets}
-              aspects={selected.result.aspects}
-              fixedStars={selected.result.fixedStars}
-              planetHouses={selected.result.planetHouses}
-            />
-          )}
-
-          {selected.result && (
-            <ElementBalanceGuide
-              planets={selected.result.planets}
-              ascendant={selected.result.ascendant}
-            />
-          )}
-
-          {/* Full Interpretation Text Section */}
-          <div className="chart-view-interpretation min-w-0 pt-2">
-            <h3 className="font-display mb-4 border-b border-slate-300/25 pb-3 text-center text-xl font-bold text-amber-300 sm:text-2xl">
-              ასტროლოგიური ინტერპრეტაცია & ანალიზი
-            </h3>
-            {selected.interpretation ? (
-              <InterpretationText
-                text={selected.interpretation}
-                viewMetadata={{ mode: "USER", viewedAt: selected.lastViewedAt }}
+            {/* Large Zodiac Chart Wheel Display */}
+            {selected.result && (
+              <ChartMapSection
+                title="ზოდიაქალური წრე"
+                className="chart-view-wheel mx-auto my-4 w-full max-w-3xl"
+                ascendant={selected.result.ascendant}
+                mc={selected.result.mc}
+                houseCusps={selected.result.houseCusps}
+                planets={selected.result.planets}
+                aspects={selected.result.aspects}
+                fixedStars={selected.result.fixedStars}
+                planetHouses={selected.result.planetHouses}
               />
-            ) : (
-              <p className="text-sm text-slate-400">ამ ჩანაწერისთვის ინტერპრეტაცია ვერ მოიძებნა.</p>
             )}
+
+            {selected.result && (
+              <ElementBalanceGuide
+                planets={selected.result.planets}
+                ascendant={selected.result.ascendant}
+              />
+            )}
+
+            {/* Full Interpretation Text Section */}
+            <div className="chart-view-interpretation min-w-0 pt-4">
+              <h3 className="font-display mb-4 border-b border-white/10 pb-3 text-center text-xl font-bold text-white sm:text-2xl">
+                ასტროლოგიური <span className="bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">ინტერპრეტაცია & ანალიზი</span>
+              </h3>
+              {selected.interpretation ? (
+                <InterpretationText
+                  text={selected.interpretation}
+                  viewMetadata={{ mode: "USER", viewedAt: selected.lastViewedAt }}
+                />
+              ) : (
+                <p className="text-sm text-slate-400 text-center py-6">ამ ჩანაწერისთვის ინტერპრეტაცია ვერ მოიძებნა.</p>
+              )}
+            </div>
           </div>
         </div>
       )}

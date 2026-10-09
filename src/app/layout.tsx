@@ -20,6 +20,7 @@ import "@fontsource/noto-serif-georgian/latin-600.css";
 import "@fontsource/noto-serif-georgian/latin-700.css";
 import "@fontsource/noto-serif-georgian/latin-800.css";
 import "./globals.css";
+import "./prismline-aurora.css";
 import "./simple-mode.css";
 import Nav from "@/components/Nav";
 
@@ -53,11 +54,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="app-body relative min-h-screen overflow-x-hidden star-field text-slate-100 selection:bg-violet-300 selection:text-slate-950">
-        <div className="pointer-events-none fixed -top-48 left-1/2 -z-10 h-[620px] w-[920px] -translate-x-1/2 rounded-full bg-indigo-500/10 blur-[150px]" />
-        <div className="pointer-events-none fixed bottom-0 -right-48 -z-10 h-[520px] w-[520px] rounded-full bg-sky-500/5 blur-[130px]" />
+      <body className="app-body relative min-h-screen overflow-x-hidden bg-[#060813] text-slate-100 selection:bg-cyan-400 selection:text-slate-950 font-body">
+        {/* Prismline Aurora Multi-Layer Ambient Canvas */}
+        <div className="aurora-canvas pointer-events-none fixed inset-0 -z-20 overflow-hidden" aria-hidden="true">
+          {/* Cyan / Aqua Aurora Glow */}
+          <div className="aurora-blob aurora-blob-cyan" />
+          {/* Indigo / Violet Aurora Glow */}
+          <div className="aurora-blob aurora-blob-violet" />
+          {/* Magenta / Pink Aurora Glow */}
+          <div className="aurora-blob aurora-blob-magenta" />
+          {/* Prismatic Top Light Ray */}
+          <div className="prism-light-beam" />
+          {/* Starfield / Grid Texture */}
+          <div className="star-matrix-overlay" />
+        </div>
+
         <Nav />
-        <main className="relative mx-auto w-full max-w-full overflow-x-hidden px-4 pb-20 pt-2 sm:px-8 sm:pb-24 sm:pt-4 lg:px-12 xl:px-16">{children}</main>
+        <main className="relative mx-auto w-full max-w-full overflow-x-hidden px-4 pb-20 pt-3 sm:px-8 sm:pb-28 sm:pt-6 lg:px-12 xl:px-16">{children}</main>
       </body>
     </html>
   );

@@ -137,12 +137,12 @@ export default function HomePage() {
     <div className="app-home">
       <section className="hero-grid">
         <div>
-          <div className="hero-kicker"><span className="h-1.5 w-1.5 rounded-full bg-violet-300" /> SWISS EPHEMERIS · PRECISION ENGINE</div>
+          <div className="hero-kicker"><span className="live-beacon" /> SWISS EPHEMERIS · PRECISION AURORA ENGINE</div>
           <h1 className="hero-title">თქვენი რუკა.<br /><em>უფრო ღრმად.</em></h1>
           <p className="hero-lead">მკაფიო, მუქი და პროფესიონალური სამუშაო სივრცე ნატალური, სინასტრიული და ტრანზიტული რუკებისთვის — გამოთვლები იწყება ზუსტი ციური მონაცემებით.</p>
           <div className="hero-actions">
             <a href="#calculator" className="primary-action"><Compass className="h-4 w-4" /> რუკის შექმნა <ArrowRight className="h-4 w-4" /></a>
-            <a href="#method" className="secondary-action"><Sparkles className="h-4 w-4" /> როგორ მუშაობს</a>
+            <a href="#method" className="secondary-action"><Sparkles className="h-4 w-4 text-cyan-300" /> როგორ მუშაობს</a>
           </div>
         </div>
         <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
@@ -373,7 +373,7 @@ export default function HomePage() {
 
       <section id="calculator" className="app-section">
         <div className="section-heading">
-          <div><div className="hero-kicker">WORKSPACE</div><h2>აირჩიეთ ანალიზის ტიპი</h2></div>
+          <div><div className="hero-kicker"><span className="live-beacon mr-1.5" /> WORKSPACE</div><h2>აირჩიეთ ანალიზის ტიპი</h2></div>
           <p>ერთი მშვიდი სამუშაო სივრცე ყველა რუკისთვის. ფორმა იცვლება არჩეული მეთოდის მიხედვით.</p>
         </div>
         <div className="mode-switcher" role="tablist" aria-label="რუკის ტიპი">
@@ -388,7 +388,7 @@ export default function HomePage() {
             );
           })}
         </div>
-        <div className="mt-3 flex items-center gap-2 text-xs text-slate-500"><span className="h-1.5 w-1.5 rounded-full bg-violet-300" />{activeTab.hint}</div>
+        <div className="mt-3 flex items-center gap-2 text-xs text-slate-400"><span className="live-beacon" />{activeTab.hint}</div>
         <div className="mt-6">
           {tab === "natal" && <NatalCalculator />}
           {tab === "synastry" && <SynastryCalculator />}
@@ -398,9 +398,9 @@ export default function HomePage() {
       </section>
 
       <section id="method" className="home-features">
-        <div className="home-feature"><h3><Check className="mr-1 inline h-4 w-4 text-violet-300" /> ზუსტი ეფემერიდი</h3><p>Swiss Ephemeris თანამედროვე თარიღებზე, უსაფრთხო fallback ისტორიულ დიაპაზონზე.</p></div>
-        <div className="home-feature"><h3><Check className="mr-1 inline h-4 w-4 text-violet-300" /> გამჭვირვალე ანალიზი</h3><p>ორბები, კუთხეები, ღირსებები, დეკლინაციები და მეთოდის წყაროები ცალკე ფენებად.</p></div>
-        <div className="home-feature"><h3><Check className="mr-1 inline h-4 w-4 text-violet-300" /> პირადი სამუშაო სივრცე</h3><p>შეინახეთ რუკები კაბინეტში და მართეთ წვდომა ერთი მშვიდი ინტერფეისიდან.</p></div>
+        <div className="home-feature"><h3><Check className="mr-1.5 inline h-4 w-4 text-cyan-400" /> ზუსტი ეფემერიდი</h3><p>Swiss Ephemeris თანამედროვე თარიღებზე, უსაფრთხო fallback ისტორიულ დიაპაზონზე.</p></div>
+        <div className="home-feature"><h3><Check className="mr-1.5 inline h-4 w-4 text-violet-400" /> გამჭვირვალე ანალიზი</h3><p>ორბები, კუთხეები, ღირსებები, დეკლინაციები და მეთოდის წყაროები ცალკე ფენებად.</p></div>
+        <div className="home-feature"><h3><Check className="mr-1.5 inline h-4 w-4 text-pink-400" /> პირადი სამუშაო სივრცე</h3><p>შეინახეთ რუკები კაბინეტში და მართეთ წვდომა ერთი მშვიდი ინტერფეისიდან.</p></div>
       </section>
     </div>
   );

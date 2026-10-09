@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { readApiResponse } from "@/lib/apiResponse";
 import PasswordField from "@/components/PasswordField";
-import { User, Mail, Lock, LogIn, UserPlus, Loader2, Sparkles, AtSign } from "lucide-react";
+import { User, Mail, LogIn, UserPlus, Loader2, Sparkles, AtSign, KeyRound } from "lucide-react";
 
 export default function CabinetPage() {
   const router = useRouter();
@@ -41,24 +42,30 @@ export default function CabinetPage() {
   }
 
   return (
-    <div className="cabinet-page mx-auto max-w-md pt-3 sm:pt-8 w-full max-w-full sm:max-w-md">
-      <div className="glass-panel rounded-2xl sm:rounded-[32px] p-5 sm:p-9 border-amber-500/25 bg-gradient-to-b from-[#130a35]/90 via-[#0e0728]/95 to-[#080417]/95 backdrop-blur-2xl shadow-2xl w-full">
-        <div className="mb-6 sm:mb-7 text-center">
-          <div className="mx-auto mb-3 flex h-11 w-11 sm:h-13 sm:w-13 items-center justify-center rounded-2xl border border-amber-400/40 bg-gradient-to-br from-amber-500/20 to-purple-600/20 text-amber-300 shadow-[0_0_24px_rgba(245,158,11,0.3)]">
-            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-amber-300 animate-pulse" />
+    <div className="cabinet-page mx-auto max-w-md pt-3 sm:pt-8 w-full max-w-full sm:max-w-md px-2">
+      <div className="prism-card rounded-3xl p-6 sm:p-9 w-full shadow-[0_25px_60px_rgba(0,0,0,0.75)]">
+        <div className="mb-6 sm:mb-8 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-400/30 bg-sky-500/10 text-sky-300 shadow-[0_0_24px_rgba(56,189,248,0.25)]">
+            <Sparkles className="h-6 w-6 text-sky-400 animate-pulse" />
           </div>
-          <h1 className="font-display text-xl sm:text-2xl font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">პირადი კაბინეტი</h1>
-          <p className="mt-1 text-[0.72rem] sm:text-xs font-medium text-slate-300">შენახული რუკების მართვა და ასტროლოგიური არქივი</p>
+          <div className="telemetry-badge inline-flex items-center gap-2 mb-2">
+            <span className="live-beacon"></span>
+            <span className="telemetry-badge-text">პირადი კაბინეტი</span>
+          </div>
+          <h1 className="font-display text-2xl font-extrabold text-white">
+            {mode === "login" ? "ავტორიზაცია" : "რეგისტრაცია"}
+          </h1>
+          <p className="mt-1 text-xs text-slate-300/80">შენახული რუკების მართვა და ასტროლოგიური არქივი</p>
         </div>
 
-        <div className="mb-7 flex rounded-full border border-amber-500/25 bg-[#080418] p-1.5 backdrop-blur-xl">
+        <div className="mb-6 flex rounded-2xl border border-white/10 bg-[#060813] p-1.5">
           <button
             type="button"
             onClick={() => setMode("login")}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold transition-all ${
+            className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all cursor-pointer ${
               mode === "login"
-                ? "bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)]"
-                : "text-slate-300 hover:text-amber-300"
+                ? "bg-gradient-to-r from-sky-400 to-indigo-500 text-white shadow-[0_0_18px_rgba(56,189,248,0.35)]"
+                : "text-slate-400 hover:text-slate-200"
             }`}
           >
             <LogIn className="h-3.5 w-3.5" />
@@ -67,10 +74,10 @@ export default function CabinetPage() {
           <button
             type="button"
             onClick={() => setMode("signup")}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold transition-all ${
+            className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all cursor-pointer ${
               mode === "signup"
-                ? "bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)]"
-                : "text-slate-300 hover:text-amber-300"
+                ? "bg-gradient-to-r from-sky-400 to-indigo-500 text-white shadow-[0_0_18px_rgba(56,189,248,0.35)]"
+                : "text-slate-400 hover:text-slate-200"
             }`}
           >
             <UserPlus className="h-3.5 w-3.5" />
@@ -82,8 +89,8 @@ export default function CabinetPage() {
           {mode === "signup" && (
             <>
               <div>
-                <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-200">
-                  <User className="h-3.5 w-3.5 text-amber-400" />
+                <label className="mb-1.5 flex items-center gap-2 text-xs font-bold text-slate-300">
+                  <User className="h-3.5 w-3.5 text-sky-400" />
                   <span>სახელი</span>
                 </label>
                 <input
@@ -91,72 +98,81 @@ export default function CabinetPage() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-2xl border border-amber-500/25 bg-[#080418] px-4 py-3 text-sm font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)]"
+                  className="w-full rounded-2xl border border-white/10 bg-[#070914] px-4 py-3 text-sm font-semibold text-white outline-none transition-all focus:border-sky-400 focus:shadow-[0_0_24px_rgba(56,189,248,0.25)]"
                 />
               </div>
               <div>
-                <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-200">
-                  <AtSign className="h-3.5 w-3.5 text-amber-400" />
+                <label className="mb-1.5 flex items-center gap-2 text-xs font-bold text-slate-300">
+                  <AtSign className="h-3.5 w-3.5 text-purple-400" />
                   <span>Username</span>
                 </label>
                 <input
                   type="text"
                   required
-                  minLength={3}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="მაგ. astro_user"
-                  className="w-full rounded-2xl border border-amber-500/25 bg-[#080418] px-4 py-3 text-sm font-semibold text-slate-100 outline-none transition-all placeholder:text-slate-500 focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)]"
+                  className="w-full rounded-2xl border border-white/10 bg-[#070914] px-4 py-3 text-sm font-semibold text-white outline-none transition-all focus:border-purple-400 focus:shadow-[0_0_24px_rgba(168,85,247,0.25)]"
                 />
               </div>
             </>
           )}
+
           <div>
-            <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-200">
-              <Mail className="h-3.5 w-3.5 text-amber-400" />
-              <span>{mode === "login" ? "Username ან ელფოსტა" : "ელფოსტა"}</span>
+            <label className="mb-1.5 flex items-center gap-2 text-xs font-bold text-slate-300">
+              <Mail className="h-3.5 w-3.5 text-sky-400" />
+              <span>{mode === "signup" ? "ელ. ფოსტა" : "ელ. ფოსტა ან Username"}</span>
             </label>
             <input
-              type={mode === "login" ? "text" : "email"}
+              type={mode === "signup" ? "email" : "text"}
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-2xl border border-amber-500/25 bg-[#080418] px-4 py-3 text-sm font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)]"
+              className="w-full rounded-2xl border border-white/10 bg-[#070914] px-4 py-3 text-sm font-semibold text-white outline-none transition-all focus:border-sky-400 focus:shadow-[0_0_24px_rgba(56,189,248,0.25)]"
             />
           </div>
+
           <div>
-            <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-200">
-              <Lock className="h-3.5 w-3.5 text-amber-400" />
-              <span>პაროლი</span>
+            <label className="mb-1.5 flex items-center justify-between text-xs font-bold text-slate-300">
+              <span className="flex items-center gap-2">
+                <KeyRound className="h-3.5 w-3.5 text-sky-400" />
+                <span>პაროლი</span>
+              </span>
+              {mode === "login" && (
+                <Link
+                  href="/cabinet/forgot-password"
+                  className="text-[0.72rem] font-semibold text-sky-400 hover:text-sky-300 underline"
+                >
+                  დაგავიწყდათ?
+                </Link>
+              )}
             </label>
             <PasswordField
-              required
-              minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-              className="w-full rounded-2xl border border-amber-500/25 bg-[#080418] px-4 py-3 text-sm font-semibold text-slate-100 outline-none transition-all focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)]"
+              required
+              className="w-full rounded-2xl border border-white/10 bg-[#070914] px-4 py-3 text-sm font-semibold text-white outline-none transition-all focus:border-sky-400 focus:shadow-[0_0_24px_rgba(56,189,248,0.25)]"
             />
           </div>
-          {error && <p className="text-xs font-semibold text-rose-400">{error}</p>}
+
+          {error && (
+            <div className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-3 text-xs font-semibold text-rose-300 text-center backdrop-blur-xl">
+              {error}
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 py-3.5 font-extrabold text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.4)] transition-all hover:scale-105 hover:shadow-[0_0_35px_rgba(245,158,11,0.6)] disabled:opacity-50"
+            className="prism-btn-primary w-full py-3.5 text-xs sm:text-sm font-bold text-white transition-all disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin text-slate-950" />
+              <Loader2 className="mx-auto h-4 w-4 animate-spin text-white" />
             ) : mode === "login" ? (
-              "შესვლა"
+              "შესვლა კაბინეტში"
             ) : (
               "ანგარიშის შექმნა"
             )}
           </button>
-          {mode === "login" && (
-            <a href="/cabinet/forgot-password" className="block text-center text-xs font-medium text-amber-300 underline decoration-amber-400/40 hover:text-amber-200">
-              დაგავიწყდათ პაროლი?
-            </a>
-          )}
         </form>
       </div>
     </div>

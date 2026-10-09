@@ -233,7 +233,7 @@ export default function PlaceAutocomplete({
         <div className="relative flex-1 min-w-0">
           <input
             ref={inputRef}
-            className="w-full rounded-xl sm:rounded-2xl border border-amber-500/25 bg-[#080418] px-3 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm font-semibold text-slate-100 outline-none transition-all placeholder:text-slate-500 focus:border-amber-400 focus:shadow-[0_0_24px_rgba(245,158,11,0.25)] hover:border-amber-500/40"
+            className="w-full rounded-xl sm:rounded-2xl border border-white/10 bg-[#070a16] px-3 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm font-semibold text-slate-100 outline-none transition-all placeholder:text-slate-500 focus:border-cyan-400 focus:shadow-[0_0_25px_rgba(56,189,248,0.25)] hover:border-white/20"
             value={query}
             onFocus={() => {
               setOpen(true);
@@ -250,21 +250,21 @@ export default function PlaceAutocomplete({
             placeholder="დაიწყეთ აკრეფა ან აირჩიეთ სიიდან…"
           />
           {searching && (
-            <Loader2 className="absolute right-3.5 top-3 sm:top-3.5 h-4 w-4 animate-spin text-amber-400" />
+            <Loader2 className="absolute right-3.5 top-3 sm:top-3.5 h-4 w-4 animate-spin text-cyan-400" />
           )}
         </div>
         <button
           type="button"
           onClick={() => setMapOpen((v) => !v)}
-          className="place-map-button flex shrink-0 items-center gap-1 sm:gap-1.5 rounded-xl sm:rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 px-3 py-2.5 sm:px-4 sm:py-3 text-[0.72rem] sm:text-xs font-bold text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all hover:scale-105 hover:border-amber-400 cursor-pointer"
+          className="place-map-button flex shrink-0 items-center gap-1 sm:gap-1.5 rounded-xl sm:rounded-2xl border border-white/15 bg-white/[0.04] px-3 py-2.5 sm:px-4 sm:py-3 text-[0.72rem] sm:text-xs font-bold text-cyan-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-all hover:bg-white/[0.08] hover:border-cyan-400/40 cursor-pointer"
         >
-          <MapIcon className="h-4 w-4 text-amber-400 shrink-0" />
+          <MapIcon className="h-4 w-4 text-cyan-400 shrink-0" />
           <span>{mapOpen ? "დახურვა" : "რუკაზე"}</span>
         </button>
       </div>
 
       {status === "ok" && value.lat !== null && (
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[0.7rem] sm:text-xs font-semibold text-amber-300">
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[0.7rem] sm:text-xs font-semibold text-cyan-300">
           <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
           <span>{value.timezone}</span>
           <span className="text-slate-400">· ({value.lat?.toFixed(3)}, {value.lon?.toFixed(3)})</span>
@@ -283,11 +283,11 @@ export default function PlaceAutocomplete({
             maxHeight: coords.maxHeight,
             zIndex: 999999,
           }}
-          className="place-suggestions overflow-y-auto rounded-2xl border-2 border-amber-400 bg-[#0a0422] p-2 shadow-[0_25px_90px_rgba(0,0,0,1)] ring-4 ring-amber-500/30 backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150"
+          className="place-suggestions overflow-y-auto rounded-2xl border border-white/15 bg-[#090d20]/95 p-2 shadow-[0_25px_90px_rgba(0,0,0,0.9)] ring-1 ring-cyan-500/30 backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150"
         >
           {localHits.length > 0 && (
-            <div className="place-suggestions-header flex items-center justify-center gap-1.5 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 border-b border-amber-500/30 bg-purple-950/60 rounded-xl mb-1">
-              <MapPin className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+            <div className="place-suggestions-header flex items-center justify-center gap-1.5 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-wider text-cyan-300 border-b border-white/10 bg-cyan-950/40 rounded-xl mb-1">
+              <MapPin className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
               <span>საქართველოს ქალაქები</span>
             </div>
           )}
@@ -299,15 +299,15 @@ export default function PlaceAutocomplete({
                 e.preventDefault();
                 selectHit(h);
               }}
-              className="place-suggestion-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/30 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
+              className="place-suggestion-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-cyan-500/20 hover:text-cyan-200 gap-2 cursor-pointer active:scale-[0.99]"
             >
               <span className="truncate max-w-[170px] sm:max-w-[260px]">{h.label}</span>
-              <span className="place-suggestion-meta text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/70 px-2 py-0.5 rounded-md shrink-0">Asia/Tbilisi</span>
+              <span className="place-suggestion-meta text-[0.62rem] sm:text-[0.68rem] font-bold text-cyan-300 bg-cyan-950/70 border border-cyan-500/20 px-2 py-0.5 rounded-md shrink-0">Asia/Tbilisi</span>
             </button>
           ))}
           {remoteHits.length > 0 && (
-            <div className="place-suggestions-header mt-2 border-t border-amber-500/30 pt-2 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-wider text-amber-300 flex items-center justify-center gap-1.5 bg-purple-950/60 rounded-xl mb-1">
-              <Globe className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+            <div className="place-suggestions-header mt-2 border-t border-white/10 pt-2 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-wider text-cyan-300 flex items-center justify-center gap-1.5 bg-cyan-950/40 rounded-xl mb-1">
+              <Globe className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
               <span>სხვა შედეგები</span>
             </div>
           )}
@@ -319,10 +319,10 @@ export default function PlaceAutocomplete({
                 e.preventDefault();
                 selectHit(h);
               }}
-              className="place-suggestion-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-amber-500/30 hover:text-amber-300 gap-2 cursor-pointer active:scale-[0.99]"
+              className="place-suggestion-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm font-semibold text-slate-100 transition-all hover:bg-cyan-500/20 hover:text-cyan-200 gap-2 cursor-pointer active:scale-[0.99]"
             >
               <span className="truncate max-w-[160px] sm:max-w-[240px]">{h.label}</span>
-              <span className="place-suggestion-meta text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-purple-900/70 px-2 py-0.5 rounded-md shrink-0">{h.timezone || "მსოფლიო"}</span>
+              <span className="place-suggestion-meta text-[0.62rem] sm:text-[0.68rem] font-bold text-violet-300 bg-violet-950/70 border border-violet-500/20 px-2 py-0.5 rounded-md shrink-0">{h.timezone || "მსოფლიო"}</span>
             </button>
           ))}
         </div>,
@@ -330,9 +330,9 @@ export default function PlaceAutocomplete({
       )}
 
       {mapOpen && (
-        <div className="place-map-panel mt-3 overflow-hidden rounded-2xl border border-amber-500/40 shadow-2xl">
+        <div className="place-map-panel mt-3 overflow-hidden rounded-2xl border border-white/15 shadow-2xl">
           <div ref={mapDivRef} style={{ height: 260, width: "100%" }} />
-          <div className="bg-slate-900/90 px-3 py-2 text-[0.7rem] text-slate-300">
+          <div className="bg-[#070a16]/95 px-3 py-2 text-[0.7rem] text-slate-300 border-t border-white/10">
             💡 დააწკაპუნეთ რუკაზე ზუსტ წერტილზე — კოორდინატები ავტომატურად ჩაიწერება.
           </div>
         </div>

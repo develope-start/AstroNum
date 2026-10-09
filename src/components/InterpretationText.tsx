@@ -23,7 +23,7 @@ function renderInline(text: string) {
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
-        <strong key={i} className="font-extrabold text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]">
+        <strong key={i} className="font-extrabold text-cyan-200 drop-shadow-[0_0_10px_rgba(56,189,248,0.35)]">
           {renderWholeWords(keepGeorgianWordsTogether(part.slice(2, -2)), `strong-${i}`)}
         </strong>
       );
@@ -355,20 +355,20 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
     <>
       <div className="interpretation-content space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden">
       {/* Header bar with reading metadata & quick actions */}
-      <div className="interpretation-toolbar flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3 border-b border-amber-500/20 pb-3 sm:pb-4 text-xs font-semibold text-slate-300 w-full">
+      <div className="interpretation-toolbar flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3 border-b border-white/10 pb-3 sm:pb-4 text-xs font-semibold text-slate-300 w-full">
         <div className="interpretation-meta flex flex-wrap items-center gap-2 sm:gap-4 max-w-full">
-          <div className="flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/15 via-purple-500/20 to-amber-500/15 px-3 py-1 sm:px-4 sm:py-1.5 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] max-w-full">
-            <BookOpen className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-            <span className="text-[0.7rem] sm:text-xs">ასტროლოგიური ინტერპრეტაცია</span>
+          <div className="flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-500/10 px-3 py-1 sm:px-4 sm:py-1.5 text-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.2)] max-w-full">
+            <BookOpen className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
+            <span className="text-[0.7rem] sm:text-xs font-bold">ასტროლოგიური ინტერპრეტაცია</span>
           </div>
           <div className="flex items-center gap-1.5 text-slate-300 text-[0.7rem] sm:text-xs">
-            <Clock className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+            <Clock className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
             <span>კითხვის სავარაუდო დრო: დაახლოებით {readingMinutes} წუთი</span>
           </div>
           {viewMetadata?.mode === "ADMIN" ? (
             <div className="flex flex-col gap-1 text-slate-300 text-[0.7rem] sm:text-xs">
               <span className="flex items-center gap-1.5">
-                <Calendar className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                <Calendar className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
                 მომხმარებლის ბოლო ნახვა: {formatViewDate(viewMetadata.userLastViewedAt, true)}
               </span>
               <span className="pl-5">
@@ -380,7 +380,7 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
             </div>
           ) : (
             <div className="flex items-center gap-1.5 text-slate-300 text-[0.7rem] sm:text-xs">
-              <Calendar className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+              <Calendar className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
               <span>ნახვის თარიღი: {formatViewDate(viewMetadata?.viewedAt ?? fallbackViewedAt)}</span>
             </div>
           )}

@@ -149,11 +149,16 @@ export default function TransitCalculator() {
           <BirthFields value={birth} onChange={setBirth} legend="01. ნატალური მონაცემები" />
         </div>
 
-        <div className="glass-panel relative z-10 flex min-w-0 w-full flex-col justify-center space-y-5 overflow-hidden rounded-2xl border-amber-500/25 bg-gradient-to-r from-[#120833]/90 via-[#0e0728]/95 to-[#120833]/90 p-4 text-center shadow-xl backdrop-blur-2xl sm:rounded-[28px] sm:p-7 lg:col-span-5 lg:h-full">
-          <div className="transit-mode-switch" role="group" aria-label="ტრანზიტის პერიოდის არჩევა">
+        <div className="glass-panel relative z-10 flex min-w-0 w-full flex-col justify-center space-y-5 overflow-hidden rounded-2xl border-white/10 bg-[#090d1e]/85 p-4 text-center shadow-[0_20px_50px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-2xl sm:rounded-[28px] sm:p-7 lg:col-span-5 lg:h-full">
+          {/* Segmented Mode Switch */}
+          <div className="flex rounded-full border border-white/10 bg-[#070a16] p-1 shadow-inner" role="group" aria-label="ტრანზიტის პერიოდის არჩევა">
             <button
               type="button"
-              className={`transit-mode-option ${inputMode === "date" ? "is-active" : ""}`}
+              className={`flex flex-1 items-center justify-center gap-2 rounded-full py-2 px-3 text-xs font-bold transition-all cursor-pointer ${
+                inputMode === "date"
+                  ? "bg-gradient-to-r from-cyan-500/30 to-violet-600/30 text-cyan-200 border border-white/20 shadow-[0_0_15px_rgba(56,189,248,0.3)]"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
               aria-pressed={inputMode === "date"}
               onClick={() => activateMode("date")}
             >
@@ -162,7 +167,11 @@ export default function TransitCalculator() {
             </button>
             <button
               type="button"
-              className={`transit-mode-option ${inputMode === "interval" ? "is-active" : ""}`}
+              className={`flex flex-1 items-center justify-center gap-2 rounded-full py-2 px-3 text-xs font-bold transition-all cursor-pointer ${
+                inputMode === "interval"
+                  ? "bg-gradient-to-r from-cyan-500/30 to-violet-600/30 text-cyan-200 border border-white/20 shadow-[0_0_15px_rgba(56,189,248,0.3)]"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
               aria-pressed={inputMode === "interval"}
               onClick={() => activateMode("interval")}
             >
@@ -170,83 +179,83 @@ export default function TransitCalculator() {
               <span>თარიღების პერიოდი</span>
             </button>
           </div>
-          <div
-            className={`transit-interval-panel mx-auto w-full max-w-2xl space-y-3 rounded-2xl border border-purple-400/20 bg-purple-950/25 p-3.5 text-left transition-all sm:p-4 ${
-              inputMode === "interval" ? "transit-interval-selected" : ""
-            }`}
-            onFocusCapture={() => inputMode !== "interval" && activateMode("interval")}
-          >
-            <div className="transit-panel-heading">
-              <div className="transit-panel-heading-icon flex h-7 w-7 items-center justify-center rounded-xl border border-purple-300/30 bg-purple-500/15 text-purple-300">
-                <Clock className="h-4 w-4" />
-              </div>
-              <div className="transit-panel-heading-copy">
-                <p className="transit-panel-title text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის ინტერვალი</p>
-                <p className="transit-panel-description text-[0.65rem] leading-relaxed text-slate-400">ძველი წელთაღრიცხვის 10 000 წლიდან ახალი წელთაღრიცხვის 10 000 წლამდე</p>
-              </div>
-            </div>
-            <div className="transit-range-fields">
-              <div className="transit-range-field">
-                <span className="transit-range-label">დაწყება</span>
-                <SharedWideDateInput label="დაწყების თარიღი" value={transitStartDate} onChange={setTransitStartDate} onActivate={() => activateMode("interval")} />
-              </div>
-              <div className="transit-range-field">
-                <span className="transit-range-label">დასასრული</span>
-                <SharedWideDateInput label="დასასრულის თარიღი" value={transitEndDate} onChange={setTransitEndDate} onActivate={() => activateMode("interval")} />
-              </div>
-            </div>
-            <p className="mx-auto max-w-xl text-center text-[0.65rem] leading-relaxed text-slate-500">შეგიძლიათ გამოიყენოთ კალენდრის ამოსქროლავი არჩევა ან პირდაპირ ჩაწეროთ თარიღი. ძველი წელთაღრიცხვისთვის გამოიყენეთ მინუსი, მაგალითად: -10000-01-01.</p>
-          </div>
 
-          <div
-            className={`transit-date-panel flex w-full flex-col items-center justify-center gap-2.5 rounded-2xl p-3 transition-all sm:p-4 ${inputMode === "date" ? "transit-date-active" : "transit-date-inactive"}`}
-            onFocusCapture={() => inputMode !== "date" && activateMode("date")}
-          >
-            <div className="transit-panel-heading">
-              <div className="transit-panel-heading-icon flex h-7 w-7 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-400">
-                <Calendar className="h-4 w-4 text-amber-400" />
+          {inputMode === "interval" && (
+            <div
+              className="mx-auto w-full space-y-3 rounded-2xl border border-white/10 bg-[#070a16]/80 p-3.5 text-left transition-all sm:p-4 shadow-inner"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-500/15 text-cyan-300">
+                  <Clock className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის ინტერვალი</p>
+                  <p className="text-[0.65rem] leading-relaxed text-slate-400">ძველი წელთაღრიცხვის 10 000 წლიდან ახალი წელთაღრიცხვის 10 000 წლამდე</p>
+                </div>
               </div>
-              <label className="transit-panel-title text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის თარიღი</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid gap-1">
+                  <span className="text-[0.68rem] font-bold text-slate-300">დაწყება</span>
+                  <SharedWideDateInput label="დაწყების თარიღი" value={transitStartDate} onChange={setTransitStartDate} onActivate={() => activateMode("interval")} />
+                </div>
+                <div className="grid gap-1">
+                  <span className="text-[0.68rem] font-bold text-slate-300">დასასრული</span>
+                  <SharedWideDateInput label="დასასრულის თარიღი" value={transitEndDate} onChange={setTransitEndDate} onActivate={() => activateMode("interval")} />
+                </div>
+              </div>
             </div>
+          )}
 
-            <SharedWideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={setTransitDate} onActivate={() => activateMode("date")} />
+          {inputMode === "date" && (
+            <div
+              className="flex w-full flex-col items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-[#070a16]/80 p-3.5 transition-all sm:p-4 shadow-inner"
+            >
+              <div className="flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-500/15 text-cyan-300">
+                  <Calendar className="h-4 w-4 text-cyan-300" />
+                </div>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის თარიღი</label>
+              </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold w-full pt-1">
-              <button
-                type="button"
-                onClick={() => { activateMode("date"); setTransitDate(today()); }}
-                className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
-                  transitDate === today()
-                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
-                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
-                }`}
-              >
-                დღეს
-              </button>
-              <button
-                type="button"
-                onClick={() => { activateMode("date"); setTransitDate(offsetDays(1)); }}
-                className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
-                  transitDate === offsetDays(1)
-                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
-                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
-                }`}
-              >
-                ხვალ
-              </button>
-              <button
-                type="button"
-                onClick={() => { activateMode("date"); setTransitDate(offsetDays(7)); }}
-                className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
-                  transitDate === offsetDays(7)
-                    ? "bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold"
-                    : "bg-purple-950/40 text-slate-300 hover:text-amber-300 border border-purple-500/20"
-                }`}
-              >
-                +1 კვირა
-              </button>
+              <SharedWideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={setTransitDate} onActivate={() => activateMode("date")} />
+
+              <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold w-full pt-1">
+                <button
+                  type="button"
+                  onClick={() => { activateMode("date"); setTransitDate(today()); }}
+                  className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
+                    transitDate === today()
+                      ? "bg-cyan-500/30 text-cyan-200 border border-cyan-400/50 font-bold shadow-[0_0_12px_rgba(56,189,248,0.3)]"
+                      : "bg-white/[0.04] text-slate-300 hover:text-cyan-300 border border-white/10"
+                  }`}
+                >
+                  დღეს
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { activateMode("date"); setTransitDate(offsetDays(1)); }}
+                  className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
+                    transitDate === offsetDays(1)
+                      ? "bg-cyan-500/30 text-cyan-200 border border-cyan-400/50 font-bold shadow-[0_0_12px_rgba(56,189,248,0.3)]"
+                      : "bg-white/[0.04] text-slate-300 hover:text-cyan-300 border border-white/10"
+                  }`}
+                >
+                  ხვალ
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { activateMode("date"); setTransitDate(offsetDays(7)); }}
+                  className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
+                    transitDate === offsetDays(7)
+                      ? "bg-cyan-500/30 text-cyan-200 border border-cyan-400/50 font-bold shadow-[0_0_12px_rgba(56,189,248,0.3)]"
+                      : "bg-white/[0.04] text-slate-300 hover:text-cyan-300 border border-white/10"
+                  }`}
+                >
+                  +1 კვირა
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           <CalculationSettings value={calculation} onChange={setCalculation} />
           <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} />
@@ -255,7 +264,7 @@ export default function TransitCalculator() {
             <button
               onClick={() => calculate(false)}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 py-3.5 px-6 text-xs sm:text-sm font-extrabold text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03] hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] disabled:opacity-50 cursor-pointer"
+              className="calc-submit-btn w-full flex items-center justify-center gap-2 rounded-full py-3.5 px-6 text-xs sm:text-sm font-extrabold text-slate-950 transition-all disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -274,9 +283,9 @@ export default function TransitCalculator() {
               <button
                 onClick={() => calculate(true)}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-purple-600/20 py-3 px-6 text-xs sm:text-sm font-bold text-amber-300 shadow-[0_0_18px_rgba(245,158,11,0.2)] transition-all hover:scale-[1.03] hover:border-amber-400 cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] py-3 px-6 text-xs sm:text-sm font-bold text-cyan-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-all hover:bg-white/[0.08] hover:border-cyan-400/40 cursor-pointer"
               >
-                <Bookmark className="h-4 w-4 text-amber-400" />
+                <Bookmark className="h-4 w-4 text-cyan-400" />
                 <span>შენახვა</span>
               </button>
             )}
@@ -285,33 +294,35 @@ export default function TransitCalculator() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 px-4 py-3.5 text-xs font-semibold text-rose-300 shadow-lg justify-center">
+        <div className="flex items-center gap-2.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 px-4 py-3.5 text-xs font-semibold text-rose-300 shadow-lg justify-center backdrop-blur-xl">
           <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {saved && (
-        <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3.5 text-xs font-semibold text-emerald-300 shadow-lg justify-center">
+        <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3.5 text-xs font-semibold text-emerald-300 shadow-lg justify-center backdrop-blur-xl">
           <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
           <span>✓ წარმატებით შენახულია კაბინეტში!</span>
         </div>
       )}
 
       {!me && interpretation && (
-        <div className="flex items-start justify-center gap-2.5 rounded-2xl border border-amber-500/30 bg-purple-950/40 p-3.5 sm:p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center">
-          <Info className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+        <div className="flex items-start justify-center gap-2.5 rounded-2xl border border-cyan-500/30 bg-[#0a0e22]/80 p-3.5 sm:p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center shadow-lg">
+          <Info className="h-4 w-4 text-cyan-300 shrink-0 mt-0.5" />
           <p>
             დაურეგისტრირებელი მომხმარებელი — ეს შედეგი შენახული იქნება ამ მოწყობილობაზე 12 საათის განმავლობაში. მუდმივი
-            შენახვისთვის გახსენით <a href="/cabinet" className="font-bold text-amber-300 underline decoration-amber-400/50">კაბინეტი</a>.
+            შენახვისთვის გახსენით <a href="/cabinet" className="font-bold text-cyan-300 underline decoration-cyan-400/50">კაბინეტი</a>.
           </p>
         </div>
       )}
 
       {interpretation && (
-        <div className="glass-panel rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-amber-500/25 bg-[#120833]/90 backdrop-blur-2xl text-left w-full">
-          <h3 className="mb-4 border-b border-slate-300/25 pb-3 text-center text-xl font-bold text-amber-300 sm:text-2xl">ასტროლოგიური ინტერპრეტაცია &amp; ანალიზი</h3>
-          <p className="mb-4 text-center text-sm font-bold tracking-wide text-amber-300">რუკის ნომერი: {mapNumber ?? "—"}</p>
+        <div className="glass-panel interpretation-container rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-2xl border-white/10 bg-[#090d1e]/90 backdrop-blur-2xl text-left w-full">
+          <h3 className="mb-4 border-b border-white/10 pb-3 text-center text-xl font-bold bg-gradient-to-r from-cyan-300 via-violet-300 to-pink-300 bg-clip-text text-transparent sm:text-2xl">
+            ასტროლოგიური ინტერპრეტაცია &amp; ანალიზი
+          </h3>
+          <p className="mb-4 text-center text-sm font-bold tracking-wide text-cyan-300">რუკის ნომერი: {mapNumber ?? "—"}</p>
           <InterpretationText text={interpretation} />
         </div>
       )}

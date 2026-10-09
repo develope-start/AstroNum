@@ -16,7 +16,7 @@ export default function PasswordField({ className = "", ...props }: PasswordFiel
         onClick={() => setVisible((current) => !current)}
         title="დააჭირეთ რომ დაინახოთ"
         aria-label={visible ? "პაროლის დამალვა" : "დააჭირეთ რომ დაინახოთ პაროლი"}
-        className="absolute inset-y-0 right-2 flex w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/10 hover:text-amber-300 focus-visible:text-amber-300"
+        className="absolute inset-y-0 right-2 flex w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/10 hover:text-sky-300 focus-visible:text-sky-300"
       >
         {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
       </button>
