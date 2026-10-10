@@ -46,15 +46,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="star-matrix-overlay" />
         </div>
 
-        {/* Document-Level Scrolling Horizontal Aurora Streams (Follows page scroll) */}
-        <div className="aurora-scroll-canvas pointer-events-none absolute inset-x-0 top-0 -z-10 h-full w-full overflow-hidden" aria-hidden="true">
-          <div className="aurora-scroll-stream aurora-stream-hero" />
-          <div className="aurora-scroll-stream aurora-stream-calc" />
-          <div className="aurora-scroll-stream aurora-stream-bento" />
-          <div className="aurora-scroll-stream aurora-stream-academy" />
-          <div className="aurora-scroll-stream aurora-stream-pricing" />
-        </div>
-
         <Nav />
         <main className="relative mx-auto w-full max-w-full overflow-x-hidden px-4 pb-12 pt-3 sm:px-8 sm:pb-20 sm:pt-6 lg:px-12 xl:px-16">{children}</main>
         <Footer />

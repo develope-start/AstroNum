@@ -53,7 +53,7 @@ body.app-body {
    Electric Cyan · Royal Indigo · Magenta
    ========================================================================== */
 
-/* 1. Global Viewport-Fixed Horizontal Aurora Stream Canvas */
+/* Viewport-fixed aurora stays centered as the document scrolls. */
 .aurora-canvas {
   position: fixed;
   inset: 0;
@@ -62,12 +62,12 @@ body.app-body {
   overflow: hidden;
 }
 
-/* Horizontal Aurora Bands - Restricted to ~30% screen height for high contrast */
+/* Overlapping ribbons share the viewport center and move continuously. */
 .aurora-horizontal-band {
   position: absolute;
   left: -20vw;
   width: 140vw;
-  height: 30vh;
+  height: clamp(13rem, 30vh, 26rem);
   pointer-events: none;
   border-radius: 50%;
   mix-blend-mode: screen;
@@ -75,139 +75,48 @@ body.app-body {
 }
 
 .aurora-band-top {
-  top: 10vh;
-  height: 28vh;
+  top: calc(50% - 9vh);
   background: radial-gradient(
-    ellipse 75% 38% at 50% 50%,
-    rgba(56, 189, 248, 0.85) 0%,
-    rgba(99, 102, 241, 0.72) 42%,
-    rgba(236, 72, 153, 0.45) 75%,
+    ellipse 70% 34% at 50% 50%,
+    rgba(56, 189, 248, 0.34) 0%,
+    rgba(99, 102, 241, 0.27) 42%,
+    rgba(236, 72, 153, 0.16) 75%,
     transparent 100%
   );
-  filter: blur(55px);
-  animation: aurora-horizontal-float 16s ease-in-out infinite alternate;
+  filter: blur(clamp(55px, 8vw, 125px));
+  animation: aurora-center-float 18s ease-in-out infinite;
 }
 
 .aurora-band-mid {
-  top: 55vh;
-  height: 28vh;
+  top: calc(50% - 2vh);
   background: radial-gradient(
-    ellipse 75% 38% at 50% 50%,
-    rgba(99, 102, 241, 0.78) 0%,
-    rgba(236, 72, 153, 0.70) 45%,
-    rgba(56, 189, 248, 0.50) 75%,
+    ellipse 64% 32% at 50% 50%,
+    rgba(99, 102, 241, 0.32) 0%,
+    rgba(236, 72, 153, 0.24) 45%,
+    rgba(56, 189, 248, 0.18) 75%,
     transparent 100%
   );
-  filter: blur(55px);
-  animation: aurora-horizontal-drift 20s ease-in-out infinite alternate-reverse;
+  filter: blur(clamp(60px, 9vw, 135px));
+  animation: aurora-center-drift 23s ease-in-out infinite;
 }
 
 .aurora-band-bottom {
-  top: 85vh;
-  height: 28vh;
+  top: calc(50% + 5vh);
   background: radial-gradient(
-    ellipse 75% 38% at 50% 50%,
-    rgba(56, 189, 248, 0.70) 0%,
-    rgba(99, 102, 241, 0.75) 42%,
-    rgba(168, 85, 247, 0.60) 75%,
+    ellipse 68% 34% at 50% 50%,
+    rgba(56, 189, 248, 0.24) 0%,
+    rgba(99, 102, 241, 0.29) 42%,
+    rgba(168, 85, 247, 0.2) 75%,
     transparent 100%
   );
-  filter: blur(55px);
-  animation: aurora-horizontal-float 18s ease-in-out infinite alternate;
-}
-
-/* 2. Document-Level Scrolling Aurora Streams (Precise 30vh height following scroll) */
-.aurora-scroll-canvas {
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  width: 100%;
-  min-height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.aurora-scroll-stream {
-  position: absolute;
-  left: -20vw;
-  width: 140vw;
-  height: 30vh;
-  border-radius: 50%;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  will-change: transform;
+  filter: blur(clamp(60px, 9vw, 135px));
+  animation: aurora-center-float 21s ease-in-out infinite reverse;
 }
 
 .app-body > main,
 .app-body > footer {
   position: relative;
   z-index: 1;
-}
-
-.aurora-stream-hero {
-  top: 4%;
-  height: 30vh;
-  background: radial-gradient(
-    ellipse 75% 38% at 50% 50%,
-    rgba(56, 189, 248, 0.88) 0%,
-    rgba(99, 102, 241, 0.75) 45%,
-    rgba(236, 72, 153, 0.40) 78%,
-    transparent 100%
-  );
-  filter: blur(60px);
-}
-
-.aurora-stream-calc {
-  top: 26%;
-  height: 30vh;
-  background: radial-gradient(
-    ellipse 75% 38% at 50% 50%,
-    rgba(99, 102, 241, 0.85) 0%,
-    rgba(56, 189, 248, 0.75) 45%,
-    rgba(236, 72, 153, 0.50) 78%,
-    transparent 100%
-  );
-  filter: blur(60px);
-}
-
-.aurora-stream-bento {
-  top: 50%;
-  height: 30vh;
-  background: radial-gradient(
-    ellipse 75% 38% at 50% 50%,
-    rgba(236, 72, 153, 0.85) 0%,
-    rgba(99, 102, 241, 0.85) 45%,
-    rgba(56, 189, 248, 0.55) 78%,
-    transparent 100%
-  );
-  filter: blur(60px);
-}
-
-.aurora-stream-academy {
-  top: 72%;
-  height: 30vh;
-  background: radial-gradient(
-    ellipse 75% 38% at 50% 50%,
-    rgba(56, 189, 248, 0.80) 0%,
-    rgba(99, 102, 241, 0.85) 45%,
-    rgba(168, 85, 247, 0.65) 78%,
-    transparent 100%
-  );
-  filter: blur(60px);
-}
-
-.aurora-stream-pricing {
-  top: 90%;
-  height: 30vh;
-  background: radial-gradient(
-    ellipse 75% 38% at 50% 50%,
-    rgba(236, 72, 153, 0.80) 0%,
-    rgba(99, 102, 241, 0.85) 45%,
-    rgba(56, 189, 248, 0.55) 78%,
-    transparent 100%
-  );
-  filter: blur(60px);
 }
 
 .star-matrix-overlay {
@@ -218,16 +127,16 @@ body.app-body {
   opacity: 0.28;
 }
 
-@keyframes aurora-horizontal-float {
-  0% { transform: translateX(0) scaleY(1); opacity: 0.92; }
-  50% { transform: translateX(3vw) scaleY(1.08); opacity: 1; }
-  100% { transform: translateX(-3vw) scaleY(0.96); opacity: 0.90; }
+@keyframes aurora-center-float {
+  0%, 100% { transform: translate3d(-2vw, 0, 0) scale3d(1, 0.92, 1); opacity: 0.74; }
+  35% { transform: translate3d(2.5vw, -1.5vh, 0) scale3d(1.04, 1.12, 1); opacity: 1; }
+  68% { transform: translate3d(-1vw, 1.25vh, 0) scale3d(0.98, 0.96, 1); opacity: 0.82; }
 }
 
-@keyframes aurora-horizontal-drift {
-  0% { transform: translateX(-2.5vw) scaleY(0.96); opacity: 0.88; }
-  50% { transform: translateX(2.5vw) scaleY(1.06); opacity: 1; }
-  100% { transform: translateX(-0.5vw) scaleY(1); opacity: 0.92; }
+@keyframes aurora-center-drift {
+  0%, 100% { transform: translate3d(1.5vw, 0.5vh, 0) scale3d(0.96, 0.94, 1); opacity: 0.68; }
+  42% { transform: translate3d(-2vw, -1vh, 0) scale3d(1.05, 1.08, 1); opacity: 0.96; }
+  74% { transform: translate3d(1vw, 1.5vh, 0) scale3d(1, 0.98, 1); opacity: 0.78; }
 }
 
 /* --- Full-Width Premium Desktop Navigation --- */
@@ -993,42 +902,6 @@ button.calc-submit-btn:hover,
 /* Remove the top gap only on the home page so its instrument touches the nav. */
 main:has(.app-home) {
   padding-top: 0 !important;
-}
-
-.aurora-band-top {
-  background: radial-gradient(
-    ellipse 95% 55% at 50% 50%,
-    rgba(56, 189, 248, 0.17) 0%,
-    rgba(99, 102, 241, 0.14) 42%,
-    rgba(236, 72, 153, 0.07) 75%,
-    transparent 100%
-  );
-  filter: blur(125px);
-  opacity: 0.22;
-}
-
-.aurora-band-mid {
-  background: radial-gradient(
-    ellipse 95% 55% at 50% 50%,
-    rgba(99, 102, 241, 0.15) 0%,
-    rgba(236, 72, 153, 0.1) 45%,
-    rgba(56, 189, 248, 0.08) 75%,
-    transparent 100%
-  );
-  filter: blur(130px);
-  opacity: 0.22;
-}
-
-.aurora-band-bottom {
-  background: radial-gradient(
-    ellipse 95% 55% at 50% 50%,
-    rgba(56, 189, 248, 0.12) 0%,
-    rgba(99, 102, 241, 0.14) 42%,
-    rgba(168, 85, 247, 0.1) 75%,
-    transparent 100%
-  );
-  filter: blur(130px);
-  opacity: 0.22;
 }
 
 .star-matrix-overlay {
