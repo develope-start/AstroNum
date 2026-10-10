@@ -1,7 +1,7 @@
 "use client";
 
 import { type CSSProperties, useEffect, useRef, useState } from "react";
-import { Activity, ArrowRight, Check, Compass, Heart, Orbit, Sparkles, Sun } from "lucide-react";
+import { Activity, ArrowRight, Bot, Check, Clock, Compass, Heart, Orbit, Sparkles, Sun } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
 import SynastryCalculator from "@/components/SynastryCalculator";
@@ -12,14 +12,18 @@ import SocialProofTicker from "@/components/SocialProofTicker";
 import BentoGrid from "@/components/BentoGrid";
 import PricingTable from "@/components/PricingTable";
 import CtaSection from "@/components/CtaSection";
+import AiAstrologyAssistant from "@/components/AiAstrologyAssistant";
+import RectificationCalculator from "@/components/RectificationCalculator";
 
-type Tab = "natal" | "synastry" | "transit" | "advanced";
+type Tab = "natal" | "synastry" | "transit" | "advanced" | "ai" | "rectification";
 
 const TABS = [
   { id: "natal", label: "ნატალური", hint: "დაბადების რუკა — პირადი სტრუქტურისა და პოტენციალის ანალიზი", icon: Sun },
   { id: "synastry", label: "სინასტრია", hint: "ორი რუკის შედარება — ურთიერთქმედების ძლიერი და რთული წერტილები", icon: Heart },
   { id: "transit", label: "ტრანზიტები", hint: "მიმდინარე ციური მოძრაობა ნატალურ რუკასთან მიმართებით", icon: Activity },
   { id: "advanced", label: "გაფართოებული", hint: "პროგრესიები, Return-ები, Solar Arc, დაბნელებები და ჰარმონიკები", icon: Orbit },
+  { id: "ai", label: "Gemini AI ანალიზი", hint: "ხელოვნური ინტელექტის სიღრმისეული ასტროლოგიური ინტერპრეტაცია", icon: Bot },
+  { id: "rectification", label: "რექტიფიკაცია", hint: "დაბადების ზუსტი წუთების დადგენა ცხოვრებისეული მოვლენების მიხედვით", icon: Clock },
 ] as const;
 
 const ZODIAC_SIGNS = [
@@ -435,6 +439,8 @@ export default function HomePage() {
           {tab === "synastry" && <SynastryCalculator />}
           {tab === "transit" && <TransitCalculator />}
           {tab === "advanced" && <AdvancedCalculator />}
+          {tab === "ai" && <AiAstrologyAssistant />}
+          {tab === "rectification" && <RectificationCalculator />}
         </div>
       </section>
 

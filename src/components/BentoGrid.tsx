@@ -164,46 +164,49 @@ export default function BentoGrid() {
           </div>
         </div>
 
-        {/* Card 4: Precision Timeline & Transits */}
+        {/* Card 4: Gemini AI Astrology Intelligence */}
         <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d121f]/70 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-500/30 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)]">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl transition-all group-hover:bg-violet-500/20" />
           
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-violet-400/30 bg-violet-950/40 text-violet-300 shadow-inner">
-            <Activity className="h-5 w-5" />
+            <Sparkles className="h-5 w-5" />
           </div>
           <h3 className="mt-5 font-display text-xl font-bold text-white">
-            დროის ტრანზიტები და ციკლები
+            Gemini AI ასტროლოგიური ინტელექტი
           </h3>
           <p className="mt-2 text-sm text-slate-400">
-            მიმდინარე ციური მოძრაობის სკანირება ნატალურ წერტილებთან მიმართებით. სატურნის, იუპიტერისა და უმაღლესი პლანეტების ტრანზიტული გავლენები.
+            Google Gemini 1.5 Flash-ის ღრმა ანალიზი ქართულ ენაზე: პიროვნული ბირთვი, პროფესია, კარიერა, სიყვარული და კარმული მისია.
           </p>
 
-          <div className="mt-5 flex items-center gap-2 rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-3 text-xs text-slate-300 font-mono">
-            <Orbit className="h-4 w-4 text-violet-400 animate-spin" style={{ animationDuration: "12s" }} />
-            <span>სატურნის დაბრუნება · 29.5 წლიანი ციკლი</span>
+          <div className="mt-5 flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-3 text-xs text-slate-300 font-mono">
+            <span className="flex items-center gap-1.5 text-cyan-300">
+              <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+              Gemini 1.5 Flash AI
+            </span>
+            <span className="text-violet-400 font-semibold">ინტეგრირებულია</span>
           </div>
         </div>
 
-        {/* Card 5: Secure Chart Vault & Cabinet */}
+        {/* Card 5: Birth Time Rectification Module */}
         <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d121f]/70 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)]">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl transition-all group-hover:bg-emerald-500/20" />
           
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-400/30 bg-emerald-950/40 text-emerald-300 shadow-inner">
-            <Lock className="h-5 w-5" />
+            <Compass className="h-5 w-5" />
           </div>
           <h3 className="mt-5 font-display text-xl font-bold text-white">
-            პირადი დაცული კაბინეტი
+            დაბადების დროის რექტიფიკაცია
           </h3>
           <p className="mt-2 text-sm text-slate-400">
-            შეინახეთ კლიენტებისა და პირადი რუკების შეუზღუდავი არქივი. დაშიფრული მონაცემთა ბაზა, სწრაფი ძებნა და კატეგორიზაცია.
+            დაადგინეთ დაბადების ზუსტი წუთი და ასცენდენტის გრადუსი ცხოვრებისეული მოვლენების (ქორწინება, კარიერა, შვილი) Solar Arc სკანირებით.
           </p>
 
           <div className="mt-5 flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-3 text-xs">
             <span className="flex items-center gap-1.5 text-slate-300">
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              256-Bit SSL დაცვა
+              Primary Directions Alg
             </span>
-            <span className="text-emerald-400 font-mono text-[11px]">აქტიური</span>
+            <span className="text-emerald-400 font-mono text-[11px]">სიზუსტე ±1 წთ</span>
           </div>
         </div>
 
