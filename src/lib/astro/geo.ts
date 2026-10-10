@@ -7,12 +7,19 @@ export interface GeoResult {
   timezone: string;
 }
 
-const NOMINATIM_HEADERS = {
-  // Nominatim-ის გამოყენების წესები მოითხოვს იდენტიფიცირებად User-Agent-ს — შეცვალეთ
-  // საკუთარი დომენით/ელფოსტით საკუთარ დეპლოიზე, თუ ბევრი მოთხოვნა გექნებათ.
-  "User-Agent": "astro-app/1.0 (astrology chart calculator)",
-  Accept: "application/json",
+type PhotonFeature = {
+  geometry?: { coordinates?: unknown };
+  properties?: Record<string, unknown>;
 };
+
+type PhotonResponse = { features?: PhotonFeature[] };
+type CacheValue<T> = { expiresAt: number; value: T };
+
+const PHOTON_BASE_URL = process.env.PHOTON_BASE_URL?.trim() || "https://photon.komoot.io";
+const CACHE_TTL_MS = 10 * 60 * 1000;
+const MAX_CACHE_ENTRIES = 500;
+const searchCache = new Map<string, CacheValue<GeoResult[]>>();
+const reverseCache = new Map<string, CacheValue<GeoResult>>();
 
 function withTimeout(ms: number) {
   const controller = new AbortController();
@@ -20,68 +27,137 @@ function withTimeout(ms: number) {
   return { signal: controller.signal, clear: () => clearTimeout(timer) };
 }
 
-/**
- * ადგილის სახელს (მაგ. "რუსთავი, საქართველო") გადააქცევს კოორდინატებად
- * OpenStreetMap-ის Nominatim სერვისის მეშვეობით (უფასო, API-გასაღები არ სჭირდება).
- * აბრუნებს რამდენიმე ვარიანტს (autocomplete-ისთვის).
- */
-export async function searchPlaces(query: string, limit = 6): Promise<GeoResult[]> {
-  const url = new URL("https://nominatim.openstreetmap.org/search");
-  url.searchParams.set("q", query);
-  url.searchParams.set("format", "jsonv2");
-  url.searchParams.set("limit", String(limit));
-  url.searchParams.set("accept-language", "ka,en");
+function readCache<T>(cache: Map<string, CacheValue<T>>, key: string): T | null {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (entry.expiresAt <= Date.now()) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.value;
+}
 
-  const { signal, clear } = withTimeout(8000);
-  try {
-    const res = await fetch(url.toString(), { headers: NOMINATIM_HEADERS, signal, cache: "no-store" });
-    clear();
-    if (!res.ok) {
-      console.error("Nominatim geocode failed:", res.status, await res.text().catch(() => ""));
-      return [];
-    }
-    const data = (await res.json()) as Array<{ display_name: string; lat: string; lon: string }>;
-    return data.map((d) => {
-      const lat = parseFloat(d.lat);
-      const lon = parseFloat(d.lon);
-      return { displayName: d.display_name, lat, lon, timezone: tzlookup(lat, lon) };
-    });
-  } catch (e) {
-    clear();
-    console.error("Nominatim geocode error:", e);
-    return [];
+function writeCache<T>(cache: Map<string, CacheValue<T>>, key: string, value: T) {
+  cache.set(key, { value, expiresAt: Date.now() + CACHE_TTL_MS });
+  while (cache.size > MAX_CACHE_ENTRIES) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey === undefined) break;
+    cache.delete(oldestKey);
   }
 }
 
-/**
- * ერთი (საუკეთესო) შედეგის მოძებნა — ძველი, მარტივი გამოძახებისთვის.
- */
+function displayName(properties: Record<string, unknown> | undefined, lat: number, lon: number) {
+  if (!properties) return `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+  const street = [properties.housenumber, properties.street]
+    .filter((part): part is string => typeof part === "string" && Boolean(part.trim()))
+    .join(" ");
+  const parts = [
+    street,
+    properties.name,
+    properties.city,
+    properties.district,
+    properties.county,
+    properties.state,
+    properties.country,
+  ].filter((part): part is string => typeof part === "string" && Boolean(part.trim()));
+  const unique = [...new Set(parts.map((part) => part.trim()))];
+  return unique.length ? unique.join(", ") : `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+}
+
+function featureToGeoResult(feature: PhotonFeature): GeoResult | null {
+  const coordinates = feature.geometry?.coordinates;
+  if (!Array.isArray(coordinates) || coordinates.length < 2) return null;
+  const [lon, lat] = coordinates;
+  if (typeof lat !== "number" || typeof lon !== "number" || !Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  try {
+    return {
+      displayName: displayName(feature.properties, lat, lon),
+      lat,
+      lon,
+      timezone: tzlookup(lat, lon),
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function requestPhoton(url: URL, signal: AbortSignal): Promise<PhotonResponse | null> {
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent": "AstroNum/1.0 (place search)",
+      Accept: "application/geo+json, application/json",
+      "Accept-Language": "ka,en;q=0.9",
+    },
+    signal,
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    console.error("Photon geocode failed:", response.status);
+    return null;
+  }
+  const data = await response.json() as PhotonResponse;
+  return data && Array.isArray(data.features) ? data : null;
+}
+
+/** Search by place name through Photon (OSM-backed, supports type-ahead search). */
+export async function searchPlaces(query: string, limit = 6): Promise<GeoResult[]> {
+  const normalizedQuery = query.trim().replace(/\s+/g, " ");
+  if (normalizedQuery.length < 2) return [];
+  const safeLimit = Math.min(10, Math.max(1, Math.trunc(limit) || 6));
+  const cacheKey = `${normalizedQuery.toLocaleLowerCase("ka-GE")}\0${safeLimit}`;
+  const cached = readCache(searchCache, cacheKey);
+  if (cached) return cached;
+
+  const url = new URL("/api/", PHOTON_BASE_URL);
+  url.searchParams.set("q", normalizedQuery);
+  url.searchParams.set("limit", String(safeLimit));
+
+  const timeout = withTimeout(8_000);
+  try {
+    const data = await requestPhoton(url, timeout.signal);
+    const results = (data?.features ?? [])
+      .map(featureToGeoResult)
+      .filter((result): result is GeoResult => result !== null);
+    if (data) writeCache(searchCache, cacheKey, results);
+    return results;
+  } catch (error) {
+    console.error("Photon geocode error:", error);
+    return [];
+  } finally {
+    timeout.clear();
+  }
+}
+
+/** Search a single best matching place. */
 export async function geocodePlace(query: string): Promise<GeoResult | null> {
   const results = await searchPlaces(query, 1);
   return results[0] ?? null;
 }
 
-/** კოორდინატებიდან ადგილის სახელს პოულობს (რუკაზე დაწკაპებისას). */
+/** Resolve a clicked map coordinate through Photon reverse geocoding. */
 export async function reverseGeocode(lat: number, lon: number): Promise<GeoResult> {
   const timezone = tzlookup(lat, lon);
-  const url = new URL("https://nominatim.openstreetmap.org/reverse");
+  const cacheKey = `${lat.toFixed(4)},${lon.toFixed(4)}`;
+  const cached = readCache(reverseCache, cacheKey);
+  if (cached) return { ...cached, lat, lon, timezone };
+
+  const fallback = { displayName: `${lat.toFixed(4)}, ${lon.toFixed(4)}`, lat, lon, timezone };
+  const url = new URL("/reverse", PHOTON_BASE_URL);
   url.searchParams.set("lat", String(lat));
   url.searchParams.set("lon", String(lon));
-  url.searchParams.set("format", "jsonv2");
-  url.searchParams.set("accept-language", "ka,en");
 
-  const { signal, clear } = withTimeout(8000);
+  const timeout = withTimeout(8_000);
   try {
-    const res = await fetch(url.toString(), { headers: NOMINATIM_HEADERS, signal, cache: "no-store" });
-    clear();
-    if (!res.ok) {
-      return { displayName: `${lat.toFixed(4)}, ${lon.toFixed(4)}`, lat, lon, timezone };
-    }
-    const data = (await res.json()) as { display_name?: string };
-    return { displayName: data.display_name || `${lat.toFixed(4)}, ${lon.toFixed(4)}`, lat, lon, timezone };
-  } catch (e) {
-    clear();
-    console.error("Nominatim reverse geocode error:", e);
-    return { displayName: `${lat.toFixed(4)}, ${lon.toFixed(4)}`, lat, lon, timezone };
+    const data = await requestPhoton(url, timeout.signal);
+    const result = data?.features?.[0] ? featureToGeoResult(data.features[0]) : null;
+    if (!result) return fallback;
+    const resolved = { ...result, lat, lon, timezone };
+    writeCache(reverseCache, cacheKey, resolved);
+    return resolved;
+  } catch (error) {
+    console.error("Photon reverse geocode error:", error);
+    return fallback;
+  } finally {
+    timeout.clear();
   }
 }

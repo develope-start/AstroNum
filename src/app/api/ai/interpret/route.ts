@@ -1,173 +1,154 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { computeNatalChart } from "@/lib/astro/chart";
+import { eclipticToSign } from "@/lib/astro/signs";
+import { houseOfLongitude } from "@/lib/astro/positions";
+import { generateNatalInterpretation } from "@/lib/interpretations/natal";
+import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 
-interface InterpretRequest {
-  type: "natal" | "career" | "love" | "karmic" | "question";
-  name: string;
-  birthDate: string;
-  birthTime: string;
-  birthPlace: string;
-  question?: string;
-  sunSign?: string;
-  moonSign?: string;
-  ascSign?: string;
-}
+const requestSchema = z.object({
+  type: z.enum(["natal", "career", "love", "karmic", "question"]),
+  name: z.string().trim().max(100).default("მაძიებელი"),
+  birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((value) => {
+    const date = new Date(`${value}T00:00:00.000Z`);
+    return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  }, "დაბადების თარიღი არასწორია"),
+  birthTime: z.string().trim().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).default("12:00"),
+  birthPlace: z.string().trim().max(160).default("თბილისი"),
+  lat: z.number().finite().min(-90).max(90),
+  lon: z.number().finite().min(-180).max(180),
+  timezone: z.string().trim().min(1).max(64),
+  question: z.string().trim().max(2_000).optional(),
+});
 
-export async function POST(req: Request) {
+const FOCUS_LABELS = {
+  natal: "ნატალური პროფილი",
+  career: "კარიერა და პროფესიული მიმართულება",
+  love: "ურთიერთობები და პარტნიორობა",
+  karmic: "კარმული ასტროლოგიის სიმბოლოები",
+  question: "პასუხი ასტროლოგიურ შეკითხვაზე",
+} as const;
+
+export async function POST(req: NextRequest) {
+  const limiter = rateLimit(getRateLimitKey(req, "ai:interpret"), 8, 15 * 60 * 1000);
+  if (!limiter.allowed) {
+    return NextResponse.json({ error: "მოთხოვნების ლიმიტი ამოიწურა. სცადეთ მოგვიანებით." }, {
+      status: 429,
+      headers: { "Retry-After": String(limiter.retryAfterSeconds) },
+    });
+  }
+
   try {
-    const body = (await req.json()) as InterpretRequest;
-    const { type, name, birthDate, birthTime, birthPlace, question, sunSign, moonSign, ascSign } = body;
+    const rawBody = await req.json().catch(() => null);
+    const parsed = requestSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "მონაცემები არასწორია" }, { status: 400 });
+    }
+    const { type, name, birthDate, birthTime, birthPlace, lat, lon, timezone, question } = parsed.data;
 
-    if (!birthDate) {
-      return NextResponse.json({ error: "დაბადების თარიღი სავალდებულოა" }, { status: 400 });
+    let chart;
+    try {
+      chart = computeNatalChart({ date: birthDate, time: birthTime, timezone, lat, lon }, "placidus");
+    } catch (error) {
+      return NextResponse.json({
+        error: error instanceof Error ? error.message : "რუკის გამოთვლა ვერ მოხერხდა",
+      }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const chartText = generateNatalInterpretation({
+      planets: chart.planets,
+      houseCusps: chart.houseCusps,
+      ascendant: chart.ascendant,
+      mc: chart.mc,
+      aspects: chart.aspects,
+      houseOfFn: (longitude) => houseOfLongitude(longitude, chart.houseCusps),
+    });
+    const placements = chart.planets.map((planet) => {
+      const sign = eclipticToSign(planet.longitude);
+      return `${planet.name}: ${sign.signName} ${sign.degreeInSign.toFixed(2)}°, ${chart.planetHouses[planet.name] ?? "?"}-ე სახლი`;
+    }).join("\n");
+    const aspects = [...chart.aspects]
+      .sort((left, right) => left.orb - right.orb)
+      .slice(0, 24)
+      .map((aspect) => `${aspect.a} ${aspect.aspect} ${aspect.b} (orb ${aspect.orb}°)`)
+      .join("\n") || "მოცემულ ორბებში ასპექტი არ დაფიქსირდა";
 
-    // If Gemini API Key is configured, make a live call
+    const apiKey = process.env.GEMINI_API_KEY;
     if (apiKey) {
       try {
-        const prompt = `შენ ხარ უმაღლესი დონის პროფესიონალი ასტროლოგი და ფსიქოანალიტიკოსი. 
-გააანალიზე შემდეგი ნატალური რუკის მონაცემები:
-სახელი: ${name || "ინკოგნიტო"}
-დაბადების თარიღი: ${birthDate}
-დაბადების დრო: ${birthTime || "დაუზუსტებელი"}
-დაბადების ადგილი: ${birthPlace || "თბილისი"}
-მზის ნიშანი: ${sunSign || "გაითვალისწინე თარიღიდან"}
-მთვარის ნიშანი: ${moonSign || "ავტომატური"}
-ასცენდენტი: ${ascSign || "ავტომატური"}
-ანალიზის ტიპი: ${type}
-${question ? `მომხმარებლის კონკრეტული შეკითხვა: "${question}"` : ""}
+        const prompt = `დაწერე მკაფიო, გამართული ქართული ასტროლოგიური ინტერპრეტაცია. ეს არის სიმბოლური ასტროლოგიური წაკითხვა და არა სამედიცინო, ფსიქოლოგიური ან ფინანსური დიაგნოზი.
 
-მოთხოვნები:
-1. პასუხი უნდა იყოს გამართულ, ლიტერატურულ და პროფესიონალურ ქართულ ენაზე.
-2. გააანალიზე როგორც ფსიქოლოგიური არქეტიპები, ისე პრაქტიკული რეკომენდაციები.
-3. სტრუქტურირებულად დაყავი აბზაცებად და ქვეთავებად.
-4. მოერიდე ბანალურ ჰოროსკოპულ ფრაზებს — გამოიყენე Swiss Ephemeris-ის სიღრმისეული ასტროლოგიური ტერმინოლოგია (ასპექტები, სახლები, სტიქიები).`;
+ფოკუსი: ${FOCUS_LABELS[type]}
+სახელი: ${name || "მაძიებელი"}
+დაბადების ადგილი: ${birthPlace || "მითითებული არ არის"}
+${question ? `შეკითხვა: ${question}` : ""}
 
+გამოთვლილი რუკის მონაცემები (ეს პოზიციები გამოიყენე წყაროდ; ახალი პოზიციები არ გამოიგონო):
+ასცენდენტი: ${eclipticToSign(chart.ascendant).signName}
+MC: ${eclipticToSign(chart.mc).signName}
+ეფემერიდა: ${chart.ephemeris.source}
+პლანეტების პოზიციები:
+${placements}
+ასპექტები:
+${aspects}
+
+განმარტე მხოლოდ მოწოდებულ მონაცემებზე დაყრდნობით. თუ შეკითხვას რუკა საკმარისად არ პასუხობს, პირდაპირ აღნიშნე ეს. მოერიდე გარანტირებულ წინასწარმეტყველებებსა და გამოგონილ ბიოგრაფიულ ფაქტებს.`;
+
+        const model = process.env.GEMINI_MODEL?.trim() || "gemini-3.8-flash";
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 25_000);
         const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { temperature: 0.7, maxOutputTokens: 1500 },
+              generationConfig: { maxOutputTokens: 1500 },
             }),
-          }
-        );
+            signal: controller.signal,
+          },
+        ).finally(() => clearTimeout(timeout));
 
         if (geminiRes.ok) {
           const data = await geminiRes.json();
           const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (generatedText) {
+          if (typeof generatedText === "string" && generatedText.trim()) {
             return NextResponse.json({
               success: true,
               analysis: generatedText,
-              provider: "Gemini 1.5 Flash AI",
+              provider: `Gemini (${model}) · ${chart.ephemeris.source}`,
             });
           }
+        } else {
+          console.warn("Gemini API returned", geminiRes.status);
         }
-      } catch (aiErr) {
-        console.warn("Gemini API call failed, falling back to expert astrological engine:", aiErr);
+      } catch (error) {
+        console.warn("Gemini request failed; using the local chart interpretation:", error);
       }
     }
 
-    // High-Accuracy Georgian Astrological Synthesis Engine (Graceful Local AI Fallback)
-    const year = parseInt(birthDate.slice(0, 4), 10) || 1990;
-    const month = parseInt(birthDate.slice(5, 7), 10) || 1;
-    const day = parseInt(birthDate.slice(8, 10), 10) || 1;
-
-    const fallbackAnalysis = generateFallbackInterpretation(
-      type,
-      name || "მაძიებელო",
-      year,
-      month,
-      day,
-      birthTime,
-      question
-    );
-
     return NextResponse.json({
       success: true,
-      analysis: fallbackAnalysis,
-      provider: "AstroNum° Ephemeris Synthesis Engine v2.1",
+      analysis: generateLocalInterpretation(type, name || "მაძიებელი", chartText, question),
+      provider: `AstroNum-ის ლოკალური ინტერპრეტაცია · ${chart.ephemeris.source}`,
     });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "ინტერპრეტაციის გენერირების შეცდომა" },
-      { status: 500 }
-    );
+  } catch {
+    return NextResponse.json({ error: "ინტერპრეტაციის გენერირების შეცდომა" }, { status: 500 });
   }
 }
 
-function generateFallbackInterpretation(
-  type: string,
+function generateLocalInterpretation(
+  type: keyof typeof FOCUS_LABELS,
   name: string,
-  year: number,
-  month: number,
-  day: number,
-  time: string,
-  question?: string
-): string {
-  if (type === "career") {
-    return `### 💼 პროფესიული მისია, კარიერა და ფინანსური პოტენციალი
+  chartText: string,
+  question?: string,
+) {
+  const focusNote = type === "question"
+    ? question
+      ? `თქვენი შეკითხვა: „${question}“. ადგილობრივი რეჟიმი შეკითხვას ცალკე ტექსტურად ვერ აანალიზებს; ქვემოთ მოცემულია გამოთვლილი ნატალური რუკა, რომელზეც პასუხის მოძებნა შეგიძლიათ.`
+      : "ადგილობრივ რეჟიმში შეკითხვაზე ცალკე ტექსტური პასუხი მიუწვდომელია; ქვემოთ მოცემულია გამოთვლილი ნატალური რუკა."
+    : `ფოკუსი: ${FOCUS_LABELS[type]}. ადგილობრივი რეჟიმი აჩვენებს გამოთვლილ რუკასა და მის წესებზე დაფუძნებულ განმარტებას; თემაზე თავისუფალი ტექსტის გენერირებისთვის Gemini API უნდა იყოს კონფიგურირებული.`;
 
-მოგესალმებით, **${name}**. თქვენი ნატალური რუკის ციური კონფიგურაციით (MC და მე-10 სახლის გავლენა):
-
-#### 1. კარიერული არქეტიპი და რეალიზაციის სფერო
-თქვენი უმაღლესი წერტილი (Medium Coeli) მიუთითებს ძლიერ შინაგან მოთხოვნილებაზე, შექმნათ მყარი სტრუქტურა და მიაღწიოთ ავტონომიას. თქვენთვის ნაკლებად მისაღებია მკაცრი რუტინა და სხვებზე სრული დაქვემდებარება; საუკეთესო შედეგს აჩვენებთ პროექტების ხელმძღვანელობაში, ანალიტიკურ ან კრეატიულ სფეროებში, სადაც საჭიროა სტრატეგიული ხედვა.
-
-#### 2. ფინანსური არხები (მე-2 და მე-8 სახლები)
-ფინანსური რესურსების მოზიდვა პირდაპირ კავშირშია თქვენს უნიკალურ ცოდნასა და ექსპერტიზასთან. იუპიტერისა და სატურნის ენერგეტიკული ბალანსი გვიჩვენებს, რომ სტაბილური შემოსავალი მოდის ეტაპობრივად, ხარისხზე ორიენტირებული შრომით. მოერიდეთ ნაჩქარევ სპეკულაციურ დაბანდებებს.
-
-#### 3. პრაქტიკული რეკომენდაცია
-* განავითარეთ თქვენი პირადი ბრენდი და დამოუკიდებელი უნარები.
-* მიმდინარე ციკლში განსაკუთრებით ხელსაყრელია ინტელექტუალური და ტექნოლოგიური პროექტების დაწყება.`;
-  }
-
-  if (type === "love") {
-    return `### ❤️ სიყვარული, სინასტრია და ურთიერთობების დინამიკა
-
-ძვირფასო **${name}**, თქვენი ვენერისა და მარსის პოზიციები, აგრეთვე მე-7 პარტნიორული სახლის სინთეზი გვიჩვენებს:
-
-#### 1. მიზიდულობისა და ემოციური კავშირის ბუნება
-თქვენთვის ურთიერთობაში უმთავრესია არა მხოლოდ ზედაპირული ვნება, არამედ ღრმა მენტალური და სულიერი გაგება. ვენერას განლაგება მოითხოვს გულწრფელობას, პატივისცემასა და ესთეტიკურ ჰარმონიას. პარტნიორში ეძებთ ინტელექტუალურ თანამოსაუბრესა და საიმედო დასაყრდენს.
-
-#### 2. გამოწვევები და ზრდის წერტილები
-ხანდახან მოსალოდნელია შინაგანი კონფლიქტი თავისუფლების წყურვილსა და ღრმა მიჯაჭვულობას შორის. სატურნის ასპექტები გასწავლით ჯანსაღი საზღვრების დაწესებას, ისე რომ არ ჩაკეტოთ თქვენი გულის ცენტრი.
-
-#### 3. იდეალური პარტნიორული თავსებადობა
-საუკეთესო რეზონანსი მიიღწევა იმ პარტნიორთან, რომლის ნატალურ რუკაშიც ძლიერადაა გამოხატული ჰაერისა და ცეცხლის სტიქიები — ეს მოგცემთ მუდმივ შთაგონებას და ემოციურ სიმსუბუქეს.`;
-  }
-
-  if (type === "karmic") {
-    return `### 🔮 კარმული მისია და სულის ევოლუციური გზა
-
-**${name}**, მთვარის კვანძების (Rahu & Ketu) და ქირონის ანალიზი ავლენს თქვენს სულიერ ამოცანას:
-
-#### 1. სამხრეთის კვანძი (Ketu) — წარსულის გამოცდილება
-თქვენ გაქვთ წარსული ინკარნაციებიდან მოყოლილი ძლიერი ინტუიციური ბაზა. თქვენთვის ადვილია წარსული კომფორტის ზონაში დარჩენა, თუმცა სულიერი ზრდისთვის აუცილებელია ახალ, ჯერ გამოუცდელ გამოცდილებებში გაბედული გადასვლა.
-
-#### 2. ჩრდილოეთის კვანძი (Rahu) — ამ ცხოვრების ევოლუციური ვექტორი
-თქვენი უმთავრესი ამოცანაა ისწავლოთ საკუთარი შინაგანი ძალის გაცნობიერება და სხვების დამოუკიდებლად წინსვლა. ნუ შეგეშინდებათ ლიდერობისა და ინოვაციური ნაბიჯების გადადგმის.
-
-#### 3. ქირონი — მკურნალის ჭრილობა და სიბრძნე
-ადრეულ ასაკში განცდილი გაუგებრობა ან ეჭვები საკუთარ თავში იქცევა თქვენს ყველაზე დიდ სიბრძნედ, რომლითაც მომავალში შეძლებთ სხვების დახმარებასა და შთაგონებას.`;
-  }
-
-  // Default: General Natal & Psychological Profile
-  return `### 🌟 ნატალური პიროვნული პროფილი და ციური სინთეზი
-
-მოგესალმებით, **${name}**. თქვენი ნატალური რუკის შვეიცარული ეფემერიდით დამუშავებული მონაცემები:
-
-#### 1. პიროვნული ბირთვი (მზისა და მთვარის სინთეზი)
-თქვენ გამოირჩევით მრავალშრიანი შინაგანი ბუნებით. მზის პოზიცია განიჭებთ სიცოცხლისუნარიანობას, მიზანდასახულობასა და ლიდერულ ნაპერწკალს, ხოლო მთვარის ემოციური მდებარეობა მიუთითებს ღრმა მგრძნობიარობაზე, განვითარებულ ინტუიციასა და ქვეცნობიერ სიბრძნეზე.
-
-#### 2. ასცენდენტი და სოციალური ნიღაბი
-სამყაროსთან თქვენი პირველი შეხება არის თავდაჯერებული, დაკვირვებული და მიმზიდველი. ადამიანები თქვენში პირველივე ნახვისას გრძნობენ ავთენტურობას და შინაგან ღირსებას.
-
-#### 3. 4 სტიქიის ტემპერამენტული ბალანსი
-თქვენს რუკაში გამოხატულია სტიქიური წონასწორობა, რაც საშუალებას გაძლევთ იდეები (ჰაერი/ცეცხლი) აქციოთ რეალურ, ხელშესახებ შედეგებად (მიწა/წყალი). 
-
-${question ? `\n#### 💬 პასუხი თქვენს შეკითხვაზე ("${question}"):\nასტროლოგიური ტრანზიტების მიხედვით, აღნიშნული საკითხის გადაწყვეტისთვის საუკეთესო პერიოდია მიმდინარე ციური ციკლის აქტიური ფაზა. ენდეთ თქვენს პირველად ინტუიციას — პლანეტარული ასპექტები მხარს უჭერს გაბედულ, გააზრებულ მოქმედებას.` : ""}`;
+  return `# ${FOCUS_LABELS[type]} — ${name}\n\n${focusNote}\n\n${chartText}`;
 }

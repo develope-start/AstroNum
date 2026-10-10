@@ -17,6 +17,9 @@ export default function ElementSources({ defaultOpen = false }: { defaultOpen?: 
         <p className="mb-3 text-xs leading-relaxed text-slate-300">
           დამატებითი მასალა სტიქიების, ტემპერამენტებისა და მათი ასტროლოგიური ინტერპრეტაციის შესახებ.
         </p>
+        <p className="mb-3 rounded-xl border border-amber-400/20 bg-amber-950/20 p-3 text-xs leading-relaxed text-amber-100/80">
+          სტიქიებისა და ტემპერამენტების კავშირი წარმოდგენილია ისტორიულ და ასტროლოგიურ სიმბოლურ სისტემად; ეს არ არის თანამედროვე კლინიკური დიაგნოსტიკა ან მეცნიერულად დადასტურებული პიროვნების ტესტი.
+        </p>
         <ol className="element-sources-list space-y-1.5 text-xs">
           {TEMPERAMENT_SOURCES.map((source, index) => (
             <li key={source.url}>

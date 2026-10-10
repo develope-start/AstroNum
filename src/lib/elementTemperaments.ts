@@ -88,12 +88,10 @@ export const TEMPERAMENT_SOURCES = [
   { title: "ფსიქოლოგიური ანალიზი: რას ნიშნავს ოთხი ტემპერამენტი?", url: "https://psychology.com/types/four-temperaments" },
   { title: "ზოდიაქოს სცენარები: ტემპერამენტების განაწილება ნიშნების მიხედვით", url: "https://www.wattpad.com/713334294-zodiac-scenarios-which-of-the-4-basic-temperaments" },
   { title: "პიროვნება, ტემპერამენტი და ზოდიაქოს ნიშნები ფსიქოთერაპიაში", url: "https://lifeencounter.com/personality-temperament-zodiac-signs-and-what-kind-of-poptart-you-are/" },
-  { title: "დევიდ ოსბორნი: ზოდიაქოს ნიშნების ტემპერამენტები და ასტროლოგიური მატრიცა", url: "https://saptarishisastrology.com/temperaments-of-the-zodiac-signs-by-david-osborn/" },
   { title: "ვიკიპედია: ასტროლოგია და კლასიკური ელემენტები / სტიქიები", url: "https://en.wikipedia.org/wiki/Astrology_and_the_classical_elements" },
-  { title: "დევიდ ოსბორნი: ანტიკური ბერძნული მედიცინა და ტრადიციული ასტროლოგია", url: "https://saptarishisastrology.com/greek-medicine-and-astrology-1-2-by-david-osborn/" },
   { title: "ჯუდით ფრიზლენი: იცნობთ საკუთარ ტემპერამენტს? მიწის სტიქიის ანალიზი", url: "https://judithfrizlen.com/2021/10/24/do-you-know-your-temperament/" },
   { title: "ანთროპოსოფიული მიდგომა და ოთხი ტემპერამენტის არსი", url: "https://medaybe.com/the-four-temperaments-in-anthroposophy/" },
   { title: "პიროვნების ტიპები: ტემპერამენტების „დიდი სამეული“ ასტროლოგიაში", url: "https://mysticalanalytics.com/the-big-3-of-temperament/" },
   { title: "ტრადიციული ასტროლოგია: ოთხი სტიქია და მათი პირველადი თვისებები", url: "https://thealignedlover.com/traditional-astrology-the-four-elements-and-their-core-qualities/" },
-  { title: "ენციკლოპედია ბრიტანიკა: ტემპერამენტის სამეცნიერო დეფინიცია, განწყობები და ხასიათი", url: "https://www.britannica.com/topic/temperament" },
+  { title: "ენციკლოპედია ბრიტანიკა: ტემპერამენტის მიმოხილვა", url: "https://www.britannica.com/topic/temperament" },
 ] as const;

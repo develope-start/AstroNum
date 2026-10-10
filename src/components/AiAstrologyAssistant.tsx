@@ -14,6 +14,28 @@ const ANALYSIS_MODES: { id: AnalysisType; label: string; icon: typeof Sparkles; 
   { id: "question", label: "შეკითხვა ასტროლოგს", icon: MessageSquare, hint: "დაუსვით კონკრეტული შეკითხვა თქვენს ნატალურ რუკაზე" },
 ];
 
+function renderAssistantMarkup(text: string) {
+  function inline(value: string, keyPrefix: string) {
+    return value.split(/(\*\*[^*]+\*\*)/g).map((part, index) =>
+      part.startsWith("**") && part.endsWith("**")
+        ? <strong key={`${keyPrefix}-${index}`} className="font-bold text-white">{part.slice(2, -2)}</strong>
+        : <span key={`${keyPrefix}-${index}`}>{part}</span>,
+    );
+  }
+
+  return text.split(/\n{2,}/).map((block, index) => {
+    const heading = block.match(/^#{1,3}\s+(.+)$/);
+    if (heading) return <h4 key={index} className="font-display text-base font-bold text-white">{inline(heading[1]!, `heading-${index}`)}</h4>;
+
+    const lines = block.split("\n");
+    if (lines.every((line) => /^[-*]\s+/.test(line))) {
+      return <ul key={index} className="list-disc space-y-1 pl-5">{lines.map((line, lineIndex) => <li key={lineIndex}>{inline(line.replace(/^[-*]\s+/, ""), `list-${index}-${lineIndex}`)}</li>)}</ul>;
+    }
+
+    return <p key={index} className="whitespace-pre-line text-sm leading-relaxed text-slate-200">{inline(block, `paragraph-${index}`)}</p>;
+  });
+}
+
 export default function AiAstrologyAssistant() {
   const [birth, setBirth] = useState<BirthValue>(EMPTY_BIRTH);
   const [mode, setMode] = useState<AnalysisType>("natal");
@@ -31,6 +53,10 @@ export default function AiAstrologyAssistant() {
       setError("გთხოვთ მიუთითოთ დაბადების თარიღი.");
       return;
     }
+    if (birth.lat === null || birth.lon === null || !birth.timezone) {
+      setError("აირჩიეთ დაბადების ადგილი შემოთავაზებული სიიდან ან მიუთითეთ რუკაზე.");
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -46,6 +72,9 @@ export default function AiAstrologyAssistant() {
           birthDate: birth.date,
           birthTime: birth.time || "12:00",
           birthPlace: birth.place || "თბილისი",
+          lat: birth.lat,
+          lon: birth.lon,
+          timezone: birth.timezone,
           question: mode === "question" ? question : undefined,
         }),
       });
@@ -57,7 +86,7 @@ export default function AiAstrologyAssistant() {
       }
 
       setResult(data.analysis);
-      setProvider(data.provider || "Gemini 1.5 Flash AI");
+      setProvider(data.provider || "AstroNum-ის ლოკალური ინტერპრეტაცია");
     } catch {
       setError("ქსელის შეცდომა. გთხოვთ სცადოთ მოგვიანებით.");
     } finally {
@@ -77,7 +106,7 @@ export default function AiAstrologyAssistant() {
       <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
         {/* Left Side: Birth Fields & Mode Controls */}
         <div className="space-y-4 lg:col-span-5">
-          <BirthFields value={birth} onChange={setBirth} legend="01. მონაცემები AI ანალიზისთვის" />
+          <BirthFields value={birth} onChange={setBirth} legend="01. ასტროლოგიური ანალიზის მონაცემები" />
 
           {/* Mode Selector */}
           <div className="rounded-2xl border border-white/10 bg-[#090d1e]/85 p-5 shadow-xl backdrop-blur-xl">
@@ -208,17 +237,15 @@ export default function AiAstrologyAssistant() {
                   <Sparkles className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-cyan-300 animate-pulse" />
                 </div>
                 <p className="mt-6 font-display text-base font-bold text-white">
-                  პლანეტარული ასპექტებისა და სახლების AI სინთეზი...
+                  დაბადების რუკის გამოთვლა და ინტერპრეტაცია...
                 </p>
                 <p className="mt-1.5 max-w-sm text-xs text-slate-400">
-                  Swiss Ephemeris v2.1-ის კოორდინატების გაშიფვრა და ქართულენოვანი ფსიქოანალიზის მომზადება
+                  მითითებული დროის ზონისა და კოორდინატების გათვალისწინებით
                 </p>
               </div>
             ) : result ? (
               <div className="mt-6 max-h-[550px] overflow-y-auto pr-2 text-sm leading-relaxed text-slate-200">
-                <div className="whitespace-pre-line font-sans space-y-4">
-                  {result}
-                </div>
+                <div className="font-sans space-y-4">{renderAssistantMarkup(result)}</div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-20 text-center text-slate-400">
@@ -239,7 +266,7 @@ export default function AiAstrologyAssistant() {
                     ✓ ასპექტების ღრმა ანალიზი
                   </span>
                   <span className="rounded-full bg-white/[0.03] px-3 py-1 border border-white/5">
-                    ✓ პირადი რეკომენდაციები
+                    ✓ გამოთვლილ პოზიციებზე მორგებული განმარტება
                   </span>
                 </div>
               </div>

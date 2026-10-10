@@ -1,47 +1,47 @@
 "use client";
 
-import { Award, Binary, Cpu, Globe, Lock, Orbit, ShieldCheck, Sparkles } from "lucide-react";
+import { Binary, Cpu, Globe, Lock, Orbit, ShieldCheck, Sparkles } from "lucide-react";
 
 const PROOF_ITEMS = [
   {
     icon: Binary,
-    label: "შვეიცარიული ეფემერიდა · ვერსია 2.1",
-    subtext: "რკალის წამზე ნაკლები ცდომილება",
+    label: "ორი ეფემერიდის ძრავა",
+    subtext: "Swiss Ephemeris და Astronomy Engine fallback",
   },
   {
     icon: Orbit,
-    label: "ასტრონომიული გამოთვლების ძრავა",
-    subtext: "კეპლერისეული პლანეტური მექანიკა",
+    label: "გამოთვლის პარამეტრები",
+    subtext: "ტროპიკული/სიდერიული ზოდიაქო, კვანძი და ასტეროიდები",
   },
   {
     icon: Cpu,
-    label: "სახლების 12 სისტემა",
-    subtext: "პლაციდუსი, კოხი, მთლიანი ნიშანი, თანაბარი სახლები",
+    label: "სახლების 4 სისტემა",
+    subtext: "პლაციდუსი, მთელი ნიშანი, თანაბარი სახლები და პორფირი",
   },
   {
     icon: Globe,
-    label: "ორმაგი გეოკოდირება",
-    subtext: "GeoNames-ისა და OpenStreetMap-ის სერვისები",
+    label: "ადგილების ძებნა და რუკა",
+    subtext: "Photon-ისა და OpenStreetMap-ის მონაცემები",
   },
   {
     icon: ShieldCheck,
-    label: "დროის სარტყლის ცდომილების გარეშე",
-    subtext: "IANA-ს მონაცემთა ბაზით დროის სარტყლის რეალურ დროში გადამოწმება",
+    label: "დროის სარტყლის გამოთვლა",
+    subtext: "კოორდინატებიდან tz-lookup-ით, თარიღის ოფსეტით Luxon-იდან",
   },
   {
     icon: Lock,
-    label: "რუკების დაცული საცავი",
-    subtext: "მონაცემების კონფიდენციალურობის სრული დაცვით შენახვა",
+    label: "ანგარიშის დაცვა",
+    subtext: "bcrypt პაროლის ჰეშისთვის და HTTP-only სესიის cookie",
   },
   {
-    icon: Award,
-    label: "შვეიცარიული გამოთვლების სერტიფიცირებული სიზუსტე",
-    subtext: "სიზუსტე: 0.0001°-მდე",
+    icon: Lock,
+    label: "პირადი რუკების არქივი",
+    subtext: "წვდომას API ანგარიშის მფლობელობითა და როლით ამოწმებს",
   },
   {
     icon: Sparkles,
-    label: "ოთხი სტიქიის სინთეზი",
-    subtext: "ჰიპოკრატეს ტემპერამენტთა დაბალანსება",
+    label: "სტიქიების სინთეზი",
+    subtext: "განაწილება ნატალურ რუკაში პლანეტების პოზიციებიდან ითვლება",
   },
 ];
 
