@@ -81,35 +81,35 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: მეთოდოლოგია */}
+          {/* Column 3: აკადემია & მეთოდოლოგია */}
           <div>
             <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-slate-300">
-              მეთოდოლოგია
+              აკადემია & ცოდნა
             </h4>
             <ul className="mt-4 space-y-2.5 text-xs text-slate-400">
               <li>
-                <a href="#features" className="transition-colors hover:text-indigo-300">
-                  Swiss Ephemeris v2.1
+                <a href="#academy" className="transition-colors hover:text-indigo-300">
+                  სატურნის დაბრუნება (29.5 წ)
                 </a>
               </li>
               <li>
-                <a href="#features" className="transition-colors hover:text-indigo-300">
-                  სახლების 12 სისტემა
+                <a href="#academy" className="transition-colors hover:text-indigo-300">
+                  ლილიტი (შავი მთვარე)
                 </a>
               </li>
               <li>
-                <a href="#features" className="transition-colors hover:text-indigo-300">
-                  4 სტიქია & ტემპერამენტი
+                <a href="#academy" className="transition-colors hover:text-indigo-300">
+                  კარმული კვანძები (Rahu/Ketu)
                 </a>
               </li>
               <li>
-                <a href="#features" className="transition-colors hover:text-indigo-300">
-                  ასპექტების ორბების ალგორითმი
+                <a href="#academy" className="transition-colors hover:text-indigo-300">
+                  მინერალური ქვები & 4 სტიქია
                 </a>
               </li>
               <li>
-                <a href="#features" className="transition-colors hover:text-indigo-300">
-                  ასტრონომიული ფიზიკა
+                <a href="#consultations" className="transition-colors hover:text-indigo-300">
+                  პირადი კონსულტაციები (1-on-1)
                 </a>
               </li>
             </ul>

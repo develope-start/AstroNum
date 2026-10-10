@@ -169,6 +169,8 @@ export default function Nav() {
           <div className="hidden items-center gap-2 md:flex">
             <Link href="/#calculator" className="nav-quiet-action"><Compass className="h-3.5 w-3.5" />რუკა</Link>
             <Link href="/#features" className="nav-quiet-action">შესაძლებლობები</Link>
+            <Link href="/#academy" className="nav-quiet-action">აკადემია</Link>
+            <Link href="/#consultations" className="nav-quiet-action">კონსულტაციები</Link>
             <Link href="/#pricing" className="nav-quiet-action">ტარიფები</Link>
             {me === null && <Link href="/cabinet" className="nav-action"><User className="h-3.5 w-3.5" />კაბინეტი</Link>}
             {me && <Link href="/cabinet/dashboard" className="nav-action"><LayoutDashboard className="h-3.5 w-3.5" />კაბინეტი</Link>}
@@ -188,6 +190,8 @@ export default function Nav() {
           <div className="mt-3 grid gap-2 border-t border-slate-700/30 pt-3 md:hidden">
             <Link href="/#calculator" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start"><Compass className="h-4 w-4" />რუკის შექმნა</Link>
             <Link href="/#features" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">შესაძლებლობები</Link>
+            <Link href="/#academy" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">აკადემია</Link>
+            <Link href="/#consultations" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">კონსულტაციები</Link>
             <Link href="/#pricing" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">ტარიფები</Link>
             {me?.role === "ADMIN" && <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start"><Shield className="h-4 w-4 text-violet-300" />ადმინ პანელი</Link>}
             {me && <p className="truncate px-2 text-xs text-slate-500">{me.email}</p>}

@@ -14,6 +14,8 @@ import PricingTable from "@/components/PricingTable";
 import CtaSection from "@/components/CtaSection";
 import AiAstrologyAssistant from "@/components/AiAstrologyAssistant";
 import RectificationCalculator from "@/components/RectificationCalculator";
+import KnowledgeHub from "@/components/KnowledgeHub";
+import ExpertConsultationBooking from "@/components/ExpertConsultationBooking";
 
 type Tab = "natal" | "synastry" | "transit" | "advanced" | "ai" | "rectification";
 
@@ -446,6 +448,12 @@ export default function HomePage() {
 
       {/* 6-Card Bento Box Feature Showcase */}
       <BentoGrid />
+
+      {/* Astrological Knowledge Hub & Insights Academy */}
+      <KnowledgeHub />
+
+      {/* 1-on-1 Certified Astrologer Consultation Booking */}
+      <ExpertConsultationBooking />
 
       {/* 3-Tier Pricing Table */}
       <PricingTable />
