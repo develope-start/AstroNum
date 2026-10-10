@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Compass, Github, Heart, Orbit, ShieldCheck, Sparkles } from "lucide-react";
+import { Code2, Compass, Heart, Orbit, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -29,13 +29,13 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="https://github.com"
+                href="https://github.com/develope-start/AstroNum"
                 target="_blank"
                 rel="noreferrer"
                 className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-slate-400 transition-colors hover:text-white"
                 aria-label="GitHub"
               >
-                <Github className="h-4 w-4" />
+                <Code2 className="h-4 w-4" />
               </a>
               <a
                 href="#calculator"
