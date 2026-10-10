@@ -314,6 +314,12 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Prismatic Horizontal Aurora Glowing Divider */}
+      <div className="prism-horizontal-glow-divider" aria-hidden="true">
+        <div className="prism-divider-line" />
+        <div className="prism-divider-glow" />
+      </div>
+
       {/* 4 სტიქიის ინტერაქციული მოდული (ტემპერამენტების სინთეზი) - ზოდიაქოს წრის ფანჯრის გარეთ */}
       <section className="hero-elements-section my-12 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="4 სტიქიის ტემპერამენტები">
         <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
@@ -412,6 +418,12 @@ export default function HomePage() {
         <SocialProofTicker />
       </div>
 
+      {/* Prismatic Horizontal Aurora Glowing Divider */}
+      <div className="prism-horizontal-glow-divider" aria-hidden="true">
+        <div className="prism-divider-line" />
+        <div className="prism-divider-glow" />
+      </div>
+
       {/* Main Interactive Astrological Calculation Workspace */}
       <section id="calculator" className="app-section relative my-16 rounded-3xl border border-white/[0.08] bg-[#0c101a]/70 p-6 shadow-2xl backdrop-blur-2xl sm:p-10 scroll-mt-24">
         {/* Specular top glow */}
@@ -456,14 +468,32 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Prismatic Horizontal Aurora Glowing Divider */}
+      <div className="prism-horizontal-glow-divider" aria-hidden="true">
+        <div className="prism-divider-line" />
+        <div className="prism-divider-glow" />
+      </div>
+
       {/* 6-Card Bento Box Feature Showcase */}
       <BentoGrid />
+
+      {/* Prismatic Horizontal Aurora Glowing Divider */}
+      <div className="prism-horizontal-glow-divider" aria-hidden="true">
+        <div className="prism-divider-line" />
+        <div className="prism-divider-glow" />
+      </div>
 
       {/* Astrological Knowledge Hub & Insights Academy */}
       <KnowledgeHub />
 
       {/* 1-on-1 Certified Astrologer Consultation Booking */}
       <ExpertConsultationBooking />
+
+      {/* Prismatic Horizontal Aurora Glowing Divider */}
+      <div className="prism-horizontal-glow-divider" aria-hidden="true">
+        <div className="prism-divider-line" />
+        <div className="prism-divider-glow" />
+      </div>
 
       {/* 3-Tier Pricing Table */}
       <PricingTable />

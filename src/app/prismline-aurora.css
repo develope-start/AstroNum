@@ -47,7 +47,13 @@ body.app-body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Elegant ambient backdrop lighting */
+/* ==========================================================================
+   PRISMLINE AURORA — HORIZONTAL GLOWING BACKGROUND & LIGHT STREAKS SYSTEM
+   Full-width horizontal chromatic aurora ribbons (Electric Cyan · Royal Indigo · Magenta)
+   As featured in Superdesign Prismline Aurora Glass architecture
+   ========================================================================== */
+
+/* 1. Global Viewport-Fixed Horizontal Aurora Stream Canvas */
 .aurora-canvas {
   position: fixed;
   inset: 0;
@@ -56,63 +62,254 @@ body.app-body {
   overflow: hidden;
 }
 
-.aurora-blob-cyan {
+/* Horizontal Aurora Bands - Stretched wide across 160vw */
+.aurora-horizontal-band {
   position: absolute;
-  top: -10%;
-  left: 20%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
+  left: -30vw;
+  width: 160vw;
+  pointer-events: none;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+
+.aurora-band-top {
+  top: -12%;
+  height: 520px;
+  background: radial-gradient(
+    ellipse 90% 45% at 50% 50%,
+    rgba(56, 189, 248, 0.28) 0%,
+    rgba(99, 102, 241, 0.24) 38%,
+    rgba(236, 72, 153, 0.14) 68%,
+    transparent 100%
+  );
+  filter: blur(110px);
+  animation: aurora-horizontal-float 18s ease-in-out infinite alternate;
+}
+
+.aurora-band-mid {
+  top: 36%;
+  height: 480px;
+  background: radial-gradient(
+    ellipse 90% 45% at 50% 50%,
+    rgba(99, 102, 241, 0.24) 0%,
+    rgba(236, 72, 153, 0.22) 42%,
+    rgba(56, 189, 248, 0.16) 75%,
+    transparent 100%
+  );
   filter: blur(120px);
-  animation: float-ambient 24s ease-in-out infinite alternate;
+  animation: aurora-horizontal-drift 22s ease-in-out infinite alternate-reverse;
 }
 
-.aurora-blob-violet {
-  position: absolute;
-  top: 15%;
-  right: 15%;
-  width: 650px;
-  height: 650px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
-  filter: blur(130px);
-  animation: float-ambient 28s ease-in-out infinite alternate-reverse;
-}
-
-.aurora-blob-magenta {
-  position: absolute;
-  top: 50%;
-  left: 35%;
-  width: 500px;
+.aurora-band-bottom {
+  bottom: -10%;
   height: 500px;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.05) 0%, transparent 70%);
-  filter: blur(120px);
-  animation: float-ambient 26s ease-in-out infinite alternate;
+  background: radial-gradient(
+    ellipse 90% 45% at 50% 50%,
+    rgba(56, 189, 248, 0.22) 0%,
+    rgba(99, 102, 241, 0.25) 40%,
+    rgba(168, 85, 247, 0.18) 72%,
+    transparent 100%
+  );
+  filter: blur(115px);
+  animation: aurora-horizontal-float 20s ease-in-out infinite alternate;
 }
 
-.prism-light-beam {
+/* Horizontal Prismatic Laser Beams (Superdesign signature) */
+.prism-horizontal-beam {
   position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(56, 189, 248, 0.15) 15%,
+    rgba(99, 102, 241, 0.65) 45%,
+    rgba(236, 72, 153, 0.55) 55%,
+    rgba(56, 189, 248, 0.2) 85%,
+    transparent 100%
+  );
+  box-shadow: 
+    0 0 18px rgba(99, 102, 241, 0.55),
+    0 0 36px rgba(56, 189, 248, 0.35),
+    0 0 75px rgba(236, 72, 153, 0.2);
+  pointer-events: none;
+}
+
+.prism-beam-top {
   top: 0;
+}
+
+.prism-beam-accent {
+  top: 32%;
+  opacity: 0.65;
+  animation: prism-beam-shimmer 14s ease-in-out infinite alternate;
+}
+
+.prism-beam-mid {
+  top: 68%;
+  opacity: 0.55;
+  animation: prism-beam-shimmer 18s ease-in-out infinite alternate-reverse;
+}
+
+/* 2. Document-Level Scrolling Aurora Streams (Flows during scrolling) */
+.aurora-scroll-canvas {
+  position: absolute;
+  inset-x: 0;
+  top: 0;
+  width: 100%;
+  min-height: 100%;
+  pointer-events: none;
+  z-index: -15;
+  overflow: hidden;
+}
+
+.aurora-scroll-stream {
+  position: absolute;
+  left: -25vw;
+  width: 150vw;
+  height: 520px;
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.aurora-stream-hero {
+  top: 4%;
+  background: radial-gradient(
+    ellipse 85% 45% at 50% 50%,
+    rgba(56, 189, 248, 0.3) 0%,
+    rgba(99, 102, 241, 0.25) 40%,
+    rgba(236, 72, 153, 0.14) 75%,
+    transparent 100%
+  );
+  filter: blur(110px);
+}
+
+.aurora-stream-calc {
+  top: 26%;
+  background: radial-gradient(
+    ellipse 85% 45% at 50% 50%,
+    rgba(99, 102, 241, 0.3) 0%,
+    rgba(56, 189, 248, 0.25) 42%,
+    rgba(236, 72, 153, 0.18) 72%,
+    transparent 100%
+  );
+  filter: blur(120px);
+}
+
+.aurora-stream-bento {
+  top: 50%;
+  background: radial-gradient(
+    ellipse 85% 45% at 50% 50%,
+    rgba(236, 72, 153, 0.28) 0%,
+    rgba(99, 102, 241, 0.3) 42%,
+    rgba(56, 189, 248, 0.2) 75%,
+    transparent 100%
+  );
+  filter: blur(125px);
+}
+
+.aurora-stream-academy {
+  top: 72%;
+  background: radial-gradient(
+    ellipse 85% 45% at 50% 50%,
+    rgba(56, 189, 248, 0.26) 0%,
+    rgba(99, 102, 241, 0.28) 40%,
+    rgba(168, 85, 247, 0.22) 72%,
+    transparent 100%
+  );
+  filter: blur(120px);
+}
+
+.aurora-stream-pricing {
+  top: 90%;
+  background: radial-gradient(
+    ellipse 85% 45% at 50% 50%,
+    rgba(236, 72, 153, 0.26) 0%,
+    rgba(99, 102, 241, 0.3) 40%,
+    rgba(56, 189, 248, 0.22) 70%,
+    transparent 100%
+  );
+  filter: blur(120px);
+}
+
+/* 3. Section-Level Horizontal Glowing Aurora Dividers */
+.prism-horizontal-glow-divider {
+  position: relative;
+  width: 100%;
+  margin: 5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.prism-divider-line {
+  position: absolute;
+  width: 100vw;
   left: 50%;
   transform: translateX(-50%);
-  width: 1000px;
-  max-width: 90vw;
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(99, 102, 241, 0.4) 50%, transparent 100%);
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(56, 189, 248, 0.15) 15%,
+    rgba(99, 102, 241, 0.6) 40%,
+    rgba(236, 72, 153, 0.55) 60%,
+    rgba(56, 189, 248, 0.2) 85%,
+    transparent 100%
+  );
+  box-shadow: 
+    0 0 18px rgba(99, 102, 241, 0.5),
+    0 0 36px rgba(56, 189, 248, 0.3);
+}
+
+.prism-divider-glow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90vw;
+  max-width: 1200px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 75% 50% at 50% 50%,
+    rgba(99, 102, 241, 0.2) 0%,
+    rgba(56, 189, 248, 0.16) 45%,
+    rgba(236, 72, 153, 0.1) 75%,
+    transparent 100%
+  );
+  filter: blur(60px);
+  pointer-events: none;
 }
 
 .star-matrix-overlay {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
-  opacity: 0.4;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 36px 36px;
+  opacity: 0.35;
 }
 
-@keyframes float-ambient {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(30px, 20px) scale(1.05); }
-  100% { transform: translate(-20px, 40px) scale(0.95); }
+@keyframes aurora-horizontal-float {
+  0% { transform: translateX(0) scaleY(1); opacity: 0.88; }
+  50% { transform: translateX(3vw) scaleY(1.08); opacity: 1; }
+  100% { transform: translateX(-3vw) scaleY(0.95); opacity: 0.85; }
+}
+
+@keyframes aurora-horizontal-drift {
+  0% { transform: translateX(-2.5vw) scaleY(0.96); opacity: 0.82; }
+  50% { transform: translateX(2.5vw) scaleY(1.06); opacity: 1; }
+  100% { transform: translateX(-0.5vw) scaleY(1); opacity: 0.88; }
+}
+
+@keyframes prism-beam-shimmer {
+  0% { opacity: 0.5; transform: scaleX(0.97); }
+  50% { opacity: 0.85; transform: scaleX(1.02); }
+  100% { opacity: 0.55; transform: scaleX(0.99); }
 }
 
 /* --- Full-Width Premium Desktop Navigation --- */

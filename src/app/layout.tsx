@@ -33,18 +33,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ka" className="dark">
       <body className="app-body relative min-h-screen overflow-x-hidden bg-[#060813] text-slate-100 selection:bg-cyan-400 selection:text-slate-950 font-body">
-        {/* Prismline Aurora Multi-Layer Ambient Canvas */}
+        {/* Prismline Aurora Multi-Layer Ambient Canvas (Fixed Viewport Atmosphere) */}
         <div className="aurora-canvas pointer-events-none fixed inset-0 -z-20 overflow-hidden" aria-hidden="true">
-          {/* Cyan / Aqua Aurora Glow */}
-          <div className="aurora-blob aurora-blob-cyan" />
-          {/* Indigo / Violet Aurora Glow */}
-          <div className="aurora-blob aurora-blob-violet" />
-          {/* Magenta / Pink Aurora Glow */}
-          <div className="aurora-blob aurora-blob-magenta" />
-          {/* Prismatic Top Light Ray */}
-          <div className="prism-light-beam" />
-          {/* Starfield / Grid Texture */}
+          {/* Top Primary Horizontal Aurora Glow Ribbon (Aqua & Violet) */}
+          <div className="aurora-horizontal-band aurora-band-top" />
+          {/* Mid-Page Horizontal Aurora Ribbon (Violet & Magenta) */}
+          <div className="aurora-horizontal-band aurora-band-mid" />
+          {/* Lower Page Horizontal Aurora Ribbon (Magenta & Cyan) */}
+          <div className="aurora-horizontal-band aurora-band-bottom" />
+
+          {/* Prismatic Horizontal Laser Beams (Superdesign signature) */}
+          <div className="prism-horizontal-beam prism-beam-top" />
+          <div className="prism-horizontal-beam prism-beam-accent" />
+          <div className="prism-horizontal-beam prism-beam-mid" />
+
+          {/* Starfield Texture */}
           <div className="star-matrix-overlay" />
+        </div>
+
+        {/* Document-Level Scrolling Horizontal Aurora Streams (Follows page scroll) */}
+        <div className="aurora-scroll-canvas pointer-events-none absolute inset-x-0 top-0 -z-10 h-full w-full overflow-hidden" aria-hidden="true">
+          <div className="aurora-scroll-stream aurora-stream-hero" />
+          <div className="aurora-scroll-stream aurora-stream-calc" />
+          <div className="aurora-scroll-stream aurora-stream-bento" />
+          <div className="aurora-scroll-stream aurora-stream-academy" />
+          <div className="aurora-scroll-stream aurora-stream-pricing" />
         </div>
 
         <Nav />
