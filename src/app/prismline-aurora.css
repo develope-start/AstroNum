@@ -58,7 +58,7 @@ body.app-body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -20;
+  z-index: 0;
   overflow: hidden;
 }
 
@@ -119,12 +119,12 @@ body.app-body {
 /* 2. Document-Level Scrolling Aurora Streams (Precise 30vh height following scroll) */
 .aurora-scroll-canvas {
   position: absolute;
-  inset-x: 0;
+  inset-inline: 0;
   top: 0;
   width: 100%;
   min-height: 100%;
   pointer-events: none;
-  z-index: -15;
+  z-index: 0;
   overflow: hidden;
 }
 
@@ -137,6 +137,12 @@ body.app-body {
   pointer-events: none;
   mix-blend-mode: screen;
   will-change: transform;
+}
+
+.app-body > main,
+.app-body > footer {
+  position: relative;
+  z-index: 1;
 }
 
 .aurora-stream-hero {
@@ -998,6 +1004,7 @@ main:has(.app-home) {
     transparent 100%
   );
   filter: blur(125px);
+  opacity: 0.22;
 }
 
 .aurora-band-mid {
@@ -1009,6 +1016,7 @@ main:has(.app-home) {
     transparent 100%
   );
   filter: blur(130px);
+  opacity: 0.22;
 }
 
 .aurora-band-bottom {
@@ -1020,6 +1028,7 @@ main:has(.app-home) {
     transparent 100%
   );
   filter: blur(130px);
+  opacity: 0.22;
 }
 
 .star-matrix-overlay {
