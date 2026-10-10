@@ -678,3 +678,76 @@ button.calc-submit-btn:hover,
   transform: translateY(-4px);
 }
 
+/* --- 100% Full-Screen Stretched Zodiac Wheel Window with Proportional Scaling --- */
+.app-home {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.hero-grid {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0.5rem 0 2rem !important;
+  margin: 0 !important;
+}
+
+/* Zodiac wheel window stretched to 100% full screen width */
+.hero-orbit-card {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: clamp(38rem, 82vh, 60rem) !important;
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: 1px solid rgba(197, 188, 255, 0.12) !important;
+  border-bottom: 1px solid rgba(197, 188, 255, 0.12) !important;
+  margin: 0 auto !important;
+  box-shadow: 0 30px 80px -25px rgba(0, 0, 0, 0.8), inset 0 0 120px rgba(133, 121, 255, 0.05) !important;
+}
+
+.celestial-system {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+}
+
+/* Starry background opacity set to approximately 20% */
+.celestial-star-noise {
+  opacity: 0.20 !important;
+}
+
+/* Proportional scaling across any screen resolution */
+.zodiac-wheel {
+  --zodiac-radius: clamp(8.5rem, min(25vh, 19vw), 17rem) !important;
+  width: calc(var(--zodiac-radius) * 2 + 5.5rem) !important;
+}
+
+.celestial-orbit-wide {
+  width: clamp(29rem, min(82vh, 78vw), 60rem) !important;
+}
+
+.celestial-orbit-inner {
+  width: clamp(22rem, min(62vh, 58vw), 44rem) !important;
+}
+
+.celestial-constellation,
+.celestial-ruler {
+  --constellation-radius: clamp(11rem, min(31vh, 24vw), 21.5rem) !important;
+  --ruler-radius: clamp(14rem, min(39vh, 31vw), 28rem) !important;
+}
+
+.celestial-constellation {
+  width: clamp(8rem, min(19vh, 15vw), 14rem) !important;
+  margin: calc(clamp(8rem, min(19vh, 15vw), 14rem) * -0.5) !important;
+}
+
+.celestial-ruler {
+  width: clamp(2.5rem, min(5.5vh, 4.4vw), 4rem) !important;
+  height: clamp(2.5rem, min(5.5vh, 4.4vw), 4rem) !important;
+  margin: calc(clamp(2.5rem, min(5.5vh, 4.4vw), 4rem) * -0.5) !important;
+}
+
+

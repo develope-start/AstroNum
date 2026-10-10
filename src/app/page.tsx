@@ -315,7 +315,7 @@ export default function HomePage() {
       </section>
 
       {/* 4 სტიქიის ინტერაქციული მოდული (ტემპერამენტების სინთეზი) - ზოდიაქოს წრის ფანჯრის გარეთ */}
-      <section className="hero-elements-section my-12" aria-label="4 სტიქიის ტემპერამენტები">
+      <section className="hero-elements-section my-12 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="4 სტიქიის ტემპერამენტები">
         <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400">
