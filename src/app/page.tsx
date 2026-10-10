@@ -342,9 +342,9 @@ export default function HomePage() {
 
                   {/* Zodiacs Row */}
                   <div className="mt-4 border-t border-white/[0.08] pt-3">
-                    <div className="mb-2 flex items-center justify-between text-xs">
+                    <div className="mb-2 flex flex-col items-start gap-1 text-xs sm:flex-row sm:items-center sm:justify-between">
                       <span className="text-[11px] opacity-75">ზოდიაქოები:</span>
-                      <div className="flex items-center gap-1.5 font-bold">
+                      <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 font-bold">
                         {element.signs.map((s) => (
                           <span key={s.name} title={s.name} className="hover:opacity-100">
                             {s.symbol} {s.name}
@@ -354,9 +354,9 @@ export default function HomePage() {
                     </div>
 
                     {/* Rulers Row */}
-                    <div className="flex items-center justify-between text-xs">
+                    <div className="flex flex-col items-start gap-1 text-xs sm:flex-row sm:items-center sm:justify-between">
                       <span className="text-[11px] opacity-75">მმართველები:</span>
-                      <div className="flex items-center gap-1.5 font-bold">
+                      <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 font-bold">
                         {element.planets.map((p) => (
                           <span key={p.name} title={p.name} className="hover:opacity-100">
                             {p.symbol} {p.name}

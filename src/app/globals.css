@@ -5805,3 +5805,83 @@ canvas {
 /* Inactive / Default Form Action Buttons */
 
 /* Gender Selection Active Buttons */
+
+/* Final home-scene geometry overrides legacy corner-panel spacing. */
+.app-home .hero-grid {
+  position: relative !important;
+  left: 50% !important;
+  right: auto !important;
+  width: 100vw !important;
+  margin: 0 0 1.5rem !important;
+  padding: 0 !important;
+  transform: translateX(-50%) !important;
+}
+
+.app-home .hero-orbit-card {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: clamp(27rem, min(72svh, 100vw), 44rem) !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12) !important;
+  border-radius: 0 !important;
+  background: rgba(2, 4, 8, 0.2) !important;
+  box-shadow: none !important;
+}
+
+.app-home .celestial-system {
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(16, 19, 37, 0.6), rgba(3, 5, 10, 0.7) 62%, rgba(2, 4, 8, 0.82)),
+    transparent !important;
+}
+
+.app-home .celestial-system::after {
+  inset: 5% 2% !important;
+  border-color: rgba(148, 163, 184, 0.045) !important;
+  box-shadow: none !important;
+}
+
+.app-home .celestial-star-noise {
+  opacity: 0.24 !important;
+}
+
+.app-home .celestial-constellation {
+  --constellation-radius: clamp(7rem, 18vw, 13rem) !important;
+  width: clamp(5rem, 10vw, 8rem) !important;
+  margin: calc(clamp(5rem, 10vw, 8rem) * -0.5) !important;
+}
+
+.app-home .celestial-ruler {
+  --ruler-radius: clamp(9rem, min(32svh, 16vw), 16rem) !important;
+  width: clamp(2.5rem, 4vw, 3.2rem) !important;
+  height: clamp(2.5rem, 4vw, 3.2rem) !important;
+  margin: calc(clamp(2.5rem, 4vw, 3.2rem) * -0.5) !important;
+}
+
+@media (max-width: 640px) {
+  .app-home .hero-orbit-card {
+    height: clamp(24rem, min(100vw, 70svh), 34rem) !important;
+  }
+
+  .app-home .celestial-constellation {
+    --constellation-radius: clamp(5.5rem, 27vw, 7.5rem) !important;
+    width: clamp(4rem, 17vw, 5.2rem) !important;
+    margin: calc(clamp(4rem, 17vw, 5.2rem) * -0.5) !important;
+  }
+
+  .app-home .celestial-ruler {
+    --ruler-radius: clamp(7rem, 34vw, 9.25rem) !important;
+    width: clamp(2.15rem, 8vw, 2.7rem) !important;
+    height: clamp(2.15rem, 8vw, 2.7rem) !important;
+    margin: calc(clamp(2.15rem, 8vw, 2.7rem) * -0.5) !important;
+  }
+}

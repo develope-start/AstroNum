@@ -102,7 +102,7 @@ export default function BirthFields({
           </span>
         </label>
 
-        <div className="grid grid-cols-2 gap-3 w-full">
+        <div className="birth-gender-options grid grid-cols-2 gap-3 w-full">
           {/* Male Button - Cyan/Sky Aura */}
           <button
             type="button"
