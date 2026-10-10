@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { type CSSProperties, useEffect, useState } from "react";
 import { Compass, LayoutDashboard, Menu, Shield, User, X } from "lucide-react";
 
@@ -21,6 +22,7 @@ const BURST_PARTICLES = Array.from({ length: 14 }).map((_, i) => {
 });
 
 export default function Nav() {
+  const pathname = usePathname();
   const [me, setMe] = useState<Me | null | undefined>(undefined);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isExploding, setIsExploding] = useState(false);
@@ -28,11 +30,19 @@ export default function Nav() {
   const isAdmin = me?.role === "ADMIN" || me?.adminId === "ADMIN";
 
   useEffect(() => {
+    let active = true;
     fetch("/api/auth/me", { cache: "no-store" })
       .then((response) => response.json())
-      .then((data) => setMe(data.user))
-      .catch(() => setMe(null));
-  }, []);
+      .then((data) => {
+        if (active) setMe(data.user ?? null);
+      })
+      .catch(() => {
+        if (active) setMe(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [pathname]);
 
   useEffect(() => {
     const header = document.querySelector<HTMLElement>(".site-header");
@@ -174,8 +184,9 @@ export default function Nav() {
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
-            {me === null && <Link href="/cabinet" className="nav-action"><User className="h-3.5 w-3.5" /><span className="hidden sm:inline">კაბინეტი</span></Link>}
-            {me && <Link href="/cabinet/dashboard" className="nav-action"><LayoutDashboard className="h-3.5 w-3.5" /></Link>}
+            {me === null && <Link href="/cabinet" className="nav-action" aria-label="კაბინეტში შესვლა" title="კაბინეტში შესვლა"><User className="h-3.5 w-3.5" /><span className="hidden sm:inline">კაბინეტი</span></Link>}
+            {me && <Link href="/cabinet/dashboard" className="nav-action" aria-label="პირადი კაბინეტი" title="პირადი კაბინეტი"><LayoutDashboard className="h-3.5 w-3.5" /></Link>}
+            {isAdmin && <Link href="/admin" className="nav-action" aria-label="ადმინისტრატორის პანელი" title="ადმინისტრატორის პანელი"><Shield className="h-3.5 w-3.5 text-violet-300" /><span className="hidden sm:inline">ადმინი</span></Link>}
             <button type="button" onClick={() => setMobileMenuOpen((value) => !value)} className="nav-quiet-action px-2.5" aria-label="მენიუს გახსნა">
               {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
