@@ -149,17 +149,11 @@ export default function KnowledgeHub() {
       <div className="mb-12 text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-950/30 px-3.5 py-1 text-xs font-medium text-cyan-300 backdrop-blur-md">
           <BookOpen className="h-3.5 w-3.5" />
-          <span>ასტროლოგიური ცოდნის ბაზა & აკადემია</span>
+          <span>ცოდნის ბაზა & გზამკვლევები</span>
         </div>
-        <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
-          სიღრმისეული შემეცნება & <br />
-          <span className="bg-gradient-to-r from-cyan-300 via-indigo-300 to-rose-300 bg-clip-text text-transparent">
-            ეზოთერული გზამკვლევები
-          </span>
+        <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          ასტროლოგიური აკადემია
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-base text-slate-400">
-          სატურნის დაბრუნება, ლილიტის კარმა, მთვარის კვანძები და მინერალების ენერგეტიკა — პროფესიონალური ცოდნა ერთ სივრცეში.
-        </p>
 
         {/* Categories Bar */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">

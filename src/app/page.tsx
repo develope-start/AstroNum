@@ -11,7 +11,6 @@ import { ELEMENT_TEMPERAMENTS, type ElementTemperamentId } from "@/lib/elementTe
 import SocialProofTicker from "@/components/SocialProofTicker";
 import BentoGrid from "@/components/BentoGrid";
 import PricingTable from "@/components/PricingTable";
-import CtaSection from "@/components/CtaSection";
 import AiAstrologyAssistant from "@/components/AiAstrologyAssistant";
 import RectificationCalculator from "@/components/RectificationCalculator";
 import KnowledgeHub from "@/components/KnowledgeHub";
@@ -457,9 +456,6 @@ export default function HomePage() {
 
       {/* 3-Tier Pricing Table */}
       <PricingTable />
-
-      {/* High-Converting Glassmorphic Call To Action */}
-      <CtaSection />
     </div>
   );
 }
