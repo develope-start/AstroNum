@@ -691,14 +691,15 @@ button.calc-submit-btn:hover,
   margin-top: 0 !important;
   margin-bottom: 1.25rem !important;
   overflow: hidden !important;
+  transform: none !important;
 }
 
 .hero-orbit-card {
   position: relative !important;
   width: 100% !important;
   max-width: 100% !important;
-  height: clamp(32rem, 74vh, 48rem) !important;
-  min-height: clamp(32rem, 74vh, 48rem) !important;
+  height: clamp(38rem, 84vh, 56rem) !important;
+  min-height: clamp(38rem, 84vh, 56rem) !important;
   border-radius: 0 !important;
   border-left: none !important;
   border-right: none !important;
@@ -707,6 +708,12 @@ button.calc-submit-btn:hover,
   margin: 0 !important;
   overflow: hidden !important; /* CRITICAL: prevents planets and orbits from ever overflowing or bleeding onto nav bar */
   box-shadow: 0 25px 60px -20px rgba(0, 0, 0, 0.8), inset 0 0 100px rgba(133, 121, 255, 0.05) !important;
+  transform: none !important; /* Fixes jumping on hover */
+  transition: border-color 0.3s ease !important;
+}
+
+.hero-orbit-card:hover {
+  transform: none !important; /* Fixes jumping on hover */
 }
 
 .celestial-system {
@@ -716,6 +723,7 @@ button.calc-submit-btn:hover,
   height: 100% !important;
   overflow: hidden !important;
   border-radius: 0 !important;
+  transform: none !important;
 }
 
 /* Background Stars Opacity: Soft & Subtle ~20% Opacity */
@@ -723,31 +731,42 @@ button.calc-submit-btn:hover,
   opacity: 0.20 !important;
 }
 
-/* Proportional scaling calibrated to stay 100% safely inside the window without ever poking out */
+/* Enlarged Proportional scaling - larger wheel, planets, and orbits */
 .zodiac-wheel {
-  --zodiac-radius: clamp(6.5rem, min(18vh, 13.5vw), 11rem) !important;
-  width: calc(var(--zodiac-radius) * 2 + 4.5rem) !important;
+  --zodiac-radius: clamp(8rem, min(22vh, 16.5vw), 13.5rem) !important;
+  width: calc(var(--zodiac-radius) * 2 + 5.5rem) !important;
 }
 
 .celestial-orbit-wide {
-  width: clamp(22rem, min(58vh, 44vw), 36rem) !important;
+  width: clamp(26rem, min(70vh, 52vw), 44rem) !important;
 }
 
 .celestial-orbit-inner {
-  width: clamp(16rem, min(44vh, 34vw), 28rem) !important;
+  width: clamp(19rem, min(52vh, 39vw), 33rem) !important;
 }
 
 .celestial-constellation {
-  --constellation-radius: clamp(8rem, min(22vh, 17vw), 14rem) !important;
-  width: clamp(6rem, min(14vh, 11vw), 9rem) !important;
-  margin: calc(clamp(6rem, min(14vh, 11vw), 9rem) * -0.5) !important;
+  --constellation-radius: clamp(9.8rem, min(26.5vh, 20vw), 16.5rem) !important;
+  width: clamp(7.2rem, min(16vh, 12vw), 11rem) !important;
+  margin: calc(clamp(7.2rem, min(16vh, 12vw), 11rem) * -0.5) !important;
 }
 
+/* Enlarged Planetary Rulers: Bigger buttons and clear glyphs */
 .celestial-ruler {
-  --ruler-radius: clamp(10.2rem, min(27vh, 20.5vw), 17rem) !important;
-  width: clamp(2.2rem, min(4.8vh, 3.8vw), 3rem) !important;
-  height: clamp(2.2rem, min(4.8vh, 3.8vw), 3rem) !important;
-  margin: calc(clamp(2.2rem, min(4.8vh, 3.8vw), 3rem) * -0.5) !important;
+  --ruler-radius: clamp(12.2rem, min(32.5vh, 24.5vw), 20rem) !important;
+  width: clamp(2.6rem, min(5.4vh, 4.2vw), 3.5rem) !important;
+  height: clamp(2.6rem, min(5.4vh, 4.2vw), 3.5rem) !important;
+  margin: calc(clamp(2.6rem, min(5.4vh, 4.2vw), 3.5rem) * -0.5) !important;
+}
+
+.celestial-ruler .celestial-ruler-zodiac,
+.celestial-ruler .celestial-ruler-planet-symbol {
+  font-size: 1.05rem !important;
+}
+
+.celestial-earth {
+  width: clamp(5.6rem, min(12vh, 9vw), 8rem) !important;
+  height: clamp(5.6rem, min(12vh, 9vw), 8rem) !important;
 }
 
 /* --- 4 Elements Glowing Glass & Neon Aura Cards --- */

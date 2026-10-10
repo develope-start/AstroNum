@@ -170,7 +170,7 @@ export default function HomePage() {
             </a>
           </div>
         </div>
-        <div className="hero-orbit-card hover-glass-lift" aria-label="ციური გამოთვლის ვიზუალური მოდული">
+        <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
           <div
             className="celestial-system"
             role="group"
