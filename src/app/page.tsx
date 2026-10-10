@@ -333,52 +333,40 @@ export default function HomePage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {ELEMENT_GROUPS.map((element) => {
             const isSelected = selectedElementInfo === element.id;
-            const elementColors = {
-              fire: "from-amber-500/20 via-rose-500/10 to-transparent border-amber-500/30 text-amber-300",
-              earth: "from-emerald-500/20 via-teal-500/10 to-transparent border-emerald-500/30 text-emerald-300",
-              air: "from-cyan-500/20 via-sky-500/10 to-transparent border-cyan-500/30 text-cyan-300",
-              water: "from-indigo-500/20 via-blue-500/10 to-transparent border-indigo-500/30 text-indigo-300",
-            }[element.id];
 
             return (
               <div
                 key={element.id}
                 onClick={() => toggleElementInfo(element.id)}
-                className={`group relative cursor-pointer rounded-2xl border bg-[#0b101c]/80 p-5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
-                  isSelected
-                    ? "border-cyan-400 ring-2 ring-cyan-400/30 shadow-cyan-500/15"
-                    : "border-white/[0.08] hover:border-white/25"
-                }`}
+                className={`celestial-element-card celestial-element-card-${element.id}${isSelected ? " is-active" : ""}`}
               >
-                <div className={`pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br ${elementColors} opacity-40`} />
-
                 <div className="relative z-10">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] text-xl font-bold">
+                    <div className="flex items-center gap-3">
+                      <span className="elem-symbol-box">
                         {element.symbol}
                       </span>
                       <div>
-                        <span className="block font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                        <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">
                           სტიქია
                         </span>
-                        <h4 className="font-display text-base font-bold text-white transition-colors group-hover:text-cyan-300">
+                        <h4 className="font-display text-base elem-title">
                           {element.name}
                         </h4>
                       </div>
                     </div>
-                    <span className="rounded-full bg-white/[0.06] px-2.5 py-1 font-mono text-[10px] font-medium text-slate-300">
+                    <span className="elem-badge">
                       {isSelected ? "დახურვა ✕" : "ტემპერამენტი ✦"}
                     </span>
                   </div>
 
                   {/* Zodiacs Row */}
-                  <div className="mt-4 border-t border-white/[0.06] pt-3">
+                  <div className="mt-4 border-t border-white/[0.08] pt-3">
                     <div className="mb-2 flex items-center justify-between text-xs">
-                      <span className="text-[11px] text-slate-400">ზოდიაქოები:</span>
-                      <div className="flex items-center gap-1.5 font-bold text-white">
+                      <span className="text-[11px] opacity-75">ზოდიაქოები:</span>
+                      <div className="flex items-center gap-1.5 font-bold">
                         {element.signs.map((s) => (
-                          <span key={s.name} title={s.name} className="hover:text-cyan-300">
+                          <span key={s.name} title={s.name} className="hover:opacity-100">
                             {s.symbol} {s.name}
                           </span>
                         ))}
@@ -387,10 +375,10 @@ export default function HomePage() {
 
                     {/* Rulers Row */}
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-[11px] text-slate-400">მმართველები:</span>
-                      <div className="flex items-center gap-1.5 font-bold text-slate-300">
+                      <span className="text-[11px] opacity-75">მმართველები:</span>
+                      <div className="flex items-center gap-1.5 font-bold">
                         {element.planets.map((p) => (
-                          <span key={p.name} title={p.name} className="hover:text-white">
+                          <span key={p.name} title={p.name} className="hover:opacity-100">
                             {p.symbol} {p.name}
                           </span>
                         ))}
