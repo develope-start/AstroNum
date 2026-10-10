@@ -393,7 +393,7 @@ export default function HomePage() {
       </section>
 
       {/* Social Proof Infinite Ticker Strip */}
-      <div className="my-10 -mx-4 sm:-mx-8 lg:-mx-12 xl:-mx-16">
+      <div className="ticker-full-bleed">
         <SocialProofTicker />
       </div>
 
