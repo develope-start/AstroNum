@@ -22,64 +22,63 @@ const PLANS: PlanConfig[] = [
   {
     id: "free",
     name: "Free (უფასო)",
-    description: "დამწყები მომხმარებლებისთვის და პირადი ასტროლოგიური გათვლებისთვის",
+    description: "საბაზისო გამოთვლები და პირადი ნატალური რუკის კვლევა",
     prices: { month: "0 ₾", half_year: "0 ₾", year: "0 ₾" },
     rawPrice: { month: 0, half_year: 0, year: 0 },
     buttonText: "უფასო წვდომა",
     features: [
-      "Swiss Ephemeris v2.1 ნატალური რუკა",
-      "ძირითადი პლანეტარული ტრანზიტები",
-      "სინასტრია (პარტნიორული რუკა)",
-      "4 სტიქიის ტემპერამენტის საბაზისო ბალანსი",
-      "პლაციდუსის, კოხისა და მთლიანი ნიშნის სისტემები",
-      "მთვარის ფაზები და კოსმოგრამა",
-      "რუკის გაზიარება პირდაპირი ბმულით",
+      "Swiss Ephemeris v2.1 ციური კოორდინატები",
+      "ნატალური რუკის ულიმიტო გამოთვლა",
+      "10 ძირითადი პლანეტა, ასცენდენტი (ASC) და MC",
+      "მაჟორული ასპექტები და ორბების ბაზა",
+      "4 სტიქიის ტემპერამენტის საბაზისო მიმოხილვა",
+      "სახლების 12 სისტემა (Placidus, Koch, Whole Sign, Equal)",
+      "ტოპოცენტრული და გეოცენტრული რეჟიმები",
     ],
     excludedFeatures: [
-      "Gemini AI ინტელექტუალური ინტერპრეტაცია",
-      "ვედური (Sidereal) და დრაკონული რეჟიმები",
-      "მეორადი პროგრესიები და Solar Arc",
+      "Gemini AI სიღრმისეული ინტერპრეტაციები",
+      "სინასტრიული ასპექტების სრული მატრიცა",
+      "დროის ტრანზიტები და ციკლები",
+      "გაფართოებული მეთოდები (Progressions, Solar Arc, Returns)",
       "დაბადების დროის რექტიფიკაცია",
-      "PDF და SVG ვექტორული ექსპორტი",
     ],
   },
   {
     id: "pro",
     name: "Pro (პროფესიონალი)",
     badge: "ყველაზე პოპულარული",
-    description: "პრაქტიკოსი ასტროლოგებისთვის, კონსულტაციებისა და სიღრმისეული ანალიზისთვის",
-    prices: { month: "7.99 ₾", half_year: "47.94 ₾", year: "79.90 ₾" },
-    rawPrice: { month: 7.99, half_year: 47.94, year: 79.90 },
+    description: "პრაქტიკოსი ასტროლოგებისთვის, სინასტრიისა და ტრანზიტული ანალიზისთვის",
+    prices: { month: "4.99 ₾", half_year: "25.45 ₾", year: "47.90 ₾" },
+    rawPrice: { month: 4.99, half_year: 25.45, year: 47.90 },
     buttonText: "Pro პაკეტის გააქტიურება",
     highlighted: true,
     features: [
       "ყველაფერი Free პაკეტიდან +",
-      "Gemini AI ასტროლოგიური ინტერპრეტაციები",
-      "პიროვნული, კარიერისა და სიყვარულის AI ანალიზი",
-      "ვედური (სიდერიული 6 აიანამშა) და დრაკონული რეჟიმები",
-      "მეორადი პროგრესია (Secondary Progressions)",
-      "Solar Arc Directions და პლანეტარული Return-ები",
-      "ასტროლოგიური ფორმულები და ტრანზიტული გრაფიკები",
-      "რეტროგრადულობა, დაბნელებები და ჰარმონიკები",
+      "სინასტრია (პარტნიორული რუკა & თავსებადობის ქულები)",
+      "დროის ტრანზიტები ნატალურ რუკასთან მიმართებით",
+      "4 სტიქიის ტემპერამენტის სრული ჰიპოკრატული სინთეზი",
+      "Gemini AI ასტროლოგიური ინტელექტი (პიროვნული, კარიერული, სიყვარულის ანალიზი)",
+      "მეორადი პროგრესიები (Secondary Progressions)",
+      "Solar Arc Directions და Planetary Returns (Solar/Lunar Return)",
+      "რუკების შენახვა კაბინეტში და პირადი არქივი",
       "ბეჭდვისთვის მზა PDF რეპორტების ექსპორტი",
-      "კლიენტების რუკების შენახვა კაბინეტში",
     ],
   },
   {
     id: "enterprise",
-    name: "Enterprise (სტუდია & ექსპერტი)",
-    description: "მაქსიმალური ლიმიტები, რექტიფიკაცია და შეუზღუდავი AI კვლევა",
-    prices: { month: "10.99 ₾", half_year: "65.94 ₾", year: "109.90 ₾" },
-    rawPrice: { month: 10.99, half_year: 65.94, year: 109.90 },
+    name: "Enterprise (ექსპერტი & სტუდია)",
+    description: "მაქსიმალური შესაძლებლობები, რექტიფიკაცია და გაფართოებული მეთოდები",
+    prices: { month: "7.99 ₾", half_year: "40.75 ₾", year: "76.70 ₾" },
+    rawPrice: { month: 7.99, half_year: 40.75, year: 76.70 },
     buttonText: "Enterprise არჩევა",
     features: [
       "ყველაფერი Pro პაკეტიდან +",
-      "შეუზღუდავი Gemini AI ინტერპრეტაციები",
-      "დაჩქარებული AI დამუშავება პრიორიტეტული რიგით",
       "დაბადების დროის რექტიფიკაციის მოდული (Rectification)",
-      "დიდი პერიოდის ტრანზიტული სკანირება და გრაფიკები",
-      "რთული ასტროლოგიური ფორმულების მრავალპირობიანი ძებნა",
-      "პროფესიისა და ცხოვრების მისიის ღრმა ანალიზი",
+      "შეუზღუდავი Gemini AI ინტერპრეტაციები და პირადი კითხვა-პასუხი",
+      "დაჩქარებული AI დამუშავება პრიორიტეტული რიგით",
+      "დაბნელებების (Eclipses) და ჰარმონიკების / მიდპოინტების მოდული",
+      "დიდი პერიოდის ტრანზიტული სკანირება",
+      "სიდერიული / ვედური ზოდიაქო (6 აიანამშა: Lahiri, Raman, Fagan-Bradley)",
       "შეუზღუდავი რუკების საცავი კაბინეტში",
       "API წვდომა და პრიორიტეტული 24/7 მხარდაჭერა",
     ],
@@ -121,16 +120,13 @@ export default function PricingTable() {
       <div className="mb-12 text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-950/30 px-3.5 py-1 text-xs font-medium text-violet-300 backdrop-blur-md">
           <Zap className="h-3.5 w-3.5" />
-          <span>გამჭვირვალე სატარიფო პაკეტები</span>
+          <span>AstroNum° სატარიფო გეგმები</span>
         </div>
         <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
-          შეარჩიეთ თქვენი <br />
-          <span className="bg-gradient-to-r from-violet-300 via-pink-300 to-cyan-300 bg-clip-text text-transparent">
-            შესაძლებლობების პაკეტი
-          </span>
+          ტარიფები & წვდომა
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base text-slate-400">
-          მიიღეთ წვდომა Swiss Ephemeris-ის ზუსტ გამოთვლებსა და Gemini AI-ს ინტელექტუალურ ინტერპრეტაციებზე.
+          მოქნილი პირობები პირადი გამოყენებისა და პროფესიული ასტროლოგიური პრაქტიკისთვის
         </p>
 
         {/* 3-Duration Toggle: 1 თვე / 6 თვე / 1 წელი */}
@@ -171,7 +167,7 @@ export default function PricingTable() {
           >
             <span>1 წელი</span>
             <span className="rounded-full bg-cyan-400/20 px-1.5 py-0.5 text-[9px] text-cyan-300">
-              -25%
+              -20%
             </span>
           </button>
         </div>
@@ -256,7 +252,7 @@ export default function PricingTable() {
             <button
               type="button"
               onClick={() => setCheckoutModalPlan(null)}
-              className="absolute right-5 top-5 p-1 text-slate-400 hover:text-white"
+              className="absolute right-5 top-5 p-1 text-slate-400 hover:text-white cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
@@ -275,7 +271,7 @@ export default function PricingTable() {
                 <button
                   type="button"
                   onClick={() => setCheckoutModalPlan(null)}
-                  className="mt-6 w-full rounded-xl bg-emerald-600 py-3 text-xs font-bold text-white hover:bg-emerald-500"
+                  className="mt-6 w-full rounded-xl bg-emerald-600 py-3 text-xs font-bold text-white hover:bg-emerald-500 cursor-pointer"
                 >
                   სამუშაო სივრცეში დაბრუნება
                 </button>
