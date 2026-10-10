@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+.chart-wheel-control {
+  cursor: pointer;
+  transition: filter 160ms ease, opacity 160ms ease;
+}
+
+.chart-wheel-control:hover,
+.chart-wheel-control:focus-visible {
+  filter: drop-shadow(0 0 5px rgba(125, 211, 252, 0.85));
+  opacity: 1;
+}
+
+.chart-wheel-control:focus-visible {
+  outline: none;
+}
+
 @layer base {
   :root {
     --bg-main: #070811;

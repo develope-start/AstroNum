@@ -107,6 +107,7 @@ export default function BirthFields({
           <button
             type="button"
             onClick={() => onChange({ ...value, gender: value.gender === "male" ? null : "male" })}
+            aria-pressed={value.gender === "male"}
             className={`flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
               value.gender === "male"
                 ? "border-sky-400 bg-gradient-to-r from-sky-500/30 via-indigo-600/30 to-blue-600/30 text-white shadow-[0_0_25px_rgba(56,189,248,0.5),inset_0_1px_1px_rgba(255,255,255,0.3)] ring-2 ring-sky-400/50 scale-[1.02]"
@@ -123,6 +124,7 @@ export default function BirthFields({
           <button
             type="button"
             onClick={() => onChange({ ...value, gender: value.gender === "female" ? null : "female" })}
+            aria-pressed={value.gender === "female"}
             className={`flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
               value.gender === "female"
                 ? "border-pink-400 bg-gradient-to-r from-pink-500/30 via-rose-600/30 to-fuchsia-600/30 text-white shadow-[0_0_25px_rgba(244,63,94,0.5),inset_0_1px_1px_rgba(255,255,255,0.3)] ring-2 ring-pink-400/50 scale-[1.02]"
