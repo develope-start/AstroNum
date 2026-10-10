@@ -21,7 +21,6 @@ import "@fontsource/noto-serif-georgian/latin-700.css";
 import "@fontsource/noto-serif-georgian/latin-800.css";
 import "./globals.css";
 import "./prismline-aurora.css";
-import "./simple-mode.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 
@@ -32,29 +31,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ka" className="dark" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                const savedMode = localStorage.getItem('astronum_ui_mode');
-                const expiresAt = Number(localStorage.getItem('astronum_ui_mode_expires') || 0);
-                const valid = !expiresAt || expiresAt > Date.now();
-                const mode = valid ? savedMode : 'dark';
-                const isSimple = mode === 'simple' || window.location.pathname.startsWith('/simple');
-                const isLight = mode === 'light' || mode === 'ultra';
-                document.documentElement.classList.toggle('simple-document', isSimple);
-                document.documentElement.classList.toggle('mode-ultra', !isSimple && isLight);
-                document.documentElement.classList.remove('mode-simple', 'mode-simple-light');
-                document.documentElement.classList.toggle('light', !isSimple && isLight);
-                document.documentElement.classList.toggle('dark', !isSimple && !isLight);
-                document.documentElement.setAttribute('data-ui-theme', isSimple ? 'simple' : (isLight ? 'light' : 'dark'));
-              } catch (e) {}
-            `,
-          }}
-        />
-      </head>
+    <html lang="ka" className="dark">
       <body className="app-body relative min-h-screen overflow-x-hidden bg-[#060813] text-slate-100 selection:bg-cyan-400 selection:text-slate-950 font-body">
         {/* Prismline Aurora Multi-Layer Ambient Canvas */}
         <div className="aurora-canvas pointer-events-none fixed inset-0 -z-20 overflow-hidden" aria-hidden="true">

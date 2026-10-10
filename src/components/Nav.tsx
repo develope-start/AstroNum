@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { type CSSProperties, useEffect, useState } from "react";
 import { Compass, LayoutDashboard, Menu, Shield, User, X } from "lucide-react";
-import UiModeToggle from "@/components/UiModeToggle";
 
 interface Me {
   userId: string;
@@ -160,11 +159,6 @@ export default function Nav() {
               </span>
             </span>
           </Link>
-
-          {/* Center Beep Glow Mode Toggle Orb */}
-          <div className="nav-mode-controls-wrap flex items-center justify-center shrink-0">
-            <UiModeToggle />
-          </div>
 
           <div className="hidden items-center gap-2 md:flex">
             <Link href="/#calculator" className="nav-quiet-action"><Compass className="h-3.5 w-3.5" />რუკა</Link>
