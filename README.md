@@ -42,7 +42,7 @@ npm run dev
 
 ## Production deployment checklist
 
-Use Node.js 20.16 or newer. The current Node.js 25 runtime is supported. Configure a reachable PostgreSQL `DATABASE_URL` with `sslmode=require`, then run:
+Use Node.js 24.x (LTS) for a consistent Vercel runtime. Configure a reachable PostgreSQL `DATABASE_URL` with `sslmode=require`, then run:
 
 ```bash
 npm ci
@@ -69,7 +69,7 @@ After the server starts, verify `GET /api/health`. It reports database connectiv
 
 2. **ჰოსტინგი.** ყველაზე მარტივია [Vercel](https://vercel.com) (თავად Next.js-ის
    შემქმნელები) — უბრალოდ დააკავშირეთ GitHub რეპოზიტორია. ალტერნატივები:
-   Render, Railway, ან ნებისმიერი სერვერი, სადაც Node.js 20+ გაქვთ.
+   Render, Railway, ან ნებისმიერი სერვერი, სადაც Node.js 24.x გაქვთ.
 
 3. **გარემოს ცვლადები** ჰოსტინგის პანელში მიუთითეთ იგივე, რაც `.env.example`-შია:
    `DATABASE_URL`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `APP_URL`,
@@ -77,10 +77,9 @@ After the server starts, verify `GET /api/health`. It reports database connectiv
 
 4. **დომენი.** ჰოსტინგის პანელიდან მიაბით საკუთარი დომენი (მაგ. astro.ge).
 
-5. **მიგრაციები.** Vercel-ის build ბრძანება ავტომატურად ასრულებს
-   `npm run db:deploy`-ს და შემდეგ ქმნის Next.js build-ს. არსებული PostgreSQL ბაზა
-   უსაფრთხოდ დაიბეისლაინდება, ხოლო ცარიელ ბაზაზე ჩვეულებრივი migration გაეშვება.
-   საჭიროა მხოლოდ სწორი production `DATABASE_URL`.
+5. **მიგრაციები.** `npm run build` ქმნის Prisma Client-ს და Next.js build-ს;
+   მონაცემთა ბაზის მიგრაციებს ავტომატურად არ უშვებს. Deployment-მდე ცალკე
+   შეასრულეთ `npm run db:deploy` სწორი production `DATABASE_URL`-ით.
 
 6. დეპლოის შემდეგ ერთხელ გაუშვით `npm run seed:admin` (ან ხელით შექმენით ანგარიში
    და მონაცემთა ბაზაში როლი `ADMIN`-ზე შეცვალეთ) — ეს არის თქვენი, საიტის
