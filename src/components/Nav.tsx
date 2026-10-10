@@ -8,6 +8,7 @@ interface Me {
   userId: string;
   email: string;
   role: "USER" | "ADMIN";
+  adminId?: string | null;
 }
 
 const BURST_PARTICLES = Array.from({ length: 14 }).map((_, i) => {
@@ -24,6 +25,7 @@ export default function Nav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isExploding, setIsExploding] = useState(false);
   const [isBrandLit, setIsBrandLit] = useState(false);
+  const isAdmin = me?.role === "ADMIN" || me?.adminId === "ADMIN";
 
   useEffect(() => {
     fetch("/api/auth/me", { cache: "no-store" })
@@ -168,7 +170,7 @@ export default function Nav() {
             <Link href="/#pricing" className="nav-quiet-action">ტარიფები</Link>
             {me === null && <Link href="/cabinet" className="nav-action"><User className="h-3.5 w-3.5" />კაბინეტი</Link>}
             {me && <Link href="/cabinet/dashboard" className="nav-action"><LayoutDashboard className="h-3.5 w-3.5" />კაბინეტი</Link>}
-            {me?.role === "ADMIN" && <Link href="/admin" className="nav-quiet-action"><Shield className="h-3.5 w-3.5 text-violet-300" />ადმინი</Link>}
+            {isAdmin && <Link href="/admin" className="nav-quiet-action"><Shield className="h-3.5 w-3.5 text-violet-300" />ადმინი</Link>}
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
@@ -187,7 +189,7 @@ export default function Nav() {
             <Link href="/#academy" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">აკადემია</Link>
             <Link href="/#consultations" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">კონსულტაციები</Link>
             <Link href="/#pricing" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">ტარიფები</Link>
-            {me?.role === "ADMIN" && <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start"><Shield className="h-4 w-4 text-violet-300" />ადმინ პანელი</Link>}
+            {isAdmin && <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start"><Shield className="h-4 w-4 text-violet-300" />ადმინ პანელი</Link>}
             {me && <p className="truncate px-2 text-xs text-slate-500">{me.email}</p>}
           </div>
         )}

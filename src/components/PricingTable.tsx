@@ -87,6 +87,7 @@ const PLANS: PlanConfig[] = [
 
 export default function PricingTable() {
   const [duration, setDuration] = useState<Duration>("month");
+  const [selectedPlan, setSelectedPlan] = useState<PlanConfig["id"] | null>(null);
   const [checkoutModalPlan, setCheckoutModalPlan] = useState<PlanConfig | null>(null);
   const checkoutTriggerRef = useRef<HTMLButtonElement | null>(null);
   const checkoutDialogRef = useRef<HTMLDivElement | null>(null);
@@ -212,10 +213,17 @@ export default function PricingTable() {
           return (
             <div
               key={plan.id}
-              className={`relative flex flex-col justify-between rounded-3xl p-7 shadow-2xl backdrop-blur-2xl transition-all duration-300 hover:translate-y-[-4px] ${
+              role="group"
+              aria-label={`${plan.name} ტარიფი`}
+              onClick={() => setSelectedPlan(plan.id)}
+              className={`relative flex cursor-pointer flex-col justify-between rounded-3xl p-7 shadow-2xl backdrop-blur-2xl transition-all duration-300 hover:translate-y-[-4px] focus-within:ring-2 focus-within:ring-cyan-300 ${
                 isPro
-                  ? "border-2 border-indigo-500/80 bg-[#12182c]/45 hover:border-cyan-400 hover:shadow-[0_0_40px_-5px_rgba(99,102,241,0.35)] md:-translate-y-2"
-                  : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-white/20"
+                  ? `border-2 bg-[#12182c]/45 hover:border-cyan-400 hover:shadow-[0_0_40px_-5px_rgba(99,102,241,0.35)] md:-translate-y-2 ${
+                      selectedPlan === plan.id ? "border-cyan-300 ring-1 ring-cyan-300/50" : "border-indigo-500/80"
+                    }`
+                  : `border bg-[#080d1a]/35 hover:border-white/20 ${
+                      selectedPlan === plan.id ? "border-cyan-300/80 ring-1 ring-cyan-300/40" : "border-white/[0.08]"
+                    }`
               }`}
             >
               {plan.badge && (
@@ -229,11 +237,24 @@ export default function PricingTable() {
               <div>
                 <div className="flex items-center justify-between">
                   <h3 className="font-display text-lg font-bold text-white">{plan.name}</h3>
-                  {isPro && (
-                    <span className="rounded-lg bg-indigo-500/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-indigo-300 border border-indigo-500/20">
-                      POPULAR
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {isPro && (
+                      <span className="rounded-lg bg-indigo-500/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-indigo-300 border border-indigo-500/20">
+                        POPULAR
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      aria-pressed={selectedPlan === plan.id}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setSelectedPlan(plan.id);
+                      }}
+                      className="rounded-lg border border-white/10 px-2 py-1 text-[10px] font-semibold text-slate-300 transition-colors hover:border-cyan-300/50 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+                    >
+                      {selectedPlan === plan.id ? "არჩეულია" : "არჩევა"}
+                    </button>
+                  </div>
                 </div>
 
                 <p className="mt-1 text-xs text-slate-400 min-h-[34px]">{plan.description}</p>
@@ -263,7 +284,10 @@ export default function PricingTable() {
 
               <button
                 type="button"
-                onClick={(event) => handleOpenCheckout(plan, event.currentTarget)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleOpenCheckout(plan, event.currentTarget);
+                }}
                 className={`mt-8 w-full rounded-xl py-3.5 text-center text-xs font-bold transition-all cursor-pointer ${
                   isPro
                     ? "bg-gradient-to-r from-cyan-500 via-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25 hover:scale-102 hover:shadow-indigo-500/40"
