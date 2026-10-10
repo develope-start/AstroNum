@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Check, CreditCard, Loader2, Lock, ShieldCheck, Sparkles, X, Zap } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, CreditCard, Sparkles, X, Zap } from "lucide-react";
 
 type Duration = "month" | "half_year" | "year";
 
@@ -50,7 +50,7 @@ const PLANS: PlanConfig[] = [
     description: "პრაქტიკოსი ასტროლოგებისთვის, სინასტრიისა და ტრანზიტული ანალიზისთვის",
     prices: { month: "4.99 ₾", half_year: "25.45 ₾", year: "47.90 ₾" },
     rawPrice: { month: 4.99, half_year: 25.45, year: 47.90 },
-    buttonText: "Pro პაკეტის გააქტიურება",
+    buttonText: "Pro პაკეტის არჩევა",
     highlighted: true,
     features: [
       "ყველაფერი Free პაკეტიდან +",
@@ -88,29 +88,61 @@ const PLANS: PlanConfig[] = [
 export default function PricingTable() {
   const [duration, setDuration] = useState<Duration>("month");
   const [checkoutModalPlan, setCheckoutModalPlan] = useState<PlanConfig | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+  const checkoutTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const checkoutDialogRef = useRef<HTMLDivElement | null>(null);
+  const checkoutCloseRef = useRef<HTMLButtonElement | null>(null);
 
   const durationLabel = duration === "month" ? "თვე" : duration === "half_year" ? "6 თვე" : "წელი";
 
-  const handleOpenCheckout = (plan: PlanConfig) => {
+  const handleOpenCheckout = (plan: PlanConfig, trigger: HTMLButtonElement) => {
     if (plan.id === "free") {
       const el = document.getElementById("calculator");
       el?.scrollIntoView({ behavior: "smooth" });
       return;
     }
+    checkoutTriggerRef.current = trigger;
     setCheckoutModalPlan(plan);
-    setCheckoutSuccess(false);
-    setIsProcessing(false);
   };
 
-  const handleConfirmPayment = () => {
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      setCheckoutSuccess(true);
-    }, 1200);
-  };
+  useEffect(() => {
+    if (!checkoutModalPlan) {
+      checkoutTriggerRef.current?.focus();
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    checkoutCloseRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setCheckoutModalPlan(null);
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusable = checkoutDialogRef.current?.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0]!;
+      const last = focusable[focusable.length - 1]!;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [checkoutModalPlan]);
 
   return (
     <section id="pricing" className="relative my-24 w-full scroll-mt-24">
@@ -182,8 +214,8 @@ export default function PricingTable() {
               key={plan.id}
               className={`relative flex flex-col justify-between rounded-3xl p-7 shadow-2xl backdrop-blur-2xl transition-all duration-300 hover:translate-y-[-4px] ${
                 isPro
-                  ? "border-2 border-indigo-500/90 bg-gradient-to-b from-[#141d33]/90 to-[#0a0f1a]/95 hover:border-cyan-400 hover:shadow-[0_0_40px_-5px_rgba(99,102,241,0.35)] md:-translate-y-2"
-                  : "border border-white/[0.08] bg-[#0c101a]/70 hover:border-white/20"
+                  ? "border-2 border-indigo-500/80 bg-[#12182c]/45 hover:border-cyan-400 hover:shadow-[0_0_40px_-5px_rgba(99,102,241,0.35)] md:-translate-y-2"
+                  : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-white/20"
               }`}
             >
               {plan.badge && (
@@ -231,7 +263,7 @@ export default function PricingTable() {
 
               <button
                 type="button"
-                onClick={() => handleOpenCheckout(plan)}
+                onClick={(event) => handleOpenCheckout(plan, event.currentTarget)}
                 className={`mt-8 w-full rounded-xl py-3.5 text-center text-xs font-bold transition-all cursor-pointer ${
                   isPro
                     ? "bg-gradient-to-r from-cyan-500 via-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25 hover:scale-102 hover:shadow-indigo-500/40"
@@ -245,131 +277,47 @@ export default function PricingTable() {
         })}
       </div>
 
-      {/* Flitt & Card Payment Checkout Modal */}
+      {/* Payment is unavailable until a real payment provider is integrated. */}
       {checkoutModalPlan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-3xl border border-white/15 bg-gradient-to-b from-[#131b2e] to-[#0a0f19] p-6 shadow-2xl sm:p-8">
+          <div
+            ref={checkoutDialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="checkout-unavailable-title"
+            aria-describedby="checkout-unavailable-description"
+            className="relative w-full max-w-md rounded-3xl border border-white/15 bg-gradient-to-b from-[#131b2e] to-[#0a0f19] p-6 shadow-2xl sm:p-8"
+          >
             <button
               type="button"
               onClick={() => setCheckoutModalPlan(null)}
-              className="absolute right-5 top-5 p-1 text-slate-400 hover:text-white cursor-pointer"
+              ref={checkoutCloseRef}
+              aria-label="ფანჯრის დახურვა"
+              className="absolute right-5 top-5 p-1 text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
 
-            {checkoutSuccess ? (
-              <div className="py-6 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
-                  <Check className="h-8 w-8" />
-                </div>
-                <h3 className="mt-4 font-display text-xl font-bold text-white">
-                  პაკეტი წარმატებით გააქტიურდა!
-                </h3>
-                <p className="mt-2 text-xs text-slate-300">
-                  თქვენს ანგარიშზე ჩაირთო {checkoutModalPlan.name}-ის ყველა პრემიუმ ფუნქცია {durationLabel} ვადით.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setCheckoutModalPlan(null)}
-                  className="mt-6 w-full rounded-xl bg-emerald-600 py-3 text-xs font-bold text-white hover:bg-emerald-500 cursor-pointer"
-                >
-                  სამუშაო სივრცეში დაბრუნება
-                </button>
+            <div className="py-5 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/15 text-amber-300">
+                <CreditCard className="h-7 w-7" />
               </div>
-            ) : (
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
-                    <CreditCard className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-display text-base font-bold text-white">
-                      პაკეტის შეძენა · Flitt Gateway
-                    </h3>
-                    <p className="text-[11px] text-slate-400">
-                      დაცული გადახდა საბანკო ბარათით
-                    </p>
-                  </div>
+              <h3 id="checkout-unavailable-title" className="mt-4 font-display text-xl font-bold text-white">
+                ონლაინ გადახდა ჯერ მიუწვდომელია
+              </h3>
+              <p id="checkout-unavailable-description" className="mt-3 text-xs leading-relaxed text-slate-300">
+                არჩეულია {checkoutModalPlan.name} · {durationLabel} · {checkoutModalPlan.prices[duration]}.
+                ამ ეტაპზე ბარათის მონაცემები არ მიიღება და პაკეტი არ აქტიურდება.
+                გადახდის გასააქტიურებლად საჭიროა რეალური გადახდის პროვაიდერის ინტეგრაცია.
+              </p>
+              <button
+                type="button"
+                onClick={() => setCheckoutModalPlan(null)}
+                className="mt-6 w-full rounded-xl bg-white/10 py-3 text-xs font-bold text-white transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+              >
+                გასაგებია
+              </button>
                 </div>
-
-                <div className="mt-5 rounded-2xl border border-white/10 bg-[#070b14] p-4 font-mono text-xs">
-                  <div className="flex justify-between text-slate-300">
-                    <span>პაკეტი:</span>
-                    <span className="font-bold text-white">{checkoutModalPlan.name}</span>
-                  </div>
-                  <div className="mt-2 flex justify-between text-slate-300">
-                    <span>ხანგრძლივობა:</span>
-                    <span className="text-cyan-300">{durationLabel}</span>
-                  </div>
-                  <div className="mt-2 flex justify-between border-t border-white/10 pt-2 text-sm font-bold text-white">
-                    <span>ჯამური თანხა:</span>
-                    <span className="text-cyan-400 font-extrabold">{checkoutModalPlan.prices[duration]}</span>
-                  </div>
-                </div>
-
-                <div className="mt-5 space-y-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">
-                      ბარათის ნომერი (Visa / Mastercard)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="4000 1234 5678 9010"
-                      defaultValue="4127 •••• •••• 8842"
-                      className="w-full rounded-xl border border-white/10 bg-[#070a16] px-3.5 py-2.5 text-xs text-white outline-none focus:border-cyan-400 font-mono"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[11px] font-semibold text-slate-300 mb-1">
-                        ვადა
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="MM/YY"
-                        defaultValue="12/28"
-                        className="w-full rounded-xl border border-white/10 bg-[#070a16] px-3.5 py-2.5 text-xs text-white outline-none focus:border-cyan-400 font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-semibold text-slate-300 mb-1">
-                        CVC / CVV
-                      </label>
-                      <input
-                        type="password"
-                        placeholder="•••"
-                        defaultValue="842"
-                        className="w-full rounded-xl border border-white/10 bg-[#070a16] px-3.5 py-2.5 text-xs text-white outline-none focus:border-cyan-400 font-mono"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleConfirmPayment}
-                  disabled={isProcessing}
-                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 via-indigo-600 to-violet-600 py-3.5 text-xs font-bold text-white shadow-xl shadow-cyan-500/20 hover:scale-102 transition-all disabled:opacity-60 cursor-pointer"
-                >
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>მიმდინარეობს ტრანზაქცია...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="h-3.5 w-3.5" />
-                      <span>გადახდა {checkoutModalPlan.prices[duration]}</span>
-                    </>
-                  )}
-                </button>
-
-                <div className="mt-4 flex items-center justify-center gap-2 text-[10px] text-slate-400">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                  <span>256-Bit SSL End-to-End Encryption · Flitt Verified</span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}

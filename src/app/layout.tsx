@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ka" className="dark">
-      <body className="app-body relative min-h-screen overflow-x-hidden bg-[#060813] text-slate-100 selection:bg-cyan-400 selection:text-slate-950 font-body">
+      <body className="app-body relative min-h-screen overflow-x-hidden bg-[#02040a] text-slate-100 selection:bg-cyan-400 selection:text-slate-950 font-body">
         {/* Prismline Aurora Multi-Layer Ambient Canvas (Fixed Viewport Atmosphere) */}
         <div className="aurora-canvas pointer-events-none fixed inset-0 -z-20 overflow-hidden" aria-hidden="true">
           {/* Top Primary Horizontal Aurora Glow Ribbon (Aqua & Violet) */}
@@ -41,11 +41,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="aurora-horizontal-band aurora-band-mid" />
           {/* Lower Page Horizontal Aurora Ribbon (Magenta & Cyan) */}
           <div className="aurora-horizontal-band aurora-band-bottom" />
-
-          {/* Prismatic Horizontal Laser Beams (Superdesign signature) */}
-          <div className="prism-horizontal-beam prism-beam-top" />
-          <div className="prism-horizontal-beam prism-beam-accent" />
-          <div className="prism-horizontal-beam prism-beam-mid" />
 
           {/* Starfield Texture */}
           <div className="star-matrix-overlay" />

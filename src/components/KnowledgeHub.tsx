@@ -187,7 +187,7 @@ export default function KnowledgeHub() {
           return (
             <article
               key={art.id}
-              className="group flex flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#0c101a]/70 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:translate-y-[-4px] hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)]"
+              className="group flex flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:translate-y-[-4px] hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)]"
             >
               <div>
                 <div className="flex items-center justify-between">

@@ -6,14 +6,14 @@
 
 /* --- Modern Design Tokens --- */
 :root {
-  --bg-main: #030712;
-  --bg-surface: #0b0f19;
-  --bg-card: rgba(13, 18, 30, 0.92);
-  --bg-card-elevated: rgba(20, 27, 45, 0.85);
-  --bg-input: rgba(5, 8, 18, 0.85);
+  --bg-main: #020408;
+  --bg-surface: #030612;
+  --bg-card: rgba(8, 12, 24, 0.35);
+  --bg-card-elevated: rgba(12, 18, 34, 0.42);
+  --bg-input: rgba(4, 7, 16, 0.55);
 
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-glass: rgba(255, 255, 255, 0.12);
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-glass: rgba(255, 255, 255, 0.10);
   --border-highlight: rgba(255, 255, 255, 0.22);
   --border-focus: #6366f1;
 
@@ -31,8 +31,8 @@
 
   --font-stack: 'Noto Sans Georgian', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  --shadow-glass: 0 20px 45px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  --shadow-glow: 0 0 25px -5px rgba(99, 102, 241, 0.25);
+  --shadow-glass: 0 20px 45px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --shadow-glow: 0 0 35px -5px rgba(99, 102, 241, 0.35);
 }
 
 /* --- Global Background & Atmosphere --- */
@@ -48,9 +48,9 @@ body.app-body {
 }
 
 /* ==========================================================================
-   PRISMLINE AURORA — HORIZONTAL GLOWING BACKGROUND & LIGHT STREAKS SYSTEM
-   Full-width horizontal chromatic aurora ribbons (Electric Cyan · Royal Indigo · Magenta)
-   As featured in Superdesign Prismline Aurora Glass architecture
+   PRISMLINE AURORA — VIBRANT HORIZONTAL AURORA GLOW SYSTEM
+   Rich, luminous horizontal chromatic ribbons across deep obsidian backdrop
+   Electric Cyan · Royal Indigo · Magenta
    ========================================================================== */
 
 /* 1. Global Viewport-Fixed Horizontal Aurora Stream Canvas */
@@ -62,11 +62,11 @@ body.app-body {
   overflow: hidden;
 }
 
-/* Horizontal Aurora Bands - Stretched wide across 160vw */
+/* Horizontal Aurora Bands - Wide panoramic light sweeps across 170vw */
 .aurora-horizontal-band {
   position: absolute;
-  left: -30vw;
-  width: 160vw;
+  left: -35vw;
+  width: 170vw;
   pointer-events: none;
   border-radius: 50%;
   mix-blend-mode: screen;
@@ -74,86 +74,48 @@ body.app-body {
 }
 
 .aurora-band-top {
-  top: -12%;
-  height: 520px;
+  top: -10%;
+  height: 560px;
   background: radial-gradient(
-    ellipse 90% 45% at 50% 50%,
-    rgba(56, 189, 248, 0.28) 0%,
-    rgba(99, 102, 241, 0.24) 38%,
-    rgba(236, 72, 153, 0.14) 68%,
+    ellipse 95% 55% at 50% 50%,
+    rgba(56, 189, 248, 0.55) 0%,
+    rgba(99, 102, 241, 0.48) 42%,
+    rgba(236, 72, 153, 0.28) 75%,
     transparent 100%
   );
-  filter: blur(110px);
+  filter: blur(100px);
   animation: aurora-horizontal-float 18s ease-in-out infinite alternate;
 }
 
 .aurora-band-mid {
-  top: 36%;
-  height: 480px;
+  top: 38%;
+  height: 520px;
   background: radial-gradient(
-    ellipse 90% 45% at 50% 50%,
-    rgba(99, 102, 241, 0.24) 0%,
-    rgba(236, 72, 153, 0.22) 42%,
-    rgba(56, 189, 248, 0.16) 75%,
+    ellipse 95% 55% at 50% 50%,
+    rgba(99, 102, 241, 0.52) 0%,
+    rgba(236, 72, 153, 0.48) 45%,
+    rgba(56, 189, 248, 0.35) 75%,
     transparent 100%
   );
-  filter: blur(120px);
+  filter: blur(105px);
   animation: aurora-horizontal-drift 22s ease-in-out infinite alternate-reverse;
 }
 
 .aurora-band-bottom {
-  bottom: -10%;
-  height: 500px;
+  bottom: -8%;
+  height: 540px;
   background: radial-gradient(
-    ellipse 90% 45% at 50% 50%,
-    rgba(56, 189, 248, 0.22) 0%,
-    rgba(99, 102, 241, 0.25) 40%,
-    rgba(168, 85, 247, 0.18) 72%,
+    ellipse 95% 55% at 50% 50%,
+    rgba(56, 189, 248, 0.48) 0%,
+    rgba(99, 102, 241, 0.52) 42%,
+    rgba(168, 85, 247, 0.42) 75%,
     transparent 100%
   );
-  filter: blur(115px);
+  filter: blur(100px);
   animation: aurora-horizontal-float 20s ease-in-out infinite alternate;
 }
 
-/* Horizontal Prismatic Laser Beams (Superdesign signature) */
-.prism-horizontal-beam {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(56, 189, 248, 0.15) 15%,
-    rgba(99, 102, 241, 0.65) 45%,
-    rgba(236, 72, 153, 0.55) 55%,
-    rgba(56, 189, 248, 0.2) 85%,
-    transparent 100%
-  );
-  box-shadow: 
-    0 0 18px rgba(99, 102, 241, 0.55),
-    0 0 36px rgba(56, 189, 248, 0.35),
-    0 0 75px rgba(236, 72, 153, 0.2);
-  pointer-events: none;
-}
-
-.prism-beam-top {
-  top: 0;
-}
-
-.prism-beam-accent {
-  top: 32%;
-  opacity: 0.65;
-  animation: prism-beam-shimmer 14s ease-in-out infinite alternate;
-}
-
-.prism-beam-mid {
-  top: 68%;
-  opacity: 0.55;
-  animation: prism-beam-shimmer 18s ease-in-out infinite alternate-reverse;
-}
-
-/* 2. Document-Level Scrolling Aurora Streams (Flows during scrolling) */
+/* 2. Document-Level Scrolling Aurora Streams (Illuminates background as you scroll) */
 .aurora-scroll-canvas {
   position: absolute;
   inset-x: 0;
@@ -167,9 +129,9 @@ body.app-body {
 
 .aurora-scroll-stream {
   position: absolute;
-  left: -25vw;
-  width: 150vw;
-  height: 520px;
+  left: -30vw;
+  width: 160vw;
+  height: 580px;
   border-radius: 50%;
   pointer-events: none;
   mix-blend-mode: screen;
@@ -179,111 +141,61 @@ body.app-body {
 .aurora-stream-hero {
   top: 4%;
   background: radial-gradient(
-    ellipse 85% 45% at 50% 50%,
-    rgba(56, 189, 248, 0.3) 0%,
-    rgba(99, 102, 241, 0.25) 40%,
-    rgba(236, 72, 153, 0.14) 75%,
+    ellipse 92% 52% at 50% 50%,
+    rgba(56, 189, 248, 0.58) 0%,
+    rgba(99, 102, 241, 0.48) 45%,
+    rgba(236, 72, 153, 0.25) 80%,
     transparent 100%
   );
-  filter: blur(110px);
+  filter: blur(100px);
 }
 
 .aurora-stream-calc {
   top: 26%;
   background: radial-gradient(
-    ellipse 85% 45% at 50% 50%,
-    rgba(99, 102, 241, 0.3) 0%,
-    rgba(56, 189, 248, 0.25) 42%,
-    rgba(236, 72, 153, 0.18) 72%,
+    ellipse 92% 52% at 50% 50%,
+    rgba(99, 102, 241, 0.58) 0%,
+    rgba(56, 189, 248, 0.50) 45%,
+    rgba(236, 72, 153, 0.32) 80%,
     transparent 100%
   );
-  filter: blur(120px);
+  filter: blur(110px);
 }
 
 .aurora-stream-bento {
   top: 50%;
   background: radial-gradient(
-    ellipse 85% 45% at 50% 50%,
-    rgba(236, 72, 153, 0.28) 0%,
-    rgba(99, 102, 241, 0.3) 42%,
-    rgba(56, 189, 248, 0.2) 75%,
+    ellipse 92% 52% at 50% 50%,
+    rgba(236, 72, 153, 0.55) 0%,
+    rgba(99, 102, 241, 0.58) 45%,
+    rgba(56, 189, 248, 0.38) 80%,
     transparent 100%
   );
-  filter: blur(125px);
+  filter: blur(115px);
 }
 
 .aurora-stream-academy {
   top: 72%;
   background: radial-gradient(
-    ellipse 85% 45% at 50% 50%,
-    rgba(56, 189, 248, 0.26) 0%,
-    rgba(99, 102, 241, 0.28) 40%,
-    rgba(168, 85, 247, 0.22) 72%,
+    ellipse 92% 52% at 50% 50%,
+    rgba(56, 189, 248, 0.52) 0%,
+    rgba(99, 102, 241, 0.58) 45%,
+    rgba(168, 85, 247, 0.45) 80%,
     transparent 100%
   );
-  filter: blur(120px);
+  filter: blur(110px);
 }
 
 .aurora-stream-pricing {
   top: 90%;
   background: radial-gradient(
-    ellipse 85% 45% at 50% 50%,
-    rgba(236, 72, 153, 0.26) 0%,
-    rgba(99, 102, 241, 0.3) 40%,
-    rgba(56, 189, 248, 0.22) 70%,
+    ellipse 92% 52% at 50% 50%,
+    rgba(236, 72, 153, 0.52) 0%,
+    rgba(99, 102, 241, 0.58) 45%,
+    rgba(56, 189, 248, 0.38) 80%,
     transparent 100%
   );
-  filter: blur(120px);
-}
-
-/* 3. Section-Level Horizontal Glowing Aurora Dividers */
-.prism-horizontal-glow-divider {
-  position: relative;
-  width: 100%;
-  margin: 5rem 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.prism-divider-line {
-  position: absolute;
-  width: 100vw;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(56, 189, 248, 0.15) 15%,
-    rgba(99, 102, 241, 0.6) 40%,
-    rgba(236, 72, 153, 0.55) 60%,
-    rgba(56, 189, 248, 0.2) 85%,
-    transparent 100%
-  );
-  box-shadow: 
-    0 0 18px rgba(99, 102, 241, 0.5),
-    0 0 36px rgba(56, 189, 248, 0.3);
-}
-
-.prism-divider-glow {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90vw;
-  max-width: 1200px;
-  height: 150px;
-  border-radius: 50%;
-  background: radial-gradient(
-    ellipse 75% 50% at 50% 50%,
-    rgba(99, 102, 241, 0.2) 0%,
-    rgba(56, 189, 248, 0.16) 45%,
-    rgba(236, 72, 153, 0.1) 75%,
-    transparent 100%
-  );
-  filter: blur(60px);
-  pointer-events: none;
+  filter: blur(110px);
 }
 
 .star-matrix-overlay {
@@ -291,25 +203,19 @@ body.app-body {
   inset: 0;
   background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 36px 36px;
-  opacity: 0.35;
+  opacity: 0.28;
 }
 
 @keyframes aurora-horizontal-float {
-  0% { transform: translateX(0) scaleY(1); opacity: 0.88; }
+  0% { transform: translateX(0) scaleY(1); opacity: 0.92; }
   50% { transform: translateX(3vw) scaleY(1.08); opacity: 1; }
-  100% { transform: translateX(-3vw) scaleY(0.95); opacity: 0.85; }
+  100% { transform: translateX(-3vw) scaleY(0.96); opacity: 0.90; }
 }
 
 @keyframes aurora-horizontal-drift {
-  0% { transform: translateX(-2.5vw) scaleY(0.96); opacity: 0.82; }
+  0% { transform: translateX(-2.5vw) scaleY(0.96); opacity: 0.88; }
   50% { transform: translateX(2.5vw) scaleY(1.06); opacity: 1; }
-  100% { transform: translateX(-0.5vw) scaleY(1); opacity: 0.88; }
-}
-
-@keyframes prism-beam-shimmer {
-  0% { opacity: 0.5; transform: scaleX(0.97); }
-  50% { opacity: 0.85; transform: scaleX(1.02); }
-  100% { opacity: 0.55; transform: scaleX(0.99); }
+  100% { transform: translateX(-0.5vw) scaleY(1); opacity: 0.92; }
 }
 
 /* --- Full-Width Premium Desktop Navigation --- */
@@ -576,8 +482,9 @@ fieldset.glass-panel:hover {
   flex-wrap: wrap;
   gap: 0.35rem;
   padding: 0.35rem;
-  background: rgba(13, 18, 30, 0.9) !important;
+  background: rgba(8, 12, 24, 0.4) !important;
   backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
   border-radius: 0.875rem !important;
   border: 1px solid var(--border-glass) !important;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4) !important;
@@ -659,7 +566,9 @@ button.calc-submit-btn:hover,
 .chart-view-interpretation,
 .admin-calculation-interpretation,
 .interpretation-content {
-  background: rgba(11, 15, 25, 0.95) !important;
+  background: rgba(8, 12, 24, 0.45) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
   border: 1px solid var(--border-glass) !important;
   border-radius: 1.25rem !important;
   padding: 1.5rem !important;
@@ -897,6 +806,9 @@ button.calc-submit-btn:hover,
   max-width: 100% !important;
   height: clamp(38rem, 84vh, 56rem) !important;
   min-height: clamp(38rem, 84vh, 56rem) !important;
+  background: rgba(4, 7, 16, 0.28) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
   border-radius: 0 !important;
   border-left: none !important;
   border-right: none !important;
@@ -968,18 +880,24 @@ button.calc-submit-btn:hover,
 
 /* --- 4 Elements Glowing Glass & Neon Aura Cards --- */
 .celestial-element-card {
+  display: block;
+  width: 100%;
   position: relative;
   cursor: pointer;
+  appearance: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   border-radius: 1.25rem;
   padding: 1.35rem;
   border: 1.5px solid var(--elem-border);
-  background: linear-gradient(145deg, var(--elem-bg), rgba(8, 11, 23, 0.88));
+  background: linear-gradient(145deg, var(--elem-bg), rgba(6, 9, 20, 0.38)) !important;
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.16),
     0 16px 40px -15px rgba(0, 0, 0, 0.8),
     0 0 25px -8px var(--elem-glow);
-  backdrop-filter: blur(20px) saturate(1.25);
-  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+  backdrop-filter: blur(20px) saturate(1.25) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.25) !important;
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
   overflow: hidden;
 }
@@ -991,6 +909,11 @@ button.calc-submit-btn:hover,
     inset 0 1px 2px rgba(255, 255, 255, 0.25),
     0 22px 50px -12px rgba(0, 0, 0, 0.9),
     0 0 38px -4px var(--elem-glow);
+}
+
+.celestial-element-card:focus-visible {
+  outline: 2px solid var(--elem-border-hover);
+  outline-offset: 4px;
 }
 
 .celestial-element-card.is-active {
@@ -1008,7 +931,7 @@ button.calc-submit-btn:hover,
   --elem-border-hover: rgba(255, 90, 80, 0.95);
   --elem-text: #ffe5e3;
   --elem-title: #ff6e65;
-  --elem-bg: rgba(145, 18, 25, 0.65);
+  --elem-bg: rgba(145, 18, 25, 0.35);
   --elem-glow: rgba(255, 45, 45, 0.85);
   --elem-symbol-bg: rgba(220, 38, 38, 0.25);
 }
@@ -1019,7 +942,7 @@ button.calc-submit-btn:hover,
   --elem-border-hover: rgba(245, 175, 110, 0.95);
   --elem-text: #fdf2e4;
   --elem-title: #f59e0b;
-  --elem-bg: rgba(92, 54, 28, 0.65);
+  --elem-bg: rgba(92, 54, 28, 0.35);
   --elem-glow: rgba(210, 130, 55, 0.8);
   --elem-symbol-bg: rgba(180, 83, 9, 0.25);
 }
@@ -1030,7 +953,7 @@ button.calc-submit-btn:hover,
   --elem-border-hover: rgba(100, 225, 255, 0.95);
   --elem-text: #e8f9ff;
   --elem-title: #38bdf8;
-  --elem-bg: rgba(14, 80, 110, 0.62);
+  --elem-bg: rgba(14, 80, 110, 0.32);
   --elem-glow: rgba(56, 189, 248, 0.85);
   --elem-symbol-bg: rgba(2, 132, 199, 0.25);
 }
@@ -1041,7 +964,7 @@ button.calc-submit-btn:hover,
   --elem-border-hover: rgba(129, 140, 248, 0.95);
   --elem-text: #e0e7ff;
   --elem-title: #818cf8;
-  --elem-bg: rgba(25, 30, 95, 0.65);
+  --elem-bg: rgba(25, 30, 95, 0.35);
   --elem-glow: rgba(99, 102, 241, 0.85);
   --elem-symbol-bg: rgba(67, 56, 202, 0.25);
 }
@@ -1082,5 +1005,4 @@ button.calc-submit-btn:hover,
   padding: 0.2rem 0.65rem;
   box-shadow: inset 0 0 8px -3px var(--elem-glow);
 }
-
 

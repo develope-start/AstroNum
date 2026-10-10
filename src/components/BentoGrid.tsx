@@ -27,7 +27,7 @@ export default function BentoGrid() {
       {/* Bento Grid: 6-card layout */}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
         {/* Card 1: Large Bento (Span 2 on lg) - Swiss Ephemeris Engine */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d121f]/70 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] lg:col-span-2">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] lg:col-span-2">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl transition-all group-hover:bg-cyan-500/20" />
           
           <div className="flex flex-col justify-between h-full">
@@ -81,7 +81,7 @@ export default function BentoGrid() {
         </div>
 
         {/* Card 2: 4-Element Temperament Synthesis */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d121f]/70 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-amber-500/30 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)]">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-amber-500/30 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)]">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-amber-500/10 blur-3xl transition-all group-hover:bg-amber-500/20" />
           
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-950/40 text-amber-300 shadow-inner">
@@ -135,7 +135,7 @@ export default function BentoGrid() {
         </div>
 
         {/* Card 3: Aspect Matrix & Synastry */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d121f]/70 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-pink-500/30 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)]">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-pink-500/30 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)]">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-pink-500/10 blur-3xl transition-all group-hover:bg-pink-500/20" />
           
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-pink-400/30 bg-pink-950/40 text-pink-300 shadow-inner">
@@ -165,7 +165,7 @@ export default function BentoGrid() {
         </div>
 
         {/* Card 4: Gemini AI Astrology Intelligence */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d121f]/70 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-500/30 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)]">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-500/30 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)]">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl transition-all group-hover:bg-violet-500/20" />
           
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-violet-400/30 bg-violet-950/40 text-violet-300 shadow-inner">
@@ -188,7 +188,7 @@ export default function BentoGrid() {
         </div>
 
         {/* Card 5: Birth Time Rectification Module */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d121f]/70 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)]">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)]">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl transition-all group-hover:bg-emerald-500/20" />
           
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-400/30 bg-emerald-950/40 text-emerald-300 shadow-inner">
@@ -211,7 +211,7 @@ export default function BentoGrid() {
         </div>
 
         {/* Card 6: Large Bento (Span 2 or 3) - Vector & PDF Export */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d121f]/70 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.15)] lg:col-span-3">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.15)] lg:col-span-3">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl transition-all group-hover:bg-indigo-500/20" />
           
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">

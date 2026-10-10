@@ -84,9 +84,7 @@ export default function HomePage() {
   const [hoveredCelestial, setHoveredCelestial] = useState<CelestialTarget>(null);
   const [selectedCelestial, setSelectedCelestial] = useState<CelestialTarget>(null);
   const [selectedElementInfo, setSelectedElementInfo] = useState<ElementTemperamentId | null>(null);
-  const elementTriggerRef = useRef<HTMLElement | null>(null);
-  const elementCloseRef = useRef<HTMLButtonElement>(null);
-  const layoutElementInfo = selectedElementInfo;
+  const elementTriggerRef = useRef<HTMLButtonElement | null>(null);
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
   const activeCelestial = selectedCelestial ?? hoveredCelestial;
   const activePlanetIndex = typeof activeCelestial === "number" ? activeCelestial : null;
@@ -108,38 +106,14 @@ export default function HomePage() {
       return;
     }
 
-    const previousOverflow = document.body.style.overflow;
-    const previousPaddingRight = document.body.style.paddingRight;
-    const scrollbarGap = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
-    const bodyPaddingRight = Number.parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
-    document.body.style.overflow = "hidden";
-    if (scrollbarGap) document.body.style.paddingRight = `${bodyPaddingRight + scrollbarGap}px`;
-    elementCloseRef.current?.focus();
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
         setSelectedElementInfo(null);
       }
-      if (event.key !== "Tab") return;
-      const dialog = document.querySelector<HTMLElement>(".celestial-temperament-card.is-visible");
-      const focusable = dialog?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])');
-      if (!focusable?.length) return;
-      const first = focusable[0]!;
-      const last = focusable[focusable.length - 1]!;
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
     };
     document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.body.style.paddingRight = previousPaddingRight;
-      document.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [selectedElementInfo]);
 
   return (
@@ -314,12 +288,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Prismatic Horizontal Aurora Glowing Divider */}
-      <div className="prism-horizontal-glow-divider" aria-hidden="true">
-        <div className="prism-divider-line" />
-        <div className="prism-divider-glow" />
-      </div>
-
       {/* 4 სტიქიის ინტერაქციული მოდული (ტემპერამენტების სინთეზი) - ზოდიაქოს წრის ფანჯრის გარეთ */}
       <section className="hero-elements-section my-12 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="4 სტიქიის ტემპერამენტები">
         <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
@@ -341,9 +309,15 @@ export default function HomePage() {
             const isSelected = selectedElementInfo === element.id;
 
             return (
-              <div
+              <button
+                type="button"
                 key={element.id}
-                onClick={() => toggleElementInfo(element.id)}
+                onClick={(event) => {
+                  elementTriggerRef.current = event.currentTarget;
+                  toggleElementInfo(element.id);
+                }}
+                aria-expanded={isSelected}
+                aria-controls={isSelected ? "element-temperament-details" : undefined}
                 className={`celestial-element-card celestial-element-card-${element.id}${isSelected ? " is-active" : ""}`}
               >
                 <div className="relative z-10">
@@ -392,18 +366,23 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
 
         {/* Selected Temperament Detail Drawer/Modal */}
         {selectedElementInfo && (
-          <div className="relative mt-6 rounded-3xl border border-white/15 bg-[#0a0f1d]/95 p-6 shadow-2xl backdrop-blur-2xl duration-200 animate-in fade-in sm:p-8">
+          <div
+            id="element-temperament-details"
+            role="region"
+            aria-label={`${ELEMENT_GROUPS.find((element) => element.id === selectedElementInfo)?.name} სტიქიის ტემპერამენტის დეტალები`}
+            className="relative mt-6 rounded-3xl border border-white/15 bg-[#080d1a]/60 p-6 shadow-2xl backdrop-blur-2xl duration-200 animate-in fade-in sm:p-8"
+          >
             <button
               type="button"
               onClick={() => setSelectedElementInfo(null)}
-              className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/10 text-slate-400 transition-all hover:bg-white/20 hover:text-white"
+              className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/10 text-slate-400 transition-all hover:bg-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1d]"
               aria-label="დახურვა"
             >
               <X className="h-4 w-4" />
@@ -418,16 +397,8 @@ export default function HomePage() {
         <SocialProofTicker />
       </div>
 
-      {/* Prismatic Horizontal Aurora Glowing Divider */}
-      <div className="prism-horizontal-glow-divider" aria-hidden="true">
-        <div className="prism-divider-line" />
-        <div className="prism-divider-glow" />
-      </div>
-
       {/* Main Interactive Astrological Calculation Workspace */}
-      <section id="calculator" className="app-section relative my-16 rounded-3xl border border-white/[0.08] bg-[#0c101a]/70 p-6 shadow-2xl backdrop-blur-2xl sm:p-10 scroll-mt-24">
-        {/* Specular top glow */}
-        <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 h-[1px] w-1/2 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60" />
+      <section id="calculator" className="app-section relative my-16 rounded-3xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-2xl backdrop-blur-2xl sm:p-10 scroll-mt-24">
 
         <div className="section-heading mb-8">
           <div>
@@ -468,32 +439,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Prismatic Horizontal Aurora Glowing Divider */}
-      <div className="prism-horizontal-glow-divider" aria-hidden="true">
-        <div className="prism-divider-line" />
-        <div className="prism-divider-glow" />
-      </div>
-
       {/* 6-Card Bento Box Feature Showcase */}
       <BentoGrid />
-
-      {/* Prismatic Horizontal Aurora Glowing Divider */}
-      <div className="prism-horizontal-glow-divider" aria-hidden="true">
-        <div className="prism-divider-line" />
-        <div className="prism-divider-glow" />
-      </div>
 
       {/* Astrological Knowledge Hub & Insights Academy */}
       <KnowledgeHub />
 
       {/* 1-on-1 Certified Astrologer Consultation Booking */}
       <ExpertConsultationBooking />
-
-      {/* Prismatic Horizontal Aurora Glowing Divider */}
-      <div className="prism-horizontal-glow-divider" aria-hidden="true">
-        <div className="prism-divider-line" />
-        <div className="prism-divider-glow" />
-      </div>
 
       {/* 3-Tier Pricing Table */}
       <PricingTable />

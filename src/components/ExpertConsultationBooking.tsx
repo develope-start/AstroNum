@@ -104,8 +104,8 @@ export default function ExpertConsultationBooking() {
               key={srv.id}
               className={`flex flex-col justify-between rounded-3xl p-6 transition-all backdrop-blur-xl ${
                 isSelected
-                  ? "border-2 border-cyan-400 bg-gradient-to-b from-[#11192e] to-[#080d1a] shadow-xl shadow-cyan-500/15"
-                  : "border border-white/[0.08] bg-[#0c101a]/70 hover:border-white/20 hover:translate-y-[-2px]"
+                  ? "border-2 border-cyan-400 bg-cyan-950/30 shadow-xl shadow-cyan-500/15"
+                  : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-white/20 hover:translate-y-[-2px]"
               }`}
             >
               <div>
