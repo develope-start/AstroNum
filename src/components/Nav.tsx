@@ -71,10 +71,10 @@ export default function Nav() {
         <div className="flex items-center justify-between gap-3">
           <Link
             href="/"
-            className={`brand-link group flex min-w-0 items-center gap-3${isBrandLit ? " is-brand-lit" : ""}`}
+            className={`brand-link group flex shrink-0 items-center gap-3${isBrandLit ? " is-brand-lit" : ""}`}
             onClick={triggerExplosion}
           >
-            <div className="brand-mark-container">
+            <div className="brand-mark-container shrink-0">
               {/* 3D Stardust Orbital Ring on Hover */}
               <div className="brand-stardust-orbit" aria-hidden="true">
                 <svg viewBox="0 0 100 100" className="h-full w-full">
@@ -142,9 +142,9 @@ export default function Nav() {
             </div>
 
             {/* Brand title with the Georgia silhouette anchored to AstroNum's lower-right edge */}
-            <span className="brand-title-wrap min-w-0 flex flex-col justify-center">
-              <span className="brand-title-row">
-                <span className="block truncate font-display text-lg font-bold tracking-tight text-slate-100 sm:text-xl drop-shadow-[0_0_10px_rgba(167,139,250,0.3)]">
+            <span className="brand-title-wrap flex shrink-0 flex-col justify-center">
+              <span className="brand-title-row flex items-center gap-2">
+                <span className="whitespace-nowrap font-display text-lg font-bold tracking-tight text-slate-100 sm:text-xl drop-shadow-[0_0_10px_rgba(167,139,250,0.3)]">
                   Astro<span className="text-violet-300">Num</span><sup className="ml-0.5 text-[0.55em] font-extrabold text-violet-300">°</sup>
                 </span>
                 <svg

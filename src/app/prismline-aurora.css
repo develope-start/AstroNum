@@ -115,32 +115,55 @@ body.app-body {
   100% { transform: translate(-20px, 40px) scale(0.95); }
 }
 
-/* --- Clean Navigation --- */
+/* --- Full-Width Premium Desktop Navigation --- */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 50;
   width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 0.85rem 1rem;
+  display: block;
+  padding: 0;
+  background: rgba(7, 10, 18, 0.92) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6) !important;
 }
 
 .nav-shell {
   position: relative;
   width: 100%;
-  max-width: 76rem;
-  background: rgba(13, 18, 30, 0.88) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border-radius: 9999px !important;
-  border: 1px solid var(--border-glass) !important;
-  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-  transition: all 0.25s ease;
+  max-width: 100% !important;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
-.nav-shell:hover {
-  border-color: var(--border-highlight) !important;
+@media (min-width: 768px) {
+  .nav-shell {
+    padding: 0.85rem 2rem !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .nav-shell {
+    padding-left: 3rem !important;
+    padding-right: 3rem !important;
+  }
+}
+
+.brand-georgia-map {
+  width: 2.2rem !important;
+  height: 1.15rem !important;
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  fill: #a78bfa !important;
+  filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.7)) !important;
+  transition: all 0.25s ease !important;
 }
 
 .nav-action {

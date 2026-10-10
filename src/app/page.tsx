@@ -1,7 +1,7 @@
 "use client";
 
 import { type CSSProperties, useEffect, useRef, useState } from "react";
-import { Activity, ArrowRight, Bot, Check, Clock, Compass, Heart, Orbit, Sparkles, Sun } from "lucide-react";
+import { Activity, ArrowRight, Bot, Check, Clock, Compass, Heart, Orbit, Sparkles, Sun, X } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
 import SynastryCalculator from "@/components/SynastryCalculator";
@@ -172,96 +172,18 @@ export default function HomePage() {
         </div>
         <div className="hero-orbit-card hover-glass-lift" aria-label="ციური გამოთვლის ვიზუალური მოდული">
           <div
-            className={`celestial-system${layoutElementInfo ? ` has-element-info element-info-${layoutElementInfo}` : ""}`}
+            className="celestial-system"
             role="group"
             aria-label="12 ზოდიაქოს ასტროლოგიური სარტყელი, მმართველი მნათობები და ცენტრში დედამიწა"
             onClick={(event) => {
               const target = event.target as Element;
-              if (!target.closest("button, .celestial-element-panel, .celestial-info-card")) {
+              if (!target.closest("button, .celestial-info-card")) {
                 setSelectedCelestial(null);
                 setHoveredCelestial(null);
-                setSelectedElementInfo(null);
               }
             }}
           >
             <div className="celestial-star-noise" aria-hidden="true" />
-            {ELEMENT_GROUPS.map((element) => (
-              <section
-                key={element.id}
-                className={`celestial-element-panel celestial-element-panel-${element.id}${selectedElementInfo === element.id ? " is-info-open" : ""}`}
-                aria-label={`${element.name} სტიქია`}
-                aria-expanded={selectedElementInfo === element.id}
-                role="group"
-                data-info-placement={element.id === "fire" || element.id === "earth" ? "below" : "above"}
-                tabIndex={0}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  elementTriggerRef.current = event.currentTarget;
-                  toggleElementInfo(element.id);
-                }}
-                onKeyDown={(event) => {
-                  if (event.target !== event.currentTarget || (event.key !== "Enter" && event.key !== " ")) return;
-                  event.preventDefault();
-                  toggleElementInfo(element.id);
-                }}
-              >
-                <div className="celestial-element-heading">
-                  <span className="celestial-element-symbol" aria-hidden="true">{element.symbol}</span>
-                  <div>
-                    <span className="celestial-element-kicker">სტიქია</span>
-                    <strong>{element.name}</strong>
-                  </div>
-                </div>
-                <div className="celestial-element-row celestial-element-zodiacs">
-                  <span className="celestial-element-label">ზოდიაქოები</span>
-                  <div className="celestial-element-items">
-                    {element.signs.map((sign) => <span key={sign.name} title={sign.name}><b>{sign.symbol}</b></span>)}
-                  </div>
-                </div>
-                <div className="celestial-element-row celestial-element-rulers">
-                  <span className="celestial-element-label">მმართველები</span>
-                  <div className="celestial-element-items">
-                    {element.planets.map((planet) => <span key={planet.name} title={planet.name}><b>{planet.symbol}</b></span>)}
-                  </div>
-                </div>
-                <div
-                  className={`celestial-temperament-card celestial-temperament-card-${element.id} celestial-temperament-card-${element.id === "fire" || element.id === "earth" ? "below" : "above"}${selectedElementInfo === element.id ? " is-visible is-pinned" : ""}`}
-                  role={selectedElementInfo === element.id ? "dialog" : undefined}
-                  aria-modal={selectedElementInfo === element.id ? true : undefined}
-                  aria-label={selectedElementInfo === element.id ? `${element.name} სტიქიის განმარტება` : undefined}
-                  onClick={(event) => event.stopPropagation()}
-                  onWheel={(event) => event.stopPropagation()}
-                  onPointerDown={(event) => event.stopPropagation()}
-                >
-                    <button
-                      type="button"
-                      className="celestial-temperament-close"
-                      ref={selectedElementInfo === element.id ? elementCloseRef : undefined}
-                      aria-label="ინფორმაციის დახურვა"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setSelectedElementInfo(null);
-                      }}
-                    >
-                      ×
-                    </button>
-                    <div className="celestial-temperament-content">
-                      <ElementTemperamentSummary element={element.id} />
-                    </div>
-                </div>
-              </section>
-            ))}
-            {layoutElementInfo && (
-              <button
-                type="button"
-                className="celestial-element-overlay"
-                aria-label="სტიქიის განმარტების დახურვა"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setSelectedElementInfo(null);
-                }}
-              />
-            )}
             <div className="celestial-orbit celestial-orbit-wide" aria-hidden="true" />
             <div className="celestial-orbit celestial-orbit-inner" aria-hidden="true" />
             <div className="celestial-constellation-ring" aria-hidden="true">
@@ -362,10 +284,6 @@ export default function HomePage() {
             )}
           </div>
           <div className="zodiac-aura" aria-hidden="true" />
-          <div className="element-frame element-frame-fire" aria-hidden="true"><span>△</span></div>
-          <div className="element-frame element-frame-earth" aria-hidden="true"><span>◇</span></div>
-          <div className="element-frame element-frame-air" aria-hidden="true"><span>⌁</span></div>
-          <div className="element-frame element-frame-water" aria-hidden="true"><span>▽</span></div>
           <div className="zodiac-wheel" aria-hidden="true">
             <div className="zodiac-wheel-shadow" />
             <div className="zodiac-disc">
@@ -394,6 +312,111 @@ export default function HomePage() {
           <span className="orbit-dot orbit-dot-one" /><span className="orbit-dot orbit-dot-two" /><span className="orbit-dot orbit-dot-three" />
           <div className="hero-orbit-meta"><span>Swiss / fallback ready</span><span>0°—360°</span></div>
         </div>
+      </section>
+
+      {/* 4 სტიქიის ინტერაქციული მოდული (ტემპერამენტების სინთეზი) - ზოდიაქოს წრის ფანჯრის გარეთ */}
+      <section className="hero-elements-section my-12" aria-label="4 სტიქიის ტემპერამენტები">
+        <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400">
+              <span className="live-beacon mr-1.5" /> 4 სტიქია & ჰიპოკრატული ტემპერამენტები
+            </div>
+            <h3 className="mt-1 font-display text-xl font-bold text-white sm:text-2xl">
+              სტიქიების ბალანსი & ფსიქოტიპები
+            </h3>
+          </div>
+          <p className="max-w-md text-xs text-slate-400">
+            დააწკაპუნეთ ნებისმიერ სტიქიაზე, რათა გაეცნოთ მის მმართველებს, ზოდიაქოებს და ტემპერამენტის სიღრმისეულ ანალიზს.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {ELEMENT_GROUPS.map((element) => {
+            const isSelected = selectedElementInfo === element.id;
+            const elementColors = {
+              fire: "from-amber-500/20 via-rose-500/10 to-transparent border-amber-500/30 text-amber-300",
+              earth: "from-emerald-500/20 via-teal-500/10 to-transparent border-emerald-500/30 text-emerald-300",
+              air: "from-cyan-500/20 via-sky-500/10 to-transparent border-cyan-500/30 text-cyan-300",
+              water: "from-indigo-500/20 via-blue-500/10 to-transparent border-indigo-500/30 text-indigo-300",
+            }[element.id];
+
+            return (
+              <div
+                key={element.id}
+                onClick={() => toggleElementInfo(element.id)}
+                className={`group relative cursor-pointer rounded-2xl border bg-[#0b101c]/80 p-5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                  isSelected
+                    ? "border-cyan-400 ring-2 ring-cyan-400/30 shadow-cyan-500/15"
+                    : "border-white/[0.08] hover:border-white/25"
+                }`}
+              >
+                <div className={`pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br ${elementColors} opacity-40`} />
+
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] text-xl font-bold">
+                        {element.symbol}
+                      </span>
+                      <div>
+                        <span className="block font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                          სტიქია
+                        </span>
+                        <h4 className="font-display text-base font-bold text-white transition-colors group-hover:text-cyan-300">
+                          {element.name}
+                        </h4>
+                      </div>
+                    </div>
+                    <span className="rounded-full bg-white/[0.06] px-2.5 py-1 font-mono text-[10px] font-medium text-slate-300">
+                      {isSelected ? "დახურვა ✕" : "ტემპერამენტი ✦"}
+                    </span>
+                  </div>
+
+                  {/* Zodiacs Row */}
+                  <div className="mt-4 border-t border-white/[0.06] pt-3">
+                    <div className="mb-2 flex items-center justify-between text-xs">
+                      <span className="text-[11px] text-slate-400">ზოდიაქოები:</span>
+                      <div className="flex items-center gap-1.5 font-bold text-white">
+                        {element.signs.map((s) => (
+                          <span key={s.name} title={s.name} className="hover:text-cyan-300">
+                            {s.symbol} {s.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Rulers Row */}
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-[11px] text-slate-400">მმართველები:</span>
+                      <div className="flex items-center gap-1.5 font-bold text-slate-300">
+                        {element.planets.map((p) => (
+                          <span key={p.name} title={p.name} className="hover:text-white">
+                            {p.symbol} {p.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Selected Temperament Detail Drawer/Modal */}
+        {selectedElementInfo && (
+          <div className="relative mt-6 rounded-3xl border border-white/15 bg-[#0a0f1d]/95 p-6 shadow-2xl backdrop-blur-2xl duration-200 animate-in fade-in sm:p-8">
+            <button
+              type="button"
+              onClick={() => setSelectedElementInfo(null)}
+              className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/10 text-slate-400 transition-all hover:bg-white/20 hover:text-white"
+              aria-label="დახურვა"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <ElementTemperamentSummary element={selectedElementInfo} />
+          </div>
+        )}
       </section>
 
       {/* Social Proof Infinite Ticker Strip */}
