@@ -625,3 +625,33 @@ button.calc-submit-btn:hover,
 .admin-page tr:hover td {
   background: rgba(255, 255, 255, 0.02) !important;
 }
+
+/* --- Social Proof Infinite Ticker Animation --- */
+@keyframes ticker {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  animation: ticker 35s linear infinite;
+  display: flex;
+  width: max-content;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* --- Glass Card Hover Micro-interactions --- */
+.hover-glass-lift {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+.hover-glass-lift:hover {
+  transform: translateY(-4px);
+}
+

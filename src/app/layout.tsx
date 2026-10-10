@@ -23,6 +23,7 @@ import "./globals.css";
 import "./prismline-aurora.css";
 import "./simple-mode.css";
 import Nav from "@/components/Nav";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "AstroNum° — პროფესიონალური ასტროლოგიური გამოთვლები",
@@ -70,7 +71,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         <Nav />
-        <main className="relative mx-auto w-full max-w-full overflow-x-hidden px-4 pb-20 pt-3 sm:px-8 sm:pb-28 sm:pt-6 lg:px-12 xl:px-16">{children}</main>
+        <main className="relative mx-auto w-full max-w-full overflow-x-hidden px-4 pb-12 pt-3 sm:px-8 sm:pb-20 sm:pt-6 lg:px-12 xl:px-16">{children}</main>
+        <Footer />
       </body>
     </html>
   );

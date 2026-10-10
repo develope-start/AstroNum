@@ -8,6 +8,10 @@ import SynastryCalculator from "@/components/SynastryCalculator";
 import TransitCalculator from "@/components/TransitCalculator";
 import ElementTemperamentSummary from "@/components/ElementTemperamentSummary";
 import { ELEMENT_TEMPERAMENTS, type ElementTemperamentId } from "@/lib/elementTemperaments";
+import SocialProofTicker from "@/components/SocialProofTicker";
+import BentoGrid from "@/components/BentoGrid";
+import PricingTable from "@/components/PricingTable";
+import CtaSection from "@/components/CtaSection";
 
 type Tab = "natal" | "synastry" | "transit" | "advanced";
 
@@ -137,15 +141,31 @@ export default function HomePage() {
     <div className="app-home">
       <section className="hero-grid">
         <div>
-          <div className="hero-kicker"><span className="live-beacon" /> SWISS EPHEMERIS · PRECISION AURORA ENGINE</div>
-          <h1 className="hero-title">თქვენი რუკა.<br /><em>უფრო ღრმად.</em></h1>
-          <p className="hero-lead">მკაფიო, მუქი და პროფესიონალური სამუშაო სივრცე ნატალური, სინასტრიული და ტრანზიტული რუკებისთვის — გამოთვლები იწყება ზუსტი ციური მონაცემებით.</p>
-          <div className="hero-actions">
-            <a href="#calculator" className="primary-action"><Compass className="h-4 w-4" /> რუკის შექმნა <ArrowRight className="h-4 w-4" /></a>
-            <a href="#method" className="secondary-action"><Sparkles className="h-4 w-4 text-cyan-300" /> როგორ მუშაობს</a>
+          <div className="hero-kicker inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-950/30 px-3.5 py-1 text-xs font-semibold text-cyan-300 backdrop-blur-md">
+            <span className="live-beacon" /> SWISS EPHEMERIS · PRECISION AURORA ENGINE v2.1
+          </div>
+          <h1 className="hero-title mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white">
+            თქვენი ცის რუკა. <br />
+            <span className="bg-gradient-to-r from-cyan-300 via-indigo-300 to-rose-300 bg-clip-text text-transparent">
+              უფრო ღრმად და ზუსტად.
+            </span>
+          </h1>
+          <p className="hero-lead mt-5 max-w-xl text-base leading-relaxed text-slate-300">
+            შვეიცარული ეფემერიდის მათემატიკური ალგორითმები, 4 სტიქიის ტემპერამენტის სინთეზი და პროფესიონალური სივრცე ნატალური, სინასტრიული და ტრანზიტული რუკებისთვის.
+          </p>
+          <div className="hero-actions mt-8 flex flex-wrap items-center gap-4">
+            <a href="#calculator" className="primary-action shadow-lg shadow-cyan-500/20">
+              <Compass className="h-4 w-4" /> რუკის შექმნა <ArrowRight className="h-4 w-4" />
+            </a>
+            <a href="#features" className="secondary-action">
+              <Sparkles className="h-4 w-4 text-cyan-300" /> შესაძლებლობები
+            </a>
+            <a href="#pricing" className="secondary-action hidden sm:inline-flex">
+              ტარიფები
+            </a>
           </div>
         </div>
-        <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
+        <div className="hero-orbit-card hover-glass-lift" aria-label="ციური გამოთვლის ვიზუალური მოდული">
           <div
             className={`celestial-system${layoutElementInfo ? ` has-element-info element-info-${layoutElementInfo}` : ""}`}
             role="group"
@@ -371,11 +391,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="calculator" className="app-section">
-        <div className="section-heading">
-          <div><div className="hero-kicker"><span className="live-beacon mr-1.5" /> WORKSPACE</div><h2>აირჩიეთ ანალიზის ტიპი</h2></div>
-          <p>ერთი მშვიდი სამუშაო სივრცე ყველა რუკისთვის. ფორმა იცვლება არჩეული მეთოდის მიხედვით.</p>
+      {/* Social Proof Infinite Ticker Strip */}
+      <div className="my-10 -mx-4 sm:-mx-8 lg:-mx-12 xl:-mx-16">
+        <SocialProofTicker />
+      </div>
+
+      {/* Main Interactive Astrological Calculation Workspace */}
+      <section id="calculator" className="app-section relative my-16 rounded-3xl border border-white/[0.08] bg-[#0c101a]/70 p-6 shadow-2xl backdrop-blur-2xl sm:p-10 scroll-mt-24">
+        {/* Specular top glow */}
+        <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 h-[1px] w-1/2 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60" />
+
+        <div className="section-heading mb-8">
+          <div>
+            <div className="hero-kicker inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400">
+              <span className="live-beacon mr-1.5" /> WORKSPACE
+            </div>
+            <h2 className="mt-1 font-display text-2xl font-bold text-white sm:text-3xl">
+              აირჩიეთ ანალიზის ტიპი
+            </h2>
+          </div>
+          <p className="mt-2 text-sm text-slate-400">
+            ერთი მშვიდი, მაღალი სიზუსტის სამუშაო სივრცე ყველა რუკისთვის. ფორმა ავტომატურად ადაპტირდება არჩეულ მეთოდზე.
+          </p>
         </div>
+        
         <div className="mode-switcher" role="tablist" aria-label="რუკის ტიპი">
           {TABS.map((item) => {
             const Icon = item.icon;
@@ -388,8 +427,10 @@ export default function HomePage() {
             );
           })}
         </div>
-        <div className="mt-3 flex items-center gap-2 text-xs text-slate-400"><span className="live-beacon" />{activeTab.hint}</div>
-        <div className="mt-6">
+        <div className="mt-3 flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <span className="live-beacon" />{activeTab.hint}
+        </div>
+        <div className="mt-8">
           {tab === "natal" && <NatalCalculator />}
           {tab === "synastry" && <SynastryCalculator />}
           {tab === "transit" && <TransitCalculator />}
@@ -397,11 +438,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="method" className="home-features">
-        <div className="home-feature"><h3><Check className="mr-1.5 inline h-4 w-4 text-cyan-400" /> ზუსტი ეფემერიდი</h3><p>Swiss Ephemeris თანამედროვე თარიღებზე, უსაფრთხო fallback ისტორიულ დიაპაზონზე.</p></div>
-        <div className="home-feature"><h3><Check className="mr-1.5 inline h-4 w-4 text-violet-400" /> გამჭვირვალე ანალიზი</h3><p>ორბები, კუთხეები, ღირსებები, დეკლინაციები და მეთოდის წყაროები ცალკე ფენებად.</p></div>
-        <div className="home-feature"><h3><Check className="mr-1.5 inline h-4 w-4 text-pink-400" /> პირადი სამუშაო სივრცე</h3><p>შეინახეთ რუკები კაბინეტში და მართეთ წვდომა ერთი მშვიდი ინტერფეისიდან.</p></div>
-      </section>
+      {/* 6-Card Bento Box Feature Showcase */}
+      <BentoGrid />
+
+      {/* 3-Tier Pricing Table */}
+      <PricingTable />
+
+      {/* High-Converting Glassmorphic Call To Action */}
+      <CtaSection />
     </div>
   );
 }
