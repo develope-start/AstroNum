@@ -204,7 +204,7 @@ export default function BentoGrid() {
 
                 {/* MC */}
                 <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.03]">
-                  <span className="text-[11px] text-slate-300">მედიუმ ცელი (MC)</span>
+                  <span className="text-[11px] text-slate-300">მედიუმ ქოელი (MC)</span>
                   {mc ? (
                     <p className="text-sm font-semibold text-rose-300 mt-0.5">
                       {mc.mcDeg}°{String(mc.mcMin).padStart(2,"0")}' {mc.mcSignSymbol}

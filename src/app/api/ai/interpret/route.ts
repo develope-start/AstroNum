@@ -4,6 +4,7 @@ import { computeNatalChart } from "@/lib/astro/chart";
 import { eclipticToSign } from "@/lib/astro/signs";
 import { houseOfLongitude } from "@/lib/astro/positions";
 import { generateNatalInterpretation } from "@/lib/interpretations/natal";
+import { ASTROLOGY_GEORGIAN_STYLE_GUIDE, normalizeGeorgianAstrologyTerms } from "@/lib/astrologyGeorgian";
 import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 
 const requestSchema = z.object({
@@ -76,7 +77,7 @@ export async function POST(req: NextRequest) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (apiKey) {
       try {
-        const prompt = `დაწერე მკაფიო, გამართული ქართული ასტროლოგიური ინტერპრეტაცია. ეს არის სიმბოლური ასტროლოგიური წაკითხვა და არა სამედიცინო, ფსიქოლოგიური ან ფინანსური დიაგნოზი.
+        const prompt = `დაწერე მკაფიო, გამართული ქართული ასტროლოგიური ინტერპრეტაცია. ${ASTROLOGY_GEORGIAN_STYLE_GUIDE} ეს არის სიმბოლური ასტროლოგიური წაკითხვა და არა სამედიცინო, ფსიქოლოგიური ან ფინანსური დიაგნოზი.
 
 ფოკუსი: ${FOCUS_LABELS[type]}
 სახელი: ${name || "მაძიებელი"}
@@ -85,7 +86,7 @@ ${question ? `შეკითხვა: ${question}` : ""}
 
 გამოთვლილი რუკის მონაცემები (ეს პოზიციები გამოიყენე წყაროდ; ახალი პოზიციები არ გამოიგონო):
 ასცენდენტი: ${eclipticToSign(chart.ascendant).signName}
-MC: ${eclipticToSign(chart.mc).signName}
+მედიუმ ქოელი (MC): ${eclipticToSign(chart.mc).signName}
 ეფემერიდა: ${chart.ephemeris.source}
 პლანეტების პოზიციები:
 ${placements}
@@ -116,7 +117,7 @@ ${aspects}
           if (typeof generatedText === "string" && generatedText.trim()) {
             return NextResponse.json({
               success: true,
-              analysis: generatedText,
+              analysis: normalizeGeorgianAstrologyTerms(generatedText),
               provider: `Gemini (${model}) · ${chart.ephemeris.source}`,
             });
           }
@@ -130,7 +131,7 @@ ${aspects}
 
     return NextResponse.json({
       success: true,
-      analysis: generateLocalInterpretation(type, name || "მაძიებელი", chartText, question),
+      analysis: normalizeGeorgianAstrologyTerms(generateLocalInterpretation(type, name || "მაძიებელი", chartText, question)),
       provider: `AstroNum-ის ლოკალური ინტერპრეტაცია · ${chart.ephemeris.source}`,
     });
   } catch {

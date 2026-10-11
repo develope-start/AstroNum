@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { prisma } from "@/lib/db";
+import { normalizeGeorgianAstrologyTerms } from "@/lib/astrologyGeorgian";
 
 const DEFAULT_PROVIDER_VERSION = "libretranslate-v1";
 const CHUNK_LIMIT = 3_500;
@@ -115,7 +116,15 @@ export async function localizeInterpretation(
   targetLanguage = "ka",
 ): Promise<TranslationResult> {
   const chunks = splitText(text);
-  if (sourceLanguage === targetLanguage) return { text, translated: false, provider: "identity", cacheHits: chunks.length, chunks: chunks.length };
+  if (sourceLanguage === targetLanguage) {
+    return {
+      text: targetLanguage === "ka" ? normalizeGeorgianAstrologyTerms(text) : text,
+      translated: false,
+      provider: "identity",
+      cacheHits: chunks.length,
+      chunks: chunks.length,
+    };
+  }
 
   const translated: string[] = [];
   let cacheHits = 0;
@@ -126,5 +135,12 @@ export async function localizeInterpretation(
     provider = result.provider;
     if (result.cached) cacheHits += 1;
   }
-  return { text: translated.join("\n\n"), translated: translated.some((part, index) => part !== chunks[index]), provider, cacheHits, chunks: chunks.length };
+  const localizedText = translated.join("\n\n");
+  return {
+    text: targetLanguage === "ka" ? normalizeGeorgianAstrologyTerms(localizedText) : localizedText,
+    translated: translated.some((part, index) => part !== chunks[index]),
+    provider,
+    cacheHits,
+    chunks: chunks.length,
+  };
 }
