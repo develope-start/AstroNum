@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Compass, Download, Flame, Heart, Layers, Loader2, Lock, Moon, Orbit, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
+import { Activity, Compass, Download, Flame, Layers, Loader2, Lock, Moon, Orbit, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
 import { type KeyboardEvent, useState } from "react";
 import { useLiveTransit } from "@/lib/useLiveTransit";
 
@@ -358,13 +358,13 @@ export default function BentoGrid() {
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-pink-500/10 blur-3xl transition-all group-hover:bg-pink-500/20" />
 
           <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-pink-400/30 bg-pink-950/40 text-pink-300 shadow-inner">
-            <Heart className="h-6 w-6" />
+            <Orbit className="h-6 w-6" />
           </div>
           <h3 className="mt-5 font-display text-xl font-bold text-white">
-            სინასტრიული ასპექტების მატრიცა
+            მიმდინარე ასპექტები
           </h3>
           <p className="mt-2 text-base text-slate-300">
-            ორი რუკის შედარება, ჰარმონიული და დისონანსური ასპექტების წონითი ანალიზი და ურთიერთობის დინამიკის გაშიფვრა.
+            მიმდინარე პლანეტურ პოზიციებს შორის ყველაზე ძლიერი ჰარმონიული და დაძაბული ასპექტები.
           </p>
 
           <div className="mt-5 rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-4 space-y-1">
