@@ -5888,3 +5888,21 @@ canvas {
     margin: calc(clamp(2.15rem, 8vw, 2.7rem) * -0.5) !important;
   }
 }
+
+.app-home .celestial-ruler-zodiac {
+  top: auto !important;
+  bottom: 0.18rem !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  font-size: 0.62rem !important;
+  box-shadow: 0 0 0 1px rgba(9, 12, 24, 0.8), 0 0 8px currentColor !important;
+}
+
+@media (max-width: 640px) {
+  .app-home .celestial-ruler-zodiac {
+    bottom: 0.12rem !important;
+    width: 0.92rem !important;
+    height: 0.92rem !important;
+    font-size: 0.58rem !important;
+  }
+}
