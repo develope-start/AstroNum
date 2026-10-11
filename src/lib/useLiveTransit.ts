@@ -62,11 +62,28 @@ export interface SynastryAspect {
   type: "harmonic" | "tense";
 }
 
+export interface LunarCalendarDay {
+  date: string;
+  dayOfMonth: number;
+  lunarDay: number;
+  isCurrentMonth: boolean;
+}
+
+export interface LunarCalendarData {
+  lunarDay: number;
+  daysSinceNewMoon: number;
+  daysUntilFullMoon: number;
+  month: number;
+  year: number;
+  days: LunarCalendarDay[];
+}
+
 export interface LiveTransitData {
   planets: PlanetData[];
   angles: AnglesData;
   elements: ElementBalance;
   synastryAspects: SynastryAspect[];
+  lunarCalendar: LunarCalendarData;
   utcTime: string;
   tbilisiTime: string;
   date: string;
@@ -225,6 +242,45 @@ function findBestSynastryAspects(planets: PlanetData[]): SynastryAspect[] {
   return aspects.slice(0, 6);
 }
 
+function computeLunarCalendar(now: Date, localDate: string): LunarCalendarData {
+  const lastNewMoon = Astronomy.SearchMoonPhase(0, now, -35);
+  const nextFullMoon = Astronomy.SearchMoonPhase(180, now, 35);
+  if (!lastNewMoon || !nextFullMoon) {
+    throw new Error("Could not find the surrounding lunar phases.");
+  }
+
+  const daysSinceNewMoon = (now.getTime() - lastNewMoon.date.getTime()) / 86_400_000;
+  const [year, month] = localDate.split("-").map(Number);
+  const firstOfMonth = new Date(Date.UTC(year, month - 1, 1, 8));
+  const mondayOffset = (firstOfMonth.getUTCDay() + 6) % 7;
+  const days: LunarCalendarDay[] = [];
+
+  for (let index = 0; index < 42; index++) {
+    const date = new Date(Date.UTC(year, month - 1, 1 - mondayOffset + index, 8));
+    const dateString = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(date.getUTCDate()).padStart(2, "0")}`;
+    const previousNewMoon = Astronomy.SearchMoonPhase(0, date, -35);
+    if (!previousNewMoon) {
+      throw new Error(`Could not find a new moon for ${dateString}.`);
+    }
+
+    days.push({
+      date: dateString,
+      dayOfMonth: date.getUTCDate(),
+      lunarDay: Math.floor((date.getTime() - previousNewMoon.date.getTime()) / 86_400_000) + 1,
+      isCurrentMonth: date.getUTCMonth() === month - 1 && date.getUTCFullYear() === year,
+    });
+  }
+
+  return {
+    lunarDay: Math.floor(daysSinceNewMoon) + 1,
+    daysSinceNewMoon,
+    daysUntilFullMoon: (nextFullMoon.date.getTime() - now.getTime()) / 86_400_000,
+    month,
+    year,
+    days,
+  };
+}
+
 function formatTimes(date: Date): { utcTime: string; tbilisiTime: string; dateStr: string } {
   const utcH = String(date.getUTCHours()).padStart(2, "0");
   const utcM = String(date.getUTCMinutes()).padStart(2, "0");
@@ -263,7 +319,8 @@ export function useLiveTransit(): LiveTransitData | null {
       const angles = computeAngles(now);
       const elements = computeElements(planets);
       const synastryAspects = findBestSynastryAspects(planets);
-      setData({ planets, angles, elements, synastryAspects, utcTime, tbilisiTime, date: dateStr });
+      const lunarCalendar = computeLunarCalendar(now, dateStr);
+      setData({ planets, angles, elements, synastryAspects, lunarCalendar, utcTime, tbilisiTime, date: dateStr });
     } catch (e) {
       console.error("useLiveTransit error:", e);
     }

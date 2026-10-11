@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Compass, Download, Flame, Heart, Layers, Loader2, Lock, Orbit, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
+import { Activity, Compass, Download, Flame, Heart, Layers, Loader2, Lock, Moon, Orbit, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
 import { type KeyboardEvent, useState } from "react";
 import { useLiveTransit } from "@/lib/useLiveTransit";
 
@@ -8,6 +8,21 @@ const GEORGIAN_MONTHS = [
   "იანვარი", "თებერვალი", "მარტი", "აპრილი", "მაისი", "ივნისი",
   "ივლისი", "აგვისტო", "სექტემბერი", "ოქტომბერი", "ნოემბერი", "დეკემბერი",
 ];
+const WEEKDAYS_KA = ["ორშ", "სამ", "ოთხ", "ხუთ", "პარ", "შაბ", "კვ"];
+const MOON_SIGN_LOCATIVE: Record<string, string> = {
+  ვერძი: "ვერძში",
+  კურო: "კუროში",
+  ტყუპები: "ტყუპებში",
+  კირჩხიბი: "კირჩხიბში",
+  ლომი: "ლომში",
+  ქალწული: "ქალწულში",
+  სასწორი: "სასწორში",
+  მორიელი: "მორიელში",
+  მშვილდოსანი: "მშვილდოსანში",
+  "თხის რქა": "თხის რქაში",
+  მერწყული: "მერწყულში",
+  თევზები: "თევზებში",
+};
 
 export default function BentoGrid() {
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
@@ -95,15 +110,15 @@ export default function BentoGrid() {
         </div>
       </div>
 
-      {/* Bento Grid: 6-card layout */}
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {/* Bento Grid: 7-card layout */}
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 
         {/* ═══════════════════════════════════════════════
             Card 1: Swiss Ephemeris Engine — LIVE TRANSIT
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("ephemeris")}
-          className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 lg:col-span-2 ${
+          className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 xl:col-span-3 ${
             selectedFeature === "ephemeris" ? "border-cyan-400/70 ring-1 ring-cyan-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -328,19 +343,18 @@ export default function BentoGrid() {
 
           <div className="mt-5 rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-3 space-y-1.5">
             {transit?.synastryAspects && transit.synastryAspects.length > 0 ? (
-              transit.synastryAspects.slice(0, 4).map((asp, i) => (
+              transit.synastryAspects.map((asp, i) => (
                 <div
-                  key={i}
-                  className={`flex items-center justify-between text-xs text-slate-300 ${i > 0 ? "border-t border-white/[0.04] pt-1.5" : ""}`}
+                  key={`${asp.planet1}-${asp.aspectName}-${asp.planet2}`}
+                  className={`flex flex-col gap-1 text-xs text-slate-300 ${i > 0 ? "border-t border-white/[0.04] pt-1.5" : ""}`}
                 >
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex flex-wrap items-center gap-x-1.5 leading-relaxed">
                     <span className={`font-bold ${asp.type === "harmonic" ? "text-pink-400" : "text-rose-500"}`}>
-                      {asp.symbol1} {asp.aspectSymbol} {asp.symbol2}
+                      {asp.symbol1} {asp.planet1} {asp.aspectSymbol} {asp.aspectName} {asp.symbol2} {asp.planet2}
                     </span>
-                    <span className="text-[10px] truncate max-w-[90px]">{asp.planet1} · {asp.planet2}</span>
                   </span>
-                  <span className={`font-mono font-semibold text-[10px] ${asp.type === "harmonic" ? "text-emerald-400" : "text-rose-400"}`}>
-                    {asp.type === "harmonic" ? "+" : ""}{asp.score} Orb {asp.orb}°
+                  <span className={`self-end font-mono font-semibold text-[10px] ${asp.type === "harmonic" ? "text-emerald-400" : "text-rose-400"}`}>
+                    {asp.type === "harmonic" ? "+" : ""}{asp.score} · ორბისი {asp.orb}°
                   </span>
                 </div>
               ))
@@ -421,9 +435,99 @@ export default function BentoGrid() {
         </div>
 
         {/* ═══════════════════════════════════════════════
-            Card 6: PDF & SVG Export (full width)
+            Card 6: Live Lunar Calendar
             ═══════════════════════════════════════════════ */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.15)] lg:col-span-3">
+        <div
+          {...featureSelectionProps("lunar-calendar")}
+          className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#0a0b1c]/50 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-400/40 hover:shadow-[0_0_30px_-5px_rgba(167,139,250,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
+            selectedFeature === "lunar-calendar" ? "border-violet-400/70 ring-1 ring-violet-400/40" : "border-violet-300/[0.12]"
+          }`}
+        >
+          <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl transition-all group-hover:bg-violet-500/20" />
+          <div className="relative">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-violet-400/30 bg-violet-950/50 text-violet-200 shadow-inner">
+              <Moon className="h-6 w-6" />
+            </div>
+            <h3 className="mt-5 font-display text-xl font-bold text-white">
+              მთვარის კალენდარი
+            </h3>
+            {transit ? (
+              <>
+                <div className="mt-4 rounded-xl border border-violet-300/15 bg-violet-950/25 p-3 text-center">
+                  <p className="text-xs font-medium text-violet-200">დღეს მთვარის</p>
+                  <p className="mt-1 text-2xl font-bold text-white">
+                    {transit.lunarCalendar.lunarDay}-ე დღე
+                  </p>
+                  <p className="mt-1 text-sm text-violet-100">
+                    მთვარე იმყოფება{" "}
+                    {MOON_SIGN_LOCATIVE[
+                      transit.planets.find((planet) => planet.name === "Moon")?.signKa ?? ""
+                    ] ?? "—"}
+                  </p>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-center">
+                  <div className="rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-2">
+                    <p className="text-[10px] text-slate-400">ახალი მთვარიდან გასულია</p>
+                    <p className="mt-1 text-sm font-semibold text-violet-200">
+                      {transit.lunarCalendar.daysSinceNewMoon.toFixed(1)} დღე
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-2">
+                    <p className="text-[10px] text-slate-400">სავსე მთვარემდე დარჩა</p>
+                    <p className="mt-1 text-sm font-semibold text-violet-200">
+                      {transit.lunarCalendar.daysUntilFullMoon.toFixed(1)} დღე
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 rounded-xl border border-white/[0.06] bg-[#070b13]/80 p-3">
+                  <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-200">
+                    <span>
+                      {GEORGIAN_MONTHS[transit.lunarCalendar.month - 1]} {transit.lunarCalendar.year}
+                    </span>
+                    <span className="text-[10px] text-violet-300">რიცხვი · მთვარის დღე</span>
+                  </div>
+                  <div className="grid grid-cols-7 gap-1 text-center">
+                    {WEEKDAYS_KA.map((weekday) => (
+                      <span key={weekday} className="pb-1 text-[9px] font-medium text-slate-500">
+                        {weekday}
+                      </span>
+                    ))}
+                    {transit.lunarCalendar.days.map((day) => {
+                      const isToday = day.date === transit.date;
+                      const dayMonth = new Date(`${day.date}T00:00:00Z`).getUTCMonth();
+                      return (
+                        <div
+                          key={day.date}
+                          aria-label={`${day.dayOfMonth} ${GEORGIAN_MONTHS[dayMonth]}, მთვარის ${day.lunarDay}-ე დღე`}
+                          aria-current={isToday ? "date" : undefined}
+                          className={`flex min-h-9 flex-col items-center justify-center rounded-md border text-[10px] leading-tight ${
+                            isToday
+                              ? "border-violet-300 bg-violet-500/30 font-bold text-white shadow-[0_0_12px_rgba(167,139,250,0.25)]"
+                              : day.isCurrentMonth
+                                ? "border-transparent text-slate-200"
+                                : "border-transparent text-slate-600"
+                          }`}
+                        >
+                          <span>{day.dayOfMonth}</span>
+                          <span className={`text-[8px] ${isToday ? "text-violet-100" : "text-slate-500"}`}>
+                            {day.lunarDay}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="mt-4 text-sm text-slate-300">მთვარის კალენდარი იტვირთება…</p>
+            )}
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════
+            Card 7: PDF & SVG Export (full width)
+            ═══════════════════════════════════════════════ */}
+        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.15)] xl:col-span-4">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl transition-all group-hover:bg-indigo-500/20" />
 
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
