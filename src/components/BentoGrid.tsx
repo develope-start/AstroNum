@@ -1,16 +1,26 @@
 "use client";
 
-import { Activity, Binary, Compass, Download, Flame, Heart, Layers, Loader2, Lock, Orbit, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
+import { Activity, Compass, Download, Flame, Heart, Layers, Loader2, Lock, Orbit, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
 import { type KeyboardEvent, useState } from "react";
 import { useLiveTransit } from "@/lib/useLiveTransit";
 
 export default function BentoGrid() {
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
   const transit = useLiveTransit();
-  const transitDate = transit
-    ? new Intl.DateTimeFormat("ka-GE", { day: "2-digit", month: "long", timeZone: "UTC" }).format(
-        new Date(`${transit.date}T00:00:00Z`),
-      )
+  const transitDateValue = transit ? new Date(`${transit.date}T00:00:00Z`) : null;
+  const transitDay = transitDateValue
+    ? new Intl.DateTimeFormat("ka-GE", { day: "2-digit", timeZone: "UTC" }).format(transitDateValue)
+    : "—";
+  const transitMonth = transitDateValue
+    ? new Intl.DateTimeFormat("ka-GE", { month: "long", timeZone: "UTC" }).format(transitDateValue)
+    : "—";
+  const transitDate = transitDateValue
+    ? new Intl.DateTimeFormat("ka-GE", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(transitDateValue)
     : null;
 
   const featureSelectionProps = (id: string) => ({
@@ -34,10 +44,10 @@ export default function BentoGrid() {
 
   // სტიქიების ტემპერამენტის სახელები
   const temperaments: Record<string, string> = {
-    fire:  "ქოლერიკი",
-    earth: "მელანქოლიკი",
-    air:   "სანგვინიკი",
-    water: "ფლეგმატიკი",
+    fire:  "ქოლერიკული",
+    earth: "მელანქოლიკური",
+    air:   "სანგვინიკული",
+    water: "ფლეგმატიკური",
   };
   const elementNameKa: Record<string, string> = {
     fire:  "ცეცხლი (Fire)",
@@ -102,8 +112,9 @@ export default function BentoGrid() {
           <div className="flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center justify-between">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-950/40 text-cyan-300 shadow-inner">
-                  <Binary className="h-6 w-6" />
+                <div className="flex h-16 w-16 flex-col items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-950/40 text-cyan-200 shadow-inner">
+                  <span className="font-mono text-base font-bold leading-none">{transitDay}</span>
+                  <span className="mt-1 text-[9px] font-medium leading-none">{transitMonth}</span>
                 </div>
                 <span className="font-mono text-xs font-semibold text-cyan-400/80 bg-cyan-950/50 px-2.5 py-1 rounded-full border border-cyan-500/20">
                   0.0001° სიზუსტე
@@ -224,7 +235,7 @@ export default function BentoGrid() {
             4 სტიქიის ტემპერამენტის სინთეზი
           </h3>
           <p className="mt-2 text-base text-slate-300">
-            ჰიპოკრატესა და კლასიკური ასტროლოგიის ტემპერამენტების (ქოლერიკი, სანგვინიკი, მელანქოლიკი, ფლეგმატიკი) ავტომატური ბალანსირება.
+            ჰიპოკრატესა და კლასიკური ასტროლოგიის ტემპერამენტების (ქოლერიკული, მელანქოლიკური, სანგვინიკური, ფლეგმატიკური) ავტომატური ბალანსირება.
           </p>
 
           <div className="mt-5 space-y-3">
