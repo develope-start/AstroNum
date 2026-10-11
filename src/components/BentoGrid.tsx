@@ -1,10 +1,12 @@
 "use client";
 
-import { Activity, Binary, Compass, Download, Flame, Heart, Layers, Lock, Orbit, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
+import { Activity, Binary, Compass, Download, Flame, Heart, Layers, Loader2, Lock, Orbit, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
 import { type KeyboardEvent, useState } from "react";
+import { useLiveTransit } from "@/lib/useLiveTransit";
 
 export default function BentoGrid() {
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
+  const transit = useLiveTransit();
 
   const featureSelectionProps = (id: string) => ({
     role: "button" as const,
@@ -19,6 +21,41 @@ export default function BentoGrid() {
     },
   });
 
+  // პლანეტების სიმბოლოების მაპინგი სათაურისთვის (4 მთავარი)
+  const sun   = transit?.planets.find(p => p.name === "Sun");
+  const moon  = transit?.planets.find(p => p.name === "Moon");
+  const asc   = transit?.angles;
+  const mc    = transit?.angles;
+
+  // სტიქიების ტემპერამენტის სახელები
+  const temperaments: Record<string, string> = {
+    fire:  "ქოლერიკი",
+    earth: "მელანქოლიკი",
+    air:   "სანგვინიკი",
+    water: "ფლეგმატიკი",
+  };
+  const elementNameKa: Record<string, string> = {
+    fire:  "ცეცხლი (Fire)",
+    earth: "მიწა (Earth)",
+    air:   "ჰაერი (Air)",
+    water: "წყალი (Water)",
+  };
+  const elementGradient: Record<string, string> = {
+    fire:  "from-amber-500 to-rose-500",
+    earth: "from-emerald-500 to-teal-500",
+    air:   "from-sky-400 to-indigo-400",
+    water: "from-cyan-400 to-blue-500",
+  };
+  const elementText: Record<string, string> = {
+    fire:  "text-amber-400",
+    earth: "text-emerald-400",
+    air:   "text-sky-400",
+    water: "text-cyan-400",
+  };
+
+  const elemOrder: Array<"fire" | "earth" | "air" | "water"> = ["fire", "earth", "air", "water"];
+  const el = transit?.elements;
+
   return (
     <section id="features" className="relative my-20 w-full scroll-mt-24">
       {/* Background radial aura */}
@@ -27,13 +64,16 @@ export default function BentoGrid() {
       <div className="mb-8 text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-950/30 px-3.5 py-1 text-xs font-medium text-cyan-300 backdrop-blur-md">
           <Sparkles className="h-3.5 w-3.5 animate-pulse" />
-          <span>არქიტექტურა & შესაძლებლობები</span>
+          <span>არქიტექტურა &amp; შესაძლებლობები</span>
         </div>
       </div>
 
       {/* Bento Grid: 6-card layout */}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {/* Card 1: Large Bento (Span 2 on lg) - Swiss Ephemeris Engine */}
+
+        {/* ═══════════════════════════════════════════════
+            Card 1: Swiss Ephemeris Engine — LIVE TRANSIT
+            ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("ephemeris")}
           className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 lg:col-span-2 ${
@@ -41,7 +81,7 @@ export default function BentoGrid() {
           }`}
         >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl transition-all group-hover:bg-cyan-500/20" />
-          
+
           <div className="flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center justify-between">
@@ -61,38 +101,97 @@ export default function BentoGrid() {
               </p>
             </div>
 
-            {/* Visual Interactive Simulation Box */}
+            {/* ── Live Transit Box ── */}
             <div className="mt-6 rounded-xl border border-white/[0.06] bg-[#070b13]/80 p-4 font-mono text-xs">
+              {/* Header row */}
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-2 text-[11px] text-slate-400">
                 <span className="flex items-center gap-1.5 text-cyan-300">
                   <span className="h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
-                  MERCURY · VENUS · MARS · PLUTO
+                  LIVE · TBILISI TRANSIT
                 </span>
-                <span className="text-slate-500">J2000.0 / TOPO</span>
+                <span className="text-slate-500">
+                  {transit ? `${transit.date} · ${transit.utcTime}` : "loading…"}
+                </span>
               </div>
+
+              {/* 4 main bodies */}
               <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {/* Sun */}
                 <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.03]">
                   <span className="text-[10px] text-slate-500">მზე (Sun)</span>
-                  <p className="text-sm font-semibold text-amber-300 mt-0.5">24° 12' 08" ♈</p>
+                  {sun ? (
+                    <p className="text-sm font-semibold text-amber-300 mt-0.5">
+                      {sun.deg}°{String(sun.min).padStart(2,"0")}' {sun.signSymbol}
+                      {sun.retrograde && <span className="ml-1 text-rose-400 text-[10px]">℞</span>}
+                    </p>
+                  ) : (
+                    <p className="text-sm font-semibold text-amber-300/40 mt-0.5 animate-pulse">—°—' ☉</p>
+                  )}
+                  {sun && <p className="text-[9px] text-slate-500 mt-0.5">{sun.signKa}</p>}
                 </div>
+
+                {/* Moon */}
                 <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.03]">
                   <span className="text-[10px] text-slate-500">მთვარე (Moon)</span>
-                  <p className="text-sm font-semibold text-sky-200 mt-0.5">11° 45' 32" ♋</p>
+                  {moon ? (
+                    <p className="text-sm font-semibold text-sky-200 mt-0.5">
+                      {moon.deg}°{String(moon.min).padStart(2,"0")}' {moon.signSymbol}
+                      {moon.retrograde && <span className="ml-1 text-rose-400 text-[10px]">℞</span>}
+                    </p>
+                  ) : (
+                    <p className="text-sm font-semibold text-sky-200/40 mt-0.5 animate-pulse">—°—' ☽</p>
+                  )}
+                  {moon && <p className="text-[9px] text-slate-500 mt-0.5">{moon.signKa}</p>}
                 </div>
+
+                {/* ASC */}
                 <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.03]">
                   <span className="text-[10px] text-slate-500">ასცენდენტი (ASC)</span>
-                  <p className="text-sm font-semibold text-indigo-300 mt-0.5">04° 18' 54" ♏</p>
+                  {asc ? (
+                    <p className="text-sm font-semibold text-indigo-300 mt-0.5">
+                      {asc.ascDeg}°{String(asc.ascMin).padStart(2,"0")}' {asc.ascSignSymbol}
+                    </p>
+                  ) : (
+                    <p className="text-sm font-semibold text-indigo-300/40 mt-0.5 animate-pulse">—°—' ♑</p>
+                  )}
+                  {asc && <p className="text-[9px] text-slate-500 mt-0.5">{asc.ascSignKa}</p>}
                 </div>
+
+                {/* MC */}
                 <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.03]">
                   <span className="text-[10px] text-slate-500">მედიუმ ცელი (MC)</span>
-                  <p className="text-sm font-semibold text-rose-300 mt-0.5">19° 52' 10" ♌</p>
+                  {mc ? (
+                    <p className="text-sm font-semibold text-rose-300 mt-0.5">
+                      {mc.mcDeg}°{String(mc.mcMin).padStart(2,"0")}' {mc.mcSignSymbol}
+                    </p>
+                  ) : (
+                    <p className="text-sm font-semibold text-rose-300/40 mt-0.5 animate-pulse">—°—' ♌</p>
+                  )}
+                  {mc && <p className="text-[9px] text-slate-500 mt-0.5">{mc.mcSignKa}</p>}
                 </div>
               </div>
+
+              {/* ── All Planets Transit Strip ── */}
+              {transit && (
+                <div className="mt-3 pt-2 border-t border-white/[0.05]">
+                  <p className="text-[9px] text-slate-600 mb-1.5 uppercase tracking-widest">ტრანზიტული მონაცემები · {transit.tbilisiTime} · თბილისი</p>
+                  <div className="flex flex-wrap gap-x-3 gap-y-1">
+                    {transit.planets.map(p => (
+                      <span key={p.name} className={`text-[10px] font-mono ${p.color}`}>
+                        {p.symbol} {p.deg}°{String(p.min).padStart(2,"0")}' {p.signSymbol}
+                        {p.retrograde ? <span className="text-rose-400 text-[8px]">℞</span> : null}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Card 2: 4-Element Temperament Synthesis */}
+        {/* ═══════════════════════════════════════════════
+            Card 2: 4-Element Temperament — LIVE TRANSIT
+            ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("temperament")}
           className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-amber-500/30 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${
@@ -100,7 +199,7 @@ export default function BentoGrid() {
           }`}
         >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-amber-500/10 blur-3xl transition-all group-hover:bg-amber-500/20" />
-          
+
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-950/40 text-amber-300 shadow-inner">
             <Flame className="h-5 w-5" />
           </div>
@@ -112,46 +211,47 @@ export default function BentoGrid() {
           </p>
 
           <div className="mt-5 space-y-2">
-            <div>
-              <div className="flex justify-between text-[11px] text-slate-300 mb-1">
-                <span>ცეცხლი (Fire) · ქოლერიკი</span>
-                <span className="text-amber-400 font-mono font-semibold">35%</span>
-              </div>
-              <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
-                <div className="h-full rounded-full bg-gradient-to-r from-amber-500 to-rose-500" style={{ width: "35%" }} />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-[11px] text-slate-300 mb-1">
-                <span>მიწა (Earth) · მელანქოლიკი</span>
-                <span className="text-emerald-400 font-mono font-semibold">25%</span>
-              </div>
-              <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
-                <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500" style={{ width: "25%" }} />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-[11px] text-slate-300 mb-1">
-                <span>ჰაერი (Air) · სანგვინიკი</span>
-                <span className="text-sky-400 font-mono font-semibold">25%</span>
-              </div>
-              <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
-                <div className="h-full rounded-full bg-gradient-to-r from-sky-400 to-indigo-400" style={{ width: "25%" }} />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-[11px] text-slate-300 mb-1">
-                <span>წყალი (Water) · ფლეგმატიკი</span>
-                <span className="text-cyan-400 font-mono font-semibold">15%</span>
-              </div>
-              <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
-                <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-500" style={{ width: "15%" }} />
-              </div>
-            </div>
+            {el ? (
+              elemOrder.map(key => (
+                <div key={key}>
+                  <div className="flex justify-between text-[11px] text-slate-300 mb-1">
+                    <span>{elementNameKa[key]} · {temperaments[key]}</span>
+                    <span className={`${elementText[key]} font-mono font-semibold`}>{el[key]}%</span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full bg-gradient-to-r ${elementGradient[key]} transition-all duration-1000`}
+                      style={{ width: `${el[key]}%` }}
+                    />
+                  </div>
+                </div>
+              ))
+            ) : (
+              elemOrder.map(key => (
+                <div key={key}>
+                  <div className="flex justify-between text-[11px] text-slate-300 mb-1">
+                    <span>{elementNameKa[key]} · {temperaments[key]}</span>
+                    <span className={`${elementText[key]} font-mono font-semibold animate-pulse`}>…%</span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                    <div className={`h-full rounded-full bg-gradient-to-r ${elementGradient[key]} animate-pulse`} style={{ width: "30%" }} />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
+
+          {/* ── Transit subtitle ── */}
+          <p className="mt-3 text-[9px] text-slate-600 uppercase tracking-widest">
+            {transit
+              ? `ტრანზიტული სტიქიები · ${transit.tbilisiTime} · თბილისი`
+              : "გამოითვლება…"}
+          </p>
         </div>
 
-        {/* Card 3: Aspect Matrix & Synastry */}
+        {/* ═══════════════════════════════════════════════
+            Card 3: Synastry Aspects — LIVE TRANSIT
+            ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("synastry")}
           className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-pink-500/30 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 ${
@@ -159,7 +259,7 @@ export default function BentoGrid() {
           }`}
         >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-pink-500/10 blur-3xl transition-all group-hover:bg-pink-500/20" />
-          
+
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-pink-400/30 bg-pink-950/40 text-pink-300 shadow-inner">
             <Heart className="h-5 w-5" />
           </div>
@@ -170,23 +270,43 @@ export default function BentoGrid() {
             ორი რუკის შედარება, ჰარმონიული და დისონანსური ასპექტების წონითი ანალიზი და ურთიერთობის დინამიკის გაშიფვრა.
           </p>
 
-          <div className="mt-5 rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-3">
-            <div className="flex items-center justify-between text-xs text-slate-300">
-              <span className="flex items-center gap-1.5">
-                <span className="text-pink-400 font-bold">☉ △ ☽</span> მზე ტრიგონი მთვარე
-              </span>
-              <span className="text-emerald-400 font-mono font-semibold">+9.2 Orb 1.1°</span>
-            </div>
-            <div className="mt-2 flex items-center justify-between text-xs text-slate-300 border-t border-white/[0.04] pt-2">
-              <span className="flex items-center gap-1.5">
-                <span className="text-indigo-400 font-bold">♀ ☌ ♂</span> ვენერა შეერთება მარსი
-              </span>
-              <span className="text-emerald-400 font-mono font-semibold">+8.5 Orb 0.8°</span>
-            </div>
+          <div className="mt-5 rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-3 space-y-1.5">
+            {transit?.synastryAspects && transit.synastryAspects.length > 0 ? (
+              transit.synastryAspects.slice(0, 4).map((asp, i) => (
+                <div
+                  key={i}
+                  className={`flex items-center justify-between text-xs text-slate-300 ${i > 0 ? "border-t border-white/[0.04] pt-1.5" : ""}`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span className={`font-bold ${asp.type === "harmonic" ? "text-pink-400" : "text-rose-500"}`}>
+                      {asp.symbol1} {asp.aspectSymbol} {asp.symbol2}
+                    </span>
+                    <span className="text-[10px] truncate max-w-[90px]">{asp.planet1} · {asp.planet2}</span>
+                  </span>
+                  <span className={`font-mono font-semibold text-[10px] ${asp.type === "harmonic" ? "text-emerald-400" : "text-rose-400"}`}>
+                    {asp.type === "harmonic" ? "+" : ""}{asp.score} Orb {asp.orb}°
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center gap-2 text-xs text-slate-500 animate-pulse">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                <span>ასპექტები გამოითვლება…</span>
+              </div>
+            )}
           </div>
+
+          {/* ── Transit subtitle ── */}
+          <p className="mt-2 text-[9px] text-slate-600 uppercase tracking-widest">
+            {transit
+              ? `მიმდინარე ტრანზიტი · ${transit.tbilisiTime} · თბილისი`
+              : "გამოითვლება…"}
+          </p>
         </div>
 
-        {/* Card 4: Gemini AI Astrology Intelligence */}
+        {/* ═══════════════════════════════════════════════
+            Card 4: Gemini AI Astrology Intelligence
+            ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("ai")}
           className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-500/30 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
@@ -194,7 +314,7 @@ export default function BentoGrid() {
           }`}
         >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl transition-all group-hover:bg-violet-500/20" />
-          
+
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-violet-400/30 bg-violet-950/40 text-violet-300 shadow-inner">
             <Sparkles className="h-5 w-5" />
           </div>
@@ -214,7 +334,9 @@ export default function BentoGrid() {
           </div>
         </div>
 
-        {/* Card 5: Birth Time Rectification Module */}
+        {/* ═══════════════════════════════════════════════
+            Card 5: Birth Time Rectification
+            ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("rectification")}
           className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
@@ -222,7 +344,7 @@ export default function BentoGrid() {
           }`}
         >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl transition-all group-hover:bg-emerald-500/20" />
-          
+
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-400/30 bg-emerald-950/40 text-emerald-300 shadow-inner">
             <Compass className="h-5 w-5" />
           </div>
@@ -242,17 +364,19 @@ export default function BentoGrid() {
           </div>
         </div>
 
-        {/* Card 6: Large Bento (Span 2 or 3) - Vector & PDF Export */}
+        {/* ═══════════════════════════════════════════════
+            Card 6: PDF & SVG Export (full width)
+            ═══════════════════════════════════════════════ */}
         <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.15)] lg:col-span-3">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl transition-all group-hover:bg-indigo-500/20" />
-          
+
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="max-w-xl">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-indigo-400/30 bg-indigo-950/40 text-indigo-300 shadow-inner">
                 <Download className="h-5 w-5" />
               </div>
               <h3 className="mt-5 font-display text-xl font-bold text-white sm:text-2xl">
-                პროფესიონალური PDF & SVG ვექტორული ექსპორტი
+                პროფესიონალური PDF &amp; SVG ვექტორული ექსპორტი
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-400">
                 დააგენერირეთ კრისტალურად სუფთა, ბეჭდვისთვის მზა ანგარიშები ქართულ ენაზე. მოიცავს რუკის დისკს, პლანეტარულ ასპექტების ცხრილებს, სტიქიურ ბალანსს და სიღრმისეულ განმარტებებს.
@@ -274,6 +398,7 @@ export default function BentoGrid() {
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );
