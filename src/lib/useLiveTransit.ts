@@ -236,9 +236,7 @@ function findBestSynastryAspects(planets: PlanetData[]): SynastryAspect[] {
     }
   }
   aspects.sort((a, b) => {
-    if (a.type === "harmonic" && b.type !== "harmonic") return -1;
-    if (a.type !== "harmonic" && b.type === "harmonic") return 1;
-    return Math.abs(b.score) - Math.abs(a.score);
+    return Math.abs(b.score) - Math.abs(a.score) || a.orb - b.orb;
   });
   return aspects.slice(0, 6);
 }

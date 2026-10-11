@@ -345,7 +345,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("synastry")}
-          className={`group relative order-3 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-pink-500/30 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 ${
+          className={`group relative order-4 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-pink-500/30 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 ${
             selectedFeature === "synastry" ? "border-pink-400/70 ring-1 ring-pink-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -361,25 +361,28 @@ export default function BentoGrid() {
             ორი რუკის შედარება, ჰარმონიული და დისონანსური ასპექტების წონითი ანალიზი და ურთიერთობის დინამიკის გაშიფვრა.
           </p>
 
-          <div className="mt-5 rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-3 space-y-1.5">
+          <div className="mt-5 rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-4 space-y-1">
             {transit?.synastryAspects && transit.synastryAspects.length > 0 ? (
               transit.synastryAspects.map((asp, i) => (
                 <div
                   key={`${asp.planet1}-${asp.aspectName}-${asp.planet2}`}
-                  className={`flex flex-col gap-1 text-xs text-slate-300 ${i > 0 ? "border-t border-white/[0.04] pt-1.5" : ""}`}
+                  className={`flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 text-sm text-slate-300 ${i > 0 ? "border-t border-white/[0.04] pt-2.5" : ""}`}
                 >
-                  <span className="flex flex-wrap items-center gap-x-1.5 leading-relaxed">
-                    <span className={`font-bold ${PLANET_TEXT_COLOR[asp.planet1] ?? "text-slate-200"}`}>
-                      {asp.symbol1} {asp.planet1}
+                  <span className="flex min-w-0 flex-wrap items-center gap-x-2 leading-relaxed">
+                    <span className={`inline-flex items-center gap-1.5 font-bold ${PLANET_TEXT_COLOR[asp.planet1] ?? "text-slate-200"}`}>
+                      <span className="text-lg leading-none sm:text-xl">{asp.symbol1}</span>
+                      <span>{asp.planet1}</span>
                     </span>
-                    <span className={`font-bold ${ASPECT_TEXT_COLOR[asp.aspectName] ?? "text-slate-200"}`}>
-                      {asp.aspectSymbol} {asp.aspectName}
+                    <span className={`inline-flex items-center gap-1.5 font-bold ${ASPECT_TEXT_COLOR[asp.aspectName] ?? "text-slate-200"}`}>
+                      <span className="text-xl leading-none sm:text-2xl">{asp.aspectSymbol}</span>
+                      <span>{asp.aspectName}</span>
                     </span>
-                    <span className={`font-bold ${PLANET_TEXT_COLOR[asp.planet2] ?? "text-slate-200"}`}>
-                      {asp.symbol2} {asp.planet2}
+                    <span className={`inline-flex items-center gap-1.5 font-bold ${PLANET_TEXT_COLOR[asp.planet2] ?? "text-slate-200"}`}>
+                      <span className="text-lg leading-none sm:text-xl">{asp.symbol2}</span>
+                      <span>{asp.planet2}</span>
                     </span>
                   </span>
-                  <span className={`self-end font-mono font-semibold text-[10px] ${asp.type === "harmonic" ? "text-emerald-400" : "text-rose-400"}`}>
+                  <span className={`ml-auto whitespace-nowrap font-mono text-xs font-semibold sm:text-[13px] ${asp.type === "harmonic" ? "text-emerald-400" : "text-rose-400"}`}>
                     {asp.type === "harmonic" ? "+" : ""}{asp.score} · ორბისი {asp.orb}°
                   </span>
                 </div>
@@ -465,7 +468,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("lunar-calendar")}
-          className={`group relative order-4 cursor-pointer overflow-hidden rounded-2xl border bg-[#0a0b1c]/50 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-400/40 hover:shadow-[0_0_30px_-5px_rgba(167,139,250,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
+          className={`group relative order-3 cursor-pointer overflow-hidden rounded-2xl border bg-[#0a0b1c]/50 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-400/40 hover:shadow-[0_0_30px_-5px_rgba(167,139,250,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
             selectedFeature === "lunar-calendar" ? "border-violet-400/70 ring-1 ring-violet-400/40" : "border-violet-300/[0.12]"
           }`}
         >
