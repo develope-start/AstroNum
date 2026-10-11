@@ -172,7 +172,7 @@ export default function Nav() {
             </span>
           </Link>
 
-          <div className="hidden items-center gap-2 md:flex">
+          <div className="hidden items-center gap-2 xl:flex">
             <Link href="/#calculator" className="nav-quiet-action"><Compass className="h-3.5 w-3.5" />რუკა</Link>
             <Link href="/#features" className="nav-quiet-action">შესაძლებლობები</Link>
             <Link href="/#academy" className="nav-quiet-action">აკადემია</Link>
@@ -183,7 +183,7 @@ export default function Nav() {
             {isAdmin && <Link href="/admin" className="nav-quiet-action"><Shield className="h-3.5 w-3.5 text-violet-300" />ადმინი</Link>}
           </div>
 
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-2 xl:hidden">
             {me === null && <Link href="/cabinet" className="nav-action" aria-label="კაბინეტში შესვლა" title="კაბინეტში შესვლა"><User className="h-3.5 w-3.5" /><span className="hidden sm:inline">კაბინეტი</span></Link>}
             {me && <Link href="/cabinet/dashboard" className="nav-action" aria-label="პირადი კაბინეტი" title="პირადი კაბინეტი"><LayoutDashboard className="h-3.5 w-3.5" /></Link>}
             {isAdmin && <Link href="/admin" className="nav-action" aria-label="ადმინისტრატორის პანელი" title="ადმინისტრატორის პანელი"><Shield className="h-3.5 w-3.5 text-violet-300" /><span className="hidden sm:inline">ადმინი</span></Link>}
@@ -194,7 +194,7 @@ export default function Nav() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="mt-3 grid gap-2 border-t border-slate-700/30 pt-3 md:hidden">
+          <div className="mt-3 grid gap-2 border-t border-slate-700/30 pt-3 xl:hidden">
             <Link href="/#calculator" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start"><Compass className="h-4 w-4" />რუკის შექმნა</Link>
             <Link href="/#features" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">შესაძლებლობები</Link>
             <Link href="/#academy" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">აკადემია</Link>

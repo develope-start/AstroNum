@@ -138,7 +138,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("ephemeris")}
-          className={`group relative order-1 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 xl:col-span-3 ${
+          className={`group relative order-1 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 md:col-span-2 lg:col-span-3 xl:col-span-3 ${
             selectedFeature === "ephemeris" ? "border-cyan-400/70 ring-1 ring-cyan-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -155,10 +155,10 @@ export default function BentoGrid() {
                   0.0001° სიზუსტე
                 </span>
               </div>
-              <h3 className="mt-5 font-display text-xl font-bold text-white sm:text-2xl">
+              <h3 className="mt-5 font-display text-lg font-bold text-white sm:text-xl">
                 Swiss Ephemeris v2.1 ციური გამოთვლების ბირთვი
               </h3>
-              <p className="mt-2.5 max-w-none text-base leading-relaxed text-slate-300 sm:text-lg">
+              <p className="mt-2.5 max-w-none text-sm leading-relaxed text-slate-300 sm:text-base">
                 უმაღლესი სიზუსტის შვეიცარული ეფემერიდი ასტრონომიულ კოორდინატებს ითვლის წამის მეასედის სიზუსტით.
                 მხარდაჭერილია პლაციდუსი, კოხი, თანაბარსახლიანი და მთლიანი ნიშნის სისტემები.
               </p>
@@ -180,14 +180,14 @@ export default function BentoGrid() {
               </div>
 
               {/* 4 main bodies */}
-              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="mt-3 grid grid-cols-2 gap-3 xl:grid-cols-4">
                 {/* Sun */}
                 <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.03]">
-                  <span className="text-sm text-slate-200">მზე (Sun)</span>
+                  <span className="block break-words text-sm leading-snug text-slate-200">მზე (Sun)</span>
                   {sun ? (
-                    <p className="mt-1 flex items-center gap-1.5 text-base font-semibold text-amber-300 sm:text-lg">
-                      <span>{sun.deg}°{String(sun.min).padStart(2,"0")}'</span>
-                      <span className="text-xl leading-none">{sun.signSymbol}</span>
+                    <p className="mt-1 flex min-w-0 flex-wrap items-center gap-1.5 text-base font-semibold text-amber-300 sm:text-lg">
+                      <span className="whitespace-nowrap">{sun.deg}°{String(sun.min).padStart(2,"0")}'</span>
+                      <span className="shrink-0 text-xl leading-none">{sun.signSymbol}</span>
                       {sun.retrograde && <span className="text-sm text-rose-400">℞</span>}
                     </p>
                   ) : (
@@ -198,11 +198,11 @@ export default function BentoGrid() {
 
                 {/* Moon */}
                 <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.03]">
-                  <span className="text-sm text-slate-200">მთვარე (Moon)</span>
+                  <span className="block break-words text-sm leading-snug text-slate-200">მთვარე (Moon)</span>
                   {moon ? (
-                    <p className="mt-1 flex items-center gap-1.5 text-base font-semibold text-sky-200 sm:text-lg">
-                      <span>{moon.deg}°{String(moon.min).padStart(2,"0")}'</span>
-                      <span className="text-xl leading-none">{moon.signSymbol}</span>
+                    <p className="mt-1 flex min-w-0 flex-wrap items-center gap-1.5 text-base font-semibold text-sky-200 sm:text-lg">
+                      <span className="whitespace-nowrap">{moon.deg}°{String(moon.min).padStart(2,"0")}'</span>
+                      <span className="shrink-0 text-xl leading-none">{moon.signSymbol}</span>
                       {moon.retrograde && <span className="text-sm text-rose-400">℞</span>}
                     </p>
                   ) : (
@@ -213,11 +213,11 @@ export default function BentoGrid() {
 
                 {/* ASC */}
                 <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.03]">
-                  <span className="text-sm text-slate-200">ასცენდენტი (ASC)</span>
+                  <span className="block break-words text-sm leading-snug text-slate-200">ასცენდენტი (ASC)</span>
                   {asc ? (
-                    <p className="mt-1 flex items-center gap-1.5 text-base font-semibold text-indigo-300 sm:text-lg">
-                      <span>{asc.ascDeg}°{String(asc.ascMin).padStart(2,"0")}'</span>
-                      <span className="text-xl leading-none">{asc.ascSignSymbol}</span>
+                    <p className="mt-1 flex min-w-0 flex-wrap items-center gap-1.5 text-base font-semibold text-indigo-300 sm:text-lg">
+                      <span className="whitespace-nowrap">{asc.ascDeg}°{String(asc.ascMin).padStart(2,"0")}'</span>
+                      <span className="shrink-0 text-xl leading-none">{asc.ascSignSymbol}</span>
                     </p>
                   ) : (
                     <p className="mt-1 text-base font-semibold text-indigo-300/40 animate-pulse">—°—' ♑</p>
@@ -227,11 +227,11 @@ export default function BentoGrid() {
 
                 {/* MC */}
                 <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.03]">
-                  <span className="text-sm text-slate-200">მედიუმ ქოელი (MC)</span>
+                  <span className="block break-words text-sm leading-snug text-slate-200">მედიუმ ქოელი (MC)</span>
                   {mc ? (
-                    <p className="mt-1 flex items-center gap-1.5 text-base font-semibold text-rose-300 sm:text-lg">
-                      <span>{mc.mcDeg}°{String(mc.mcMin).padStart(2,"0")}'</span>
-                      <span className="text-xl leading-none">{mc.mcSignSymbol}</span>
+                    <p className="mt-1 flex min-w-0 flex-wrap items-center gap-1.5 text-base font-semibold text-rose-300 sm:text-lg">
+                      <span className="whitespace-nowrap">{mc.mcDeg}°{String(mc.mcMin).padStart(2,"0")}'</span>
+                      <span className="shrink-0 text-xl leading-none">{mc.mcSignSymbol}</span>
                     </p>
                   ) : (
                     <p className="mt-1 text-base font-semibold text-rose-300/40 animate-pulse">—°—' ♌</p>
