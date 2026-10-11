@@ -70,6 +70,20 @@ const CELESTIAL_PLANET_META = {
   neptune: { name: "ნეპტუნი", glyph: "♆", kind: "პლანეტა", description: "ინტუიციისა და წარმოსახვის მმართველი" },
 } as const;
 
+const CELESTIAL_IMAGE: Record<keyof typeof CELESTIAL_PLANET_META | "earth", string> = {
+  sun: "/celestial/sun.png",
+  moon: "/celestial/moon.png",
+  mercury: "/celestial/mercury.png",
+  venus: "/celestial/venus.png",
+  earth: "/celestial/earth.png",
+  mars: "/celestial/mars.png",
+  jupiter: "/celestial/jupiter.png",
+  saturn: "/celestial/saturn.png",
+  uranus: "/celestial/uranus.png",
+  neptune: "/celestial/neptune.png",
+  pluto: "/celestial/pluto.png",
+};
+
 const ELEMENT_GROUPS = [
   { id: "fire", name: "ცეცხლი", symbol: ELEMENT_TEMPERAMENTS.fire.symbol, signs: [{ name: "ვერძი", symbol: "♈" }, { name: "ლომი", symbol: "♌" }, { name: "მშვილდოსანი", symbol: "♐" }], planets: [{ name: "მარსი", symbol: "♂" }, { name: "მზე", symbol: "☉" }, { name: "იუპიტერი", symbol: "♃" }] },
   { id: "earth", name: "მიწა", symbol: ELEMENT_TEMPERAMENTS.earth.symbol, signs: [{ name: "კურო", symbol: "♉" }, { name: "ქალწული", symbol: "♍" }, { name: "თხის რქა", symbol: "♑" }], planets: [{ name: "ვენერა", symbol: "♀" }, { name: "მერკური", symbol: "☿" }, { name: "სატურნი", symbol: "♄" }] },
@@ -236,15 +250,38 @@ export default function HomePage() {
             <div className="celestial-earth-halo" aria-hidden="true" />
             {activeCelestial !== null && (
               <div
-                className={`celestial-info-card ${activeCelestial === "earth" ? "celestial-info-earth" : `celestial-info-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
+                className={`celestial-info-card ${selectedCelestial !== null ? "is-selected" : "is-preview"} ${activeCelestial === "earth" ? "celestial-info-earth" : `celestial-info-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
                 aria-live="polite"
               >
-                {activeCelestial === "earth" ? (
+                {selectedCelestial !== null ? (
                   <>
-                    <span className="celestial-info-eyebrow">ციური დაკვირვების ცენტრი</span>
-                    <strong>დედამიწა</strong>
-                    <p>ციური სფეროსა და ეკლიპტიკური სარტყლის დამკვირვებლის ცენტრალური წერტილი.</p>
-                    <span className="celestial-info-tags">12 ნიშანი · ეკლიპტიკური სარტყელი · Swiss Ephemeris</span>
+                    <span className="celestial-info-smoke" aria-hidden="true" />
+                    <span className="celestial-info-fire" aria-hidden="true" />
+                    <span className="celestial-info-dust" aria-hidden="true" />
+                    <div
+                      className="celestial-info-art"
+                      key={activeCelestial === "earth" ? "earth" : activePlanet?.name}
+                    >
+                      <img
+                        src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+                        alt={`${activeCelestial === "earth" ? "დედამიწა" : activePlanet?.name} — ციური ვიზუალი`}
+                      />
+                    </div>
+                    <div className="celestial-info-caption">
+                      <span className="celestial-info-eyebrow">
+                        {activeCelestial === "earth" ? "ციური დაკვირვების ცენტრი" : `თანავარსკვლავედი ${activeSign?.name}`}
+                      </span>
+                      <strong>
+                        {activeCelestial === "earth"
+                          ? "დედამიწა"
+                          : `${activeSign?.sign} · ${activePlanet?.kind} ${activePlanet?.name}`}
+                      </strong>
+                      <p>
+                        {activeCelestial === "earth"
+                          ? "ციური სფეროსა და ეკლიპტიკური სარტყლის დამკვირვებლის ცენტრალური წერტილი."
+                          : activePlanet?.description}
+                      </p>
+                    </div>
                   </>
                 ) : (
                   <>
