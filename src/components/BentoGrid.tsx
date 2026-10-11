@@ -158,16 +158,16 @@ export default function BentoGrid() {
               <h3 className="mt-5 font-display text-xl font-bold text-white sm:text-2xl">
                 Swiss Ephemeris v2.1 ციური გამოთვლების ბირთვი
               </h3>
-              <p className="mt-2.5 max-w-xl text-base leading-relaxed text-slate-300">
+              <p className="mt-2.5 max-w-none text-base leading-relaxed text-slate-300 sm:text-lg">
                 უმაღლესი სიზუსტის შვეიცარული ეფემერიდი ასტრონომიულ კოორდინატებს ითვლის წამის მეასედის სიზუსტით.
                 მხარდაჭერილია პლაციდუსი, კოხი, თანაბარსახლიანი და მთლიანი ნიშნის სისტემები.
               </p>
             </div>
 
             {/* ── Live Transit Box ── */}
-            <div className="mt-6 rounded-xl border border-white/[0.06] bg-[#070b13]/80 p-4 font-mono text-xs">
+            <div className="mt-6 rounded-xl border border-white/[0.06] bg-[#070b13]/80 p-4 font-mono text-sm">
               {/* Header row */}
-              <div className="flex items-center justify-between border-b border-white/[0.06] pb-2 text-xs text-slate-300">
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-white/[0.06] pb-2 text-sm text-slate-300">
                 <span className="flex items-center gap-1.5 text-cyan-200">
                   <span className="h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
                   LIVE · {transitDate ?? "თბილისის ტრანზიტი"}
@@ -182,69 +182,75 @@ export default function BentoGrid() {
               {/* 4 main bodies */}
               <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {/* Sun */}
-                <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.03]">
-                  <span className="text-[11px] text-slate-300">მზე (Sun)</span>
+                <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.03]">
+                  <span className="text-sm text-slate-200">მზე (Sun)</span>
                   {sun ? (
-                    <p className="text-sm font-semibold text-amber-300 mt-0.5">
-                      {sun.deg}°{String(sun.min).padStart(2,"0")}' {sun.signSymbol}
-                      {sun.retrograde && <span className="ml-1 text-rose-400 text-[10px]">℞</span>}
+                    <p className="mt-1 flex items-center gap-1.5 text-base font-semibold text-amber-300 sm:text-lg">
+                      <span>{sun.deg}°{String(sun.min).padStart(2,"0")}'</span>
+                      <span className="text-xl leading-none">{sun.signSymbol}</span>
+                      {sun.retrograde && <span className="text-sm text-rose-400">℞</span>}
                     </p>
                   ) : (
-                    <p className="text-sm font-semibold text-amber-300/40 mt-0.5 animate-pulse">—°—' ☉</p>
+                    <p className="mt-1 text-base font-semibold text-amber-300/40 animate-pulse">—°—' ☉</p>
                   )}
-                  {sun && <p className="text-[10px] text-slate-300 mt-0.5">{sun.signKa}</p>}
+                  {sun && <p className="mt-1 text-xs text-slate-200">{sun.signKa}</p>}
                 </div>
 
                 {/* Moon */}
-                <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.03]">
-                  <span className="text-[11px] text-slate-300">მთვარე (Moon)</span>
+                <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.03]">
+                  <span className="text-sm text-slate-200">მთვარე (Moon)</span>
                   {moon ? (
-                    <p className="text-sm font-semibold text-sky-200 mt-0.5">
-                      {moon.deg}°{String(moon.min).padStart(2,"0")}' {moon.signSymbol}
-                      {moon.retrograde && <span className="ml-1 text-rose-400 text-[10px]">℞</span>}
+                    <p className="mt-1 flex items-center gap-1.5 text-base font-semibold text-sky-200 sm:text-lg">
+                      <span>{moon.deg}°{String(moon.min).padStart(2,"0")}'</span>
+                      <span className="text-xl leading-none">{moon.signSymbol}</span>
+                      {moon.retrograde && <span className="text-sm text-rose-400">℞</span>}
                     </p>
                   ) : (
-                    <p className="text-sm font-semibold text-sky-200/40 mt-0.5 animate-pulse">—°—' ☽</p>
+                    <p className="mt-1 text-base font-semibold text-sky-200/40 animate-pulse">—°—' ☽</p>
                   )}
-                  {moon && <p className="text-[10px] text-slate-300 mt-0.5">{moon.signKa}</p>}
+                  {moon && <p className="mt-1 text-xs text-slate-200">{moon.signKa}</p>}
                 </div>
 
                 {/* ASC */}
-                <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.03]">
-                  <span className="text-[11px] text-slate-300">ასცენდენტი (ASC)</span>
+                <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.03]">
+                  <span className="text-sm text-slate-200">ასცენდენტი (ASC)</span>
                   {asc ? (
-                    <p className="text-sm font-semibold text-indigo-300 mt-0.5">
-                      {asc.ascDeg}°{String(asc.ascMin).padStart(2,"0")}' {asc.ascSignSymbol}
+                    <p className="mt-1 flex items-center gap-1.5 text-base font-semibold text-indigo-300 sm:text-lg">
+                      <span>{asc.ascDeg}°{String(asc.ascMin).padStart(2,"0")}'</span>
+                      <span className="text-xl leading-none">{asc.ascSignSymbol}</span>
                     </p>
                   ) : (
-                    <p className="text-sm font-semibold text-indigo-300/40 mt-0.5 animate-pulse">—°—' ♑</p>
+                    <p className="mt-1 text-base font-semibold text-indigo-300/40 animate-pulse">—°—' ♑</p>
                   )}
-                  {asc && <p className="text-[10px] text-slate-300 mt-0.5">{asc.ascSignKa}</p>}
+                  {asc && <p className="mt-1 text-xs text-slate-200">{asc.ascSignKa}</p>}
                 </div>
 
                 {/* MC */}
-                <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.03]">
-                  <span className="text-[11px] text-slate-300">მედიუმ ქოელი (MC)</span>
+                <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.03]">
+                  <span className="text-sm text-slate-200">მედიუმ ქოელი (MC)</span>
                   {mc ? (
-                    <p className="text-sm font-semibold text-rose-300 mt-0.5">
-                      {mc.mcDeg}°{String(mc.mcMin).padStart(2,"0")}' {mc.mcSignSymbol}
+                    <p className="mt-1 flex items-center gap-1.5 text-base font-semibold text-rose-300 sm:text-lg">
+                      <span>{mc.mcDeg}°{String(mc.mcMin).padStart(2,"0")}'</span>
+                      <span className="text-xl leading-none">{mc.mcSignSymbol}</span>
                     </p>
                   ) : (
-                    <p className="text-sm font-semibold text-rose-300/40 mt-0.5 animate-pulse">—°—' ♌</p>
+                    <p className="mt-1 text-base font-semibold text-rose-300/40 animate-pulse">—°—' ♌</p>
                   )}
-                  {mc && <p className="text-[10px] text-slate-300 mt-0.5">{mc.mcSignKa}</p>}
+                  {mc && <p className="mt-1 text-xs text-slate-200">{mc.mcSignKa}</p>}
                 </div>
               </div>
 
               {/* ── All Planets Transit Strip ── */}
               {transit && (
                 <div className="mt-3 pt-2 border-t border-white/[0.05]">
-                  <p className="text-[10px] text-slate-300 mb-1.5 uppercase tracking-widest">ტრანზიტული მონაცემები · {transit.tbilisiTime} · თბილისი</p>
-                  <div className="flex flex-wrap gap-x-3 gap-y-1">
+                  <p className="mb-2 text-xs text-slate-200 uppercase tracking-widest sm:text-sm">ტრანზიტული მონაცემები · {transit.tbilisiTime} · თბილისი</p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-2">
                     {transit.planets.map(p => (
-                      <span key={p.name} className={`text-[10px] font-mono ${p.color}`}>
-                        {p.symbol} {p.deg}°{String(p.min).padStart(2,"0")}' {p.signSymbol}
-                        {p.retrograde ? <span className="text-rose-400 text-[8px]">℞</span> : null}
+                      <span key={p.name} className={`inline-flex items-center gap-1 font-mono text-xs sm:text-sm ${p.color}`}>
+                        <span className="text-base font-semibold sm:text-lg">{p.symbol}</span>
+                        <span>{p.deg}°{String(p.min).padStart(2,"0")}'</span>
+                        <span className="text-base sm:text-lg">{p.signSymbol}</span>
+                        {p.retrograde ? <span className="text-xs text-rose-400">℞</span> : null}
                       </span>
                     ))}
                   </div>
