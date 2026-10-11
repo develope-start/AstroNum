@@ -104,7 +104,7 @@ export default function CabinetPage() {
               <div>
                 <label className="mb-1.5 flex items-center gap-2 text-xs font-bold text-slate-300">
                   <AtSign className="h-3.5 w-3.5 text-purple-400" />
-                  <span>Username</span>
+                  <span>მომხმარებლის სახელი</span>
                 </label>
                 <input
                   type="text"

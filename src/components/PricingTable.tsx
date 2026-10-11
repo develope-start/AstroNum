@@ -21,7 +21,7 @@ interface PlanConfig {
 const PLANS: PlanConfig[] = [
   {
     id: "free",
-    name: "Free (უფასო)",
+    name: "უფასო (Free)",
     description: "საბაზისო გამოთვლები და პირადი ნატალური რუკის კვლევა",
     prices: { month: "0 ₾", half_year: "0 ₾", year: "0 ₾" },
     rawPrice: { month: 0, half_year: 0, year: 0 },
@@ -32,7 +32,7 @@ const PLANS: PlanConfig[] = [
       "10 ძირითადი პლანეტა, ასცენდენტი (ASC) და MC",
       "მაჟორული ასპექტები და ორბების ბაზა",
       "4 სტიქიის ტემპერამენტის საბაზისო მიმოხილვა",
-      "სახლების 12 სისტემა (Placidus, Koch, Whole Sign, Equal)",
+      "სახლების 4 სისტემა (Placidus, Koch, Whole Sign, Equal)",
       "ტოპოცენტრული და გეოცენტრული რეჟიმები",
     ],
     excludedFeatures: [
@@ -45,7 +45,7 @@ const PLANS: PlanConfig[] = [
   },
   {
     id: "pro",
-    name: "Pro (პროფესიონალი)",
+    name: "პროფესიონალი (Pro)",
     badge: "ყველაზე პოპულარული",
     description: "პრაქტიკოსი ასტროლოგებისთვის, სინასტრიისა და ტრანზიტული ანალიზისთვის",
     prices: { month: "4.99 ₾", half_year: "25.45 ₾", year: "47.90 ₾" },
@@ -54,19 +54,19 @@ const PLANS: PlanConfig[] = [
     highlighted: true,
     features: [
       "ყველაფერი Free პაკეტიდან +",
-      "სინასტრია (პარტნიორული რუკა & თავსებადობის ქულები)",
+      "სინასტრია (პარტნიორული რუკა და თავსებადობის ქულები)",
       "დროის ტრანზიტები ნატალურ რუკასთან მიმართებით",
       "4 სტიქიის ტემპერამენტის სრული ჰიპოკრატული სინთეზი",
       "Gemini AI ასტროლოგიური ინტელექტი (პიროვნული, კარიერული, სიყვარულის ანალიზი)",
       "მეორადი პროგრესიები (Secondary Progressions)",
-      "Solar Arc Directions და Planetary Returns (Solar/Lunar Return)",
+      "სოლარული არკის დირექციები და პლანეტარული დაბრუნებები",
       "რუკების შენახვა კაბინეტში და პირადი არქივი",
       "ბეჭდვისთვის მზა PDF რეპორტების ექსპორტი",
     ],
   },
   {
     id: "enterprise",
-    name: "Enterprise (ექსპერტი & სტუდია)",
+    name: "ექსპერტი და სტუდია",
     description: "მაქსიმალური შესაძლებლობები, რექტიფიკაცია და გაფართოებული მეთოდები",
     prices: { month: "7.99 ₾", half_year: "40.75 ₾", year: "76.70 ₾" },
     rawPrice: { month: 7.99, half_year: 40.75, year: 76.70 },
@@ -76,7 +76,7 @@ const PLANS: PlanConfig[] = [
       "დაბადების დროის რექტიფიკაციის მოდული (Rectification)",
       "შეუზღუდავი Gemini AI ინტერპრეტაციები და პირადი კითხვა-პასუხი",
       "დაჩქარებული AI დამუშავება პრიორიტეტული რიგით",
-      "დაბნელებების (Eclipses) და ჰარმონიკების / მიდპოინტების მოდული",
+      "დაბნელებების (Eclipses) და ჰარმონიკების / შუაწერტილების მოდული",
       "დიდი პერიოდის ტრანზიტული სკანირება",
       "სიდერიული / ვედური ზოდიაქო (6 აიანამშა: Lahiri, Raman, Fagan-Bradley)",
       "შეუზღუდავი რუკების საცავი კაბინეტში",
@@ -240,7 +240,7 @@ export default function PricingTable() {
                   <div className="flex items-center gap-2">
                     {isPro && (
                       <span className="rounded-lg bg-indigo-500/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-indigo-300 border border-indigo-500/20">
-                        POPULAR
+                        პოპულარული
                       </span>
                     )}
                     <button

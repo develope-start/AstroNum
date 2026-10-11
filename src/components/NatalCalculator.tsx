@@ -239,7 +239,7 @@ export default function NatalCalculator() {
             <div className="mb-6 border-b border-white/10 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
                 <h3 className="text-xl sm:text-2xl font-bold text-white tracking-normal">
-                  ასტროლოგიური ინტერპრეტაცია &amp; ანალიზი
+                  ასტროლოგიური ინტერპრეტაცია და ანალიზი
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-400 mt-1">
                   დეტალური პირადი ანალიზი და ასტროლოგიური პოზიციების გაშიფვრა

@@ -57,7 +57,7 @@ export default function CalculationSettings({
             ეფემერიდის ძრავი
             <select value={value.ephemeris ?? "swiss"} onChange={(event) => set("ephemeris", event.target.value as CalculationOptions["ephemeris"])} className="mt-1 w-full rounded-xl border border-white/10 bg-[#070a16] px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400">
               <option value="swiss" className="bg-[#070a16]">Swiss Ephemeris — მთავარი</option>
-              <option value="astronomy" className="bg-[#070a16]">Astronomy Engine — fallback/შედარება</option>
+              <option value="astronomy" className="bg-[#070a16]">Astronomy Engine — ალტერნატივა/შედარება</option>
             </select>
           </label>
 
@@ -100,7 +100,7 @@ export default function CalculationSettings({
 
           <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#070a16]/60 px-3 py-2 text-xs font-semibold text-slate-300 sm:col-span-2">
             <input type="checkbox" checked={value.includeAsteroids ?? false} onChange={(event) => set("includeAsteroids", event.target.checked)} className="h-4 w-4 accent-cyan-400" />
-            დამატებითი ასტეროიდები — Ceres, Pallas, Juno და Vesta (Chiron რუკაში ყოველთვის ჩანს)
+            დამატებითი ასტეროიდები — Ceres, Pallas, Juno და Vesta (ქირონი რუკაში ყოველთვის ჩანს)
           </label>
         </div>
       )}

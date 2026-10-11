@@ -1,4 +1,4 @@
 {
   "css.lint.unknownAtRules": "ignore",
-  "terminal.integrated.cwd": "${workspaceFolder}/AstroNum"
+  "terminal.integrated.cwd": "${workspaceFolder}"
 }

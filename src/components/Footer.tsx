@@ -60,7 +60,7 @@ export default function Footer() {
               </li>
               <li>
                 <a href="#calculator" className="transition-colors hover:text-cyan-300">
-                  სინასტრია & თავსებადობა
+                  სინასტრია და თავსებადობა
                 </a>
               </li>
               <li>
@@ -70,12 +70,12 @@ export default function Footer() {
               </li>
               <li>
                 <a href="#calculator" className="transition-colors hover:text-cyan-300">
-                  Secondary Progressions
+                  მეორადი პროგრესიები
                 </a>
               </li>
               <li>
                 <a href="#calculator" className="transition-colors hover:text-cyan-300">
-                  Solar Arc & ჰარმონიკები
+                  სოლარული არკი და ჰარმონიკები
                 </a>
               </li>
             </ul>
@@ -104,7 +104,7 @@ export default function Footer() {
               </li>
               <li>
                 <a href="#academy" className="transition-colors hover:text-indigo-300">
-                  მინერალური ქვები & 4 სტიქია
+                  მინერალური ქვები და 4 სტიქია
                 </a>
               </li>
               <li>
@@ -138,7 +138,7 @@ export default function Footer() {
               </li>
               <li>
                 <a href="#pricing" className="transition-colors hover:text-violet-300">
-                  ტარიფები & Pro რეჟიმი
+                  ტარიფები და Pro რეჟიმი
                 </a>
               </li>
               <li>
@@ -152,7 +152,7 @@ export default function Footer() {
           {/* Column 5: იურიდიული & კონფიდენციალურობა */}
           <div>
             <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-slate-300">
-              უსაფრთხოება & წესები
+              უსაფრთხოება და წესები
             </h4>
             <ul className="mt-4 space-y-2.5 text-xs text-slate-400">
               <li>
@@ -177,7 +177,7 @@ export default function Footer() {
               </li>
               <li>
                 <span className="cursor-pointer transition-colors hover:text-rose-300">
-                  მხარდაჭერა & Feedback
+                  მხარდაჭერა და უკუკავშირი
                 </span>
               </li>
             </ul>
@@ -190,7 +190,7 @@ export default function Footer() {
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-mono text-[11px] text-slate-400">
-              Systems Operational · Ephemeris Online
+              სისტემა აქტიურია · ეფემერიდი ონლაინ
             </span>
           </div>
         </div>

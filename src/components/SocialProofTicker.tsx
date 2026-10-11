@@ -6,7 +6,7 @@ const PROOF_ITEMS = [
   {
     icon: Binary,
     label: "ორი ეფემერიდის ძრავა",
-    subtext: "Swiss Ephemeris და Astronomy Engine fallback",
+    subtext: "Swiss Ephemeris და Astronomy Engine (ალტერნატივა)",
   },
   {
     icon: Orbit,

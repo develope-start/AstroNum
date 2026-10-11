@@ -22,7 +22,7 @@ const TABS = [
   { id: "natal", label: "ნატალური", hint: "დაბადების რუკა — პირადი სტრუქტურისა და პოტენციალის ანალიზი", icon: Sun },
   { id: "synastry", label: "სინასტრია", hint: "ორი რუკის შედარება — ურთიერთქმედების ძლიერი და რთული წერტილები", icon: Heart },
   { id: "transit", label: "ტრანზიტები", hint: "მიმდინარე ციური მოძრაობა ნატალურ რუკასთან მიმართებით", icon: Activity },
-  { id: "advanced", label: "გაფართოებული", hint: "პროგრესიები, Return-ები, Solar Arc, დაბნელებები და ჰარმონიკები", icon: Orbit },
+  { id: "advanced", label: "გაფართოებული", hint: "პროგრესიები, დაბრუნებები, სოლარული არკი, დაბნელებები და ჰარმონიკები", icon: Orbit },
   { id: "ai", label: "Gemini AI ანალიზი", hint: "ხელოვნური ინტელექტის სიღრმისეული ასტროლოგიური ინტერპრეტაცია", icon: Bot },
   { id: "rectification", label: "რექტიფიკაცია", hint: "დაბადების ზუსტი წუთების დადგენა ცხოვრებისეული მოვლენების მიხედვით", icon: Clock },
 ] as const;
@@ -284,7 +284,7 @@ export default function HomePage() {
           <div className="orbit-ring orbit-ring-two" />
           <div className="orbit-core" />
           <span className="orbit-dot orbit-dot-one" /><span className="orbit-dot orbit-dot-two" /><span className="orbit-dot orbit-dot-three" />
-          <div className="hero-orbit-meta"><span>Swiss / fallback ready</span><span>0°—360°</span></div>
+          <div className="hero-orbit-meta"><span>შვეიც. / ალტერნ. ძრავა</span><span>0°—360°</span></div>
         </div>
       </section>
 
@@ -293,10 +293,10 @@ export default function HomePage() {
         <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400">
-              <span className="live-beacon mr-1.5" /> 4 სტიქია & ჰიპოკრატული ტემპერამენტები
+              <span className="live-beacon mr-1.5" /> 4 სტიქია და ჰიპოკრატული ტემპერამენტები
             </div>
             <h3 className="mt-1 font-display text-xl font-bold text-white sm:text-2xl">
-              სტიქიების ბალანსი & ფსიქოტიპები
+              სტიქიების ბალანსი და ფსიქოტიპები
             </h3>
           </div>
           <p className="max-w-md text-xs text-slate-400">
@@ -403,7 +403,7 @@ export default function HomePage() {
         <div className="section-heading mb-8">
           <div>
             <div className="hero-kicker inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400">
-              <span className="live-beacon mr-1.5" /> WORKSPACE
+              <span className="live-beacon mr-1.5" /> სამუშაო სივრცე
             </div>
             <h2 className="mt-1 font-display text-2xl font-bold text-white sm:text-3xl">
               აირჩიეთ ანალიზის ტიპი
