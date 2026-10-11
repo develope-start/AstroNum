@@ -249,49 +249,45 @@ export default function HomePage() {
             </button>
             <div className="celestial-earth-halo" aria-hidden="true" />
             {activeCelestial !== null && (
-              <div
-                className={`celestial-info-card ${selectedCelestial !== null ? "is-selected" : "is-preview"} ${activeCelestial === "earth" ? "celestial-info-earth" : `celestial-info-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
-                aria-live="polite"
-              >
-                {selectedCelestial !== null ? (
-                  <>
-                    <span className="celestial-info-smoke" aria-hidden="true" />
-                    <span className="celestial-info-fire" aria-hidden="true" />
-                    <span className="celestial-info-dust" aria-hidden="true" />
-                    <div
-                      className="celestial-info-art"
-                      key={activeCelestial === "earth" ? "earth" : activePlanet?.name}
-                    >
-                      <img
-                        src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
-                        alt={`${activeCelestial === "earth" ? "დედამიწა" : activePlanet?.name} — ციური ვიზუალი`}
-                      />
-                    </div>
-                    <div className="celestial-info-caption">
-                      <span className="celestial-info-eyebrow">
-                        {activeCelestial === "earth" ? "ციური დაკვირვების ცენტრი" : `თანავარსკვლავედი ${activeSign?.name}`}
-                      </span>
-                      <strong>
-                        {activeCelestial === "earth"
-                          ? "დედამიწა"
-                          : `${activeSign?.sign} · ${activePlanet?.kind} ${activePlanet?.name}`}
-                      </strong>
-                      <p>
-                        {activeCelestial === "earth"
-                          ? "ციური სფეროსა და ეკლიპტიკური სარტყლის დამკვირვებლის ცენტრალური წერტილი."
-                          : activePlanet?.description}
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <span className="celestial-info-eyebrow">თანავარსკვლავედი {activeSign?.name}</span>
-                    <strong>{activeSign?.sign} · მმართველი {activePlanet?.kind} {activePlanet?.name}</strong>
-                    <p>{activePlanet?.description}</p>
-                    <span className="celestial-info-tags">{activePlanet?.glyph} {activePlanet?.name} · {activeSign?.element}</span>
-                  </>
+              <>
+                <div
+                  className={`celestial-info-card ${activeCelestial === "earth" ? "celestial-info-earth" : `celestial-info-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
+                  aria-live="polite"
+                >
+                  {activeCelestial === "earth" ? (
+                    <>
+                      <span className="celestial-info-eyebrow">ციური დაკვირვების ცენტრი</span>
+                      <strong>დედამიწა</strong>
+                      <p>ციური სფეროსა და ეკლიპტიკური სარტყლის დამკვირვებლის ცენტრალური წერტილი.</p>
+                      <span className="celestial-info-tags">12 ნიშანი · ეკლიპტიკური სარტყელი · Swiss Ephemeris</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="celestial-info-eyebrow">თანავარსკვლავედი {activeSign?.name}</span>
+                      <strong>{activeSign?.sign} · მმართველი {activePlanet?.kind} {activePlanet?.name}</strong>
+                      <p>{activePlanet?.description}</p>
+                      <span className="celestial-info-tags">{activePlanet?.glyph} {activePlanet?.name} · {activeSign?.element}</span>
+                    </>
+                  )}
+                </div>
+                {selectedCelestial !== null && (
+                  <div
+                    className={`celestial-stage ${activeCelestial === "earth" ? "celestial-stage-earth" : `celestial-stage-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
+                    key={activeCelestial === "earth" ? "earth" : activePlanet?.name}
+                    aria-hidden="true"
+                  >
+                    <span className="celestial-stage-smoke" />
+                    <span className="celestial-stage-flame" />
+                    <span className="celestial-stage-orbit" />
+                    <span className="celestial-stage-dust" />
+                    <img
+                      className="celestial-stage-image"
+                      src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+                      alt=""
+                    />
+                  </div>
                 )}
-              </div>
+              </>
             )}
           </div>
           <div className="zodiac-aura" aria-hidden="true" />
