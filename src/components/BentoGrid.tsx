@@ -23,6 +23,26 @@ const MOON_SIGN_LOCATIVE: Record<string, string> = {
   მერწყული: "მერწყულში",
   თევზები: "თევზებში",
 };
+const PLANET_TEXT_COLOR: Record<string, string> = {
+  მზე: "text-amber-300",
+  მთვარე: "text-slate-200",
+  მერკური: "text-orange-300",
+  ვენერა: "text-emerald-300",
+  მარსი: "text-red-400",
+  იუპიტერი: "text-purple-300",
+  სატურნი: "text-slate-400",
+  ურანი: "text-cyan-300",
+  ნეპტუნი: "text-blue-400",
+  პლუტონი: "text-violet-300",
+};
+const ASPECT_TEXT_COLOR: Record<string, string> = {
+  კონიუნქცია: "text-[#c58b58]",
+  სექსტილი: "text-sky-300",
+  ტრიგონი: "text-emerald-300",
+  კვადრატი: "text-red-400",
+  ოპოზიცია: "text-rose-400",
+  კვინკუნქსი: "text-amber-300",
+};
 
 export default function BentoGrid() {
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
@@ -118,7 +138,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("ephemeris")}
-          className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 xl:col-span-3 ${
+          className={`group relative order-1 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 xl:col-span-3 ${
             selectedFeature === "ephemeris" ? "border-cyan-400/70 ring-1 ring-cyan-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -239,7 +259,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("temperament")}
-          className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-amber-500/30 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${
+          className={`group relative order-2 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-amber-500/30 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${
             selectedFeature === "temperament" ? "border-amber-400/70 ring-1 ring-amber-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -325,7 +345,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("synastry")}
-          className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-pink-500/30 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 ${
+          className={`group relative order-3 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-pink-500/30 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 ${
             selectedFeature === "synastry" ? "border-pink-400/70 ring-1 ring-pink-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -349,8 +369,14 @@ export default function BentoGrid() {
                   className={`flex flex-col gap-1 text-xs text-slate-300 ${i > 0 ? "border-t border-white/[0.04] pt-1.5" : ""}`}
                 >
                   <span className="flex flex-wrap items-center gap-x-1.5 leading-relaxed">
-                    <span className={`font-bold ${asp.type === "harmonic" ? "text-pink-400" : "text-rose-500"}`}>
-                      {asp.symbol1} {asp.planet1} {asp.aspectSymbol} {asp.aspectName} {asp.symbol2} {asp.planet2}
+                    <span className={`font-bold ${PLANET_TEXT_COLOR[asp.planet1] ?? "text-slate-200"}`}>
+                      {asp.symbol1} {asp.planet1}
+                    </span>
+                    <span className={`font-bold ${ASPECT_TEXT_COLOR[asp.aspectName] ?? "text-slate-200"}`}>
+                      {asp.aspectSymbol} {asp.aspectName}
+                    </span>
+                    <span className={`font-bold ${PLANET_TEXT_COLOR[asp.planet2] ?? "text-slate-200"}`}>
+                      {asp.symbol2} {asp.planet2}
                     </span>
                   </span>
                   <span className={`self-end font-mono font-semibold text-[10px] ${asp.type === "harmonic" ? "text-emerald-400" : "text-rose-400"}`}>
@@ -379,7 +405,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("ai")}
-          className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-500/30 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
+          className={`group relative order-5 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-500/30 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
             selectedFeature === "ai" ? "border-violet-400/70 ring-1 ring-violet-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -409,7 +435,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("rectification")}
-          className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
+          className={`group relative order-6 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
             selectedFeature === "rectification" ? "border-emerald-400/70 ring-1 ring-emerald-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -439,7 +465,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("lunar-calendar")}
-          className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-[#0a0b1c]/50 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-400/40 hover:shadow-[0_0_30px_-5px_rgba(167,139,250,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
+          className={`group relative order-4 cursor-pointer overflow-hidden rounded-2xl border bg-[#0a0b1c]/50 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-400/40 hover:shadow-[0_0_30px_-5px_rgba(167,139,250,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
             selectedFeature === "lunar-calendar" ? "border-violet-400/70 ring-1 ring-violet-400/40" : "border-violet-300/[0.12]"
           }`}
         >
@@ -456,12 +482,23 @@ export default function BentoGrid() {
                 <div className="mt-4 rounded-xl border border-violet-300/15 bg-violet-950/25 p-3 text-center">
                   <p className="text-xs font-medium text-violet-200">დღეს მთვარის</p>
                   <p className="mt-1 text-2xl font-bold text-white">
-                    {transit.lunarCalendar.lunarDay}-ე დღე
+                    {transit.lunarCalendar.lunarDay} მთვარის დღე
                   </p>
+                  {transit.lunarCalendar.phase && (
+                    <p className="mt-1 text-xs font-medium text-violet-200">
+                      ({transit.lunarCalendar.phase === "new" ? "ახალმთვარეობა" : "სავსემთვარეობა"})
+                    </p>
+                  )}
                   <p className="mt-1 text-sm text-violet-100">
                     მთვარე იმყოფება{" "}
+                    {moon?.signSymbol && (
+                      <span className="mx-1 text-violet-200" aria-label="ზოდიაქოს ნიშანი">
+                        {moon.signSymbol}
+                      </span>
+                    )}
+                    {" "}
                     {MOON_SIGN_LOCATIVE[
-                      transit.planets.find((planet) => planet.name === "Moon")?.signKa ?? ""
+                       moon?.signKa ?? ""
                     ] ?? "—"}
                   </p>
                 </div>
@@ -527,7 +564,7 @@ export default function BentoGrid() {
         {/* ═══════════════════════════════════════════════
             Card 7: PDF & SVG Export (full width)
             ═══════════════════════════════════════════════ */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.15)] xl:col-span-4">
+        <div className="group relative order-7 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.15)] xl:col-span-4">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl transition-all group-hover:bg-indigo-500/20" />
 
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">

@@ -798,9 +798,19 @@ button.calc-submit-btn:hover,
   margin: calc(clamp(2.6rem, min(5.4vh, 4.2vw), 3.5rem) * -0.5) !important;
 }
 
-.celestial-ruler .celestial-ruler-zodiac,
 .celestial-ruler .celestial-ruler-planet-symbol {
   font-size: 1.05rem !important;
+}
+
+.celestial-ruler .celestial-ruler-zodiac {
+  width: 1.6rem !important;
+  height: 1.6rem !important;
+  font-size: 0.86rem !important;
+  right: -0.16rem !important;
+  bottom: -0.16rem !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
 }
 
 .celestial-earth {

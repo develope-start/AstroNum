@@ -73,6 +73,7 @@ export interface LunarCalendarData {
   lunarDay: number;
   daysSinceNewMoon: number;
   daysUntilFullMoon: number;
+  phase: "new" | "full" | null;
   month: number;
   year: number;
   days: LunarCalendarDay[];
@@ -245,9 +246,21 @@ function findBestSynastryAspects(planets: PlanetData[]): SynastryAspect[] {
 function computeLunarCalendar(now: Date, localDate: string): LunarCalendarData {
   const lastNewMoon = Astronomy.SearchMoonPhase(0, now, -35);
   const nextFullMoon = Astronomy.SearchMoonPhase(180, now, 35);
-  if (!lastNewMoon || !nextFullMoon) {
+  const previousFullMoon = Astronomy.SearchMoonPhase(180, now, -35);
+  const nextNewMoon = Astronomy.SearchMoonPhase(0, now, 35);
+  if (!lastNewMoon || !nextFullMoon || !previousFullMoon || !nextNewMoon) {
     throw new Error("Could not find the surrounding lunar phases.");
   }
+
+  const toTbilisiDate = (date: Date) => {
+    const local = new Date(date.getTime() + 4 * 60 * 60 * 1000);
+    return `${local.getUTCFullYear()}-${String(local.getUTCMonth() + 1).padStart(2, "0")}-${String(local.getUTCDate()).padStart(2, "0")}`;
+  };
+  const phase = [lastNewMoon, nextNewMoon].some((event) => toTbilisiDate(event.date) === localDate)
+    ? "new"
+    : [previousFullMoon, nextFullMoon].some((event) => toTbilisiDate(event.date) === localDate)
+      ? "full"
+      : null;
 
   const daysSinceNewMoon = (now.getTime() - lastNewMoon.date.getTime()) / 86_400_000;
   const [year, month] = localDate.split("-").map(Number);
@@ -275,6 +288,7 @@ function computeLunarCalendar(now: Date, localDate: string): LunarCalendarData {
     lunarDay: Math.floor(daysSinceNewMoon) + 1,
     daysSinceNewMoon,
     daysUntilFullMoon: (nextFullMoon.date.getTime() - now.getTime()) / 86_400_000,
+    phase,
     month,
     year,
     days,
