@@ -46,7 +46,7 @@ export default function BentoGrid() {
   const temperaments: Record<string, string> = {
     fire:  "ქოლერიკული",
     earth: "მელანქოლიკური",
-    air:   "სანგვინიკული",
+    air:   "სანგვინიკური",
     water: "ფლეგმატური",
   };
   const elementNameKa: Record<string, string> = {
