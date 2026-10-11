@@ -4,6 +4,11 @@ import { Activity, Compass, Download, Flame, Heart, Layers, Loader2, Lock, Orbit
 import { type KeyboardEvent, useState } from "react";
 import { useLiveTransit } from "@/lib/useLiveTransit";
 
+const GEORGIAN_MONTHS = [
+  "იანვარი", "თებერვალი", "მარტი", "აპრილი", "მაისი", "ივნისი",
+  "ივლისი", "აგვისტო", "სექტემბერი", "ოქტომბერი", "ნოემბერი", "დეკემბერი",
+];
+
 export default function BentoGrid() {
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
   const transit = useLiveTransit();
@@ -12,15 +17,10 @@ export default function BentoGrid() {
     ? new Intl.DateTimeFormat("ka-GE", { day: "2-digit", timeZone: "UTC" }).format(transitDateValue)
     : "—";
   const transitMonth = transitDateValue
-    ? new Intl.DateTimeFormat("ka-GE", { month: "long", timeZone: "UTC" }).format(transitDateValue)
+    ? new Intl.DateTimeFormat("ka-GE", { month: "2-digit", timeZone: "UTC" }).format(transitDateValue)
     : "—";
   const transitDate = transitDateValue
-    ? new Intl.DateTimeFormat("ka-GE", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        timeZone: "UTC",
-      }).format(transitDateValue)
+    ? `${transitDateValue.getUTCDate()} ${GEORGIAN_MONTHS[transitDateValue.getUTCMonth()]} ${transitDateValue.getUTCFullYear()}`
     : null;
 
   const featureSelectionProps = (id: string) => ({
@@ -45,9 +45,9 @@ export default function BentoGrid() {
   // სტიქიების ტემპერამენტის სახელები
   const temperaments: Record<string, string> = {
     fire:  "ქოლერიკული",
-    earth: "მელანქოლიკური",
+    earth: "მელანქოლიური",
     air:   "სანგვინიკული",
-    water: "ფლეგმატიკური",
+    water: "ფლეგმატური",
   };
   const elementNameKa: Record<string, string> = {
     fire:  "ცეცხლი (Fire)",
@@ -237,7 +237,7 @@ export default function BentoGrid() {
             4 სტიქიის ტემპერამენტის სინთეზი
           </h3>
           <p className="mt-2 text-base text-slate-300">
-            ჰიპოკრატესა და კლასიკური ასტროლოგიის ტემპერამენტების (ქოლერიკული, მელანქოლიკური, სანგვინიკური, ფლეგმატიკური) ავტომატური ბალანსირება.
+            ჰიპოკრატესა და კლასიკური ასტროლოგიის ტემპერამენტების (ქოლერიკული, მელანქოლიური, სანგვინიკული, ფლეგმატური) ავტომატური ბალანსირება.
           </p>
 
           <div className="mt-5 space-y-3">
