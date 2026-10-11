@@ -255,7 +255,10 @@ export default function BentoGrid() {
                       {el[key]}%
                     </span>
                   </div>
-                  <div className="h-2.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                  <div
+                    className="h-2.5 w-full overflow-hidden rounded-full"
+                    style={{ backgroundColor: `${elementGlowColor[key]}33` }}
+                  >
                     <div
                       className={`h-full rounded-full bg-gradient-to-r ${elementGradient[key]} transition-all duration-1000`}
                       style={{
