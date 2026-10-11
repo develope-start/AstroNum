@@ -138,7 +138,9 @@ export default function BentoGrid() {
                   LIVE · {transitDate ?? "თბილისის ტრანზიტი"}
                 </span>
                 <span className="text-slate-300">
-                  {transit ? transit.utcTime : "იტვირთება…"}
+                  {transit
+                    ? `${transit.utcTime} · თბილისი ${transit.tbilisiTime.replace(" (+04:00)", "")} (GMT+4)`
+                    : "იტვირთება…"}
                 </span>
               </div>
 
