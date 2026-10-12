@@ -544,7 +544,7 @@ svg {
 .celestial-system {
   position: absolute;
   inset: 0;
-  overflow: visible !important;
+  overflow: hidden !important;
   perspective: none !important;
   background:
     radial-gradient(circle at 48% 48%, rgba(172, 161, 255, 0.08) 0 1px, transparent 2px),
@@ -5864,7 +5864,7 @@ canvas {
 }
 
 .app-home .celestial-ruler {
-  --ruler-radius: clamp(9rem, min(32svh, 16vw), 16rem) !important;
+  --ruler-radius: clamp(7rem, min(28svh, 14vw), 14rem) !important;
   width: clamp(2.8rem, 4.4vw, 3.6rem) !important;
   height: clamp(2.8rem, 4.4vw, 3.6rem) !important;
   margin: calc(clamp(2.8rem, 4.4vw, 3.6rem) * -0.5) !important;
@@ -5882,7 +5882,7 @@ canvas {
   }
 
   .app-home .celestial-ruler {
-    --ruler-radius: clamp(7rem, 34vw, 9.25rem) !important;
+    --ruler-radius: clamp(5.5rem, min(30vw, 30svh), 8rem) !important;
     width: clamp(2.4rem, 8.8vw, 3rem) !important;
     height: clamp(2.4rem, 8.8vw, 3rem) !important;
     margin: calc(clamp(2.4rem, 8.8vw, 3rem) * -0.5) !important;
@@ -5928,11 +5928,9 @@ canvas {
 .celestial-stage {
   --stage-accent: #c4b5fd;
   position: absolute;
-  top: 3%;
-  right: -3%;
-  bottom: -5%;
-  z-index: 6;
-  width: min(47%, 42rem);
+  right: 0;
+  bottom: 0;
+  z-index: 2;
   overflow: hidden;
   pointer-events: none;
 }
@@ -5949,18 +5947,6 @@ canvas {
 .celestial-stage-neptune { --stage-accent: #659dff; }
 .celestial-stage-earth { --stage-accent: #67cfff; }
 
-.celestial-stage-portal {
-  position: fixed;
-  z-index: 10000;
-  inset: 0;
-  pointer-events: none;
-}
-
-.celestial-stage-portal .celestial-stage {
-  right: auto;
-  bottom: auto;
-}
-
 .celestial-stage-image {
   position: absolute;
   inset: 0;
@@ -5969,14 +5955,17 @@ canvas {
   height: 100%;
   object-fit: contain;
   object-position: 58% bottom;
-  opacity: 0.96;
-  filter: drop-shadow(0 0 1.1rem color-mix(in srgb, var(--stage-accent), transparent 55%));
-  animation: celestial-genie-rise 1.2s cubic-bezier(0.18, 0.8, 0.25, 1) both;
+  opacity: 0.8;
+  filter: blur(2px) drop-shadow(0 0 1.1rem color-mix(in srgb, var(--stage-accent), transparent 55%));
+  -webkit-mask-image: radial-gradient(ellipse 72% 160% at 25% 45%, #000 75%, transparent 100%);
+  mask-image: radial-gradient(ellipse 72% 160% at 25% 45%, #000 75%, transparent 100%);
+  clip-path: circle(0% at 100% 95%);
+  animation:
+    celestial-image-rise 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both,
+    celestial-image-reveal 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both;
 }
 
-.celestial-stage-figure-soft,
-.celestial-stage-hand-soft,
-.celestial-stage-fingers-soft {
+.celestial-stage-hand-soften {
   position: absolute;
   inset: 0;
   z-index: 2;
@@ -5984,216 +5973,170 @@ canvas {
   height: 100%;
   object-fit: contain;
   object-position: 58% bottom;
+  opacity: 0.72;
+  filter: blur(10px);
   pointer-events: none;
-  animation: celestial-genie-rise 1.2s cubic-bezier(0.18, 0.8, 0.25, 1) both;
+  clip-path: circle(0% at 100% 95%);
+  -webkit-mask-image: radial-gradient(ellipse 24% 25% at 29% 66%, #000 0 42%, transparent 100%);
+  mask-image: radial-gradient(ellipse 24% 25% at 29% 66%, #000 0 42%, transparent 100%);
+  animation: celestial-image-reveal 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both;
 }
 
-.celestial-stage-neptune .celestial-stage-image,
-.celestial-stage-neptune .celestial-stage-figure-soft,
-.celestial-stage-neptune .celestial-stage-hand-soft,
-.celestial-stage-neptune .celestial-stage-fingers-soft {
-  inset: auto 8% 0 auto;
-  width: 82%;
-  height: 82%;
+.celestial-stage-protected {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  object-position: right bottom;
+  object-position: 58% bottom;
+  pointer-events: none;
+  z-index: 3;
+  clip-path: circle(0% at 100% 95%);
+  animation:
+    celestial-mask-rise 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both,
+    celestial-image-reveal 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both;
 }
 
-.celestial-stage-figure-soft {
-  opacity: 0.7;
-  filter: blur(1.2px) saturate(0.92);
-  -webkit-mask-image: radial-gradient(ellipse 19% 47% at 82% 55%, #000 65%, transparent 100%);
-  mask-image: radial-gradient(ellipse 19% 47% at 82% 55%, #000 65%, transparent 100%);
-  animation-name: celestial-figure-rise;
-}
-
-.celestial-stage-hand-soft {
-  opacity: 0.65;
-  filter: blur(1.3px) saturate(0.94);
-  -webkit-mask-image: radial-gradient(ellipse 34% 21% at 50% 72%, #000 65%, transparent 100%);
-  mask-image: radial-gradient(ellipse 34% 21% at 50% 72%, #000 65%, transparent 100%);
-  animation-name: celestial-hand-rise;
-}
-
-.celestial-stage-fingers-soft {
-  opacity: 0.65;
-  filter: blur(2.8px) saturate(0.94);
-  -webkit-mask-image:
-    radial-gradient(ellipse 11% 10% at 23% 58%, #000 58%, transparent 100%),
-    radial-gradient(ellipse 10% 9% at 39% 59%, #000 58%, transparent 100%);
-  mask-image:
-    radial-gradient(ellipse 11% 10% at 23% 58%, #000 58%, transparent 100%),
-    radial-gradient(ellipse 10% 9% at 39% 59%, #000 58%, transparent 100%);
-  animation-name: celestial-hand-rise;
+.celestial-stage-protected-planet {
+  -webkit-mask-image: radial-gradient(ellipse 30% 29% at 33% 37%, #000 56%, transparent 100%);
+  mask-image: radial-gradient(ellipse 30% 29% at 33% 37%, #000 56%, transparent 100%);
 }
 
 .celestial-stage-smoke,
-.celestial-stage-flame,
-.celestial-stage-orbit,
-.celestial-stage-dust {
+.celestial-stage-flame {
   position: absolute;
   pointer-events: none;
 }
 
 .celestial-stage-smoke {
-  right: 18%;
-  bottom: -3%;
-  left: 9%;
-  z-index: 3;
-  height: 36%;
+  bottom: 0;
+  right: 0;
+  z-index: 2;
+  width: 64%;
+  height: 72%;
   background:
-    radial-gradient(ellipse at 23% 85%, rgba(113, 65, 190, 0.48), transparent 58%),
-    radial-gradient(ellipse at 68% 75%, rgba(71, 53, 132, 0.55), transparent 60%),
-    radial-gradient(ellipse at 47% 98%, rgba(205, 180, 255, 0.34), transparent 55%);
-  filter: blur(1.45rem);
-  transform-origin: 50% 100%;
-  animation: celestial-smoke-rise 4.8s ease-in-out infinite alternate;
+    radial-gradient(ellipse at 77% 91%, rgba(183, 159, 157, 0.26), transparent 35%),
+    radial-gradient(ellipse at 57% 66%, rgba(151, 133, 158, 0.22), transparent 48%),
+    radial-gradient(ellipse at 83% 41%, rgba(177, 162, 169, 0.18), transparent 55%);
+  filter: blur(1.7rem);
+  -webkit-mask-image: radial-gradient(ellipse 72% 98% at 74% 100%, #000 0%, transparent 100%);
+  mask-image: radial-gradient(ellipse 72% 98% at 74% 100%, #000 0%, transparent 100%);
+  transform-origin: 75% 100%;
+  animation: celestial-smoke-rise 7.2s ease-in-out infinite alternate;
+}
+
+.celestial-stage-smoke::before,
+.celestial-stage-smoke::after {
+  position: absolute;
+  content: "";
+  width: 56%;
+  height: 52%;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(209, 196, 202, 0.32), rgba(143, 126, 151, 0.2) 42%, transparent 76%);
+  filter: blur(1.5rem);
+  animation: celestial-smoke-wisp 6.8s ease-in-out infinite;
+}
+
+.celestial-stage-smoke::before {
+  left: 8%;
+  bottom: 1%;
+}
+
+.celestial-stage-smoke::after {
+  right: -9%;
+  bottom: 12%;
+  opacity: 0.75;
+  animation-delay: 2.4s;
 }
 
 .celestial-stage-flame {
-  right: 25%;
-  bottom: -4%;
-  left: 18%;
-  z-index: 4;
-  height: 23%;
+  left: 40%;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  height: 54%;
   background:
-    radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--stage-accent), transparent 42%), transparent 55%),
-    conic-gradient(from 180deg at 50% 100%, transparent 0deg 36deg, rgba(167, 139, 250, 0.52) 48deg 59deg, transparent 72deg 109deg, rgba(124, 58, 237, 0.56) 121deg 134deg, transparent 148deg 180deg);
-  filter: blur(0.9rem);
-  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 92%);
-  mask-image: linear-gradient(to top, #000 0%, transparent 92%);
-  transform-origin: 50% 100%;
-  animation: celestial-flame-flicker 1.6s ease-in-out infinite alternate;
+    radial-gradient(ellipse 18% 74% at 17% 100%, rgba(255, 238, 174, 0.9), rgba(255, 139, 40, 0.56) 48%, transparent 100%),
+    radial-gradient(ellipse 23% 92% at 39% 100%, rgba(255, 174, 75, 0.88), rgba(237, 71, 34, 0.52) 52%, transparent 100%),
+    radial-gradient(ellipse 18% 78% at 63% 100%, rgba(255, 239, 178, 0.86), rgba(255, 134, 42, 0.5) 48%, transparent 100%),
+    radial-gradient(ellipse 22% 84% at 88% 100%, rgba(255, 174, 74, 0.82), rgba(204, 54, 34, 0.48) 55%, transparent 100%),
+    radial-gradient(ellipse 78% 38% at 62% 100%, rgba(255, 103, 33, 0.4), transparent 100%);
+  filter: blur(0.7rem);
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(ellipse 94% 100% at 62% 100%, #000 0%, transparent 100%);
+  mask-image: radial-gradient(ellipse 94% 100% at 62% 100%, #000 0%, transparent 100%);
+  transform-origin: 60% 100%;
+  clip-path: circle(0% at 100% 100%);
+  animation:
+    celestial-flame-emerge 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both,
+    celestial-flame-breathe 4.6s 1.5s ease-in-out infinite alternate;
 }
 
-.celestial-stage-orbit {
-  top: 31%;
-  left: 39%;
-  z-index: 5;
-  width: 54%;
-  aspect-ratio: 1;
-  border: 1px solid rgba(208, 195, 255, 0.24);
-  border-radius: 50%;
-  box-shadow: 0 0 1.5rem color-mix(in srgb, var(--stage-accent), transparent 68%), inset 0 0 1.2rem rgba(167, 139, 250, 0.12);
-  transform: translate(-50%, -50%) rotateX(64deg) rotateZ(-18deg);
-  animation: celestial-ring-turn 18s linear infinite;
-}
-
-.celestial-stage-orbit::before,
-.celestial-stage-orbit::after {
+.celestial-stage-flame::before {
   position: absolute;
-  inset: -1px;
+  inset: 0;
   content: "";
-  border: 2px solid transparent;
-  border-top-color: color-mix(in srgb, var(--stage-accent), transparent 12%);
-  border-right-color: rgba(196, 181, 253, 0.5);
-  border-radius: inherit;
-  filter: drop-shadow(0 0 0.4rem var(--stage-accent));
+  background:
+    radial-gradient(ellipse 11% 73% at 17% 100%, rgba(255, 239, 174, 0.68), rgba(255, 151, 62, 0.36) 42%, transparent 100%),
+    radial-gradient(ellipse 14% 91% at 39% 100%, rgba(255, 190, 88, 0.64), rgba(244, 95, 45, 0.32) 46%, transparent 100%),
+    radial-gradient(ellipse 10% 68% at 63% 100%, rgba(255, 241, 176, 0.62), rgba(255, 154, 60, 0.3) 42%, transparent 100%),
+    radial-gradient(ellipse 14% 84% at 87% 100%, rgba(255, 184, 82, 0.6), rgba(221, 72, 43, 0.3) 48%, transparent 100%);
+  filter: blur(0.42rem);
+  animation: celestial-flame-tongues 3.2s ease-in-out infinite alternate;
 }
 
-.celestial-stage-orbit::after {
-  inset: 8%;
-  border-width: 1px;
-  border-top-color: rgba(226, 211, 255, 0.7);
-  border-right-color: transparent;
-  animation: celestial-ring-turn 11s linear infinite reverse;
+@keyframes celestial-image-rise {
+  from { opacity: 0; transform: translateY(10%); }
+  to { opacity: 0.8; transform: translateY(0); }
 }
 
-.celestial-stage-dust {
-  top: 31%;
-  left: 39%;
-  z-index: 5;
-  width: 60%;
-  aspect-ratio: 1;
-  border: 1px dashed rgba(216, 200, 255, 0.28);
-  border-radius: 50%;
-  box-shadow: 0 0 1rem rgba(167, 139, 250, 0.13);
-  transform: translate(-50%, -50%) rotateX(64deg) rotateZ(18deg);
-  animation: celestial-ring-turn 48s linear infinite;
+@keyframes celestial-image-reveal {
+  from { clip-path: circle(0% at 100% 95%); }
+  to { clip-path: circle(155% at 100% 95%); }
 }
 
-.celestial-stage-dust::before,
-.celestial-stage-dust::after {
-  position: absolute;
-  width: 0.3rem;
-  height: 0.3rem;
-  content: "";
-  border-radius: 50%;
-  background: #e9ddff;
-  box-shadow: 0 0 0.7rem 0.18rem rgba(192, 132, 252, 0.62);
-}
-
-.celestial-stage-dust::before { top: 13%; left: 18%; }
-.celestial-stage-dust::after { right: 12%; bottom: 17%; }
-
-@keyframes celestial-genie-rise {
-  from { opacity: 0; transform: translateY(38%); }
-  to { opacity: 0.94; transform: translateY(0); }
-}
-
-@keyframes celestial-figure-rise {
-  from { opacity: 0; transform: translateY(38%); }
-  to { opacity: 0.7; transform: translateY(0); }
-}
-
-@keyframes celestial-hand-rise {
-  from { opacity: 0; transform: translateY(38%); }
-  to { opacity: 0.65; transform: translateY(0); }
-}
-
-@keyframes celestial-ring-turn {
-  to { rotate: 360deg; }
+@keyframes celestial-mask-rise {
+  from { opacity: 0; transform: translateY(10%); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes celestial-smoke-rise {
-  from { opacity: 0.48; transform: translateY(7%) scaleX(0.9); }
-  to { opacity: 0.9; transform: translateY(-9%) scaleX(1.08); }
+  from { opacity: 0.3; transform: translate3d(1%, 5%, 0) scale(0.97); }
+  to { opacity: 0.55; transform: translate3d(-2%, -8%, 0) scale(1.03); }
 }
 
-@keyframes celestial-flame-flicker {
-  from { opacity: 0.5; transform: scaleY(0.78) skewX(-3deg); }
-  to { opacity: 0.86; transform: scaleY(1.08) skewX(3deg); }
+@keyframes celestial-smoke-wisp {
+  0% { opacity: 0.16; transform: translate3d(1%, 7%, 0) scale(0.92); }
+  58% { opacity: 0.42; }
+  100% { opacity: 0; transform: translate3d(-4%, -18%, 0) scale(1.06); }
 }
 
-@media (max-width: 1023px) {
-  .celestial-stage {
-    top: auto;
-    right: 1%;
-    bottom: -4%;
-    width: min(58%, 34rem);
-    height: 63%;
-  }
-
-  .celestial-stage-orbit,
-  .celestial-stage-dust {
-    top: 36%;
-  }
+@keyframes celestial-flame-emerge {
+  from { opacity: 0; clip-path: circle(0% at 100% 100%); }
+  to { opacity: 0.86; clip-path: circle(155% at 100% 100%); }
 }
 
-@media (max-width: 640px) {
-  .celestial-stage {
-    right: 0;
-    bottom: -3%;
-    width: 68%;
-    height: 58%;
-  }
+@keyframes celestial-flame-breathe {
+  from { opacity: 0.72; transform: translate3d(0, 0.5%, 0) scaleX(0.99); }
+  to { opacity: 0.96; transform: translate3d(0, -1%, 0) scaleX(1.01); }
+}
 
-  .celestial-stage-orbit,
-  .celestial-stage-dust {
-    top: 36%;
-  }
+@keyframes celestial-flame-tongues {
+  from { opacity: 0.62; transform: translate3d(0, 2%, 0) scaleY(0.96); }
+  to { opacity: 0.92; transform: translate3d(-0.5%, -2%, 0) scaleY(1.04); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .celestial-stage-image,
-  .celestial-stage-figure-soft,
-  .celestial-stage-hand-soft,
-  .celestial-stage-fingers-soft,
+  .celestial-stage-protected,
   .celestial-stage-smoke,
   .celestial-stage-flame,
-  .celestial-stage-orbit,
-  .celestial-stage-dust,
-  .celestial-stage-orbit::after {
+  .celestial-stage-smoke::before,
+  .celestial-stage-smoke::after,
+  .celestial-stage-hand-soften,
+  .celestial-stage-flame::before {
     animation: none !important;
+    clip-path: none !important;
   }
 }

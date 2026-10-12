@@ -1,7 +1,6 @@
 "use client";
 
 import { type CSSProperties, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { Activity, ArrowRight, Bot, Check, Clock, Compass, Heart, Orbit, Sparkles, Sun, X } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
@@ -117,31 +116,21 @@ export default function HomePage() {
     const stage = celestialStageRef.current;
     if (!system || !stage) return;
 
-    const updatePosition = () => {
+    const updateSize = () => {
       const bounds = system.getBoundingClientRect();
-      const viewportWidth = window.innerWidth;
-      const viewportRatio = Math.max(0, Math.min(1, (viewportWidth - 390) / (1023 - 390)));
-      const width = Math.min(bounds.width * (0.68 - viewportRatio * 0.21), 672);
-      const height = width * 0.98;
-      const frameRight = bounds.right - bounds.width * 0.02;
-      const frameBottom = bounds.bottom - bounds.height * 0.05;
-      const left = frameRight - width;
+      const width = Math.min(bounds.width * 0.68, bounds.height * 0.95 * 0.98, 672);
 
-      stage.style.left = `${Math.max(0, Math.min(viewportWidth - width, left))}px`;
-      stage.style.top = `${frameBottom - height}px`;
       stage.style.width = `${width}px`;
-      stage.style.height = `${height}px`;
+      stage.style.height = `${width / 0.98}px`;
     };
 
-    updatePosition();
-    window.addEventListener("resize", updatePosition);
-    window.addEventListener("scroll", updatePosition, true);
-    const resizeObserver = new ResizeObserver(updatePosition);
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    const resizeObserver = new ResizeObserver(updateSize);
     resizeObserver.observe(system);
 
     return () => {
-      window.removeEventListener("resize", updatePosition);
-      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updateSize);
       resizeObserver.disconnect();
     };
   }, [selectedCelestial]);
@@ -311,6 +300,32 @@ export default function HomePage() {
                   )}
                 </div>
               </>
+            )}
+            {selectedCelestial !== null && activeCelestial !== null && (
+              <div
+                className={`celestial-stage ${activeCelestial === "earth" ? "celestial-stage-earth" : `celestial-stage-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
+                key={activeCelestial === "earth" ? "earth" : activePlanet?.name}
+                ref={celestialStageRef}
+                aria-hidden="true"
+              >
+                <img
+                  className="celestial-stage-image"
+                  src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+                  alt=""
+                />
+                <img
+                  className="celestial-stage-hand-soften"
+                  src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+                  alt=""
+                />
+                <span className="celestial-stage-smoke" />
+                <span className="celestial-stage-flame" />
+                <img
+                  className="celestial-stage-protected celestial-stage-protected-planet"
+                  src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+                  alt=""
+                />
+              </div>
             )}
           </div>
           <div className="zodiac-aura" aria-hidden="true" />
@@ -507,42 +522,6 @@ export default function HomePage() {
       {/* 3-Tier Pricing Table */}
       <PricingTable />
 
-      {selectedCelestial !== null && activeCelestial !== null && typeof document !== "undefined" && createPortal(
-        <div className="celestial-stage-portal" aria-hidden="true">
-          <div
-            className={`celestial-stage ${activeCelestial === "earth" ? "celestial-stage-earth" : `celestial-stage-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
-            key={activeCelestial === "earth" ? "earth" : activePlanet?.name}
-            ref={celestialStageRef}
-            style={{ left: 0, top: 0, width: 0, height: 0 }}
-          >
-            <span className="celestial-stage-smoke" />
-            <span className="celestial-stage-flame" />
-            <span className="celestial-stage-orbit" />
-            <span className="celestial-stage-dust" />
-            <img
-              className="celestial-stage-image"
-              src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
-              alt=""
-            />
-            <img
-              className="celestial-stage-figure-soft"
-              src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
-              alt=""
-            />
-            <img
-              className="celestial-stage-hand-soft"
-              src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
-              alt=""
-            />
-            <img
-              className="celestial-stage-fingers-soft"
-              src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
-              alt=""
-            />
-          </div>
-        </div>,
-        document.body,
-      )}
     </div>
   );
 }
