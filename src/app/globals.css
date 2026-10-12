@@ -5928,10 +5928,8 @@ canvas {
 .celestial-stage {
   --stage-accent: #c4b5fd;
   position: absolute;
-  right: 0;
-  bottom: 0;
   z-index: 2;
-  overflow: hidden;
+  overflow: visible;
   pointer-events: none;
 }
 
@@ -5947,17 +5945,25 @@ canvas {
 .celestial-stage-neptune { --stage-accent: #659dff; }
 .celestial-stage-earth { --stage-accent: #67cfff; }
 
-.celestial-stage-mars { --stage-tint: #df786f; }
-.celestial-stage-venus { --stage-tint: #efc891; }
-.celestial-stage-mercury { --stage-tint: #c5c2c3; }
-.celestial-stage-moon { --stage-tint: #e1e4f7; }
-.celestial-stage-sun { --stage-tint: #ffd37d; }
-.celestial-stage-pluto { --stage-tint: #837d9b; }
-.celestial-stage-jupiter { --stage-tint: #d2ae80; }
-.celestial-stage-saturn { --stage-tint: #c5ae8b; }
-.celestial-stage-uranus { --stage-tint: #93dce0; }
-.celestial-stage-neptune { --stage-tint: #718fea; }
-.celestial-stage-earth { --stage-tint: #9cdcff; }
+.celestial-zodiac-stage {
+  position: absolute;
+  z-index: 1;
+  aspect-ratio: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.celestial-zodiac-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  opacity: 0.88;
+  filter: drop-shadow(0 0 1.2rem color-mix(in srgb, var(--stage-accent), transparent 60%));
+  animation: celestial-zodiac-appear 240ms ease-out both;
+}
 
 .celestial-stage-image {
   position: absolute;
@@ -5966,96 +5972,58 @@ canvas {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: 58% bottom;
-  opacity: 0.8;
-  filter: blur(2px) drop-shadow(0 0 1.1rem color-mix(in srgb, var(--stage-accent), transparent 55%));
-  -webkit-mask-image: radial-gradient(ellipse 72% 160% at 25% 45%, #000 75%, transparent 100%);
-  mask-image: radial-gradient(ellipse 72% 160% at 25% 45%, #000 75%, transparent 100%);
-  clip-path: circle(0% at 100% 95%);
-  animation:
-    celestial-image-rise 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both,
-    celestial-image-reveal 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both;
-}
-
-.celestial-stage-hand-soften {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: 58% bottom;
-  opacity: 0.72;
-  filter: blur(10px);
+  object-position: center;
+  opacity: 1;
+  filter: none;
   pointer-events: none;
-  clip-path: circle(0% at 100% 95%);
-  -webkit-mask-image: radial-gradient(ellipse 24% 25% at 29% 66%, #000 0 42%, transparent 100%);
-  mask-image: radial-gradient(ellipse 24% 25% at 29% 66%, #000 0 42%, transparent 100%);
-  animation: celestial-image-reveal 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both;
-}
-
-.celestial-stage-tint {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background-color: var(--stage-tint);
-  opacity: 0.2;
-  mix-blend-mode: color;
-  pointer-events: none;
-  -webkit-mask-image: var(--stage-image-mask);
-  mask-image: var(--stage-image-mask);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: 58% bottom;
-  mask-position: 58% bottom;
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  clip-path: circle(0% at 100% 95%);
-  animation: celestial-image-reveal 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both;
-}
-
-.celestial-stage-protected {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: 58% bottom;
-  pointer-events: none;
-  z-index: 3;
-  clip-path: circle(0% at 100% 95%);
-  animation:
-    celestial-mask-rise 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both,
-    celestial-image-reveal 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both;
-}
-
-.celestial-stage-protected-planet {
-  opacity: 0.8;
-  -webkit-mask-image: radial-gradient(ellipse 30% 29% at 33% 37%, #000 56%, transparent 100%);
-  mask-image: radial-gradient(ellipse 30% 29% at 33% 37%, #000 56%, transparent 100%);
+  user-select: none;
+  -webkit-user-drag: none;
+  animation: celestial-image-rise 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes celestial-image-rise {
-  from { opacity: 0; transform: translateY(10%); }
-  to { opacity: 0.8; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-@keyframes celestial-image-reveal {
-  from { clip-path: circle(0% at 100% 95%); }
-  to { clip-path: circle(155% at 100% 95%); }
+@keyframes celestial-zodiac-appear {
+  from { opacity: 0; }
+  to { opacity: 0.88; }
 }
 
-@keyframes celestial-mask-rise {
-  from { opacity: 0; transform: translateY(10%); }
-  to { opacity: 1; transform: translateY(0); }
+@media (max-width: 640px) {
+  .celestial-stage-image {
+    object-position: center;
+  }
+
+  .app-home .celestial-system:has(.celestial-stage) .celestial-ruler-ring,
+  .app-home .celestial-system:has(.celestial-stage) .celestial-constellation-ring {
+    transform: translateY(-1.25rem);
+  }
+
+  .app-home .celestial-system:has(.celestial-stage) .celestial-orbit,
+  .app-home .celestial-system:has(.celestial-stage) .celestial-earth,
+  .app-home .celestial-system:has(.celestial-stage) .celestial-earth-halo,
+  .app-home .celestial-system:has(.celestial-stage) .celestial-info-card {
+    top: calc(50% - 1.25rem);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .celestial-stage-image,
-  .celestial-stage-protected,
-  .celestial-stage-hand-soften,
-  .celestial-stage-tint {
+  .celestial-stage-image {
     animation: none !important;
-    clip-path: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .celestial-zodiac-image {
+    animation: none !important;
+    opacity: 0.88;
   }
 }

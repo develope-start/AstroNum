@@ -1,6 +1,7 @@
 "use client";
 
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { type CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Activity, ArrowRight, Bot, Check, Clock, Compass, Heart, Orbit, Sparkles, Sun, X } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
@@ -84,6 +85,21 @@ const CELESTIAL_IMAGE: Record<keyof typeof CELESTIAL_PLANET_META | "earth", stri
   pluto: "/celestial/pluto.png",
 };
 
+const ZODIAC_IMAGE = [
+  "/zodiac/1-ვერძი.png",
+  "/zodiac/2-კურო.png",
+  "/zodiac/3-ტყუპი.png",
+  "/zodiac/4-კირჩხიბი.png",
+  "/zodiac/5-ლომი.png",
+  "/zodiac/6-ქალწული.png",
+  "/zodiac/7-სასწორი.png",
+  "/zodiac/8-მორიელი.png",
+  "/zodiac/9-მშვილდოსანი.png",
+  "/zodiac/10-თხის რქა.png",
+  "/zodiac/11-მერწყული.png",
+  "/zodiac/12-თვზები.png",
+].map((path) => encodeURI(path));
+
 const ELEMENT_GROUPS = [
   { id: "fire", name: "ცეცხლი", symbol: ELEMENT_TEMPERAMENTS.fire.symbol, signs: [{ name: "ვერძი", symbol: "♈" }, { name: "ლომი", symbol: "♌" }, { name: "მშვილდოსანი", symbol: "♐" }], planets: [{ name: "მარსი", symbol: "♂" }, { name: "მზე", symbol: "☉" }, { name: "იუპიტერი", symbol: "♃" }] },
   { id: "earth", name: "მიწა", symbol: ELEMENT_TEMPERAMENTS.earth.symbol, signs: [{ name: "კურო", symbol: "♉" }, { name: "ქალწული", symbol: "♍" }, { name: "თხის რქა", symbol: "♑" }], planets: [{ name: "ვენერა", symbol: "♀" }, { name: "მერკური", symbol: "☿" }, { name: "სატურნი", symbol: "♄" }] },
@@ -101,6 +117,7 @@ export default function HomePage() {
   const elementTriggerRef = useRef<HTMLButtonElement | null>(null);
   const celestialSystemRef = useRef<HTMLDivElement | null>(null);
   const celestialStageRef = useRef<HTMLDivElement | null>(null);
+  const zodiacStageRef = useRef<HTMLDivElement | null>(null);
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
   const activeCelestial = selectedCelestial ?? hoveredCelestial;
   const activePlanetIndex = typeof activeCelestial === "number" ? activeCelestial : null;
@@ -111,8 +128,9 @@ export default function HomePage() {
   const activeCelestialImage = activeCelestial === null
     ? null
     : CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet];
+  const activeZodiacImage = activePlanetIndex === null ? null : ZODIAC_IMAGE[activePlanetIndex];
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (selectedCelestial === null) return;
 
     const system = celestialSystemRef.current;
@@ -121,10 +139,54 @@ export default function HomePage() {
 
     const updateSize = () => {
       const bounds = system.getBoundingClientRect();
-      const width = Math.min(bounds.width * 0.68, bounds.height * 0.95 * 0.98, 672);
+      const zodiacStage = zodiacStageRef.current;
+      if (activePlanetIndex !== null && !zodiacStage) return;
+      const orbit = system.querySelector<HTMLElement>(".celestial-orbit-wide");
+      if (!orbit) return;
 
-      stage.style.width = `${width}px`;
-      stage.style.height = `${width / 0.98}px`;
+      const orbitBounds = orbit.getBoundingClientRect();
+      const gap = Math.max(12, Math.min(24, bounds.width * 0.018));
+      const orbitLeft = orbitBounds.left - bounds.left;
+      const orbitRight = orbitBounds.right - bounds.left;
+      const rulerBottom = Array.from(system.querySelectorAll<HTMLElement>(".celestial-ruler"))
+        .reduce((bottom, ruler) => Math.max(bottom, ruler.getBoundingClientRect().bottom), orbitBounds.bottom);
+      const occupiedBottom = rulerBottom - bounds.top;
+      const leftLane = Math.max(0, orbitLeft - gap * 2);
+      const rightLane = Math.max(0, bounds.width - orbitRight - gap * 2);
+      const sideSize = Math.min(leftLane, rightLane, bounds.height * 0.68, 340);
+
+      let zodiacLeft: number;
+      let planetLeft: number;
+      let top: number;
+      let size: number;
+
+      if (sideSize >= 88) {
+        size = sideSize;
+        zodiacLeft = (orbitLeft - size) / 2;
+        planetLeft = orbitRight + (bounds.width - orbitRight - size) / 2;
+        top = bounds.height - size - gap;
+      } else {
+        // When the wheel fills the width, put the two illustrations in a paired
+        // shelf below it. Each image gets its own half; neither can cross the wheel.
+        const shelfTop = Math.min(bounds.height - gap, occupiedBottom + gap);
+        const shelfHeight = Math.max(0, bounds.height - shelfTop - gap);
+        size = Math.min(shelfHeight, (bounds.width - gap * 3) / 2, 150);
+        zodiacLeft = gap;
+        planetLeft = bounds.width - gap - size;
+        top = shelfTop + Math.max(0, (shelfHeight - size) / 2);
+      }
+
+      const place = (element: HTMLDivElement, left: number) => {
+        element.style.left = `${left}px`;
+        element.style.top = `${top}px`;
+        element.style.right = "auto";
+        element.style.bottom = "auto";
+        element.style.width = `${size}px`;
+        element.style.height = `${size}px`;
+      };
+
+      if (zodiacStage) place(zodiacStage, zodiacLeft);
+      place(stage, planetLeft);
     };
 
     updateSize();
@@ -136,7 +198,7 @@ export default function HomePage() {
       window.removeEventListener("resize", updateSize);
       resizeObserver.disconnect();
     };
-  }, [selectedCelestial]);
+  }, [activePlanetIndex, selectedCelestial]);
 
   const toggleElementInfo = (elementId: ElementTemperamentId) => {
     setSelectedElementInfo((current) => {
@@ -282,6 +344,16 @@ export default function HomePage() {
             <div className="celestial-earth-halo" aria-hidden="true" />
             {activeCelestial !== null && (
               <>
+                {activeZodiacImage !== null && selectedCelestial !== null && (
+                  <div
+                    className={`celestial-zodiac-stage celestial-stage-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}
+                    key={activeZodiacImage}
+                    ref={zodiacStageRef}
+                    aria-hidden="true"
+                  >
+                    <Image className="celestial-zodiac-image" src={activeZodiacImage} alt="" fill sizes="50vw" />
+                  </div>
+                )}
                 <div
                   className={`celestial-info-card ${activeCelestial === "earth" ? "celestial-info-earth" : `celestial-info-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
                   aria-live="polite"
@@ -315,20 +387,6 @@ export default function HomePage() {
                   className="celestial-stage-image"
                   src={activeCelestialImage!}
                   alt=""
-                />
-                <img
-                  className="celestial-stage-hand-soften"
-                  src={activeCelestialImage!}
-                  alt=""
-                />
-                <img
-                  className="celestial-stage-protected celestial-stage-protected-planet"
-                  src={activeCelestialImage!}
-                  alt=""
-                />
-                <span
-                  className="celestial-stage-tint"
-                  style={{ "--stage-image-mask": `url("${activeCelestialImage}")` } as CSSProperties}
                 />
               </div>
             )}
