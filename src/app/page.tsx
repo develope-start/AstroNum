@@ -108,6 +108,9 @@ export default function HomePage() {
     ? null
     : CELESTIAL_PLANET_META[CELESTIAL_CONSTELLATIONS[activePlanetIndex].planet as keyof typeof CELESTIAL_PLANET_META];
   const activeSign = activePlanetIndex === null ? null : ZODIAC_SIGNS[activePlanetIndex];
+  const activeCelestialImage = activeCelestial === null
+    ? null
+    : CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet];
 
   useEffect(() => {
     if (selectedCelestial === null) return;
@@ -310,18 +313,22 @@ export default function HomePage() {
               >
                 <img
                   className="celestial-stage-image"
-                  src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+                  src={activeCelestialImage!}
                   alt=""
                 />
                 <img
                   className="celestial-stage-hand-soften"
-                  src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+                  src={activeCelestialImage!}
                   alt=""
                 />
                 <img
                   className="celestial-stage-protected celestial-stage-protected-planet"
-                  src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+                  src={activeCelestialImage!}
                   alt=""
+                />
+                <span
+                  className="celestial-stage-tint"
+                  style={{ "--stage-image-mask": `url("${activeCelestialImage}")` } as CSSProperties}
                 />
               </div>
             )}

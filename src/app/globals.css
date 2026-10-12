@@ -659,7 +659,7 @@ svg {
 
 .constellation-art circle {
   fill: currentColor;
-  opacity: 0.82;
+  opacity: 0.92;
 }
 
 .celestial-element-fire { color: #f0c4a8; }
@@ -5947,6 +5947,18 @@ canvas {
 .celestial-stage-neptune { --stage-accent: #659dff; }
 .celestial-stage-earth { --stage-accent: #67cfff; }
 
+.celestial-stage-mars { --stage-tint: #df786f; }
+.celestial-stage-venus { --stage-tint: #efc891; }
+.celestial-stage-mercury { --stage-tint: #c5c2c3; }
+.celestial-stage-moon { --stage-tint: #e1e4f7; }
+.celestial-stage-sun { --stage-tint: #ffd37d; }
+.celestial-stage-pluto { --stage-tint: #837d9b; }
+.celestial-stage-jupiter { --stage-tint: #d2ae80; }
+.celestial-stage-saturn { --stage-tint: #c5ae8b; }
+.celestial-stage-uranus { --stage-tint: #93dce0; }
+.celestial-stage-neptune { --stage-tint: #718fea; }
+.celestial-stage-earth { --stage-tint: #9cdcff; }
+
 .celestial-stage-image {
   position: absolute;
   inset: 0;
@@ -5982,6 +5994,26 @@ canvas {
   animation: celestial-image-reveal 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both;
 }
 
+.celestial-stage-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-color: var(--stage-tint);
+  opacity: 0.2;
+  mix-blend-mode: color;
+  pointer-events: none;
+  -webkit-mask-image: var(--stage-image-mask);
+  mask-image: var(--stage-image-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 58% bottom;
+  mask-position: 58% bottom;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  clip-path: circle(0% at 100% 95%);
+  animation: celestial-image-reveal 1.5s cubic-bezier(0.2, 0.72, 0.24, 1) both;
+}
+
 .celestial-stage-protected {
   position: absolute;
   inset: 0;
@@ -5998,6 +6030,7 @@ canvas {
 }
 
 .celestial-stage-protected-planet {
+  opacity: 0.8;
   -webkit-mask-image: radial-gradient(ellipse 30% 29% at 33% 37%, #000 56%, transparent 100%);
   mask-image: radial-gradient(ellipse 30% 29% at 33% 37%, #000 56%, transparent 100%);
 }
@@ -6020,7 +6053,8 @@ canvas {
 @media (prefers-reduced-motion: reduce) {
   .celestial-stage-image,
   .celestial-stage-protected,
-  .celestial-stage-hand-soften {
+  .celestial-stage-hand-soften,
+  .celestial-stage-tint {
     animation: none !important;
     clip-path: none !important;
   }
