@@ -285,6 +285,21 @@ export default function HomePage() {
                       src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
                       alt=""
                     />
+                    <img
+                      className="celestial-stage-figure-soft"
+                      src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+                      alt=""
+                    />
+                    <img
+                      className="celestial-stage-hand-soft"
+                      src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+                      alt=""
+                    />
+                    <img
+                      className="celestial-stage-fingers-soft"
+                      src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+                      alt=""
+                    />
                   </div>
                 )}
               </>
