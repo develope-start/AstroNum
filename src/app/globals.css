@@ -5935,14 +5935,6 @@ canvas {
   width: min(47%, 42rem);
   overflow: hidden;
   pointer-events: none;
-  -webkit-mask-image:
-    linear-gradient(to right, transparent 0%, #000 8%, #000 56%, rgba(0, 0, 0, 0.72) 72%, rgba(0, 0, 0, 0.24) 86%, transparent 96%),
-    linear-gradient(to top, transparent 0%, rgba(0, 0, 0, 0.72) 6%, #000 18%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(to right, transparent 0%, #000 8%, #000 56%, rgba(0, 0, 0, 0.72) 72%, rgba(0, 0, 0, 0.24) 86%, transparent 96%),
-    linear-gradient(to top, transparent 0%, rgba(0, 0, 0, 0.72) 6%, #000 18%);
-  mask-composite: intersect;
 }
 
 .celestial-stage-mars { --stage-accent: #fb775e; }
@@ -5957,6 +5949,18 @@ canvas {
 .celestial-stage-neptune { --stage-accent: #659dff; }
 .celestial-stage-earth { --stage-accent: #67cfff; }
 
+.celestial-stage-portal {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  pointer-events: none;
+}
+
+.celestial-stage-portal .celestial-stage {
+  right: auto;
+  bottom: auto;
+}
+
 .celestial-stage-image {
   position: absolute;
   inset: 0;
@@ -5966,8 +5970,6 @@ canvas {
   object-fit: contain;
   object-position: 58% bottom;
   opacity: 0.96;
-  -webkit-mask-image: url("/celestial/person-transparent-areas.svg");
-  mask-image: url("/celestial/person-transparent-areas.svg");
   filter: drop-shadow(0 0 1.1rem color-mix(in srgb, var(--stage-accent), transparent 55%));
   animation: celestial-genie-rise 1.2s cubic-bezier(0.18, 0.8, 0.25, 1) both;
 }

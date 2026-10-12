@@ -1,6 +1,7 @@
 "use client";
 
 import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Activity, ArrowRight, Bot, Check, Clock, Compass, Heart, Orbit, Sparkles, Sun, X } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
@@ -99,6 +100,8 @@ export default function HomePage() {
   const [selectedCelestial, setSelectedCelestial] = useState<CelestialTarget>(null);
   const [selectedElementInfo, setSelectedElementInfo] = useState<ElementTemperamentId | null>(null);
   const elementTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const celestialSystemRef = useRef<HTMLDivElement | null>(null);
+  const celestialStageRef = useRef<HTMLDivElement | null>(null);
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0];
   const activeCelestial = selectedCelestial ?? hoveredCelestial;
   const activePlanetIndex = typeof activeCelestial === "number" ? activeCelestial : null;
@@ -106,6 +109,42 @@ export default function HomePage() {
     ? null
     : CELESTIAL_PLANET_META[CELESTIAL_CONSTELLATIONS[activePlanetIndex].planet as keyof typeof CELESTIAL_PLANET_META];
   const activeSign = activePlanetIndex === null ? null : ZODIAC_SIGNS[activePlanetIndex];
+
+  useEffect(() => {
+    if (selectedCelestial === null) return;
+
+    const system = celestialSystemRef.current;
+    const stage = celestialStageRef.current;
+    if (!system || !stage) return;
+
+    const updatePosition = () => {
+      const bounds = system.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportRatio = Math.max(0, Math.min(1, (viewportWidth - 390) / (1023 - 390)));
+      const width = Math.min(bounds.width * (0.68 - viewportRatio * 0.21), 672);
+      const height = width * 0.98;
+      const frameRight = bounds.right - bounds.width * 0.02;
+      const frameBottom = bounds.bottom - bounds.height * 0.05;
+      const left = frameRight - width;
+
+      stage.style.left = `${Math.max(0, Math.min(viewportWidth - width, left))}px`;
+      stage.style.top = `${frameBottom - height}px`;
+      stage.style.width = `${width}px`;
+      stage.style.height = `${height}px`;
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    const resizeObserver = new ResizeObserver(updatePosition);
+    resizeObserver.observe(system);
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+      resizeObserver.disconnect();
+    };
+  }, [selectedCelestial]);
 
   const toggleElementInfo = (elementId: ElementTemperamentId) => {
     setSelectedElementInfo((current) => {
@@ -161,6 +200,7 @@ export default function HomePage() {
         <div className="hero-orbit-card" aria-label="ციური გამოთვლის ვიზუალური მოდული">
           <div
             className="celestial-system"
+            ref={celestialSystemRef}
             role="group"
             aria-label="12 ზოდიაქოს ასტროლოგიური სარტყელი, მმართველი მნათობები და ცენტრში დედამიწა"
             onClick={(event) => {
@@ -270,38 +310,6 @@ export default function HomePage() {
                     </>
                   )}
                 </div>
-                {selectedCelestial !== null && (
-                  <div
-                    className={`celestial-stage ${activeCelestial === "earth" ? "celestial-stage-earth" : `celestial-stage-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
-                    key={activeCelestial === "earth" ? "earth" : activePlanet?.name}
-                    aria-hidden="true"
-                  >
-                    <span className="celestial-stage-smoke" />
-                    <span className="celestial-stage-flame" />
-                    <span className="celestial-stage-orbit" />
-                    <span className="celestial-stage-dust" />
-                    <img
-                      className="celestial-stage-image"
-                      src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
-                      alt=""
-                    />
-                    <img
-                      className="celestial-stage-figure-soft"
-                      src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
-                      alt=""
-                    />
-                    <img
-                      className="celestial-stage-hand-soft"
-                      src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
-                      alt=""
-                    />
-                    <img
-                      className="celestial-stage-fingers-soft"
-                      src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
-                      alt=""
-                    />
-                  </div>
-                )}
               </>
             )}
           </div>
@@ -498,6 +506,43 @@ export default function HomePage() {
 
       {/* 3-Tier Pricing Table */}
       <PricingTable />
+
+      {selectedCelestial !== null && activeCelestial !== null && typeof document !== "undefined" && createPortal(
+        <div className="celestial-stage-portal" aria-hidden="true">
+          <div
+            className={`celestial-stage ${activeCelestial === "earth" ? "celestial-stage-earth" : `celestial-stage-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
+            key={activeCelestial === "earth" ? "earth" : activePlanet?.name}
+            ref={celestialStageRef}
+            style={{ left: 0, top: 0, width: 0, height: 0 }}
+          >
+            <span className="celestial-stage-smoke" />
+            <span className="celestial-stage-flame" />
+            <span className="celestial-stage-orbit" />
+            <span className="celestial-stage-dust" />
+            <img
+              className="celestial-stage-image"
+              src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+              alt=""
+            />
+            <img
+              className="celestial-stage-figure-soft"
+              src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+              alt=""
+            />
+            <img
+              className="celestial-stage-hand-soft"
+              src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+              alt=""
+            />
+            <img
+              className="celestial-stage-fingers-soft"
+              src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
+              alt=""
+            />
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }
