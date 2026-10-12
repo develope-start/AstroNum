@@ -5928,8 +5928,10 @@ canvas {
 .celestial-stage {
   --stage-accent: #c4b5fd;
   position: absolute;
+  right: 1.5%;
+  bottom: 0;
   z-index: 2;
-  overflow: visible;
+  overflow: hidden;
   pointer-events: none;
 }
 
@@ -5972,7 +5974,7 @@ canvas {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: center;
+  object-position: 40% bottom;
   opacity: 1;
   filter: none;
   pointer-events: none;
@@ -5984,11 +5986,11 @@ canvas {
 @keyframes celestial-image-rise {
   from {
     opacity: 0;
-    transform: scale(0.985);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -5998,20 +6000,14 @@ canvas {
 }
 
 @media (max-width: 640px) {
+  .celestial-stage {
+    right: 0;
+    max-width: 68%;
+    max-height: 68%;
+  }
+
   .celestial-stage-image {
-    object-position: center;
-  }
-
-  .app-home .celestial-system:has(.celestial-stage) .celestial-ruler-ring,
-  .app-home .celestial-system:has(.celestial-stage) .celestial-constellation-ring {
-    transform: translateY(-1.25rem);
-  }
-
-  .app-home .celestial-system:has(.celestial-stage) .celestial-orbit,
-  .app-home .celestial-system:has(.celestial-stage) .celestial-earth,
-  .app-home .celestial-system:has(.celestial-stage) .celestial-earth-halo,
-  .app-home .celestial-system:has(.celestial-stage) .celestial-info-card {
-    top: calc(50% - 1.25rem);
+    object-position: 44% bottom;
   }
 }
 

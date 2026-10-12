@@ -139,54 +139,78 @@ export default function HomePage() {
 
     const updateSize = () => {
       const bounds = system.getBoundingClientRect();
+      const width = Math.min(bounds.width * 0.68, bounds.height * 0.95 * 0.98, 672);
+
+      stage.style.width = `${width}px`;
+      stage.style.height = `${width / 0.98}px`;
+      stage.style.right = "1.5%";
+      stage.style.bottom = "0px";
+      stage.style.left = "auto";
+      stage.style.top = "auto";
+
       const zodiacStage = zodiacStageRef.current;
-      if (activePlanetIndex !== null && !zodiacStage) return;
-      const orbit = system.querySelector<HTMLElement>(".celestial-orbit-wide");
-      if (!orbit) return;
+      if (!zodiacStage || activePlanetIndex === null) return;
 
-      const orbitBounds = orbit.getBoundingClientRect();
-      const gap = Math.max(12, Math.min(24, bounds.width * 0.018));
-      const orbitLeft = orbitBounds.left - bounds.left;
-      const orbitRight = orbitBounds.right - bounds.left;
-      const rulerBottom = Array.from(system.querySelectorAll<HTMLElement>(".celestial-ruler"))
-        .reduce((bottom, ruler) => Math.max(bottom, ruler.getBoundingClientRect().bottom), orbitBounds.bottom);
-      const occupiedBottom = rulerBottom - bounds.top;
-      const leftLane = Math.max(0, orbitLeft - gap * 2);
-      const rightLane = Math.max(0, bounds.width - orbitRight - gap * 2);
-      const sideSize = Math.min(leftLane, rightLane, bounds.height * 0.68, 340);
+      const rulers = system.querySelectorAll<HTMLButtonElement>(".celestial-ruler");
+      const ruler = rulers[activePlanetIndex] ?? rulers[0];
+      if (!ruler) return;
 
-      let zodiacLeft: number;
-      let planetLeft: number;
-      let top: number;
-      let size: number;
+      const rulerBounds = ruler.getBoundingClientRect();
+      const centerX = bounds.width / 2;
+      const centerY = bounds.height / 2;
+      const rulerCenterX = rulerBounds.left - bounds.left + rulerBounds.width / 2;
+      const rulerCenterY = rulerBounds.top - bounds.top + rulerBounds.height / 2;
+      const orbitRadius = Math.hypot(rulerCenterX - centerX, rulerCenterY - centerY);
+      const planetRingRadius = orbitRadius + rulerBounds.width * 0.5;
 
-      if (sideSize >= 88) {
-        size = sideSize;
-        zodiacLeft = (orbitLeft - size) / 2;
-        planetLeft = orbitRight + (bounds.width - orbitRight - size) / 2;
-        top = bounds.height - size - gap;
-      } else {
-        // When the wheel fills the width, put the two illustrations in a paired
-        // shelf below it. Each image gets its own half; neither can cross the wheel.
-        const shelfTop = Math.min(bounds.height - gap, occupiedBottom + gap);
-        const shelfHeight = Math.max(0, bounds.height - shelfTop - gap);
-        size = Math.min(shelfHeight, (bounds.width - gap * 3) / 2, 150);
-        zodiacLeft = gap;
-        planetLeft = bounds.width - gap - size;
-        top = shelfTop + Math.max(0, (shelfHeight - size) / 2);
+      const frameLeft = Math.max(12, Math.min(28, bounds.width * 0.03));
+      const ringLeftX = centerX - planetRingRadius;
+      const availableWidth = Math.max(0, ringLeftX - frameLeft);
+
+      // Center horizontally in the space between the left frame edge and the planetary circle:
+      const targetCenterX = (frameLeft + ringLeftX) / 2;
+      const targetCenterY = centerY;
+
+      // Safe margin so the 1x1 image never overflows or clips:
+      const safeGap = 8;
+      const maxSizeFromWidth = Math.max(0, availableWidth - safeGap * 2);
+      const maxSizeFromHeight = Math.max(0, bounds.height - frameLeft * 2);
+
+      // On mobile / narrow screens ensure a proportional readable size:
+      const isCompact = bounds.width <= 640;
+      const mobileFloor = isCompact ? Math.min(bounds.width * 0.28, bounds.height * 0.28, 115) : 80;
+
+      let size = Math.max(maxSizeFromWidth, mobileFloor);
+      size = Math.min(size, maxSizeFromHeight, bounds.height * 0.72, 380);
+
+      // Center the 1x1 box in that space:
+      let leftPos = targetCenterX - size / 2;
+      let topPos = targetCenterY - size / 2;
+
+      // Boundary safety check:
+      if (leftPos < frameLeft) leftPos = frameLeft;
+      if (topPos < frameLeft) topPos = frameLeft;
+      if (topPos + size > bounds.height - frameLeft) {
+        topPos = bounds.height - frameLeft - size;
       }
 
-      const place = (element: HTMLDivElement, left: number) => {
-        element.style.left = `${left}px`;
-        element.style.top = `${top}px`;
-        element.style.right = "auto";
-        element.style.bottom = "auto";
-        element.style.width = `${size}px`;
-        element.style.height = `${size}px`;
-      };
+      zodiacStage.style.left = `${leftPos}px`;
+      zodiacStage.style.top = `${topPos}px`;
+      zodiacStage.style.bottom = "auto";
+      zodiacStage.style.right = "auto";
+      zodiacStage.style.width = `${size}px`;
+      zodiacStage.style.height = `${size}px`;
 
-      if (zodiacStage) place(zodiacStage, zodiacLeft);
-      place(stage, planetLeft);
+      const image = zodiacStage.querySelector("img");
+      if (image) {
+        image.style.width = "100%";
+        image.style.height = "100%";
+        image.style.left = "0px";
+        image.style.top = "0px";
+        image.style.position = "absolute";
+        image.style.objectFit = "contain";
+        image.style.objectPosition = "center";
+      }
     };
 
     updateSize();
