@@ -318,8 +318,6 @@ export default function HomePage() {
                   src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
                   alt=""
                 />
-                <span className="celestial-stage-smoke" />
-                <span className="celestial-stage-flame" />
                 <img
                   className="celestial-stage-protected celestial-stage-protected-planet"
                   src={CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet]}
