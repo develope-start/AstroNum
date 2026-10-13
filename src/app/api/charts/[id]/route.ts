@@ -8,11 +8,12 @@ import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 import { appendElementBalanceInterpretation } from "@/lib/interpretations/elementBalance";
 import { recordChartView } from "@/lib/chartViews";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getActiveSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: "ბრაუზერის სესია არ არის აქტიური" }, { status: 401 });
 
-  const chart = await prisma.chart.findUnique({ where: { id: params.id } });
+  const { id } = await params;
+  const chart = await prisma.chart.findUnique({ where: { id } });
   if (!chart) return NextResponse.json({ error: "რუკა ვერ მოიძებნა" }, { status: 404 });
   if (chart.userId !== session.userId && session.role !== "ADMIN") {
     return NextResponse.json({ error: "წვდომა აკრძალულია" }, { status: 403 });
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
   let lastViewedAt: string | null = null;
   try {
-    const view = await recordChartView(params.id, session.userId, session.role);
+    const view = await recordChartView(id, session.userId, session.role);
     lastViewedAt = view.viewedAt.toISOString();
   } catch (error) {
     console.error("Could not record chart view", error);
@@ -62,12 +63,13 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json({ ...chart, result, interpretation, lastViewedAt });
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getActiveSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: "სესია არ არის აქტიური" }, { status: 401 });
 
+  const { id } = await params;
   const chart = await prisma.chart.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: {
       id: true,
       userId: true,
@@ -96,7 +98,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     },
   });
   if (!chart) {
-    const archived = await prisma.deletedCalculation.findUnique({ where: { originalId: params.id }, select: { id: true } });
+    const archived = await prisma.deletedCalculation.findUnique({ where: { originalId: id }, select: { id: true } });
     return archived
       ? NextResponse.json({ ok: true, message: "რუკა უკვე წაშლილია" })
       : NextResponse.json({ error: "რუკა ვერ მოიძებნა" }, { status: 404 });

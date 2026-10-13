@@ -83,13 +83,14 @@ async function buildArchivedInterpretation(archived: Record<string, unknown>, re
   return null;
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getActiveSessionFromRequest(req);
   if (!session || session.role !== "ADMIN") {
     return NextResponse.json({ error: "ბѓ¬бѓ•бѓ“бѓќбѓ›бѓђ бѓђбѓ™бѓ бѓ«бѓђбѓљбѓЈбѓљбѓбѓђ" }, { status: 403 });
   }
 
-  const deleted = await prisma.deletedCalculation.findUnique({ where: { id: params.id } });
+  const { id } = await params;
+  const deleted = await prisma.deletedCalculation.findUnique({ where: { id } });
   if (!deleted) return NextResponse.json({ error: "бѓЈбѓ бѓњбѓђбѓЁбѓ бѓ”бѓЎ бѓ бѓЈбѓ™бѓђ бѓђбѓ¦бѓђбѓ  бѓђбѓ бѓЎбѓ”бѓ‘бѓќбѓ‘бѓЎ" }, { status: 404 });
 
   const archived = parseJsonObject(deleted.dataJson);
@@ -119,13 +120,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   });
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getActiveSessionFromRequest(req);
   if (!session || session.role !== "ADMIN") {
     return NextResponse.json({ error: "წვდომა აკრძალულია" }, { status: 403 });
   }
 
-  const deleted = await prisma.deletedCalculation.findUnique({ where: { id: params.id } });
+  const { id } = await params;
+  const deleted = await prisma.deletedCalculation.findUnique({ where: { id } });
   if (!deleted) return NextResponse.json({ error: "ურნაში ეს რუკა აღარ არსებობს" }, { status: 404 });
 
   const archived = parseJsonObject(deleted.dataJson);

@@ -20,13 +20,14 @@ async function primaryAdmin(req: NextRequest) {
   return user?.adminId === "ADMIN" ? session : null;
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await primaryAdmin(req);
   if (!session) return NextResponse.json({ error: "Only the primary administrator can manage administrators" }, { status: 403 });
   const parsed = updateSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
 
-  const admin = await prisma.user.findUnique({ where: { id: params.id } });
+  const { id } = await params;
+  const admin = await prisma.user.findUnique({ where: { id } });
   if (!admin || admin.role !== "ADMIN") return NextResponse.json({ error: "Administrator not found" }, { status: 404 });
   const email = parsed.data.email;
   const username = parsed.data.username?.toLowerCase();
@@ -52,13 +53,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   return NextResponse.json({ message: "Administrator updated" });
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await primaryAdmin(req);
   if (!session) return NextResponse.json({ error: "Only the primary administrator can manage administrators" }, { status: 403 });
-  if (session.userId === params.id) return NextResponse.json({ error: "The primary administrator cannot be deleted here" }, { status: 400 });
+  const { id } = await params;
+  if (session.userId === id) return NextResponse.json({ error: "The primary administrator cannot be deleted here" }, { status: 400 });
 
   const admin = await prisma.user.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: {
       id: true,
       publicId: true,

@@ -24,14 +24,15 @@ async function authorized(req: NextRequest) {
   return session?.role === "ADMIN" ? session : null;
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await authorized(req);
   if (!session) return NextResponse.json({ error: "Access denied" }, { status: 403 });
+  const { id } = await params;
   // Keep this select explicit so an older database missing the optional
   // interpretation column can still open a calculation.
   let viewChartId: string | null = null;
   let calculation = await prisma.calculation.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: {
       id: true, userId: true, publicId: true, mapNumber: true, saved: true, type: true,
       name1: true, date1: true, time1: true, place1: true, lat1: true, lon1: true, tz1: true,
@@ -42,7 +43,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   });
   if (!calculation) {
     const savedChart = await prisma.chart.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         id: true, userId: true, mapNumber: true, type: true,
         name1: true, date1: true, time1: true, place1: true, lat1: true, lon1: true, tz1: true,
@@ -137,27 +138,29 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json({ ...metadata, result, interpretation, viewMetadata });
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await authorized(req))) return NextResponse.json({ error: "Access denied" }, { status: 403 });
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
+  const { id } = await params;
   try {
-    await prisma.calculation.update({ where: { id: params.id }, data: parsed.data });
+    await prisma.calculation.update({ where: { id }, data: parsed.data });
   } catch {
     return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
   }
   return NextResponse.json({ message: "Calculation updated" });
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await authorized(req))) return NextResponse.json({ error: "Access denied" }, { status: 403 });
+  const { id } = await params;
   const calculation = await prisma.calculation.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: calculationWithoutInterpretationSelect,
   });
   if (!calculation) {
     const savedChart = await prisma.chart.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         id: true, userId: true, mapNumber: true, type: true, label: true,
         name1: true, date1: true, time1: true, place1: true, lat1: true, lon1: true, tz1: true,
@@ -189,7 +192,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       });
       return NextResponse.json({ message: "Chart moved to trash" });
     }
-    const alreadyInTrash = await prisma.deletedCalculation.findUnique({ where: { originalId: params.id }, select: { id: true } });
+    const alreadyInTrash = await prisma.deletedCalculation.findUnique({ where: { originalId: id }, select: { id: true } });
     if (alreadyInTrash) return NextResponse.json({ message: "Calculation is already in trash" });
     return NextResponse.json({ error: "Calculation not found" }, { status: 404 });
   }

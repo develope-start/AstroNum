@@ -16,9 +16,10 @@ function parseJsonArray(value: string): Array<Record<string, any>> | null {
   }
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await allowed(req))) return NextResponse.json({ error: "წვდომა აკრძალულია" }, { status: 403 });
-  const deleted = await prisma.deletedUser.findUnique({ where: { id: params.id } });
+  const { id } = await params;
+  const deleted = await prisma.deletedUser.findUnique({ where: { id } });
   if (!deleted) return NextResponse.json({ error: "ურნაში ჩანაწერი ვერ მოიძებნა" }, { status: 404 });
   if (deleted.role === "ADMIN" && deleted.adminId === "ADMIN") {
     return NextResponse.json({ error: "მთავარი ადმინისტრატორის წაშლილი კაბინეტის აღდგენა შეუძლებელია; რუკები ცალკე აღადგინეთ." }, { status: 409 });

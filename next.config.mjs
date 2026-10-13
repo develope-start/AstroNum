@@ -2,9 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  experimental: {
-    serverComponentsExternalPackages: ["@swisseph/node"],
-  },
+  serverExternalPackages: ["@swisseph/node"],
   async headers() {
     return [
       {
