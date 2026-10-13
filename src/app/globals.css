@@ -5952,9 +5952,7 @@ canvas {
 
 .celestial-zodiac-stage {
   position: absolute;
-  left: 0 !important;
-  bottom: 0 !important;
-  z-index: 1;
+  z-index: 2;
   aspect-ratio: 1;
   overflow: visible;
   pointer-events: none;
@@ -5962,13 +5960,12 @@ canvas {
 
 .celestial-zodiac-image {
   position: absolute;
-  left: 0 !important;
-  bottom: 0 !important;
+  inset: 0;
   width: 100% !important;
   height: 100% !important;
   object-fit: contain;
-  object-position: left bottom !important;
-  opacity: 0.92;
+  object-position: center bottom !important;
+  opacity: 0.95;
   filter: drop-shadow(0 0 1.2rem color-mix(in srgb, var(--stage-accent), transparent 60%));
   animation: celestial-zodiac-appear 240ms ease-out both;
 }
@@ -6017,12 +6014,11 @@ canvas {
   }
 
   .celestial-zodiac-stage {
-    left: 0 !important;
-    bottom: 0 !important;
+    z-index: 2;
   }
 
   .celestial-zodiac-image {
-    object-position: left bottom !important;
+    object-position: center bottom !important;
   }
 }
 
