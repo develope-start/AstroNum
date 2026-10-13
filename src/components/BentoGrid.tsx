@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Compass, Download, Flame, Layers, Loader2, Lock, Moon, Orbit, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
+import { Activity, Compass, Flame, Loader2, Lock, Moon, Orbit, ShieldCheck, Sparkles } from "lucide-react";
 import { type KeyboardEvent, useState } from "react";
 import { useLiveTransit } from "@/lib/useLiveTransit";
 
@@ -606,44 +606,6 @@ export default function BentoGrid() {
             ) : (
               <p className="mt-4 text-sm text-slate-300">მთვარის კალენდარი იტვირთება…</p>
             )}
-          </div>
-        </div>
-
-        {/* ═══════════════════════════════════════════════
-            Card 7: PDF & SVG Export (full width)
-            ═══════════════════════════════════════════════ */}
-        <div
-          onMouseMove={handleSpotlightMove}
-          className="cosmic-spotlight group relative order-7 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.15)] xl:col-span-4"
-        >
-          <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl transition-all group-hover:bg-indigo-500/20" />
-
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="max-w-xl">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-indigo-400/30 bg-indigo-950/40 text-indigo-300 shadow-inner">
-                <Download className="h-6 w-6" />
-              </div>
-              <h3 className="mt-5 font-display text-xl font-bold text-white sm:text-2xl">
-                პროფესიონალური PDF და SVG ვექტორული ექსპორტი
-              </h3>
-              <p className="mt-2 text-base leading-relaxed text-slate-300">
-                შექმენით კრისტალურად სუფთა, ბეჭდვისთვის მზა ანგარიშები ქართულ ენაზე. მოიცავს რუკის დისკს, პლანეტარულ ასპექტების ცხრილებს, სტიქიურ ბალანსს და სიღრმისეულ განმარტებებს.
-              </p>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-3">
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200">
-                <Layers className="h-4 w-4 text-cyan-300" />
-                <span>მაღალი გარჩევადობა 300 DPI</span>
-              </div>
-              <a
-                href="#calculator"
-                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition-all hover:scale-105"
-              >
-                <Wand2 className="h-4 w-4" />
-                <span>შექმენით რუკა</span>
-              </a>
-            </div>
           </div>
         </div>
 

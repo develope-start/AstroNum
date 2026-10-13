@@ -5858,10 +5858,10 @@ canvas {
 }
 
 .app-home .celestial-constellation {
-  --constellation-radius: calc(var(--ruler-radius) + clamp(0.45rem, 0.8vw, 0.8rem)) !important;
-  width: clamp(4.2rem, 6.6vw, 5.4rem) !important;
-  height: clamp(4.2rem, 6.6vw, 5.4rem) !important;
-  margin: calc(clamp(4.2rem, 6.6vw, 5.4rem) * -0.5) !important;
+  --constellation-radius: var(--ruler-radius) !important;
+  width: clamp(8.4rem, 13.2vw, 10.8rem) !important;
+  height: clamp(8.4rem, 13.2vw, 10.8rem) !important;
+  margin: calc(clamp(8.4rem, 13.2vw, 10.8rem) * -0.5) !important;
   opacity: 0.95 !important;
   pointer-events: none;
 }
@@ -5879,10 +5879,10 @@ canvas {
   }
 
   .app-home .celestial-constellation {
-    --constellation-radius: calc(var(--ruler-radius) + clamp(0.35rem, 0.7vw, 0.55rem)) !important;
-    width: clamp(3.6rem, 13.2vw, 4.5rem) !important;
-    height: clamp(3.6rem, 13.2vw, 4.5rem) !important;
-    margin: calc(clamp(3.6rem, 13.2vw, 4.5rem) * -0.5) !important;
+    --constellation-radius: var(--ruler-radius) !important;
+    width: clamp(7.2rem, 26.4vw, 9rem) !important;
+    height: clamp(7.2rem, 26.4vw, 9rem) !important;
+    margin: calc(clamp(7.2rem, 26.4vw, 9rem) * -0.5) !important;
     opacity: 0.92 !important;
   }
 

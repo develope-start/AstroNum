@@ -156,18 +156,7 @@ export default function HomePage() {
         const rulerCenterY = rulerBounds.top - bounds.top + rulerBounds.height / 2;
         orbitRadius = Math.hypot(rulerCenterX - centerX, rulerCenterY - centerY);
         rulerRadius = orbitRadius + rulerBounds.width * 0.5;
-        systemOuterRadius = rulerRadius;
-      }
-
-      // Query actual rendered position of the constellation outer halo if present
-      const constellations = system.querySelectorAll<HTMLElement>(".celestial-constellation");
-      if (constellations.length > 0) {
-        const c0 = constellations[0];
-        const cBounds = c0.getBoundingClientRect();
-        const cCenterX = cBounds.left - bounds.left + cBounds.width / 2;
-        const cCenterY = cBounds.top - bounds.top + cBounds.height / 2;
-        const cRadius = Math.hypot(cCenterX - centerX, cCenterY - centerY);
-        systemOuterRadius = Math.max(systemOuterRadius, cRadius + cBounds.width * 0.5);
+        systemOuterRadius = rulerRadius + 14;
       }
 
       // Green Line: Horizontal upper boundary across the entire celestial module
@@ -441,26 +430,6 @@ export default function HomePage() {
               ))}
             </div>
 
-            {/* Dynamic Celestial Energy Ray connecting active planet/sign to center Earth */}
-            {activePlanetIndex !== null && (
-              <div
-                className="celestial-energy-ray pointer-events-none"
-                style={{
-                  "--ray-angle": `${activePlanetIndex * 30}deg`,
-                  "--ray-color":
-                    CELESTIAL_CONSTELLATIONS[activePlanetIndex].element === "fire"
-                      ? "#f59e0b"
-                      : CELESTIAL_CONSTELLATIONS[activePlanetIndex].element === "water"
-                      ? "#38bdf8"
-                      : CELESTIAL_CONSTELLATIONS[activePlanetIndex].element === "earth"
-                      ? "#10b981"
-                      : "#c084fc",
-                } as CSSProperties}
-                aria-hidden="true"
-              >
-                <div className="celestial-ray-beam" />
-              </div>
-            )}
 
             <button
               type="button"
