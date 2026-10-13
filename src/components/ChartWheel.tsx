@@ -7,8 +7,8 @@ import type { KeyboardEvent } from "react";
 
 const SIGN_SYMBOLS = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
 const SIGN_COLORS = [
-  "#fb7185", "#93892B", "#38bdf8", "#60a5fa", "#fb7185", "#93892B",
-  "#38bdf8", "#60a5fa", "#fb7185", "#93892B", "#38bdf8", "#60a5fa",
+  "#fb7185", "#c8b72e", "#38bdf8", "#60a5fa", "#fb7185", "#c8b72e",
+  "#38bdf8", "#60a5fa", "#fb7185", "#c8b72e", "#38bdf8", "#60a5fa",
 ];
 
 const PLANET_GLYPHS: Record<string, string> = {
