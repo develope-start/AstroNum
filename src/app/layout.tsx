@@ -23,6 +23,7 @@ import "./globals.css";
 import "./prismline-aurora.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import CosmicStarfield from "@/components/CosmicStarfield";
 
 export const metadata: Metadata = {
   title: "AstroNum° — პროფესიონალური ასტროლოგიური გამოთვლები",
@@ -45,6 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Starfield Texture */}
           <div className="star-matrix-overlay" />
         </div>
+
+        {/* Dynamic Interactive Canvas Starfield */}
+        <CosmicStarfield />
 
         <Nav />
         <main className="relative mx-auto w-full max-w-full overflow-x-hidden px-4 pb-12 pt-3 sm:px-8 sm:pb-20 sm:pt-6 lg:px-12 xl:px-16">{children}</main>

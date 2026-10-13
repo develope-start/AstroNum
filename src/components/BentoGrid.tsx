@@ -58,10 +58,17 @@ export default function BentoGrid() {
     ? `${transitDateValue.getUTCDate()} ${GEORGIAN_MONTHS[transitDateValue.getUTCMonth()]} ${transitDateValue.getUTCFullYear()}`
     : null;
 
+  const handleSpotlightMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--mouse-x", `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty("--mouse-y", `${event.clientY - rect.top}px`);
+  };
+
   const featureSelectionProps = (id: string) => ({
     role: "button" as const,
     tabIndex: 0,
     "aria-pressed": selectedFeature === id,
+    onMouseMove: handleSpotlightMove,
     onClick: () => setSelectedFeature(id),
     onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.key === "Enter" || event.key === " ") {
@@ -138,7 +145,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("ephemeris")}
-          className={`group relative order-1 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 md:col-span-2 lg:col-span-3 xl:col-span-3 ${
+          className={`cosmic-spotlight group relative order-1 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 md:col-span-2 lg:col-span-3 xl:col-span-3 ${
             selectedFeature === "ephemeris" ? "border-cyan-400/70 ring-1 ring-cyan-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -265,7 +272,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("temperament")}
-          className={`group relative order-2 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-amber-500/30 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${
+          className={`cosmic-spotlight group relative order-2 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-amber-500/30 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${
             selectedFeature === "temperament" ? "border-amber-400/70 ring-1 ring-amber-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -351,7 +358,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("synastry")}
-          className={`group relative order-4 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-pink-500/30 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 ${
+          className={`cosmic-spotlight group relative order-4 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-pink-500/30 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 ${
             selectedFeature === "synastry" ? "border-pink-400/70 ring-1 ring-pink-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -414,7 +421,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("ai")}
-          className={`group relative order-5 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-500/30 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
+          className={`cosmic-spotlight group relative order-5 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-500/30 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
             selectedFeature === "ai" ? "border-violet-400/70 ring-1 ring-violet-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -444,7 +451,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("rectification")}
-          className={`group relative order-6 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
+          className={`cosmic-spotlight group relative order-6 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
             selectedFeature === "rectification" ? "border-emerald-400/70 ring-1 ring-emerald-400/40" : "border-white/[0.08]"
           }`}
         >
@@ -474,7 +481,7 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("lunar-calendar")}
-          className={`group relative order-3 cursor-pointer overflow-hidden rounded-2xl border bg-[#0a0b1c]/50 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-400/40 hover:shadow-[0_0_30px_-5px_rgba(167,139,250,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
+          className={`cosmic-spotlight group relative order-3 cursor-pointer overflow-hidden rounded-2xl border bg-[#0a0b1c]/50 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-400/40 hover:shadow-[0_0_30px_-5px_rgba(167,139,250,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
             selectedFeature === "lunar-calendar" ? "border-violet-400/70 ring-1 ring-violet-400/40" : "border-violet-300/[0.12]"
           }`}
         >
@@ -573,7 +580,10 @@ export default function BentoGrid() {
         {/* ═══════════════════════════════════════════════
             Card 7: PDF & SVG Export (full width)
             ═══════════════════════════════════════════════ */}
-        <div className="group relative order-7 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.15)] xl:col-span-4">
+        <div
+          onMouseMove={handleSpotlightMove}
+          className="cosmic-spotlight group relative order-7 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.15)] xl:col-span-4"
+        >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl transition-all group-hover:bg-indigo-500/20" />
 
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">

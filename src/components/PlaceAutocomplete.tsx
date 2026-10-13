@@ -44,6 +44,16 @@ export default function PlaceAutocomplete({
   const mapDivRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<import("leaflet").Map | null>(null);
   const markerRef = useRef<import("leaflet").CircleMarker | null>(null);
+  const valueRef = useRef(value);
+  const onChangeRef = useRef(onChange);
+
+  // BirthFields provides an inline callback, so its identity changes whenever
+  // the form updates. Keep the latest values in refs so an open Leaflet map is
+  // not destroyed and recreated after every field update.
+  useEffect(() => {
+    valueRef.current = value;
+    onChangeRef.current = onChange;
+  }, [value, onChange]);
 
   useEffect(() => {
     setMounted(true);
@@ -183,9 +193,10 @@ export default function PlaceAutocomplete({
         mapRef.current.remove();
         mapRef.current = null;
       }
-      const initialLat = value.lat ?? 41.7151;
-      const initialLon = value.lon ?? 44.8271;
-      const map = L.map(mapDivRef.current).setView([initialLat, initialLon], value.lat ? 10 : 6);
+      const initialValue = valueRef.current;
+      const initialLat = initialValue.lat ?? 41.7151;
+      const initialLon = initialValue.lon ?? 44.8271;
+      const map = L.map(mapDivRef.current).setView([initialLat, initialLon], initialValue.lat !== null ? 10 : 6);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap",
       }).addTo(map);
@@ -208,11 +219,11 @@ export default function PlaceAutocomplete({
           const label = res.ok ? data.displayName : `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
           const timezone = res.ok ? data.timezone : undefined;
           setQuery(label);
-          onChange({ place: label, lat, lon: lng, timezone: timezone ?? null });
+          onChangeRef.current({ place: label, lat, lon: lng, timezone: timezone ?? null });
           setStatus("ok");
         } catch {
           setQuery(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
-          onChange({ place: `${lat.toFixed(4)}, ${lng.toFixed(4)}`, lat, lon: lng, timezone: null });
+          onChangeRef.current({ place: `${lat.toFixed(4)}, ${lng.toFixed(4)}`, lat, lon: lng, timezone: null });
         } finally {
           setSearching(false);
         }
@@ -223,7 +234,12 @@ export default function PlaceAutocomplete({
     return () => {
       cancelled = true;
     };
-  }, [mapOpen, onChange, value.lat, value.lon]);
+  }, [mapOpen]);
+
+  useEffect(() => {
+    if (!mapOpen || value.lat === null || value.lon === null) return;
+    markerRef.current?.setLatLng([value.lat, value.lon]);
+  }, [mapOpen, value.lat, value.lon]);
 
   useEffect(() => {
     if (!mapOpen && mapRef.current) {

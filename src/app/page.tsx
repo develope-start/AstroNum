@@ -251,26 +251,26 @@ export default function HomePage() {
     <div className="app-home">
       <section className="hero-grid">
         <div>
-          <div className="hero-kicker inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-950/30 px-3.5 py-1 text-xs font-semibold text-cyan-300 backdrop-blur-md">
+          <div className="hero-kicker inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-950/40 px-4 py-1.5 text-xs font-semibold text-cyan-300 shadow-[0_0_20px_-3px_rgba(56,189,248,0.25)] backdrop-blur-md">
             <span className="live-beacon" /> SWISS EPHEMERIS · PRECISION AURORA ENGINE v2.1
           </div>
           <h1 className="hero-title mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white">
             თქვენი ცის რუკა. <br />
-            <span className="bg-gradient-to-r from-cyan-300 via-indigo-300 to-rose-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-cyan-300 via-indigo-200 to-amber-300 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(99,102,241,0.3)]">
               უფრო ღრმად და ზუსტად.
             </span>
           </h1>
-          <p className="hero-lead mt-5 max-w-xl text-base leading-relaxed text-slate-300">
+          <p className="hero-lead mt-5 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg">
             შვეიცარული ეფემერიდის მათემატიკური ალგორითმები, 4 სტიქიის ტემპერამენტის სინთეზი და პროფესიონალური სივრცე ნატალური, სინასტრიული და ტრანზიტული რუკებისთვის.
           </p>
           <div className="hero-actions mt-8 flex flex-wrap items-center gap-4">
-            <a href="#calculator" className="primary-action shadow-lg shadow-cyan-500/20">
+            <a href="#calculator" className="primary-action btn-shimmer shadow-lg shadow-cyan-500/30">
               <Compass className="h-4 w-4" /> რუკის შექმნა <ArrowRight className="h-4 w-4" />
             </a>
-            <a href="#features" className="secondary-action">
+            <a href="#features" className="secondary-action hover:border-cyan-400/40 transition-colors">
               <Sparkles className="h-4 w-4 text-cyan-300" /> შესაძლებლობები
             </a>
-            <a href="#pricing" className="secondary-action hidden sm:inline-flex">
+            <a href="#pricing" className="secondary-action hidden sm:inline-flex hover:border-violet-400/40 transition-colors">
               ტარიფები
             </a>
           </div>

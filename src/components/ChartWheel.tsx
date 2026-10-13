@@ -107,27 +107,80 @@ export default function ChartWheel({
     { lon: norm360(mc + 180), label: "IC", color: "#38bdf8", textColor: "#e0f2fe", bg: "#001827" },
   ];
 
+  // Degree tick marks (every 5 degrees)
+  const degreeTicks = Array.from({ length: 72 }, (_, i) => {
+    const deg = i * 5;
+    const isMajor = deg % 30 === 0;
+    const isMid = deg % 10 === 0;
+    const pStart = toXY(deg, rOuter);
+    const pEnd = toXY(deg, isMajor ? rZodiacIn : isMid ? rOuter - size * 0.016 : rOuter - size * 0.009);
+    return { deg, isMajor, isMid, pStart, pEnd };
+  });
+
   return (
-    <div className="chart-wheel-wrap w-full overflow-visible px-0.5 py-2 sm:px-2 sm:py-3">
-      <svg viewBox={`0 0 ${size} ${size}`} className="mx-auto block h-auto w-full max-w-[42rem] overflow-visible drop-shadow-[0_12px_45px_rgba(0,0,0,0.85)]" role="group" aria-label="ნატალური რუკის ბორბალი">
+    <div className="chart-wheel-wrap relative mx-auto w-full overflow-visible px-0.5 py-2 sm:px-2 sm:py-3">
+      <svg viewBox={`0 0 ${size} ${size}`} className="mx-auto block h-auto w-full max-w-[42rem] overflow-visible drop-shadow-[0_16px_55px_rgba(0,0,0,0.92)] transition-transform duration-700 hover:scale-[1.01]" role="group" aria-label="ნატალური რუკის ბორბალი">
         <defs>
           <radialGradient id="wheel-center-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.2" />
-            <stop offset="60%" stopColor="#0f0728" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#080414" stopOpacity="0.98" />
+            <stop offset="0%" stopColor="#818cf8" stopOpacity="0.28" />
+            <stop offset="45%" stopColor="#2e1065" stopOpacity="0.45" />
+            <stop offset="80%" stopColor="#0a051d" stopOpacity="0.92" />
+            <stop offset="100%" stopColor="#04020a" stopOpacity="0.99" />
           </radialGradient>
-          <filter id="gold-glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+          <radialGradient id="hub-core-gradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.8" />
+            <stop offset="60%" stopColor="#7c3aed" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#09041a" stopOpacity="0.95" />
+          </radialGradient>
+          <filter id="gold-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+          <filter id="aspect-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="1.8" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
         </defs>
 
-        <circle cx={cx} cy={cy} r={rOuter} fill="url(#wheel-center-glow)" />
-        <circle cx={cx} cy={cy} r={rOuter} fill="none" stroke="#f59e0b" strokeOpacity={0.55} strokeWidth={2} filter="url(#gold-glow)" />
-        <circle cx={cx} cy={cy} r={rZodiacIn} fill="none" stroke="#f59e0b" strokeOpacity={0.35} strokeWidth={1} />
-        <circle cx={cx} cy={cy} r={rInner} fill="none" stroke="#a855f7" strokeOpacity={0.4} strokeWidth={1.2} />
+        {/* Ambient Outer Halo */}
+        <circle cx={cx} cy={cy} r={rOuter + size * 0.02} fill="none" stroke="#6366f1" strokeOpacity={0.15} strokeWidth={1} strokeDasharray="4 8" />
 
+        {/* Wheel Body */}
+        <circle cx={cx} cy={cy} r={rOuter} fill="url(#wheel-center-glow)" />
+        <circle cx={cx} cy={cy} r={rOuter} fill="none" stroke="#f59e0b" strokeOpacity={0.6} strokeWidth={2.2} filter="url(#gold-glow)" />
+        <circle cx={cx} cy={cy} r={rZodiacIn} fill="none" stroke="#f59e0b" strokeOpacity={0.4} strokeWidth={1.2} />
+        <circle cx={cx} cy={cy} r={rInner} fill="none" stroke="#818cf8" strokeOpacity={0.45} strokeWidth={1.4} strokeDasharray="3 3" />
+
+        {/* Swiss Ephemeris Degree Ticks */}
+        {degreeTicks.map(({ deg, isMajor, isMid, pStart, pEnd }) => (
+          <line
+            key={`tick-${deg}`}
+            x1={pStart.x}
+            y1={pStart.y}
+            x2={pEnd.x}
+            y2={pEnd.y}
+            stroke={isMajor ? "#f59e0b" : isMid ? "#fbbf24" : "#94a3b8"}
+            strokeOpacity={isMajor ? 0.75 : isMid ? 0.45 : 0.25}
+            strokeWidth={isMajor ? 1.5 : isMid ? 1 : 0.75}
+          />
+        ))}
+
+        {/* Zodiac 12 Signs */}
         {zodiacSegments.map(({ i, p1, p2, labelPos }) => (
           <g key={`zodiac-${i}`}>
-            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#f59e0b" strokeOpacity={0.3} strokeWidth={1} />
-            <text x={labelPos.x} y={labelPos.y} fill={SIGN_COLORS[i]} fontSize={size * 0.045} textAnchor="middle" dominantBaseline="central" className="select-none font-extrabold" style={{ textShadow: `0 0 12px ${SIGN_COLORS[i]}` }}>{SIGN_SYMBOLS[i]}</text>
+            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#f59e0b" strokeOpacity={0.4} strokeWidth={1.2} />
+            <text
+              x={labelPos.x}
+              y={labelPos.y}
+              fill={SIGN_COLORS[i]}
+              fontSize={size * 0.046}
+              textAnchor="middle"
+              dominantBaseline="central"
+              className="select-none font-extrabold transition-all duration-300 hover:scale-125"
+              style={{ textShadow: `0 0 14px ${SIGN_COLORS[i]}` }}
+            >
+              {SIGN_SYMBOLS[i]}
+            </text>
           </g>
         ))}
 
@@ -182,15 +235,63 @@ export default function ChartWheel({
           const p1 = toXY(a.longitude, rInner * 0.95);
           const p2 = toXY(b.longitude, rInner * 0.95);
           const color = ASPECT_COLORS[aspect.aspect] ?? "#94a3b8";
-          const opacity = Math.max(0.22, 0.78 - aspect.orb * 0.06);
+          const opacity = Math.max(0.3, 0.88 - aspect.orb * 0.05);
           const focus = () => emitFocus({ type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` });
-          return <g key={`aspect-${aspect.a}-${aspect.b}-${aspect.aspect}-${index}`} className="chart-focus-source chart-wheel-control" role="button" tabIndex={0} aria-label={`${PLANET_NAMES_KA[aspect.a] ?? aspect.a} ${aspect.aspectKa} ${PLANET_NAMES_KA[aspect.b] ?? aspect.b} — დეტალების ნახვა`} onClick={focus} onKeyDown={(event) => activateOnKeyboard(event, focus)}><line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={color} strokeOpacity={opacity} strokeWidth={aspect.kind === "major" ? 1.8 : 0.95} strokeDasharray={aspect.kind === "minor" ? "3 3" : undefined} /><title>{`${aspect.a} ${aspect.aspectKa} ${aspect.b} — ორბი ${aspect.orb}°`}</title></g>;
+          return (
+            <g
+              key={`aspect-${aspect.a}-${aspect.b}-${aspect.aspect}-${index}`}
+              className="chart-focus-source chart-wheel-control"
+              role="button"
+              tabIndex={0}
+              aria-label={`${PLANET_NAMES_KA[aspect.a] ?? aspect.a} ${aspect.aspectKa} ${PLANET_NAMES_KA[aspect.b] ?? aspect.b} — დეტალების ნახვა`}
+              onClick={focus}
+              onKeyDown={(event) => activateOnKeyboard(event, focus)}
+            >
+              {/* Outer soft glow line */}
+              <line
+                x1={p1.x}
+                y1={p1.y}
+                x2={p2.x}
+                y2={p2.y}
+                stroke={color}
+                strokeOpacity={opacity * 0.5}
+                strokeWidth={aspect.kind === "major" ? 3.2 : 1.8}
+                filter="url(#aspect-glow)"
+              />
+              {/* Core crisp line */}
+              <line
+                x1={p1.x}
+                y1={p1.y}
+                x2={p2.x}
+                y2={p2.y}
+                stroke={color}
+                strokeOpacity={opacity}
+                strokeWidth={aspect.kind === "major" ? 1.6 : 0.9}
+                strokeDasharray={aspect.kind === "minor" ? "3 3" : undefined}
+              />
+              <title>{`${aspect.a} ${aspect.aspectKa} ${aspect.b} — ორბი ${aspect.orb}°`}</title>
+            </g>
+          );
         })}
 
         {fixedStars.map((star, index) => {
           const pos = toXY(star.longitude, rPlanetBase + size * 0.055);
           const focus = () => emitFocus({ type: "star", key: star.star });
-          return <g key={`star-${star.star}-${index}`} className="chart-focus-source chart-wheel-control" role="button" tabIndex={0} aria-label={`${star.star} — დეტალების ნახვა`} onClick={focus} onKeyDown={(event) => activateOnKeyboard(event, focus)}><circle cx={pos.x} cy={pos.y} r={size * 0.017} fill="#0d0726" stroke="#fef08a" strokeWidth="1.2" /><text x={pos.x} y={pos.y + 0.5} fill="#fef08a" fontSize={size * 0.029} textAnchor="middle" dominantBaseline="central">★</text><title>{`${star.star} — ${star.planet}, ორბი ${star.orb}°`}</title></g>;
+          return (
+            <g
+              key={`star-${star.star}-${index}`}
+              className="chart-focus-source chart-wheel-control"
+              role="button"
+              tabIndex={0}
+              aria-label={`${star.star} — დეტალების ნახვა`}
+              onClick={focus}
+              onKeyDown={(event) => activateOnKeyboard(event, focus)}
+            >
+              <circle cx={pos.x} cy={pos.y} r={size * 0.017} fill="#0d0726" stroke="#fef08a" strokeWidth="1.2" />
+              <text x={pos.x} y={pos.y + 0.5} fill="#fef08a" fontSize={size * 0.029} textAnchor="middle" dominantBaseline="central">★</text>
+              <title>{`${star.star} — ${star.planet}, ორბი ${star.orb}°`}</title>
+            </g>
+          );
         })}
 
         {sorted.map((planet, index) => {
@@ -199,11 +300,66 @@ export default function ChartWheel({
           const color = PLANET_COLORS[planet.name] ?? "#f59e0b";
           const glyph = PLANET_GLYPHS[planet.name] ?? "•";
           const focus = () => emitFocus({ type: "planet", key: planet.name });
-          return <g key={planet.name} className="chart-focus-source chart-wheel-control select-none" role="button" tabIndex={0} aria-label={`${PLANET_NAMES_KA[planet.name] ?? planet.name} — დეტალების ნახვა`} onClick={focus} onKeyDown={(event) => activateOnKeyboard(event, focus)}><circle cx={pos.x} cy={pos.y} r={size * 0.027} fill="#0d0726" stroke={color} strokeWidth="1.3" opacity="0.95" style={{ filter: `drop-shadow(0 0 6px ${color}bb)` }} /><text x={pos.x} y={pos.y + 0.5} fill={color} className="font-black" fontSize={size * 0.039} textAnchor="middle" dominantBaseline="central" style={{ textShadow: `0 0 10px ${color}` }}>{glyph}</text><text x={pos.x} y={pos.y + size * 0.041} fill="#cbd5e1" className="font-bold" fontSize={size * 0.019} textAnchor="middle" dominantBaseline="central">{deg}°</text><title>{`${planet.name} — დეტალების ნახვა`}</title></g>;
+          return (
+            <g
+              key={planet.name}
+              className="chart-focus-source chart-wheel-control select-none transition-transform duration-200"
+              role="button"
+              tabIndex={0}
+              aria-label={`${PLANET_NAMES_KA[planet.name] ?? planet.name} — დეტალების ნახვა`}
+              onClick={focus}
+              onKeyDown={(event) => activateOnKeyboard(event, focus)}
+            >
+              <circle
+                cx={pos.x}
+                cy={pos.y}
+                r={size * 0.028}
+                fill="#0d0726"
+                stroke={color}
+                strokeWidth="1.4"
+                opacity="0.95"
+                style={{ filter: `drop-shadow(0 0 7px ${color}cc)` }}
+              />
+              <text
+                x={pos.x}
+                y={pos.y + 0.5}
+                fill={color}
+                className="font-black"
+                fontSize={size * 0.039}
+                textAnchor="middle"
+                dominantBaseline="central"
+                style={{ textShadow: `0 0 12px ${color}` }}
+              >
+                {glyph}
+              </text>
+              <text
+                x={pos.x}
+                y={pos.y + size * 0.041}
+                fill="#cbd5e1"
+                className="font-bold"
+                fontSize={size * 0.019}
+                textAnchor="middle"
+                dominantBaseline="central"
+              >
+                {deg}°
+              </text>
+              <title>{`${planet.name} — დეტალების ნახვა`}</title>
+            </g>
+          );
         })}
 
-        <circle cx={cx} cy={cy} r={rInner * 0.4} fill="#09041a" stroke="#a855f7" strokeWidth="1.5" />
-        <circle cx={cx} cy={cy} r={3} fill="#f59e0b" />
+        {/* Center Astrolabe Core */}
+        <g className="chart-wheel-hub pointer-events-none select-none">
+          <circle cx={cx} cy={cy} r={rInner * 0.45} fill="url(#hub-core-gradient)" stroke="#f59e0b" strokeOpacity={0.5} strokeWidth={1.5} filter="url(#gold-glow)" />
+          <circle cx={cx} cy={cy} r={rInner * 0.3} fill="#060312" stroke="#818cf8" strokeOpacity={0.6} strokeWidth={1} />
+          {/* Compass 8-point celestial star */}
+          <polygon
+            points={`${cx},${cy - 12} ${cx + 3},${cy - 3} ${cx + 12},${cy} ${cx + 3},${cy + 3} ${cx},${cy + 12} ${cx - 3},${cy + 3} ${cx - 12},${cy} ${cx - 3},${cy - 3}`}
+            fill="#fbbf24"
+            opacity={0.85}
+          />
+          <circle cx={cx} cy={cy} r={2.5} fill="#ffffff" />
+        </g>
       </svg>
     </div>
   );
