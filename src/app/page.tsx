@@ -205,55 +205,45 @@ export default function HomePage() {
       stage.style.top = "auto";
 
       // 3. Left-side Zodiac creature calculation (Native aspect ratio 1:1)
+      // Must stay pinned flush to the left and bottom edges (0px gap), exactly like the right-side stage.
+      // Must scale down dynamically and proportionally from the bottom-left corner as the screen shrinks.
+      // Upper boundary MUST NOT exceed the green line: zodiacHeight <= bounds.height - greenLineY.
+      // Must not touch or cross into the central system: zodiacWidth <= ringLeftX - safeGap.
       const zodiacStage = zodiacStageRef.current;
       if (!zodiacStage || activePlanetIndex === null) return;
 
-      const frameLeft = Math.max(16, Math.min(32, bounds.width * 0.03));
       const ringLeftX = centerX - systemOuterRadius;
-      const innerLimitRight = Math.max(frameLeft, ringLeftX - 12);
-      const boxWidth = Math.max(0, innerLimitRight - frameLeft);
+      const safeGap = 12;
+      const availableSpaceLeft = Math.max(0, ringLeftX - safeGap);
+      const maxZodiacHeightAllowed = Math.max(0, bounds.height - greenLineY);
+      const maxZodiacCap = Math.min(520, bounds.width * 0.44);
 
-      const bottomLimitY = bounds.height - Math.max(14, frameLeft);
-      const boxHeight = Math.max(0, bottomLimitY - greenLineY);
+      let zodiacSize = Math.min(availableSpaceLeft, maxZodiacHeightAllowed, maxZodiacCap);
+      const minMobileZodiac = isMobile ? Math.min(bounds.width * 0.28, availableSpaceLeft, 90) : 100;
+      zodiacSize = Math.max(minMobileZodiac, zodiacSize);
 
-      // Scale proportionally within the available red box area
-      let zodiacSize = Math.min(boxWidth, boxHeight, 460);
-      if (isMobile) {
-        zodiacSize = Math.max(Math.min(boxWidth, boxHeight, 130), Math.min(boxWidth, 75));
-      } else {
-        zodiacSize = Math.max(90, Math.min(zodiacSize, boxWidth, boxHeight));
-      }
+      if (zodiacSize > availableSpaceLeft) zodiacSize = availableSpaceLeft;
+      if (zodiacSize > maxZodiacHeightAllowed) zodiacSize = maxZodiacHeightAllowed;
+      if (zodiacSize > bounds.width) zodiacSize = bounds.width;
 
-      // On wide screens: centered horizontally & vertically in the red box
-      // As screen shrinks: shrinks proportionally towards bottom-left area
-      const boxCenterX = frameLeft + boxWidth / 2;
-      const boxCenterY = greenLineY + boxHeight / 2;
-      let leftPos = boxCenterX - zodiacSize / 2;
-      let topPos = boxCenterY - zodiacSize / 2;
-
-      // Strict boundary enforcement:
-      // Never cross left edge, never touch central circle, never exceed green line, never overflow bottom
-      if (leftPos < frameLeft) leftPos = frameLeft;
-      if (leftPos + zodiacSize > innerLimitRight) leftPos = Math.max(frameLeft, innerLimitRight - zodiacSize);
-      if (topPos < greenLineY) topPos = greenLineY;
-      if (topPos + zodiacSize > bottomLimitY) topPos = Math.max(greenLineY, bottomLimitY - zodiacSize);
-
-      zodiacStage.style.left = `${Math.round(leftPos)}px`;
-      zodiacStage.style.top = `${Math.round(topPos)}px`;
       zodiacStage.style.width = `${Math.round(zodiacSize)}px`;
       zodiacStage.style.height = `${Math.round(zodiacSize)}px`;
+      zodiacStage.style.left = "0px";
+      zodiacStage.style.bottom = "0px";
       zodiacStage.style.right = "auto";
-      zodiacStage.style.bottom = "auto";
+      zodiacStage.style.top = "auto";
 
       const image = zodiacStage.querySelector("img");
       if (image) {
         image.style.width = "100%";
         image.style.height = "100%";
         image.style.left = "0px";
-        image.style.top = "0px";
+        image.style.bottom = "0px";
+        image.style.top = "auto";
+        image.style.right = "auto";
         image.style.position = "absolute";
         image.style.objectFit = "contain";
-        image.style.objectPosition = "center";
+        image.style.objectPosition = "left bottom";
       }
     };
 
