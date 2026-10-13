@@ -172,38 +172,44 @@ export default function HomePage() {
       const imageAspect = 768 / 1024; // 0.75
       const isMobile = bounds.width <= 640;
 
-      // Safe margins from right and bottom frame edges
-      const frameRight = isMobile
-        ? Math.max(8, Math.min(18, bounds.width * 0.025))
-        : Math.max(18, Math.min(38, bounds.width * 0.03));
-      const humanFrameBottom = isMobile ? 8 : Math.max(14, Math.min(26, bounds.height * 0.03));
+      // 2. Right-side Celestial Human stage calculation (Native aspect ratio 768 / 1024 = 0.75)
+      // Scaled up by 20% as requested. Pinned flush to the right and bottom edges (0px gap),
+      // seamlessly stitched to the card boundaries with zero naprali/gap.
+      // Upper boundary respects the greenLine ceiling.
+      const imageAspect = 768 / 1024; // 0.75
+      const isMobile = bounds.width <= 640;
+
+      // Pinned flush to the card's right and bottom edges with no gap/naprali
+      const frameRight = 0;
+      const humanFrameBottom = 0;
 
       // Upper ceiling respect: never cross above greenLineY
-      const maxHumanHeightAllowed = Math.max(0, bounds.height - greenLineY - humanFrameBottom - 6);
+      const maxHumanHeightAllowed = Math.max(0, bounds.height - greenLineY - 4);
       const maxWidthFromHeight = maxHumanHeightAllowed * imageAspect;
 
       // Horizontal space to the right of the central planetary ring
       const ringRightX = centerX + systemOuterRadius;
-      const safeCircleGapRight = isMobile ? 8 : 18;
-      const availableSpaceRight = Math.max(0, bounds.width - ringRightX - frameRight - safeCircleGapRight);
-      const maxHumanWidthCap = Math.min(480, bounds.width * 0.40);
+      const safeCircleGapRight = isMobile ? 6 : 10;
+      const availableSpaceRight = Math.max(0, bounds.width - ringRightX - safeCircleGapRight);
+      const maxHumanWidthCap = Math.min(580, bounds.width * (isMobile ? 0.44 : 0.48));
 
       let stageWidth: number;
       if (isMobile) {
-        // On mobile, keep clearly visible, proportioned with the left-side zodiac creature
-        const mobileTargetWidth = Math.min(bounds.width * 0.36, (bounds.height - greenLineY) * imageAspect * 0.72, 145);
-        stageWidth = Math.max(110, Math.min(mobileTargetWidth, bounds.width - frameRight - 12));
+        // On mobile: 20% larger while keeping nicely proportioned
+        const mobileTargetWidth = Math.min(bounds.width * 0.42, (bounds.height - greenLineY) * imageAspect * 0.88, 175);
+        stageWidth = Math.max(130, Math.min(mobileTargetWidth, bounds.width * 0.44));
       } else {
-        // Desktop / tablet: scale dynamically to fit available space without touching central circle
-        stageWidth = Math.min(availableSpaceRight, maxWidthFromHeight, maxHumanWidthCap);
-        stageWidth = Math.max(130, stageWidth);
-        if (stageWidth > availableSpaceRight && availableSpaceRight > 90) {
-          stageWidth = availableSpaceRight;
+        // Desktop / tablet: 20% larger than previous baseline
+        const baseWidth = Math.min(maxWidthFromHeight, maxHumanWidthCap);
+        stageWidth = Math.round(baseWidth * 1.20);
+        stageWidth = Math.max(155, stageWidth);
+        if (stageWidth > bounds.width * 0.48) {
+          stageWidth = bounds.width * 0.48;
         }
       }
 
-      if (stageWidth > bounds.width - frameRight - 10) {
-        stageWidth = bounds.width - frameRight - 10;
+      if (stageWidth > bounds.width - 8) {
+        stageWidth = bounds.width - 8;
       }
       let stageHeight = stageWidth / imageAspect;
       if (stageHeight > maxHumanHeightAllowed) {
@@ -213,8 +219,8 @@ export default function HomePage() {
 
       stage.style.width = `${Math.round(stageWidth)}px`;
       stage.style.height = `${Math.round(stageHeight)}px`;
-      stage.style.right = `${Math.round(frameRight)}px`;
-      stage.style.bottom = `${Math.round(humanFrameBottom)}px`;
+      stage.style.right = "0px";
+      stage.style.bottom = "0px";
       stage.style.left = "auto";
       stage.style.top = "auto";
 
