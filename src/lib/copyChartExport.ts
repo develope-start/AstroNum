@@ -56,6 +56,7 @@ function elementBalanceSvg(root: HTMLElement) {
   const rows = items.map((item, index) => {
     const label = item.dataset.exportElementLabel ?? item.textContent?.trim() ?? "";
     const value = Number(item.dataset.exportElementValue ?? 0);
+    const y = 76 + index * rowHeight;
     const barColor = item.dataset.exportElement === "earth" ? "#93892B" : item.dataset.exportElement === "fire" ? "#f59e0b" : item.dataset.exportElement === "air" ? "#38bdf8" : "#818cf8";
     return `
       <text x="54" y="${y}" fill="#f8fafc" font-size="30" font-weight="700">${escapeHtml(label)}</text>
