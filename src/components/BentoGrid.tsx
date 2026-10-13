@@ -115,25 +115,25 @@ export default function BentoGrid() {
   };
   const elementGradient: Record<string, string> = {
     fire:  "from-amber-500 to-rose-500",
-    earth: "from-emerald-500 to-teal-500",
+    earth: "from-[#93892B] to-[#bdae36]",
     air:   "from-sky-400 to-indigo-400",
     water: "from-cyan-400 to-blue-500",
   };
   const elementText: Record<string, string> = {
     fire:  "text-amber-400",
-    earth: "text-emerald-400",
+    earth: "text-[#93892B]",
     air:   "text-sky-400",
     water: "text-cyan-400",
   };
   const elementTitle: Record<string, string> = {
     fire:  "text-[#ff6e65]",
-    earth: "text-[#f59e0b]",
+    earth: "text-[#93892B]",
     air:   "text-[#38bdf8]",
     water: "text-[#818cf8]",
   };
   const elementGlowColor: Record<string, string> = {
     fire:  "rgba(255, 45, 45, 0.7)",
-    earth: "rgba(210, 130, 55, 0.65)",
+    earth: "rgba(147, 137, 43, 0.7)",
     air:   "rgba(56, 189, 248, 0.7)",
     water: "rgba(99, 102, 241, 0.7)",
   };

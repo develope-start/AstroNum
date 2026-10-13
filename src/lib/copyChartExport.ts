@@ -56,12 +56,12 @@ function elementBalanceSvg(root: HTMLElement) {
   const rows = items.map((item, index) => {
     const label = item.dataset.exportElementLabel ?? item.textContent?.trim() ?? "";
     const value = Number(item.dataset.exportElementValue ?? 0);
-    const y = 76 + index * rowHeight;
+    const barColor = item.dataset.exportElement === "earth" ? "#93892B" : item.dataset.exportElement === "fire" ? "#f59e0b" : item.dataset.exportElement === "air" ? "#38bdf8" : "#818cf8";
     return `
       <text x="54" y="${y}" fill="#f8fafc" font-size="30" font-weight="700">${escapeHtml(label)}</text>
       <text x="1146" y="${y}" fill="#fcd34d" font-size="30" font-weight="800" text-anchor="end">${value}%</text>
       <rect x="54" y="${y + 17}" width="1092" height="18" rx="9" fill="#1e293b" />
-      <rect x="54" y="${y + 17}" width="${Math.max(0, Math.min(100, value)) * 10.92}" height="18" rx="9" fill="#a78bfa" />`;
+      <rect x="54" y="${y + 17}" width="${Math.max(0, Math.min(100, value)) * 10.92}" height="18" rx="9" fill="${barColor}" />`;
   }).join("");
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
     <rect width="100%" height="100%" rx="28" fill="#0f0a24" />

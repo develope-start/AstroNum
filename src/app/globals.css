@@ -663,7 +663,7 @@ svg {
 }
 
 .celestial-element-fire { color: #f0c4a8; }
-.celestial-element-earth { color: #c6dabd; }
+.celestial-element-earth { color: #93892B; }
 .celestial-element-air { color: #acd9ed; }
 .celestial-element-water { color: #c4b9f2; }
 
@@ -1792,10 +1792,10 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
 }
 
 .celestial-element-panel-earth {
-  --element-border: rgba(215, 145, 80, 0.85);
-  --element-text: #fdf2e4;
-  --element-bg: rgba(92, 54, 28, 0.76);
-  --element-glow: rgba(210, 130, 55, 0.82);
+  --element-border: rgba(147, 137, 43, 0.85);
+  --element-text: #fdf5d8;
+  --element-bg: rgba(147, 137, 43, 0.45);
+  --element-glow: rgba(147, 137, 43, 0.85);
 }
 
 .celestial-element-panel-air {
@@ -2149,7 +2149,7 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
 }
 
 .zodiac-sign-fire { color: #f1b39b; border-color: rgba(244, 164, 139, 0.42); }
-.zodiac-sign-earth { color: #c6d8b4; border-color: rgba(163, 201, 151, 0.4); }
+.zodiac-sign-earth { color: #93892B; border-color: rgba(147, 137, 43, 0.4); }
 .zodiac-sign-air { color: #b8dff0; border-color: rgba(125, 211, 252, 0.4); }
 .zodiac-sign-water { color: #c6b8ed; border-color: rgba(196, 181, 253, 0.42); }
 
@@ -2250,7 +2250,7 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
 .element-frame::after { right: -0.2rem; bottom: -0.2rem; border-width: 0 1px 1px 0; }
 .element-frame span { transform: rotate(-45deg); font-family: Georgia, "Times New Roman", serif; font-size: 1.25rem; }
 .element-frame-fire { top: 10%; left: 10%; color: #efb09b; }
-.element-frame-earth { top: 10%; right: 10%; color: #c6d8b4; }
+.element-frame-earth { top: 10%; right: 10%; color: #93892B; }
 .element-frame-air { right: 10%; bottom: 10%; color: #abd7e8; }
 .element-frame-water { bottom: 10%; left: 10%; color: #c4b5fd; }
 

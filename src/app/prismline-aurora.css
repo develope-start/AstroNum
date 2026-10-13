@@ -878,15 +878,15 @@ button.calc-submit-btn:hover,
   --elem-symbol-bg: rgba(220, 38, 38, 0.25);
 }
 
-/* Earth Element: Rich Amber / Terracotta Gold Neon */
+/* Earth Element: Rich Earth Ochre / Antique Gold Neon */
 .celestial-element-card-earth {
-  --elem-border: rgba(215, 145, 80, 0.7);
-  --elem-border-hover: rgba(245, 175, 110, 0.95);
-  --elem-text: #fdf2e4;
-  --elem-title: #f59e0b;
-  --elem-bg: rgba(92, 54, 28, 0.35);
-  --elem-glow: rgba(210, 130, 55, 0.8);
-  --elem-symbol-bg: rgba(180, 83, 9, 0.25);
+  --elem-border: rgba(147, 137, 43, 0.7);
+  --elem-border-hover: rgba(180, 168, 60, 0.95);
+  --elem-text: #fdf5d8;
+  --elem-title: #93892B;
+  --elem-bg: rgba(147, 137, 43, 0.22);
+  --elem-glow: rgba(147, 137, 43, 0.8);
+  --elem-symbol-bg: rgba(147, 137, 43, 0.25);
 }
 
 /* Air Element: Electric Cyan / Sky Blue Neon */
@@ -1231,8 +1231,8 @@ main:has(.app-home) {
 
 .celestial-ruler.celestial-element-earth:hover,
 .celestial-ruler.celestial-element-earth.is-active {
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.85), inset 0 0 12px rgba(16, 185, 129, 0.5) !important;
-  border-color: #10b981 !important;
+  box-shadow: 0 0 25px rgba(147, 137, 43, 0.85), inset 0 0 12px rgba(147, 137, 43, 0.5) !important;
+  border-color: #93892B !important;
 }
 
 

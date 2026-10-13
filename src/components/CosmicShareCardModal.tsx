@@ -54,7 +54,7 @@ export default function CosmicShareCardModal({
 
   const elementInfo: Record<string, { label: string; icon: typeof Flame; color: string; temper: string }> = {
     fire: { label: "ცეცხლი", icon: Flame, color: "#f59e0b", temper: "ქოლერიკული" },
-    earth: { label: "მიწა", icon: Mountain, color: "#10b981", temper: "მელანქოლიკური" },
+    earth: { label: "მიწა", icon: Mountain, color: "#93892B", temper: "მელანქოლიკური" },
     air: { label: "ჰაერი", icon: Wind, color: "#a855f7", temper: "სანგვინიკური" },
     water: { label: "წყალი", icon: Droplets, color: "#38bdf8", temper: "ფლეგმატური" },
   };
