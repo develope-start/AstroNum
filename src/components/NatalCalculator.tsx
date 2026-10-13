@@ -16,6 +16,7 @@ import { saveGuestCache, loadGuestCache, clearGuestCache, validateGuestCache } f
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
 import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Info } from "lucide-react";
+import CosmicShareCardModal from "./CosmicShareCardModal";
 
 interface WheelData {
   ascendant: number;
