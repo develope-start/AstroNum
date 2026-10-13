@@ -166,42 +166,44 @@ export default function HomePage() {
 
 
       // 2. Right-side Celestial Human stage calculation (Native aspect ratio 768 / 1024 = 0.75)
-      // 20% larger on desktop, shifted noticeably to the LEFT away from the right edge,
-      // flush against the bottom edge (0px gap), with dynamic proportional resizing on all screen sizes.
+      // Enlarged scale (+20%), shifted leftward away from extreme frame edge, flush to bottom edge (0px).
+      // Scales dynamically and proportionally with window resize.
       const imageAspect = 768 / 1024; // 0.75
       const isMobile = bounds.width <= 640;
 
-      // Pinned flush against the right and bottom edges with 0px gap to eliminate any emptiness/void
-      const frameRight = 0;
-      const humanFrameBottom = 0;
+      // Moderate shift to the left away from the right frame border without leaving an empty void
+      const frameRight = isMobile
+        ? Math.max(6, Math.min(12, bounds.width * 0.018))
+        : Math.max(16, Math.min(32, bounds.width * 0.022));
+      const humanFrameBottom = 0; // Pinned flush to the bottom edge
 
-      // Upper ceiling: allows human artwork to scale dynamically on desktop
-      const humanGreenLineY = Math.max(bounds.height * 0.14, centerY - orbitRadius * 0.70);
+      // Upper ceiling: allows enlarged human artwork to scale dynamically and proportionally with viewport
+      const humanGreenLineY = Math.max(bounds.height * 0.10, centerY - orbitRadius * 0.75);
       const maxHumanHeightAllowed = Math.max(0, bounds.height - humanGreenLineY - 4);
       const maxWidthFromHeight = maxHumanHeightAllowed * imageAspect;
 
       // Horizontal space to the right of the central planetary ring
       const ringRightX = centerX + systemOuterRadius;
-      const safeCircleGapRight = isMobile ? 6 : 10;
-      const availableSpaceRight = Math.max(0, bounds.width - ringRightX - safeCircleGapRight);
-      const maxHumanWidthCap = Math.min(560, bounds.width * (isMobile ? 0.38 : 0.46));
+      const safeCircleGapRight = isMobile ? 6 : 14;
+      const availableSpaceRight = Math.max(0, bounds.width - ringRightX - frameRight - safeCircleGapRight);
+      const maxHumanWidthCap = Math.min(620, bounds.width * (isMobile ? 0.40 : 0.48));
 
       let stageWidth: number;
       if (isMobile) {
         // On mobile: compact size, proportioned with the left-side zodiac creature (110px - 145px)
         const mobileTargetWidth = Math.min(bounds.width * 0.36, (bounds.height - greenLineY) * imageAspect * 0.72, 145);
-        stageWidth = Math.max(110, Math.min(mobileTargetWidth, bounds.width - 10));
+        stageWidth = Math.max(110, Math.min(mobileTargetWidth, bounds.width - frameRight - 10));
       } else {
-        // Desktop / tablet: dynamically and proportionally scaling with viewport width, 0px gap at right frame
-        const responsiveDesktopWidth = Math.min(bounds.width * 0.35, maxWidthFromHeight, maxHumanWidthCap);
-        stageWidth = Math.max(160, responsiveDesktopWidth);
+        // Desktop / tablet: 20% larger, dynamically and proportionally scaling with viewport width
+        const responsiveDesktopWidth = Math.min(bounds.width * 0.38, maxWidthFromHeight, maxHumanWidthCap);
+        stageWidth = Math.max(165, responsiveDesktopWidth);
         if (stageWidth > availableSpaceRight && availableSpaceRight > 110) {
           stageWidth = availableSpaceRight;
         }
       }
 
-      if (stageWidth > bounds.width - 8) {
-        stageWidth = bounds.width - 8;
+      if (stageWidth > bounds.width - frameRight - 8) {
+        stageWidth = bounds.width - frameRight - 8;
       }
       let stageHeight = stageWidth / imageAspect;
       if (stageHeight > maxHumanHeightAllowed) {
@@ -211,8 +213,8 @@ export default function HomePage() {
 
       stage.style.width = `${Math.round(stageWidth)}px`;
       stage.style.height = `${Math.round(stageHeight)}px`;
-      stage.style.right = "0px";
-      stage.style.bottom = "0px";
+      stage.style.right = `${Math.round(frameRight)}px`;
+      stage.style.bottom = `${Math.round(humanFrameBottom)}px`;
       stage.style.left = "auto";
       stage.style.top = "auto";
 
@@ -230,34 +232,39 @@ export default function HomePage() {
       }
 
       // 3. Left-side Zodiac creature calculation (Native aspect ratio 1:1)
-      // Pinned flush to the left and bottom edges (0px gap), so the extreme left side of the image
-      // aligns exactly with the whole frame's left side. Enlarged by 20% as requested.
+      // Generous frameLeft margin shifts it comfortably to the right on desktop,
+      // ensuring horns, tails, claws, and drop-shadows are NEVER cut off by the main frame borders.
+      // Must not touch or cross into the central circle: right edge stops cleanly before ringLeftX.
+      // Upper boundary MUST NOT exceed the green line.
+      // Scales down smoothly, dynamically, and synchronously on all screen sizes.
       const zodiacStage = zodiacStageRef.current;
       if (!zodiacStage || activePlanetIndex === null) return;
 
-      const frameLeft = 0;
-      const frameBottom = 0;
+      // Generous margins from card edges so artwork and glow are 100% uncut
+      const frameLeft = isMobile
+        ? Math.max(14, Math.min(24, bounds.width * 0.04))
+        : Math.max(48, Math.min(92, bounds.width * 0.06));
+      const frameBottom = isMobile ? 12 : Math.max(18, Math.min(28, bounds.height * 0.04));
 
-      // Available space between the left edge and the central circle
+      // Available space between the safe left margin and the central circle
       const ringLeftX = centerX - systemOuterRadius;
-      const safeCircleGap = isMobile ? 8 : 14;
-      const availableSpaceDesktop = Math.max(0, ringLeftX - safeCircleGap);
+      const safeCircleGap = isMobile ? 10 : 22;
+      const availableSpaceDesktop = Math.max(0, ringLeftX - frameLeft - safeCircleGap);
 
       // Safe upper ceiling so top horns/stars never clip at or above green line
-      const maxZodiacHeightAllowed = Math.max(0, bounds.height - greenLineY - 4);
-      const maxZodiacCap = Math.min(540, bounds.width * (isMobile ? 0.38 : 0.46));
+      const maxZodiacHeightAllowed = Math.max(0, bounds.height - greenLineY - frameBottom - 8);
+      const maxZodiacCap = Math.min(460, bounds.width * 0.40);
 
       let zodiacSize: number;
       if (isMobile) {
-        // On mobile, keep clearly visible and proportional
-        const mobileTarget = Math.min(bounds.width * 0.38, bounds.height * 0.36, 160);
-        zodiacSize = Math.max(115, Math.min(mobileTarget, bounds.width - 10));
+        // On mobile, keep it clearly visible and proportional (110px - 145px)
+        const mobileTarget = Math.min(bounds.width * 0.36, bounds.height * 0.34, 145);
+        zodiacSize = Math.max(110, Math.min(mobileTarget, bounds.width - frameLeft - 14));
       } else {
-        // On desktop/tablet, 20% larger, scaling dynamically
-        const baseSize = Math.min(bounds.width * 0.32, maxZodiacHeightAllowed, maxZodiacCap);
-        zodiacSize = Math.round(baseSize * 1.20);
-        zodiacSize = Math.max(130, zodiacSize);
-        if (zodiacSize > availableSpaceDesktop && availableSpaceDesktop > 110) {
+        // On desktop/tablet, scale dynamically to fit available space without touching central circle
+        zodiacSize = Math.min(availableSpaceDesktop, maxZodiacHeightAllowed, maxZodiacCap);
+        zodiacSize = Math.max(100, zodiacSize);
+        if (zodiacSize > availableSpaceDesktop && availableSpaceDesktop > 70) {
           zodiacSize = availableSpaceDesktop;
         }
       }
@@ -265,14 +272,14 @@ export default function HomePage() {
       if (zodiacSize > maxZodiacHeightAllowed) {
         zodiacSize = maxZodiacHeightAllowed;
       }
-      if (zodiacSize > bounds.width - 8) {
-        zodiacSize = bounds.width - 8;
+      if (zodiacSize > bounds.width - frameLeft - 10) {
+        zodiacSize = bounds.width - frameLeft - 10;
       }
 
       zodiacStage.style.width = `${Math.round(zodiacSize)}px`;
       zodiacStage.style.height = `${Math.round(zodiacSize)}px`;
-      zodiacStage.style.left = "0px";
-      zodiacStage.style.bottom = "0px";
+      zodiacStage.style.left = `${Math.round(frameLeft)}px`;
+      zodiacStage.style.bottom = `${Math.round(frameBottom)}px`;
       zodiacStage.style.right = "auto";
       zodiacStage.style.top = "auto";
 
@@ -286,7 +293,7 @@ export default function HomePage() {
         image.style.right = "auto";
         image.style.position = "absolute";
         image.style.objectFit = "contain";
-        image.style.objectPosition = "left bottom";
+        image.style.objectPosition = "center bottom";
       }
     };
 
