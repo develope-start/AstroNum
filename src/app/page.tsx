@@ -195,9 +195,9 @@ export default function HomePage() {
 
       let stageWidth: number;
       if (isMobile) {
-        // On mobile: 20% larger while keeping nicely proportioned
-        const mobileTargetWidth = Math.min(bounds.width * 0.42, (bounds.height - greenLineY) * imageAspect * 0.88, 175);
-        stageWidth = Math.max(130, Math.min(mobileTargetWidth, bounds.width * 0.44));
+        // On mobile: original compact size, proportioned with the left-side zodiac creature (110px - 145px)
+        const mobileTargetWidth = Math.min(bounds.width * 0.36, (bounds.height - greenLineY) * imageAspect * 0.72, 145);
+        stageWidth = Math.max(110, Math.min(mobileTargetWidth, bounds.width - 12));
       } else {
         // Desktop / tablet: 20% larger than previous baseline
         const baseWidth = Math.min(maxWidthFromHeight, maxHumanWidthCap);
