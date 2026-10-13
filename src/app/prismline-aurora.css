@@ -785,9 +785,10 @@ button.calc-submit-btn:hover,
 }
 
 .celestial-constellation {
-  --constellation-radius: clamp(9.8rem, min(26.5vh, 20vw), 16.5rem) !important;
-  width: clamp(7.2rem, min(16vh, 12vw), 11rem) !important;
-  margin: calc(clamp(7.2rem, min(16vh, 12vw), 11rem) * -0.5) !important;
+  --constellation-radius: calc(var(--ruler-radius) + clamp(2.8rem, 5.2vw, 4.2rem)) !important;
+  width: clamp(3.4rem, 6.2vw, 4.8rem) !important;
+  margin: calc(clamp(3.4rem, 6.2vw, 4.8rem) * -0.5) !important;
+  pointer-events: none;
 }
 
 /* Enlarged Planetary Rulers: Bigger buttons and clear glyphs */

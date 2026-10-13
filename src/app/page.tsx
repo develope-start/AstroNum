@@ -142,38 +142,58 @@ export default function HomePage() {
       const centerX = bounds.width / 2;
       const centerY = bounds.height / 2;
 
-      // 1. Calculate the exact outer boundary of the central planetary ring
+      // 1. Calculate the exact outer boundary of the central planetary ring & constellation halo
       const rulers = system.querySelectorAll<HTMLButtonElement>(".celestial-ruler");
       const ruler = (activePlanetIndex !== null ? rulers[activePlanetIndex] : rulers[0]) ?? rulers[0];
 
-      let planetRingRadius = Math.min(bounds.width, bounds.height) * 0.36;
+      let orbitRadius = Math.min(bounds.width, bounds.height) * 0.28;
+      let rulerRadius = orbitRadius;
+      let systemOuterRadius = orbitRadius * 1.35;
+
       if (ruler) {
         const rulerBounds = ruler.getBoundingClientRect();
         const rulerCenterX = rulerBounds.left - bounds.left + rulerBounds.width / 2;
         const rulerCenterY = rulerBounds.top - bounds.top + rulerBounds.height / 2;
-        const orbitRadius = Math.hypot(rulerCenterX - centerX, rulerCenterY - centerY);
-        planetRingRadius = orbitRadius + rulerBounds.width * 0.5;
+        orbitRadius = Math.hypot(rulerCenterX - centerX, rulerCenterY - centerY);
+        rulerRadius = orbitRadius + rulerBounds.width * 0.5;
+        systemOuterRadius = rulerRadius;
       }
 
+      // Query actual rendered position of the constellation outer halo if present
+      const constellations = system.querySelectorAll<HTMLElement>(".celestial-constellation");
+      if (constellations.length > 0) {
+        const c0 = constellations[0];
+        const cBounds = c0.getBoundingClientRect();
+        const cCenterX = cBounds.left - bounds.left + cBounds.width / 2;
+        const cCenterY = cBounds.top - bounds.top + cBounds.height / 2;
+        const cRadius = Math.hypot(cCenterX - centerX, cCenterY - centerY);
+        systemOuterRadius = Math.max(systemOuterRadius, cRadius + cBounds.width * 0.5);
+      }
+
+      // Green Line: Horizontal upper boundary across the entire celestial module
+      // Passes below the top 12 o'clock planet across the upper chord of the planetary circle (~28-32% from top).
+      // Neither the right-side planet person NOR the left-side zodiac creature may extend above this line.
+      const greenLineY = Math.max(bounds.height * 0.26, centerY - orbitRadius * 0.52);
+
       // 2. Right-side human stage calculation (Celestial Stage Image: native aspect ratio 768 / 1024 = 0.75)
-      // Must stay pinned flush to the right and bottom edges with 0px gap.
-      // Must scale down dynamically and proportionally from the bottom-right corner as the screen shrinks.
-      // Must never overlap or cross the central zodiac/planetary ring.
+      // Must stay pinned flush to the right and bottom edges (0px gap).
+      // Upper boundary MUST NOT exceed the green line: stageHeight <= bounds.height - greenLineY.
+      // Must not intersect the central system: bounds.width - stageWidth >= centerX + systemOuterRadius + 12.
       const imageAspect = 768 / 1024; // 0.75
-      const availableSpaceRight = Math.max(0, bounds.width - (centerX + planetRingRadius) - 10);
-      const maxHeight = bounds.height * 0.98;
-      const maxWidthFromHeight = maxHeight * imageAspect;
-      const maxWidthCap = Math.min(640, bounds.width * 0.48);
+      const maxHeightAllowed = Math.max(0, bounds.height - greenLineY);
+      const maxWidthFromHeight = maxHeightAllowed * imageAspect;
+      const availableSpaceRight = Math.max(0, bounds.width - (centerX + systemOuterRadius) - 12);
+      const maxWidthCap = Math.min(560, bounds.width * 0.44);
 
       let stageWidth = Math.min(maxWidthFromHeight, maxWidthCap, availableSpaceRight);
       const isMobile = bounds.width <= 640;
-      const minMobileWidth = isMobile ? Math.min(bounds.width * 0.26, 95) : 100;
+      const minMobileWidth = isMobile ? Math.min(bounds.width * 0.25, 90) : 100;
       stageWidth = Math.max(minMobileWidth, stageWidth);
 
       if (stageWidth > bounds.width) stageWidth = bounds.width;
       let stageHeight = stageWidth / imageAspect;
-      if (stageHeight > bounds.height) {
-        stageHeight = bounds.height;
+      if (stageHeight > maxHeightAllowed) {
+        stageHeight = maxHeightAllowed;
         stageWidth = stageHeight * imageAspect;
       }
 
@@ -184,47 +204,46 @@ export default function HomePage() {
       stage.style.left = "auto";
       stage.style.top = "auto";
 
-      // 3. Left-side Zodiac creature calculation
+      // 3. Left-side Zodiac creature calculation (Native aspect ratio 1:1)
       const zodiacStage = zodiacStageRef.current;
       if (!zodiacStage || activePlanetIndex === null) return;
 
-      const frameLeft = Math.max(12, Math.min(28, bounds.width * 0.03));
-      const ringLeftX = centerX - planetRingRadius;
-      const availableWidth = Math.max(0, ringLeftX - frameLeft);
+      const frameLeft = Math.max(16, Math.min(32, bounds.width * 0.03));
+      const ringLeftX = centerX - systemOuterRadius;
+      const innerLimitRight = Math.max(frameLeft, ringLeftX - 12);
+      const boxWidth = Math.max(0, innerLimitRight - frameLeft);
 
-      // Center horizontally in the space between the left frame edge and the planetary circle:
-      const targetCenterX = (frameLeft + ringLeftX) / 2;
-      const targetCenterY = centerY;
+      const bottomLimitY = bounds.height - Math.max(14, frameLeft);
+      const boxHeight = Math.max(0, bottomLimitY - greenLineY);
 
-      // Safe margin so the 1x1 image never overflows or clips:
-      const safeGap = 8;
-      const maxSizeFromWidth = Math.max(0, availableWidth - safeGap * 2);
-      const maxSizeFromHeight = Math.max(0, bounds.height - frameLeft * 2);
-
-      // On mobile / narrow screens ensure a proportional readable size:
-      const isCompact = bounds.width <= 640;
-      const mobileFloor = isCompact ? Math.min(bounds.width * 0.28, bounds.height * 0.28, 115) : 80;
-
-      let size = Math.max(maxSizeFromWidth, mobileFloor);
-      size = Math.min(size, maxSizeFromHeight, bounds.height * 0.72, 380);
-
-      // Center the 1x1 box in that space:
-      let leftPos = targetCenterX - size / 2;
-      let topPos = targetCenterY - size / 2;
-
-      // Boundary safety check:
-      if (leftPos < frameLeft) leftPos = frameLeft;
-      if (topPos < frameLeft) topPos = frameLeft;
-      if (topPos + size > bounds.height - frameLeft) {
-        topPos = bounds.height - frameLeft - size;
+      // Scale proportionally within the available red box area
+      let zodiacSize = Math.min(boxWidth, boxHeight, 460);
+      if (isMobile) {
+        zodiacSize = Math.max(Math.min(boxWidth, boxHeight, 130), Math.min(boxWidth, 75));
+      } else {
+        zodiacSize = Math.max(90, Math.min(zodiacSize, boxWidth, boxHeight));
       }
 
-      zodiacStage.style.left = `${leftPos}px`;
-      zodiacStage.style.top = `${topPos}px`;
-      zodiacStage.style.bottom = "auto";
+      // On wide screens: centered horizontally & vertically in the red box
+      // As screen shrinks: shrinks proportionally towards bottom-left area
+      const boxCenterX = frameLeft + boxWidth / 2;
+      const boxCenterY = greenLineY + boxHeight / 2;
+      let leftPos = boxCenterX - zodiacSize / 2;
+      let topPos = boxCenterY - zodiacSize / 2;
+
+      // Strict boundary enforcement:
+      // Never cross left edge, never touch central circle, never exceed green line, never overflow bottom
+      if (leftPos < frameLeft) leftPos = frameLeft;
+      if (leftPos + zodiacSize > innerLimitRight) leftPos = Math.max(frameLeft, innerLimitRight - zodiacSize);
+      if (topPos < greenLineY) topPos = greenLineY;
+      if (topPos + zodiacSize > bottomLimitY) topPos = Math.max(greenLineY, bottomLimitY - zodiacSize);
+
+      zodiacStage.style.left = `${Math.round(leftPos)}px`;
+      zodiacStage.style.top = `${Math.round(topPos)}px`;
+      zodiacStage.style.width = `${Math.round(zodiacSize)}px`;
+      zodiacStage.style.height = `${Math.round(zodiacSize)}px`;
       zodiacStage.style.right = "auto";
-      zodiacStage.style.width = `${size}px`;
-      zodiacStage.style.height = `${size}px`;
+      zodiacStage.style.bottom = "auto";
 
       const image = zodiacStage.querySelector("img");
       if (image) {
