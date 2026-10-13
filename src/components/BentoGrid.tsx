@@ -502,6 +502,7 @@ export default function BentoGrid() {
           }`}
         >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl transition-all group-hover:bg-violet-500/20" />
+          <div className="relative">
             <div className="flex items-center justify-between">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-violet-400/30 bg-violet-950/50 text-violet-200 shadow-inner">
                 <Moon className="h-6 w-6" />

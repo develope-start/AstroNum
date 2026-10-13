@@ -48,6 +48,8 @@ export default function NatalCalculator() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [mapNumber, setMapNumber] = useState<string | null>(null);
+  const [isRevealing, setIsRevealing] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
     const cached = loadGuestCache<CacheShape>("natal");
@@ -129,6 +131,10 @@ export default function NatalCalculator() {
         planetHouses: data.result.planetHouses ?? {},
       };
       setWheel(w);
+      setIsRevealing(true);
+      setTimeout(() => {
+        setIsRevealing(false);
+      }, 1400);
       if (save) setSaved(true);
       else saveGuestCache<CacheShape>("natal", { birth, houseSystem, calculation, interpretation: data.interpretation, wheel: w, mapNumber: data.mapNumber ?? null });
     } catch (error) {
@@ -219,7 +225,17 @@ export default function NatalCalculator() {
         {wheel && <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />}
 
         {(wheel || interpretation) && (
-          <div className="flex justify-end">
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            {wheel && (
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(true)}
+                className="btn-shimmer flex items-center justify-center gap-2 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-indigo-900/40 to-amber-500/20 px-5 py-2.5 text-xs font-bold text-amber-200 shadow-[0_0_25px_rgba(245,158,11,0.25)] transition-all hover:border-amber-400 hover:text-white cursor-pointer"
+              >
+                <Sparkles className="h-4 w-4 text-amber-300" />
+                <span>✦ ჰოლოგრაფიული ბარათი (Story)</span>
+              </button>
+            )}
             <ChartExportButton className="flex items-center justify-center gap-1.5 rounded-full border border-cyan-400/40 bg-gradient-to-r from-cyan-950/60 via-indigo-950/60 to-purple-950/60 px-5 py-2.5 text-xs font-bold text-cyan-200 shadow-[0_0_20px_rgba(56,189,248,0.25)] transition-all hover:bg-cyan-400 hover:text-slate-950 cursor-pointer" />
           </div>
         )}
@@ -256,6 +272,35 @@ export default function NatalCalculator() {
           </div>
         )}
       </div>
+
+      {/* 1.5s Hypnotic Cosmic Reveal Accelerator */}
+      {isRevealing && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-2xl animate-in fade-in duration-300">
+          <div className="relative flex items-center justify-center">
+            <div className="h-48 w-48 rounded-full border-2 border-dashed border-cyan-400/70 animate-spin" style={{ animationDuration: "1.2s" }} />
+            <div className="absolute h-36 w-36 rounded-full border-2 border-dotted border-amber-400/80 animate-spin" style={{ animationDuration: "0.8s", animationDirection: "reverse" }} />
+            <div className="absolute h-24 w-24 rounded-full border border-violet-400/90 animate-ping" />
+            <div className="absolute h-6 w-6 rounded-full bg-gradient-to-r from-amber-300 to-cyan-300 shadow-[0_0_30px_#38bdf8] animate-pulse" />
+          </div>
+          <p className="mt-8 font-display text-lg sm:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-cyan-300 to-violet-300 animate-pulse tracking-wide">
+            ✦ ცის რუკა იკვრება · SWISS EPHEMERIS ✦
+          </p>
+          <span className="mt-2 text-xs font-mono text-slate-400">ალგორითმული სინთეზი და ასპექტების დათვლა…</span>
+        </div>
+      )}
+
+      {/* Cosmic Holographic Share Modal */}
+      {wheel && (
+        <CosmicShareCardModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          userName={birth.name}
+          birthDate={birth.date}
+          birthPlace={birth.place}
+          planets={wheel.planets}
+          ascendant={wheel.ascendant}
+        />
+      )}
     </div>
   );
 }

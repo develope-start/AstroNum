@@ -15,6 +15,9 @@ interface CosmicShareCardModalProps {
   ascendant: number;
 }
 
+const SIGN_SYMBOLS = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
+const ELEMENTS = ["fire", "earth", "air", "water"] as const;
+
 export default function CosmicShareCardModal({
   isOpen,
   onClose,
@@ -36,11 +39,16 @@ export default function CosmicShareCardModal({
   const moonSign = moon ? eclipticToSign(moon.longitude) : null;
   const ascSign = eclipticToSign(ascendant);
 
+  const sunSymbol = sunSign ? SIGN_SYMBOLS[sunSign.signIndex] : "☉";
+  const moonSymbol = moonSign ? SIGN_SYMBOLS[moonSign.signIndex] : "☽";
+  const ascSymbol = SIGN_SYMBOLS[ascSign.signIndex];
+
   // Element calculation
   const elementCounts: Record<string, number> = { fire: 0, earth: 0, air: 0, water: 0 };
   planets.forEach((p) => {
     const s = eclipticToSign(p.longitude);
-    if (s.element) elementCounts[s.element] = (elementCounts[s.element] ?? 0) + 1;
+    const elemName = ELEMENTS[s.signIndex % 4];
+    elementCounts[elemName] = (elementCounts[elemName] ?? 0) + 1;
   });
   const dominantElement = Object.entries(elementCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "fire";
 
@@ -122,7 +130,7 @@ export default function CosmicShareCardModal({
       // Sun Sign
       ctx.font = "bold 90px 'Noto Sans Georgian', sans-serif";
       ctx.fillStyle = "#fbbf24";
-      ctx.fillText(sunSign?.signSymbol ?? "☉", 540, 650);
+      ctx.fillText(sunSymbol, 540, 650);
 
       ctx.font = "bold 52px 'Noto Sans Georgian', sans-serif";
       ctx.fillStyle = "#ffffff";
@@ -135,7 +143,7 @@ export default function CosmicShareCardModal({
       // Moon Sign
       ctx.font = "bold 90px 'Noto Sans Georgian', sans-serif";
       ctx.fillStyle = "#e0f2fe";
-      ctx.fillText(moonSign?.signSymbol ?? "☽", 540, 970);
+      ctx.fillText(moonSymbol, 540, 970);
 
       ctx.font = "bold 52px 'Noto Sans Georgian', sans-serif";
       ctx.fillStyle = "#ffffff";
@@ -148,7 +156,7 @@ export default function CosmicShareCardModal({
       // Ascendant
       ctx.font = "bold 90px 'Noto Sans Georgian', sans-serif";
       ctx.fillStyle = "#f472b6";
-      ctx.fillText(ascSign.signSymbol, 540, 1290);
+      ctx.fillText(ascSymbol, 540, 1290);
 
       ctx.font = "bold 52px 'Noto Sans Georgian', sans-serif";
       ctx.fillStyle = "#ffffff";
@@ -231,7 +239,7 @@ export default function CosmicShareCardModal({
             {/* Sun */}
             <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-3 text-left">
               <div className="flex items-center gap-3">
-                <span className="text-3xl text-amber-400 font-black">{sunSign?.signSymbol ?? "☉"}</span>
+                <span className="text-3xl text-amber-400 font-black">{sunSymbol}</span>
                 <div>
                   <span className="text-[10px] text-amber-300/80 font-bold uppercase tracking-wider block">მზე (იდენტობა)</span>
                   <span className="text-sm font-extrabold text-white">{sunSign?.signName ?? "—"}</span>
@@ -245,7 +253,7 @@ export default function CosmicShareCardModal({
             {/* Moon */}
             <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-3 text-left">
               <div className="flex items-center gap-3">
-                <span className="text-3xl text-sky-300 font-black">{moonSign?.signSymbol ?? "☽"}</span>
+                <span className="text-3xl text-sky-300 font-black">{moonSymbol}</span>
                 <div>
                   <span className="text-[10px] text-sky-300/80 font-bold uppercase tracking-wider block">მთვარე (სული/ემოცია)</span>
                   <span className="text-sm font-extrabold text-white">{moonSign?.signName ?? "—"}</span>
@@ -259,7 +267,7 @@ export default function CosmicShareCardModal({
             {/* Ascendant */}
             <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-3 text-left">
               <div className="flex items-center gap-3">
-                <span className="text-3xl text-rose-300 font-black">{ascSign.signSymbol}</span>
+                <span className="text-3xl text-rose-300 font-black">{ascSymbol}</span>
                 <div>
                   <span className="text-[10px] text-rose-300/80 font-bold uppercase tracking-wider block">ასცენდენტი (გარეგნობა)</span>
                   <span className="text-sm font-extrabold text-white">{ascSign.signName}</span>

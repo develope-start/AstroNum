@@ -216,7 +216,7 @@ export default function PricingTable() {
               role="group"
               aria-label={`${plan.name} ტარიფი`}
               onClick={() => setSelectedPlan(plan.id)}
-              className={`relative flex cursor-pointer flex-col justify-between rounded-3xl p-7 shadow-2xl backdrop-blur-2xl transition-all duration-300 hover:translate-y-[-4px] focus-within:ring-2 focus-within:ring-cyan-300 ${
+              className={`cosmic-spotlight relative flex cursor-pointer flex-col justify-between rounded-3xl p-7 shadow-2xl backdrop-blur-2xl transition-all duration-300 hover:translate-y-[-4px] focus-within:ring-2 focus-within:ring-cyan-300 ${
                 isPro
                   ? `border-2 bg-[#12182c]/45 hover:border-cyan-400 hover:shadow-[0_0_40px_-5px_rgba(99,102,241,0.35)] md:-translate-y-2 ${
                       selectedPlan === plan.id ? "border-cyan-300 ring-1 ring-cyan-300/50" : "border-indigo-500/80"
@@ -260,7 +260,7 @@ export default function PricingTable() {
                 <p className="mt-1 text-xs text-slate-400 min-h-[34px]">{plan.description}</p>
 
                 <div className="mt-6 flex items-baseline gap-1.5">
-                  <span className="font-display text-4xl font-extrabold text-white">
+                  <span className={`font-display text-4xl font-extrabold ${isPro ? "text-stellar-gold" : "text-white"}`}>
                     {plan.prices[duration]}
                   </span>
                   <span className="text-xs text-slate-400">/ {durationLabel}</span>
