@@ -171,39 +171,37 @@ export default function HomePage() {
       const imageAspect = 768 / 1024; // 0.75
       const isMobile = bounds.width <= 640;
 
-      // Shifted noticeably to the LEFT on desktop (48px - 100px) away from the right edge
-      const frameRight = isMobile
-        ? Math.max(8, Math.min(16, bounds.width * 0.025))
-        : Math.max(48, Math.min(100, bounds.width * 0.07));
-      const humanFrameBottom = 0; // Seamlessly flush to the bottom edge
+      // Pinned flush against the right and bottom edges with 0px gap to eliminate any emptiness/void
+      const frameRight = 0;
+      const humanFrameBottom = 0;
 
-      // Upper ceiling: allows 20% larger human artwork to expand naturally on desktop
+      // Upper ceiling: allows human artwork to scale dynamically on desktop
       const humanGreenLineY = Math.max(bounds.height * 0.14, centerY - orbitRadius * 0.70);
       const maxHumanHeightAllowed = Math.max(0, bounds.height - humanGreenLineY - 4);
       const maxWidthFromHeight = maxHumanHeightAllowed * imageAspect;
 
       // Horizontal space to the right of the central planetary ring
       const ringRightX = centerX + systemOuterRadius;
-      const safeCircleGapRight = isMobile ? 8 : 16;
-      const availableSpaceRight = Math.max(0, bounds.width - ringRightX - frameRight - safeCircleGapRight);
-      const maxHumanWidthCap = Math.min(540, bounds.width * (isMobile ? 0.38 : 0.44));
+      const safeCircleGapRight = isMobile ? 6 : 10;
+      const availableSpaceRight = Math.max(0, bounds.width - ringRightX - safeCircleGapRight);
+      const maxHumanWidthCap = Math.min(560, bounds.width * (isMobile ? 0.38 : 0.46));
 
       let stageWidth: number;
       if (isMobile) {
-        // On mobile: original compact size, proportioned with the left-side zodiac creature (110px - 145px)
+        // On mobile: compact size, proportioned with the left-side zodiac creature (110px - 145px)
         const mobileTargetWidth = Math.min(bounds.width * 0.36, (bounds.height - greenLineY) * imageAspect * 0.72, 145);
-        stageWidth = Math.max(110, Math.min(mobileTargetWidth, bounds.width - frameRight - 10));
+        stageWidth = Math.max(110, Math.min(mobileTargetWidth, bounds.width - 10));
       } else {
-        // Desktop / tablet: 20% larger, dynamically and proportionally scaling with viewport width
-        const responsiveDesktopWidth = Math.min(bounds.width * 0.30, maxWidthFromHeight, maxHumanWidthCap);
+        // Desktop / tablet: dynamically and proportionally scaling with viewport width, 0px gap at right frame
+        const responsiveDesktopWidth = Math.min(bounds.width * 0.35, maxWidthFromHeight, maxHumanWidthCap);
         stageWidth = Math.max(160, responsiveDesktopWidth);
         if (stageWidth > availableSpaceRight && availableSpaceRight > 110) {
           stageWidth = availableSpaceRight;
         }
       }
 
-      if (stageWidth > bounds.width - frameRight - 10) {
-        stageWidth = bounds.width - frameRight - 10;
+      if (stageWidth > bounds.width - 8) {
+        stageWidth = bounds.width - 8;
       }
       let stageHeight = stageWidth / imageAspect;
       if (stageHeight > maxHumanHeightAllowed) {
@@ -213,8 +211,8 @@ export default function HomePage() {
 
       stage.style.width = `${Math.round(stageWidth)}px`;
       stage.style.height = `${Math.round(stageHeight)}px`;
-      stage.style.right = `${Math.round(frameRight)}px`;
-      stage.style.bottom = `${Math.round(humanFrameBottom)}px`;
+      stage.style.right = "0px";
+      stage.style.bottom = "0px";
       stage.style.left = "auto";
       stage.style.top = "auto";
 
