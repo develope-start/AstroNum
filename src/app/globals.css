@@ -5933,8 +5933,6 @@ canvas {
 .celestial-stage {
   --stage-accent: #c4b5fd;
   position: absolute;
-  right: 0 !important;
-  bottom: 0 !important;
   z-index: 2;
   overflow: visible;
   pointer-events: none;
@@ -5974,13 +5972,12 @@ canvas {
 
 .celestial-stage-image {
   position: absolute;
-  right: 0 !important;
-  bottom: 0 !important;
+  inset: 0;
   z-index: 1;
   width: 100% !important;
   height: 100% !important;
   object-fit: contain;
-  object-position: right bottom !important;
+  object-position: center bottom !important;
   opacity: 1;
   filter: none;
   pointer-events: none;
@@ -6006,13 +6003,8 @@ canvas {
 }
 
 @media (max-width: 640px) {
-  .celestial-stage {
-    right: 0 !important;
-    bottom: 0 !important;
-  }
-
   .celestial-stage-image {
-    object-position: right bottom !important;
+    object-position: center bottom !important;
   }
 
   .celestial-zodiac-stage {
