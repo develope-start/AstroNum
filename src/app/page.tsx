@@ -139,29 +139,54 @@ export default function HomePage() {
 
     const updateSize = () => {
       const bounds = system.getBoundingClientRect();
-      const width = Math.min(bounds.width * 0.68, bounds.height * 0.95 * 0.98, 672);
+      const centerX = bounds.width / 2;
+      const centerY = bounds.height / 2;
 
-      stage.style.width = `${width}px`;
-      stage.style.height = `${width / 0.98}px`;
-      stage.style.right = "1.5%";
+      // 1. Calculate the exact outer boundary of the central planetary ring
+      const rulers = system.querySelectorAll<HTMLButtonElement>(".celestial-ruler");
+      const ruler = (activePlanetIndex !== null ? rulers[activePlanetIndex] : rulers[0]) ?? rulers[0];
+
+      let planetRingRadius = Math.min(bounds.width, bounds.height) * 0.36;
+      if (ruler) {
+        const rulerBounds = ruler.getBoundingClientRect();
+        const rulerCenterX = rulerBounds.left - bounds.left + rulerBounds.width / 2;
+        const rulerCenterY = rulerBounds.top - bounds.top + rulerBounds.height / 2;
+        const orbitRadius = Math.hypot(rulerCenterX - centerX, rulerCenterY - centerY);
+        planetRingRadius = orbitRadius + rulerBounds.width * 0.5;
+      }
+
+      // 2. Right-side human stage calculation (Celestial Stage Image: native aspect ratio 768 / 1024 = 0.75)
+      // Must stay pinned flush to the right and bottom edges with 0px gap.
+      // Must scale down dynamically and proportionally from the bottom-right corner as the screen shrinks.
+      // Must never overlap or cross the central zodiac/planetary ring.
+      const imageAspect = 768 / 1024; // 0.75
+      const availableSpaceRight = Math.max(0, bounds.width - (centerX + planetRingRadius) - 10);
+      const maxHeight = bounds.height * 0.98;
+      const maxWidthFromHeight = maxHeight * imageAspect;
+      const maxWidthCap = Math.min(640, bounds.width * 0.48);
+
+      let stageWidth = Math.min(maxWidthFromHeight, maxWidthCap, availableSpaceRight);
+      const isMobile = bounds.width <= 640;
+      const minMobileWidth = isMobile ? Math.min(bounds.width * 0.26, 95) : 100;
+      stageWidth = Math.max(minMobileWidth, stageWidth);
+
+      if (stageWidth > bounds.width) stageWidth = bounds.width;
+      let stageHeight = stageWidth / imageAspect;
+      if (stageHeight > bounds.height) {
+        stageHeight = bounds.height;
+        stageWidth = stageHeight * imageAspect;
+      }
+
+      stage.style.width = `${Math.round(stageWidth)}px`;
+      stage.style.height = `${Math.round(stageHeight)}px`;
+      stage.style.right = "0px";
       stage.style.bottom = "0px";
       stage.style.left = "auto";
       stage.style.top = "auto";
 
+      // 3. Left-side Zodiac creature calculation
       const zodiacStage = zodiacStageRef.current;
       if (!zodiacStage || activePlanetIndex === null) return;
-
-      const rulers = system.querySelectorAll<HTMLButtonElement>(".celestial-ruler");
-      const ruler = rulers[activePlanetIndex] ?? rulers[0];
-      if (!ruler) return;
-
-      const rulerBounds = ruler.getBoundingClientRect();
-      const centerX = bounds.width / 2;
-      const centerY = bounds.height / 2;
-      const rulerCenterX = rulerBounds.left - bounds.left + rulerBounds.width / 2;
-      const rulerCenterY = rulerBounds.top - bounds.top + rulerBounds.height / 2;
-      const orbitRadius = Math.hypot(rulerCenterX - centerX, rulerCenterY - centerY);
-      const planetRingRadius = orbitRadius + rulerBounds.width * 0.5;
 
       const frameLeft = Math.max(12, Math.min(28, bounds.width * 0.03));
       const ringLeftX = centerX - planetRingRadius;
