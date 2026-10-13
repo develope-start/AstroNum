@@ -75,7 +75,7 @@ body.app-body {
 }
 
 .aurora-band-top {
-  top: calc(50% - 9vh);
+  top: calc(22vh - 6vh);
   background: radial-gradient(
     ellipse 70% 34% at 50% 50%,
     rgba(56, 189, 248, 0.58) 0%,
@@ -88,7 +88,7 @@ body.app-body {
 }
 
 .aurora-band-mid {
-  top: calc(50% - 2vh);
+  top: 22vh;
   background: radial-gradient(
     ellipse 64% 32% at 50% 50%,
     rgba(99, 102, 241, 0.54) 0%,
@@ -101,7 +101,7 @@ body.app-body {
 }
 
 .aurora-band-bottom {
-  top: calc(50% + 5vh);
+  top: calc(22vh + 6vh);
   background: radial-gradient(
     ellipse 68% 34% at 50% 50%,
     rgba(56, 189, 248, 0.42) 0%,
