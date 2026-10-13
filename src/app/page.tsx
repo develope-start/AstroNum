@@ -321,7 +321,7 @@ export default function HomePage() {
                 <button
                   type="button"
                   key={`ruler-${item.planet}-${index}`}
-                  className={`celestial-ruler celestial-ruler-${item.planet}${selectedCelestial === index ? " is-active" : ""}`}
+                  className={`celestial-ruler celestial-ruler-${item.planet} celestial-element-${item.element}${selectedCelestial === index ? " is-active" : ""}`}
                   style={{ "--celestial-angle": `${index * 30}deg` } as CSSProperties}
                   aria-label={`${ZODIAC_SIGNS[index].name} — ${CELESTIAL_PLANET_META[item.planet as keyof typeof CELESTIAL_PLANET_META].name}`}
                   aria-pressed={selectedCelestial === index}
@@ -345,6 +345,28 @@ export default function HomePage() {
                 </button>
               ))}
             </div>
+
+            {/* Dynamic Celestial Energy Ray connecting active planet/sign to center Earth */}
+            {activePlanetIndex !== null && (
+              <div
+                className="celestial-energy-ray pointer-events-none"
+                style={{
+                  "--ray-angle": `${activePlanetIndex * 30}deg`,
+                  "--ray-color":
+                    CELESTIAL_CONSTELLATIONS[activePlanetIndex].element === "fire"
+                      ? "#f59e0b"
+                      : CELESTIAL_CONSTELLATIONS[activePlanetIndex].element === "water"
+                      ? "#38bdf8"
+                      : CELESTIAL_CONSTELLATIONS[activePlanetIndex].element === "earth"
+                      ? "#10b981"
+                      : "#c084fc",
+                } as CSSProperties}
+                aria-hidden="true"
+              >
+                <div className="celestial-ray-beam" />
+              </div>
+            )}
+
             <button
               type="button"
               className={`celestial-earth${selectedCelestial === "earth" ? " is-active" : ""}`}

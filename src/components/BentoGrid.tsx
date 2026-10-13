@@ -59,9 +59,24 @@ export default function BentoGrid() {
     : null;
 
   const handleSpotlightMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    event.currentTarget.style.setProperty("--mouse-x", `${event.clientX - rect.left}px`);
-    event.currentTarget.style.setProperty("--mouse-y", `${event.clientY - rect.top}px`);
+    const card = event.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    card.style.setProperty("--mouse-x", `${x}px`);
+    card.style.setProperty("--mouse-y", `${y}px`);
+
+    // 3D Perspective Tilt
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((centerY - y) / centerY) * 4;
+    const rotateY = ((x - centerX) / centerX) * 4;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+  };
+
+  const handleSpotlightLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+    const card = event.currentTarget;
+    card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)";
   };
 
   const featureSelectionProps = (id: string) => ({
@@ -69,6 +84,7 @@ export default function BentoGrid() {
     tabIndex: 0,
     "aria-pressed": selectedFeature === id,
     onMouseMove: handleSpotlightMove,
+    onMouseLeave: handleSpotlightLeave,
     onClick: () => setSelectedFeature(id),
     onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.key === "Enter" || event.key === " ") {
@@ -486,9 +502,24 @@ export default function BentoGrid() {
           }`}
         >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl transition-all group-hover:bg-violet-500/20" />
-          <div className="relative">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-violet-400/30 bg-violet-950/50 text-violet-200 shadow-inner">
-              <Moon className="h-6 w-6" />
+            <div className="flex items-center justify-between">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-violet-400/30 bg-violet-950/50 text-violet-200 shadow-inner">
+                <Moon className="h-6 w-6" />
+              </div>
+              {/* 3D Glowing Moon Sphere */}
+              <div className="relative flex h-14 w-14 items-center justify-center" aria-hidden="true">
+                <div className="absolute inset-0 rounded-full bg-violet-400/25 blur-lg animate-pulse" />
+                <div
+                  className="relative h-12 w-12 rounded-full shadow-[inset_-8px_-8px_14px_rgba(0,0,0,0.85),inset_4px_4px_10px_rgba(255,255,255,0.4),0_0_20px_rgba(196,181,253,0.5)] transition-transform duration-700 group-hover:scale-110"
+                  style={{
+                    background: "radial-gradient(circle at 35% 35%, #f5f3ff, #ddd6fe 45%, #8b5cf6 80%, #3b0764 100%)",
+                  }}
+                >
+                  <div className="absolute left-2.5 top-2.5 h-2 w-2 rounded-full bg-violet-950/20" />
+                  <div className="absolute right-3 top-5 h-2.5 w-2.5 rounded-full bg-violet-950/25" />
+                  <div className="absolute bottom-2.5 left-4 h-3 w-3 rounded-full bg-violet-950/20" />
+                </div>
+              </div>
             </div>
             <h3 className="mt-5 font-display text-xl font-bold text-white">
               მთვარის კალენდარი
