@@ -166,43 +166,44 @@ export default function HomePage() {
 
 
       // 2. Right-side Celestial Human stage calculation (Native aspect ratio 768 / 1024 = 0.75)
-      // Scaled up by 20% as requested. Pinned flush to the right and bottom edges (0px gap),
-      // seamlessly stitched to the card boundaries with zero naprali/gap.
-      // Upper boundary respects the greenLine ceiling.
+      // 20% larger on desktop, shifted noticeably to the LEFT away from the right edge,
+      // flush against the bottom edge (0px gap), with dynamic proportional resizing on all screen sizes.
       const imageAspect = 768 / 1024; // 0.75
       const isMobile = bounds.width <= 640;
 
-      // Pinned flush to the card's right and bottom edges with no gap/naprali
-      const frameRight = 0;
-      const humanFrameBottom = 0;
+      // Shifted noticeably to the LEFT on desktop (48px - 100px) away from the right edge
+      const frameRight = isMobile
+        ? Math.max(8, Math.min(16, bounds.width * 0.025))
+        : Math.max(48, Math.min(100, bounds.width * 0.07));
+      const humanFrameBottom = 0; // Seamlessly flush to the bottom edge
 
-      // Upper ceiling respect: never cross above greenLineY
-      const maxHumanHeightAllowed = Math.max(0, bounds.height - greenLineY - 4);
+      // Upper ceiling: allows 20% larger human artwork to expand naturally on desktop
+      const humanGreenLineY = Math.max(bounds.height * 0.14, centerY - orbitRadius * 0.70);
+      const maxHumanHeightAllowed = Math.max(0, bounds.height - humanGreenLineY - 4);
       const maxWidthFromHeight = maxHumanHeightAllowed * imageAspect;
 
       // Horizontal space to the right of the central planetary ring
       const ringRightX = centerX + systemOuterRadius;
-      const safeCircleGapRight = isMobile ? 6 : 10;
-      const availableSpaceRight = Math.max(0, bounds.width - ringRightX - safeCircleGapRight);
-      const maxHumanWidthCap = Math.min(580, bounds.width * (isMobile ? 0.44 : 0.48));
+      const safeCircleGapRight = isMobile ? 8 : 16;
+      const availableSpaceRight = Math.max(0, bounds.width - ringRightX - frameRight - safeCircleGapRight);
+      const maxHumanWidthCap = Math.min(540, bounds.width * (isMobile ? 0.38 : 0.44));
 
       let stageWidth: number;
       if (isMobile) {
         // On mobile: original compact size, proportioned with the left-side zodiac creature (110px - 145px)
         const mobileTargetWidth = Math.min(bounds.width * 0.36, (bounds.height - greenLineY) * imageAspect * 0.72, 145);
-        stageWidth = Math.max(110, Math.min(mobileTargetWidth, bounds.width - 12));
+        stageWidth = Math.max(110, Math.min(mobileTargetWidth, bounds.width - frameRight - 10));
       } else {
-        // Desktop / tablet: 20% larger than previous baseline
-        const baseWidth = Math.min(maxWidthFromHeight, maxHumanWidthCap);
-        stageWidth = Math.round(baseWidth * 1.20);
-        stageWidth = Math.max(155, stageWidth);
-        if (stageWidth > bounds.width * 0.48) {
-          stageWidth = bounds.width * 0.48;
+        // Desktop / tablet: 20% larger, dynamically and proportionally scaling with viewport width
+        const responsiveDesktopWidth = Math.min(bounds.width * 0.30, maxWidthFromHeight, maxHumanWidthCap);
+        stageWidth = Math.max(160, responsiveDesktopWidth);
+        if (stageWidth > availableSpaceRight && availableSpaceRight > 110) {
+          stageWidth = availableSpaceRight;
         }
       }
 
-      if (stageWidth > bounds.width - 8) {
-        stageWidth = bounds.width - 8;
+      if (stageWidth > bounds.width - frameRight - 10) {
+        stageWidth = bounds.width - frameRight - 10;
       }
       let stageHeight = stageWidth / imageAspect;
       if (stageHeight > maxHumanHeightAllowed) {
@@ -212,8 +213,8 @@ export default function HomePage() {
 
       stage.style.width = `${Math.round(stageWidth)}px`;
       stage.style.height = `${Math.round(stageHeight)}px`;
-      stage.style.right = "0px";
-      stage.style.bottom = "0px";
+      stage.style.right = `${Math.round(frameRight)}px`;
+      stage.style.bottom = `${Math.round(humanFrameBottom)}px`;
       stage.style.left = "auto";
       stage.style.top = "auto";
 
