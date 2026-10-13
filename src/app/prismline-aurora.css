@@ -785,9 +785,9 @@ button.calc-submit-btn:hover,
 }
 
 .celestial-constellation {
-  --constellation-radius: calc(var(--ruler-radius) + clamp(2.8rem, 5.2vw, 4.2rem)) !important;
-  width: clamp(3.4rem, 6.2vw, 4.8rem) !important;
-  margin: calc(clamp(3.4rem, 6.2vw, 4.8rem) * -0.5) !important;
+  --constellation-radius: calc(var(--ruler-radius) + clamp(1.1rem, 1.8vw, 1.7rem)) !important;
+  width: clamp(2.8rem, 4.6vw, 3.8rem) !important;
+  margin: calc(clamp(2.8rem, 4.6vw, 3.8rem) * -0.5) !important;
   pointer-events: none;
 }
 
