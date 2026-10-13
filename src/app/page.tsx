@@ -164,13 +164,6 @@ export default function HomePage() {
       // Neither the right-side planet person NOR the left-side zodiac creature may extend above this line.
       const greenLineY = Math.max(bounds.height * 0.26, centerY - orbitRadius * 0.52);
 
-      // 2. Right-side Celestial Human stage calculation (Native aspect ratio 768 / 1024 = 0.75)
-      // Placed flush against the right and bottom frame edge, with safe margins (frameRight & frameBottom)
-      // to ensure the curved border of .celestial-system NEVER cuts off shoulders, elbows, or auras.
-      // Upper boundary MUST NOT exceed the green line: stageHeight <= bounds.height - greenLineY - frameBottom - 6.
-      // Scales smoothly, dynamically, and synchronously on viewport resize without collapsing or clipping.
-      const imageAspect = 768 / 1024; // 0.75
-      const isMobile = bounds.width <= 640;
 
       // 2. Right-side Celestial Human stage calculation (Native aspect ratio 768 / 1024 = 0.75)
       // Scaled up by 20% as requested. Pinned flush to the right and bottom edges (0px gap),
