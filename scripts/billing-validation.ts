@@ -5,8 +5,8 @@ import {
   periodEnd,
   PLAN_PRICES_TETRI,
 } from "../src/lib/billing/plans";
-import { verifyBogCallback } from "../src/lib/billing/bog";
-import { assertTbcBillingConfigured, createTbcOrder, getTbcPaymentDetails } from "../src/lib/billing/tbc";
+import { verifyBogCallback, verifyBogConnection } from "../src/lib/billing/bog";
+import { assertTbcBillingConfigured, createTbcOrder, getTbcPaymentDetails, verifyTbcConnection } from "../src/lib/billing/tbc";
 
 assert.equal(PLAN_PRICES_TETRI.pro.month, 499);
 assert.equal(PLAN_PRICES_TETRI.pro.half_year, 2545);
@@ -34,34 +34,63 @@ assert.equal(verifyBogCallback(body, "invalid-signature", publicKey.export({ typ
 
 void (async () => {
   const originalFetch = globalThis.fetch;
-  const environment = { APP_URL: process.env.APP_URL, TBC_DEVELOPER_API_KEY: process.env.TBC_DEVELOPER_API_KEY, TBC_CLIENT_ID: process.env.TBC_CLIENT_ID, TBC_CLIENT_SECRET: process.env.TBC_CLIENT_SECRET, TBC_API_BASE_URL: process.env.TBC_API_BASE_URL };
+  const environment = {
+    APP_URL: process.env.APP_URL,
+    BOG_ENVIRONMENT: process.env.BOG_ENVIRONMENT,
+    BOG_CLIENT_ID: process.env.BOG_CLIENT_ID,
+    BOG_CLIENT_SECRET: process.env.BOG_CLIENT_SECRET,
+    BOG_CALLBACK_URL: process.env.BOG_CALLBACK_URL,
+    BOG_CALLBACK_PUBLIC_KEY: process.env.BOG_CALLBACK_PUBLIC_KEY,
+    TBC_DEVELOPER_API_KEY: process.env.TBC_DEVELOPER_API_KEY,
+    TBC_CLIENT_ID: process.env.TBC_CLIENT_ID,
+    TBC_CLIENT_SECRET: process.env.TBC_CLIENT_SECRET,
+    TBC_API_BASE_URL: process.env.TBC_API_BASE_URL,
+  };
   process.env.APP_URL = "https://astro.example";
+  process.env.BOG_ENVIRONMENT = "sandbox";
+  process.env.BOG_CLIENT_ID = "test-bog-client";
+  process.env.BOG_CLIENT_SECRET = "test-bog-secret";
+  process.env.BOG_CALLBACK_URL = "https://astro.example/api/billing/bog/callback";
+  process.env.BOG_CALLBACK_PUBLIC_KEY = publicKey.export({ type: "spki", format: "pem" }).toString();
   process.env.TBC_DEVELOPER_API_KEY = "test-developer-key";
   process.env.TBC_CLIENT_ID = "test-merchant-id";
   process.env.TBC_CLIENT_SECRET = "test-merchant-secret";
   process.env.TBC_API_BASE_URL = "https://api.tbcbank.ge";
   const requests: Array<{ url: string; init: RequestInit }> = [];
+  let rejectTbcAuth = false;
   globalThis.fetch = (async (input: RequestInfo | URL, init: RequestInit = {}) => {
     const url = String(input);
     requests.push({ url, init });
-    if (url.endsWith("/v1/tpay/access-token")) return new Response(JSON.stringify({ access_token: "test-access-token", token_type: "Bearer", expires_in: 3600 }), { status: 200 });
+    if (url.endsWith("/protocol/openid-connect/token")) return new Response(JSON.stringify({ access_token: "test-bog-access-token", expires_in: 3600 }), { status: 200 });
+    if (url.endsWith("/v1/tpay/access-token")) {
+      if (rejectTbcAuth) return new Response("unauthorized", { status: 401 });
+      return new Response(JSON.stringify({ access_token: "test-access-token", token_type: "Bearer", expires_in: 3600 }), { status: 200 });
+    }
     if (url.endsWith("/v1/tpay/payments") && init.method === "POST") return new Response(JSON.stringify({ payId: "tpay-test123", links: [{ rel: "approval_url", uri: "https://tpay.tbcbank.ge/checkout/test123" }] }), { status: 200 });
     if (url.endsWith("/v1/tpay/payments/tpay-test123")) return new Response(JSON.stringify({ payId: "tpay-test123", status: "Succeeded", currency: "GEL", amount: 4.99, returnedAmount: 0 }), { status: 200 });
     throw new Error("Unexpected TBC test request: " + url);
   }) as typeof fetch;
   try {
     assertTbcBillingConfigured();
+    assert.deepEqual(await verifyBogConnection(), { environment: "sandbox" });
+    await verifyTbcConnection();
+    assert.equal(requests.filter(({ url }) => url.endsWith("/protocol/openid-connect/token")).length, 1);
+    assert.equal(requests.filter(({ url }) => url.endsWith("/v1/tpay/access-token")).length, 1);
     const created = await createTbcOrder({ externalOrderId: "external-order-123", plan: "pro", duration: "month", userIpAddress: "192.0.2.1" });
     assert.equal(created.orderId, "tpay-test123");
     assert.equal(new URL(created.checkoutUrl).origin, "https://tpay.tbcbank.ge");
-    const requestBody = JSON.parse(String(requests[1]?.init.body));
+    const paymentRequest = requests.find(({ url, init }) => url.endsWith("/v1/tpay/payments") && init.method === "POST");
+    assert.ok(paymentRequest);
+    const requestBody = JSON.parse(String(paymentRequest.init.body));
     assert.equal(requestBody.amount.total, 4.99);
     assert.equal(requestBody.merchantPaymentId, "external-order-123");
     assert.equal(requestBody.callbackUrl, "https://astro.example/api/billing/tbc/callback");
-    assert.equal(new Headers(requests[1]?.init.headers).get("authorization"), "Bearer test-access-token");
+    assert.equal(new Headers(paymentRequest.init.headers).get("authorization"), "Bearer test-access-token");
     const details = await getTbcPaymentDetails("tpay-test123");
     assert.equal(details.status, "Succeeded");
     assert.equal(details.amount, 4.99);
+    rejectTbcAuth = true;
+    await assert.rejects(verifyTbcConnection(), /HTTP 401/);
   } finally {
     globalThis.fetch = originalFetch;
     for (const [key, value] of Object.entries(environment)) {

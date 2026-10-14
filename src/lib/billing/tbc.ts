@@ -28,14 +28,18 @@ function getConfig(): TbcConfig {
 }
 export function assertTbcBillingConfigured(): void { getConfig(); }
 
+export async function verifyTbcConnection(): Promise<void> {
+  await getAccessToken(getConfig(), true);
+}
+
 async function request(url: string, init: RequestInit, timeoutMs = 20000): Promise<Response> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try { return await fetch(url, { ...init, cache: "no-store", signal: controller.signal }); }
   finally { clearTimeout(timeout); }
 }
-async function getAccessToken(config: TbcConfig): Promise<string> {
-  if (cachedToken && cachedToken.expiresAt > Date.now() + 60000) return cachedToken.value;
+async function getAccessToken(config: TbcConfig, forceRefresh = false): Promise<string> {
+  if (!forceRefresh && cachedToken && cachedToken.expiresAt > Date.now() + 60000) return cachedToken.value;
   const response = await request(`${config.apiUrl}/v1/tpay/access-token`, {
     method: "POST",
     headers: { apikey: config.apiKey, "Content-Type": "application/x-www-form-urlencoded" },

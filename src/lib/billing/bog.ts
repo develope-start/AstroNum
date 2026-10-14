@@ -71,8 +71,8 @@ function getBogConfig(): BogConfig {
   };
 }
 
-async function getAccessToken(config: BogConfig): Promise<string> {
-  if (cachedToken && cachedToken.expiresAt > Date.now() + 30_000) return cachedToken.value;
+async function getAccessToken(config: BogConfig, forceRefresh = false): Promise<string> {
+  if (!forceRefresh && cachedToken && cachedToken.expiresAt > Date.now() + 30_000) return cachedToken.value;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
@@ -232,4 +232,10 @@ export function getBogCallbackPublicKey(): string {
 
 export function assertBogBillingConfigured(): void {
   getBogConfig();
+}
+
+export async function verifyBogConnection(): Promise<{ environment: BogEnvironment }> {
+  const config = getBogConfig();
+  await getAccessToken(config, true);
+  return { environment: config.environment };
 }

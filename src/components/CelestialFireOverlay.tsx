@@ -15,8 +15,8 @@ export function preloadCelestialFireVideo() {
     video.src = SOURCE;
     video.muted = true;
     video.playsInline = true;
-    video.loop = true;
-    video.autoplay = true;
+    video.loop = false;
+    video.autoplay = false;
     video.preload = "auto";
     video.className = "celestial-fire-source";
     video.style.position = "fixed";
@@ -27,10 +27,7 @@ export function preloadCelestialFireVideo() {
     video.style.opacity = "0";
     video.style.pointerEvents = "none";
     document.body.appendChild(video);
-    void video.play().catch(() => undefined);
     sharedFireVideo = video;
-  } else if (sharedFireVideo.paused) {
-    void sharedFireVideo.play().catch(() => undefined);
   }
 }
 
@@ -50,6 +47,24 @@ export default function CelestialFireOverlay() {
     let animationFrame = 0;
     let active = true;
     let lastVideoTime = -1;
+
+    const stopPlayback = () => {
+      active = false;
+      window.cancelAnimationFrame(animationFrame);
+      video.pause();
+      context.clearRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+    };
+
+    const handleOutsideSelection = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element) || !target.closest(".celestial-ruler, .celestial-earth")) {
+        stopPlayback();
+      }
+    };
+
+    // A new planet selection remounts the keyed stage and starts a fresh cycle.
+    // Any other click cancels the current effect immediately.
+    document.addEventListener("pointerdown", handleOutsideSelection, true);
 
     // Align canvas flush to the stage container (which is already pinned to bottom: 0)
     const syncCanvasToStage = () => {
@@ -72,9 +87,9 @@ export default function CelestialFireOverlay() {
       : null;
     if (stage) resizeObserver?.observe(stage);
 
-    if (video.paused) {
-      void video.play().catch(() => undefined);
-    }
+    video.loop = false;
+    video.currentTime = 0;
+    void video.play().catch(() => undefined);
 
     const smoothstep = (value: number) => {
       const t = Math.max(0, Math.min(1, value));
@@ -130,14 +145,14 @@ export default function CelestialFireOverlay() {
 
         context.putImageData(frame, 0, 0);
       }
-      animationFrame = window.requestAnimationFrame(drawFrame);
+      if (!video.ended) animationFrame = window.requestAnimationFrame(drawFrame);
     };
 
     animationFrame = window.requestAnimationFrame(drawFrame);
 
     return () => {
-      active = false;
-      window.cancelAnimationFrame(animationFrame);
+      stopPlayback();
+      document.removeEventListener("pointerdown", handleOutsideSelection, true);
       resizeObserver?.disconnect();
     };
   }, []);

@@ -117,6 +117,7 @@ export default function HomePage() {
   const [tab, setTab] = useState<Tab>("natal");
   const [hoveredCelestial, setHoveredCelestial] = useState<CelestialTarget>(null);
   const [selectedCelestial, setSelectedCelestial] = useState<CelestialTarget>(null);
+  const [celestialAnimationRun, setCelestialAnimationRun] = useState(0);
   const [selectedElementInfo, setSelectedElementInfo] = useState<ElementTemperamentId | null>(null);
   const elementTriggerRef = useRef<HTMLButtonElement | null>(null);
   const celestialSystemRef = useRef<HTMLDivElement | null>(null);
@@ -436,11 +437,9 @@ export default function HomePage() {
                   onBlur={() => setHoveredCelestial(null)}
                   onClick={(event) => {
                     event.stopPropagation();
-                    setSelectedCelestial((current) => {
-                      const isSamePlanet = current === index;
-                      if (isSamePlanet) setHoveredCelestial(null);
-                      return isSamePlanet ? null : index;
-                    });
+                    setHoveredCelestial(null);
+                    setSelectedCelestial(index);
+                    setCelestialAnimationRun((run) => run + 1);
                   }}
                 >
                   <span className="celestial-ruler-zodiac" aria-hidden="true">{ZODIAC_SIGNS[index].sign}</span>
@@ -463,11 +462,9 @@ export default function HomePage() {
               onBlur={() => setHoveredCelestial(null)}
               onClick={(event) => {
                 event.stopPropagation();
-                setSelectedCelestial((current) => {
-                  const isSameEarth = current === "earth";
-                  if (isSameEarth) setHoveredCelestial(null);
-                  return isSameEarth ? null : "earth";
-                });
+                setHoveredCelestial(null);
+                setSelectedCelestial("earth");
+                setCelestialAnimationRun((run) => run + 1);
               }}
             >
               <span className="celestial-earth-clouds" />
@@ -510,7 +507,7 @@ export default function HomePage() {
             {selectedCelestial !== null && activeCelestial !== null && (
               <div
                 className={`celestial-stage ${activeCelestial === "earth" ? "celestial-stage-earth" : `celestial-stage-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
-                key={activeCelestial === "earth" ? "earth" : activePlanet?.name}
+                key={`${activeCelestial === "earth" ? "earth" : activePlanet?.name}-${celestialAnimationRun}`}
                 ref={celestialStageRef}
                 aria-hidden="true"
               >
