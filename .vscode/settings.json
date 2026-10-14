@@ -1,4 +1,5 @@
 {
   "css.lint.unknownAtRules": "ignore",
-  "terminal.integrated.cwd": "${workspaceFolder}"
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "chatgpt.openOnStartup": false
 }
