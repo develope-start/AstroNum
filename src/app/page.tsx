@@ -9,6 +9,7 @@ import NatalCalculator from "@/components/NatalCalculator";
 import SynastryCalculator from "@/components/SynastryCalculator";
 import TransitCalculator from "@/components/TransitCalculator";
 import ElementTemperamentSummary from "@/components/ElementTemperamentSummary";
+import CurrentTransitElementBalance from "@/components/CurrentTransitElementBalance";
 import { ELEMENT_TEMPERAMENTS, type ElementTemperamentId } from "@/lib/elementTemperaments";
 import SocialProofTicker from "@/components/SocialProofTicker";
 import BentoGrid from "@/components/BentoGrid";
@@ -375,17 +376,18 @@ export default function HomePage() {
     <div className="app-home">
       <section className="hero-grid">
         <div>
-          <div className="hero-kicker inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-950/40 px-4 py-1.5 text-xs font-semibold text-cyan-300 shadow-[0_0_20px_-3px_rgba(56,189,248,0.25)] backdrop-blur-md">
-            <span className="live-beacon" /> SWISS EPHEMERIS · PRECISION AURORA ENGINE v2.1
+          <div className="mb-3 inline-flex max-w-full items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-950/40 px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold text-cyan-300 shadow-[0_0_20px_-3px_rgba(56,189,248,0.25)] backdrop-blur-md">
+            <span className="live-beacon shrink-0" />
+            <span className="truncate">SWISS EPHEMERIS · PRECISION AURORA ENGINE v2.1</span>
           </div>
-          <h1 className="hero-title mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white">
-            თქვენი ცის რუკა. <br />
+          <h1 className="hero-title mt-2 font-display text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-tight">
+            თქვენი ცის რუკა. <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-cyan-300 via-indigo-200 to-amber-300 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(99,102,241,0.3)]">
               უფრო ღრმად და ზუსტად.
             </span>
           </h1>
           <p className="hero-lead mt-5 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg">
-            შვეიცარული ეფემერიდის მათემატიკური ალგორითმები, 4 სტიქიის ტემპერამენტის სინთეზი და პროფესიონალური სივრცე ნატალური, სინასტრიული და ტრანზიტული რუკებისთვის.
+            შვეიცარული ეფემერიდის მათემატიკური ალგორითმები, მიმდინარე ტრანზიტების სტიქიური ბალანსი და პროფესიონალური სივრცე ნატალური, სინასტრიული და ტრანზიტული რუკებისთვის.
           </p>
           <div className="hero-actions mt-8 flex flex-wrap items-center gap-4">
             <a href="#calculator" className="primary-action btn-shimmer shadow-lg shadow-cyan-500/30">
@@ -582,17 +584,18 @@ export default function HomePage() {
 
       {/* 4 სტიქიის ინტერაქციული მოდული (ტემპერამენტების სინთეზი) - ზოდიაქოს წრის ფანჯრის გარეთ */}
       <section className="hero-elements-section my-12 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="4 სტიქიის ტემპერამენტები">
-        <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+        <div className="mb-6 flex flex-col justify-between gap-3 sm:mb-8 sm:flex-row sm:items-end">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400">
-              <span className="live-beacon mr-1.5" /> 4 სტიქია და ჰიპოკრატული ტემპერამენტები
+            <div className="mb-2.5 inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-950/40 px-3 py-1 text-xs font-semibold text-cyan-300 shadow-[0_0_15px_-3px_rgba(56,189,248,0.25)] backdrop-blur-md">
+              <span className="live-beacon shrink-0" />
+              <span>4 სტიქია და ჰიპოკრატული ტემპერამენტები</span>
             </div>
-            <h3 className="mt-1 font-display text-xl font-bold text-white sm:text-2xl">
+            <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white leading-snug">
               სტიქიების ბალანსი და ფსიქოტიპები
             </h3>
           </div>
-          <p className="max-w-md text-xs text-slate-400">
-            დააწკაპუნეთ ნებისმიერ სტიქიაზე, რათა გაეცნოთ მის მმართველებს, ზოდიაქოებს და ტემპერამენტის სიღრმისეულ ანალიზს.
+          <p className="max-w-md text-xs sm:text-sm leading-relaxed text-slate-300 sm:text-right">
+            ქვედა ბალანსი მიმდინარე ტრანზიტების მიხედვით ავტომატურად ახლდება. ბარათები კი სტიქიების მუდმივ ტემპერამენტულ დახასიათებებს აჩვენებს.
           </p>
         </div>
 
@@ -711,6 +714,8 @@ export default function HomePage() {
             <ElementTemperamentSummary element={selectedElementInfo} />
           </div>
         )}
+
+        <CurrentTransitElementBalance />
       </section>
 
       {/* Social Proof Infinite Ticker Strip */}
@@ -719,18 +724,19 @@ export default function HomePage() {
       </div>
 
       {/* Main Interactive Astrological Calculation Workspace */}
-      <section id="calculator" className="app-section relative my-16 rounded-3xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-2xl backdrop-blur-2xl sm:p-10 scroll-mt-24">
+      <section id="calculator" className="app-section relative my-12 sm:my-16 rounded-3xl border border-white/[0.08] bg-[#080d1a]/35 p-4 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-2xl scroll-mt-24">
 
-        <div className="section-heading mb-8">
+        <div className="mb-6 flex flex-col justify-between gap-3 sm:mb-8 sm:flex-row sm:items-end">
           <div>
-            <div className="hero-kicker inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400">
-              <span className="live-beacon mr-1.5" /> სამუშაო სივრცე
+            <div className="mb-2.5 inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-950/40 px-3 py-1 text-xs font-semibold text-cyan-300 shadow-[0_0_15px_-3px_rgba(56,189,248,0.25)] backdrop-blur-md">
+              <span className="live-beacon shrink-0" />
+              <span>სამუშაო სივრცე</span>
             </div>
-            <h2 className="mt-1 font-display text-2xl font-bold text-white sm:text-3xl">
+            <h2 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white leading-snug">
               აირჩიეთ ანალიზის ტიპი
             </h2>
           </div>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="max-w-md text-xs sm:text-sm leading-relaxed text-slate-300 sm:text-right">
             ერთი მშვიდი, მაღალი სიზუსტის სამუშაო სივრცე ყველა რუკისთვის. ფორმა ავტომატურად ადაპტირდება არჩეულ მეთოდზე.
           </p>
         </div>

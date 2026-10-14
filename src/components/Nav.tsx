@@ -155,7 +155,7 @@ export default function Nav() {
             {/* Brand title with the Georgia silhouette anchored to AstroNum's lower-right edge */}
             <span className="brand-title-wrap flex shrink-0 flex-col justify-center">
               <span className="brand-title-row flex items-center gap-1.5 sm:gap-2">
-                <span className="whitespace-nowrap font-display text-[0.95rem] font-bold tracking-tight text-slate-100 sm:text-xl drop-shadow-[0_0_10px_rgba(167,139,250,0.3)]">
+                <span className="whitespace-nowrap font-display text-[0.92rem] font-bold tracking-tight text-slate-100 sm:text-[1.15rem] drop-shadow-[0_0_10px_rgba(167,139,250,0.3)]">
                   Astro<span className="text-violet-300">Num</span><sup className="ml-0.5 text-[0.55em] font-extrabold text-violet-300">°</sup>
                 </span>
                 <svg

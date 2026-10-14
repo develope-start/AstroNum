@@ -147,8 +147,8 @@ export default function BentoGrid() {
       <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-500/[0.04] blur-[140px]" />
 
       <div className="mb-8 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-950/30 px-3.5 py-1 text-sm font-medium text-cyan-200 backdrop-blur-md">
-          <Sparkles className="h-4 w-4 animate-pulse" />
+        <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-950/30 px-3.5 py-1 text-xs sm:text-sm font-medium text-cyan-200 backdrop-blur-md">
+          <Sparkles className="h-4 w-4 animate-pulse shrink-0" />
           <span>არქიტექტურა და შესაძლებლობები</span>
         </div>
       </div>

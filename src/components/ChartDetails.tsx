@@ -267,16 +267,16 @@ export default function ChartDetails({
 
   return (
     <div className="chart-details mt-4 space-y-4 text-left">
-      <section className="prism-card rounded-3xl p-5 sm:p-7 space-y-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-white/10 pb-4 text-center sm:text-left">
+      <section className="prism-card rounded-3xl p-4 sm:p-7 space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-4 text-left">
           <div>
-            <div className="telemetry-badge inline-flex items-center gap-2 mb-1">
-              <span className="live-beacon"></span>
+            <div className="telemetry-badge inline-flex items-center gap-2 mb-1.5">
+              <span className="live-beacon shrink-0"></span>
               <span className="telemetry-badge-text">ასტრო-რეზიუმე</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-extrabold text-white">რუკის მთავარი სურათი</h3>
+            <h3 className="text-lg sm:text-2xl font-extrabold text-white">რუკის მთავარი სურათი</h3>
           </div>
-          <span className="rounded-full border border-sky-400/40 bg-sky-500/15 px-3.5 py-1.5 text-xs font-bold text-sky-200 shadow-[0_0_15px_rgba(56,189,248,0.25)] shrink-0">
+          <span className="self-start sm:self-auto rounded-full border border-sky-400/40 bg-sky-500/15 px-3 py-1 text-xs font-bold text-sky-200 shadow-[0_0_15px_rgba(56,189,248,0.25)] shrink-0">
             ASC · {degreeLabel(ascendant)}
           </span>
         </div>

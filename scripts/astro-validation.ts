@@ -1,5 +1,6 @@
 import { computeNatalChart, computeTransitInterval } from "../src/lib/astro/chart";
 import { computePlanetPositions } from "../src/lib/astro/positions";
+import { buildCurrentTransitElementSnapshot, ELEMENT_PLANET_NAMES } from "../src/lib/astro/currentTransitElements";
 import { wideDateToUtcDate } from "../src/lib/astro/wideDate";
 import { calculateAngularity, calculateDeclinationContacts, calculateFixedStarContacts, calculateTraditionalDignities } from "../src/lib/astro/advanced";
 import { computeSecondaryProgression } from "../src/lib/astro/progressions";
@@ -27,6 +28,28 @@ const input = {
 };
 
 const swiss = computeNatalChart({ ...input, calculation: { ephemeris: "swiss" } }, "placidus");
+const elementReferencePlanets = ELEMENT_PLANET_NAMES.map((name, index) => ({
+  name,
+  longitude: index * 30,
+  speed: 1,
+  retrograde: false,
+}));
+const currentElementSnapshot = buildCurrentTransitElementSnapshot(new Date("2026-10-14T12:00:00.000Z"), [
+  ...elementReferencePlanets,
+  { name: "Chiron", longitude: 0, speed: 0, retrograde: false },
+]);
+assert(currentElementSnapshot.balance.total === 10, "current transit element balance counts the ten classical planets only");
+assert(currentElementSnapshot.elements.reduce((sum, item) => sum + item.percentage, 0) === 100, "current transit element percentages sum to 100");
+assert(currentElementSnapshot.planets.length === 10, "current transit snapshot reports each classical planet once");
+assert(currentElementSnapshot.aspects.every((aspect) => aspect.kind === "major"), "current transit snapshot lists only major aspects");
+assert(currentElementSnapshot.aspects.length > 0, "current transit snapshot includes computed planetary aspects");
+let incompleteTransitRejected = false;
+try {
+  buildCurrentTransitElementSnapshot(new Date("2026-10-14T12:00:00.000Z"), elementReferencePlanets.slice(1));
+} catch (error) {
+  incompleteTransitRejected = error instanceof Error && error.message.includes("missing one or more classical planets");
+}
+assert(incompleteTransitRejected, "current transit snapshot rejects incomplete planetary data");
 const sun = swiss.planets.find((planet) => planet.name === "Sun");
 assert(sun, "Sun is present");
 assert(Math.abs(sun.longitude - 280.3689186985535) < 1e-7, "Swiss J2000 Sun reference changed");

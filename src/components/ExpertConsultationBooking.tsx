@@ -81,15 +81,15 @@ export default function ExpertConsultationBooking() {
       {/* Background glow */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.04] blur-[150px]" />
 
-      <div className="mb-12 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-950/30 px-3.5 py-1 text-xs font-medium text-indigo-300 backdrop-blur-md">
-          <Calendar className="h-3.5 w-3.5" />
-          <span>AstroNum° პროფესიონალური ასტროლოგიური კონსულტაცია</span>
+      <div className="mb-10 text-center">
+        <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-950/30 px-3.5 py-1 text-xs font-medium text-indigo-300 backdrop-blur-md">
+          <Calendar className="h-3.5 w-3.5 shrink-0" />
+          <span>პროფესიონალური ასტროლოგიური კონსულტაცია</span>
         </div>
-        <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+        <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
           პერსონალური ასტროლოგიური სესია
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-base text-slate-400">
+        <p className="mx-auto mt-2 max-w-2xl text-xs sm:text-base text-slate-300">
           გაიღრმავეთ თქვენი რუკის ანალიზი ინდივიდუალურ ონლაინ სესიაზე. დეტალური განხილვა, კითხვა-პასუხი და პრაქტიკული რეკომენდაციები.
         </p>
       </div>

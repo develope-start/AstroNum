@@ -146,9 +146,9 @@ export default function KnowledgeHub() {
       {/* Background glow */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[450px] w-[750px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-600/[0.04] blur-[140px]" />
 
-      <div className="mb-12 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-950/30 px-3.5 py-1 text-xs font-medium text-cyan-300 backdrop-blur-md">
-          <BookOpen className="h-3.5 w-3.5" />
+      <div className="mb-10 text-center">
+        <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-950/30 px-3.5 py-1 text-xs font-medium text-cyan-300 backdrop-blur-md">
+          <BookOpen className="h-3.5 w-3.5 shrink-0" />
           <span>ცოდნის ბაზა & გზამკვლევები</span>
         </div>
         <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -156,7 +156,7 @@ export default function KnowledgeHub() {
         </h2>
 
         {/* Categories Bar */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
           {[
             { id: "all", label: "ყველა თემა" },
             { id: "saturn", label: "სატურნის ციკლები" },
@@ -168,7 +168,7 @@ export default function KnowledgeHub() {
               key={cat.id}
               type="button"
               onClick={() => setActiveTab(cat.id)}
-              className={`rounded-full px-4 py-2 text-xs font-semibold transition-all cursor-pointer ${
+              className={`rounded-full px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === cat.id
                   ? "bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-md shadow-cyan-500/20"
                   : "border border-white/5 bg-white/[0.02] text-slate-400 hover:border-white/15 hover:text-white"
@@ -187,15 +187,6 @@ export default function KnowledgeHub() {
           return (
             <article
               key={art.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => setReadingArticle(art)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setReadingArticle(art);
-                }
-              }}
               onMouseMove={(e) => {
                 const card = e.currentTarget;
                 const rect = card.getBoundingClientRect();
@@ -213,34 +204,47 @@ export default function KnowledgeHub() {
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)";
               }}
-              className="cosmic-spotlight group relative flex cursor-pointer flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-400/50 hover:bg-[#0c1428]/50 hover:shadow-[0_0_35px_-5px_rgba(56,189,248,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 active:scale-[0.99]"
+              className="cosmic-spotlight group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-b from-[#0c1428]/60 to-[#060a14]/60 p-6 shadow-xl backdrop-blur-2xl transition-all duration-300 hover:border-cyan-400/60 hover:bg-[#0e1933]/70 hover:shadow-[0_0_40px_-5px_rgba(56,189,248,0.3)]"
             >
-              <div>
+              {/* Radial ambient glow on hover */}
+              <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-cyan-500/10 blur-3xl transition-all duration-500 group-hover:bg-cyan-500/25 group-hover:scale-125" />
+
+              <div className="relative z-10">
                 <div className="flex items-center justify-between">
-                  <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-mono font-semibold transition-all group-hover:shadow-[0_0_12px_rgba(56,189,248,0.2)] ${art.badgeColor}`}>
+                  <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-mono font-semibold transition-all duration-300 group-hover:shadow-[0_0_14px_rgba(56,189,248,0.3)] ${art.badgeColor}`}>
                     {art.categoryLabel}
                   </span>
-                  <span className="text-[11px] text-slate-400 font-mono">{art.readTime}</span>
+                  <span className="text-[11px] text-slate-400 font-mono transition-colors group-hover:text-slate-300">
+                    {art.readTime}
+                  </span>
                 </div>
 
-                <div className="mt-5 flex items-center gap-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-cyan-300 transition-all duration-300 group-hover:scale-110 group-hover:border-cyan-400/40 group-hover:bg-cyan-950/50 group-hover:text-cyan-200 shadow-inner">
-                    <Icon className="h-5 w-5" />
+                <div className="mt-5 flex items-center gap-3.5">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-cyan-300 shadow-inner transition-all duration-300 group-hover:scale-110 group-hover:border-cyan-400/50 group-hover:bg-cyan-950/60 group-hover:text-cyan-200 group-hover:shadow-[0_0_20px_rgba(56,189,248,0.35)]">
+                    <Icon className="h-6 w-6" />
                   </div>
                   <h3 className="font-display text-base font-bold text-white transition-colors duration-200 group-hover:text-cyan-200 line-clamp-2">
                     {art.title}
                   </h3>
                 </div>
 
-                <p className="mt-3 text-xs leading-relaxed text-slate-300 line-clamp-3">
+                <p className="mt-3.5 text-xs leading-relaxed text-slate-300 transition-colors group-hover:text-slate-200 line-clamp-3">
                   {art.excerpt}
                 </p>
               </div>
 
-              <div className="mt-6 flex items-center justify-between border-t border-white/[0.06] pt-4 text-xs font-semibold text-cyan-400 transition-colors group-hover:text-cyan-200">
-                <span>სრული სტატიის წაკითხვა</span>
-                <span className="text-sm transition-transform duration-300 group-hover:translate-x-1.5">→</span>
-              </div>
+              <button
+                type="button"
+                onClick={() => setReadingArticle(art)}
+                className="relative z-10 mt-6 flex w-full cursor-pointer items-center justify-between border-t border-white/[0.06] pt-4 text-left text-xs font-semibold text-cyan-400 transition-all duration-200 hover:border-cyan-400/50 hover:text-white focus-visible:outline-none focus-visible:text-white group/btn"
+              >
+                <span className="group-hover/btn:underline group-hover/btn:text-white transition-all">
+                  სრული სტატიის წაკითხვა
+                </span>
+                <span aria-hidden="true" className="text-sm transition-transform duration-300 group-hover/btn:translate-x-2 group-hover/btn:text-cyan-300">
+                  →
+                </span>
+              </button>
             </article>
           );
         })}

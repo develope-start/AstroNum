@@ -208,23 +208,23 @@ export default function PricingTable() {
       <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/[0.04] blur-[150px]" />
 
       <div className="mb-12 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-950/30 px-3.5 py-1 text-xs font-medium text-violet-300 backdrop-blur-md">
-          <Zap className="h-3.5 w-3.5" />
+        <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-violet-400/20 bg-violet-950/30 px-3.5 py-1 text-xs font-medium text-violet-300 backdrop-blur-md">
+          <Zap className="h-3.5 w-3.5 shrink-0" />
           <span>AstroNum° სატარიფო გეგმები</span>
         </div>
-        <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+        <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
           ტარიფები & წვდომა
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-base text-slate-400">
+        <p className="mx-auto mt-2 max-w-xl text-xs sm:text-base text-slate-300">
           მოქნილი პირობები პირადი გამოყენებისა და პროფესიული ასტროლოგიური პრაქტიკისთვის
         </p>
 
         {/* 3-Duration Toggle: 1 თვე / 6 თვე / 1 წელი */}
-        <div className="mt-8 inline-flex items-center rounded-full border border-white/10 bg-[#070b13]/85 p-1.5 backdrop-blur-md shadow-xl">
+        <div className="mt-6 inline-flex max-w-full items-center rounded-full border border-white/10 bg-[#070b13]/85 p-1 backdrop-blur-md shadow-xl">
           <button
             type="button"
             onClick={() => setDuration("month")}
-            className={`rounded-full px-5 py-2 text-xs font-bold transition-all cursor-pointer ${
+            className={`rounded-full px-3 py-1.5 sm:px-5 sm:py-2 text-xs font-bold transition-all cursor-pointer ${
               duration === "month"
                 ? "bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/25"
                 : "text-slate-400 hover:text-white"
@@ -235,7 +235,7 @@ export default function PricingTable() {
           <button
             type="button"
             onClick={() => setDuration("half_year")}
-            className={`flex items-center gap-1.5 rounded-full px-5 py-2 text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 sm:px-5 sm:py-2 text-xs font-bold transition-all cursor-pointer ${
               duration === "half_year"
                 ? "bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/25"
                 : "text-slate-400 hover:text-white"
@@ -249,7 +249,7 @@ export default function PricingTable() {
           <button
             type="button"
             onClick={() => setDuration("year")}
-            className={`flex items-center gap-1.5 rounded-full px-5 py-2 text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 sm:px-5 sm:py-2 text-xs font-bold transition-all cursor-pointer ${
               duration === "year"
                 ? "bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/25"
                 : "text-slate-400 hover:text-white"
@@ -369,7 +369,7 @@ export default function PricingTable() {
                   handleOpenCheckout(plan, event.currentTarget);
                 }}
                 className={`mt-8 w-full rounded-xl py-3.5 text-center text-xs font-bold transition-all cursor-pointer ${
-                  isActive
+                  isSelected
                     ? "bg-gradient-to-r from-cyan-500 via-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/30 scale-[1.02] hover:shadow-indigo-500/50"
                     : "border border-white/10 bg-white/[0.04] text-white hover:bg-white/10 hover:border-white/20"
                 }`}
