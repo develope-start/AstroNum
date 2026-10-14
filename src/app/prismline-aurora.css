@@ -6,11 +6,11 @@
 
 /* --- Modern Design Tokens --- */
 :root {
-  --bg-main: #030208;
-  --bg-surface: #060310;
-  --bg-card: rgba(8, 6, 20, 0.28);
-  --bg-card-elevated: rgba(12, 10, 28, 0.35);
-  --bg-input: rgba(4, 3, 12, 0.55);
+  --bg-main: #0a091e;
+  --bg-surface: #100e2b;
+  --bg-card: rgba(16, 14, 40, 0.38);
+  --bg-card-elevated: rgba(22, 19, 50, 0.45);
+  --bg-input: rgba(10, 8, 26, 0.55);
 
   --border-subtle: rgba(255, 255, 255, 0.07);
   --border-glass: rgba(255, 255, 255, 0.10);
@@ -48,9 +48,11 @@ body.app-body {
 }
 
 /* ==========================================================================
-   PRISMLINE AURORA — REFINED HORIZONTAL AURORA GLOW SYSTEM
-   Wide Chromatic Aurora with Glassmorphic Navigation Integration
-   Electric Cyan · Royal Indigo · Magenta
+   PRISMLINE AURORA — SOFT AMBIENT HORIZONTAL AURORA GLOW
+   Subtle, Atmospheric, Non-Garish Celestial Glow
+   Starts gracefully from the midpoint of the navigation bar (~2rem)
+   Widened horizontal span with natural tapered ends
+   Integrated with Translucent Frosted Glass Navigation
    ========================================================================== */
 
 /* Viewport-fixed aurora stays centered as the document scrolls. */
@@ -60,57 +62,81 @@ body.app-body {
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
+  background: radial-gradient(circle at 50% 12%, rgba(59, 42, 130, 0.14) 0%, rgba(14, 12, 38, 0.05) 50%, transparent 80%);
 }
 
-/* Overlapping ribbons share the viewport center and move continuously. */
+/* Widened horizontal ribbon: seamless, feather-soft atmospheric cosmic illumination */
 .aurora-horizontal-band {
   position: absolute;
-  left: -15vw;
-  width: 130vw;
-  height: clamp(12rem, 25vh, 22rem);
+  left: -12vw;
+  width: 124vw;
+  height: clamp(18rem, 45vh, 36rem);
   pointer-events: none;
-  border-radius: 50%;
   mix-blend-mode: screen;
   will-change: transform, opacity;
+  /* Omnidirectional smooth falloff mask: guarantees 100% seamless feathering in all directions with ZERO sharp lines */
+  -webkit-mask-image: radial-gradient(ellipse 85% 90% at 50% 35%, #000 20%, rgba(0, 0, 0, 0.85) 45%, rgba(0, 0, 0, 0.50) 68%, rgba(0, 0, 0, 0.20) 84%, rgba(0, 0, 0, 0.03) 94%, transparent 100%);
+  mask-image: radial-gradient(ellipse 85% 90% at 50% 35%, #000 20%, rgba(0, 0, 0, 0.85) 45%, rgba(0, 0, 0, 0.50) 68%, rgba(0, 0, 0, 0.20) 84%, rgba(0, 0, 0, 0.03) 94%, transparent 100%);
 }
 
+/* Primary Top Band: Shifted down by ~10% (10vh), covering ~45% of screen */
 .aurora-band-top {
-  top: -0.5rem;
-  background: radial-gradient(
-    ellipse 68% 34% at 50% 50%,
-    rgba(56, 189, 248, 0.62) 0%,
-    rgba(99, 102, 241, 0.50) 42%,
-    rgba(236, 72, 153, 0.34) 75%,
-    transparent 100%
-  );
-  filter: blur(clamp(44px, 5.5vw, 90px)) saturate(1.5) drop-shadow(0 0 50px rgba(56, 189, 248, 0.32));
-  animation: aurora-center-float 18s ease-in-out infinite;
+  top: calc(var(--site-header-height, 4rem) * 0.5 + 10vh);
+  background:
+    radial-gradient(ellipse 55% 65% at 20% 30%, rgba(20, 184, 166, 0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 60% at 50% 32%, rgba(56, 189, 248, 0.20) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 65% at 82% 30%, rgba(168, 85, 247, 0.18) 0%, transparent 70%),
+    linear-gradient(
+      180deg,
+      rgba(13, 148, 136, 0.16) 0%,
+      rgba(14, 165, 233, 0.18) 32%,
+      rgba(99, 102, 241, 0.15) 62%,
+      rgba(147, 51, 234, 0.08) 82%,
+      transparent 100%
+    );
+  filter: blur(clamp(60px, 7.5vw, 115px));
+  animation: aurora-center-float 20s ease-in-out infinite;
 }
 
+/* Mid Band: Atmospheric core adding rich gentle depth across ~45% of screen */
 .aurora-band-mid {
-  top: calc(var(--site-header-height, 4rem) * 0.35 + 1.5vh);
-  background: radial-gradient(
-    ellipse 64% 32% at 50% 50%,
-    rgba(99, 102, 241, 0.58) 0%,
-    rgba(236, 72, 153, 0.44) 45%,
-    rgba(56, 189, 248, 0.32) 75%,
-    transparent 100%
-  );
-  filter: blur(clamp(48px, 6vw, 98px)) saturate(1.55) drop-shadow(0 0 55px rgba(139, 92, 246, 0.34));
-  animation: aurora-center-drift 23s ease-in-out infinite;
+  top: calc(var(--site-header-height, 4rem) * 0.5 + 12.5vh);
+  height: clamp(20rem, 48vh, 38rem);
+  left: -14vw;
+  width: 128vw;
+  background:
+    radial-gradient(ellipse 55% 65% at 24% 35%, rgba(13, 148, 136, 0.16) 0%, transparent 75%),
+    radial-gradient(ellipse 50% 65% at 76% 35%, rgba(147, 51, 234, 0.16) 0%, transparent 75%),
+    linear-gradient(
+      180deg,
+      rgba(20, 184, 166, 0.14) 0%,
+      rgba(6, 182, 212, 0.16) 32%,
+      rgba(99, 102, 241, 0.15) 60%,
+      rgba(168, 85, 247, 0.07) 84%,
+      transparent 100%
+    );
+  filter: blur(clamp(65px, 8vw, 125px));
+  animation: aurora-center-drift 24s ease-in-out infinite;
 }
 
+/* Bottom Band: Gentle ambient base cascading downward into darkness without any sharp edges */
 .aurora-band-bottom {
-  top: calc(var(--site-header-height, 4rem) + 4vh);
-  background: radial-gradient(
-    ellipse 66% 34% at 50% 50%,
-    rgba(56, 189, 248, 0.46) 0%,
-    rgba(99, 102, 241, 0.52) 42%,
-    rgba(168, 85, 247, 0.36) 75%,
-    transparent 100%
-  );
-  filter: blur(clamp(48px, 6vw, 98px)) saturate(1.55) drop-shadow(0 0 55px rgba(129, 140, 248, 0.32));
-  animation: aurora-center-float 21s ease-in-out infinite reverse;
+  top: calc(var(--site-header-height, 4rem) * 0.5 + 15vh);
+  height: clamp(18rem, 44vh, 35rem);
+  left: -10vw;
+  width: 120vw;
+  background:
+    radial-gradient(ellipse 55% 70% at 30% 40%, rgba(20, 184, 166, 0.13) 0%, transparent 75%),
+    radial-gradient(ellipse 55% 70% at 72% 40%, rgba(139, 92, 246, 0.13) 0%, transparent 75%),
+    linear-gradient(
+      180deg,
+      rgba(56, 189, 248, 0.14) 0%,
+      rgba(129, 140, 248, 0.12) 48%,
+      rgba(168, 85, 247, 0.06) 78%,
+      transparent 100%
+    );
+  filter: blur(clamp(70px, 8.5vw, 130px));
+  animation: aurora-center-float 22s ease-in-out infinite reverse;
 }
 
 .app-body > main,
@@ -124,22 +150,22 @@ body.app-body {
   inset: 0;
   background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 36px 36px;
-  opacity: 0.28;
+  opacity: 0.25;
 }
 
 @keyframes aurora-center-float {
-  0%, 100% { transform: translate3d(-2vw, 0, 0) scale3d(1, 0.92, 1); opacity: 0.74; }
-  35% { transform: translate3d(2.5vw, -1.5vh, 0) scale3d(1.04, 1.12, 1); opacity: 1; }
-  68% { transform: translate3d(-1vw, 1.25vh, 0) scale3d(0.98, 0.96, 1); opacity: 0.82; }
+  0%, 100% { transform: translate3d(-1vw, 0, 0) scale3d(1, 0.96, 1); opacity: 0.85; }
+  35% { transform: translate3d(1.5vw, -0.6vh, 0) scale3d(1.02, 1.04, 1); opacity: 1; }
+  68% { transform: translate3d(-0.6vw, 0.6vh, 0) scale3d(0.99, 0.98, 1); opacity: 0.88; }
 }
 
 @keyframes aurora-center-drift {
-  0%, 100% { transform: translate3d(1.5vw, 0.5vh, 0) scale3d(0.96, 0.94, 1); opacity: 0.68; }
-  42% { transform: translate3d(-2vw, -1vh, 0) scale3d(1.05, 1.08, 1); opacity: 0.96; }
-  74% { transform: translate3d(1vw, 1.5vh, 0) scale3d(1, 0.98, 1); opacity: 0.78; }
+  0%, 100% { transform: translate3d(1vw, 0.2vh, 0) scale3d(0.98, 0.97, 1); opacity: 0.80; }
+  42% { transform: translate3d(-1.2vw, -0.5vh, 0) scale3d(1.02, 1.03, 1); opacity: 0.96; }
+  74% { transform: translate3d(0.6vw, 0.6vh, 0) scale3d(1, 0.99, 1); opacity: 0.85; }
 }
 
-/* --- Full-Width Premium Desktop Navigation with Translucent Glassmorphism & Aurora Glow --- */
+/* --- Full-Width Premium Desktop Navigation with Translucent Frosted Glass --- */
 .site-header {
   position: sticky;
   top: 0;
@@ -147,14 +173,11 @@ body.app-body {
   width: 100%;
   display: block;
   padding: 0;
-  background: linear-gradient(180deg, rgba(7, 6, 20, 0.65) 0%, rgba(4, 3, 14, 0.52) 100%) !important;
-  backdrop-filter: blur(28px) saturate(210%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
+  background: linear-gradient(180deg, rgba(12, 10, 30, 0.32) 0%, rgba(16, 13, 38, 0.22) 100%) !important;
+  backdrop-filter: blur(14px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(140%) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow:
-    0 16px 36px -12px rgba(0, 0, 0, 0.65),
-    0 1px 0 0 rgba(255, 255, 255, 0.08) inset,
-    0 8px 24px -6px rgba(99, 102, 241, 0.22) !important;
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -169,12 +192,14 @@ body.app-body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(56, 189, 248, 0.2) 15%,
-    rgba(139, 92, 246, 0.5) 50%,
-    rgba(236, 72, 153, 0.3) 85%,
+    rgba(16, 185, 129, 0.16) 18%,
+    rgba(13, 148, 136, 0.25) 34%,
+    rgba(99, 102, 241, 0.30) 55%,
+    rgba(168, 85, 247, 0.25) 76%,
+    rgba(217, 70, 239, 0.14) 90%,
     transparent 100%
   );
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.45);
+  box-shadow: 0 0 8px rgba(13, 148, 136, 0.18), 0 0 8px rgba(168, 85, 247, 0.15);
   pointer-events: none;
 }
 
@@ -412,6 +437,12 @@ div.glass-panel,
 .prism-card:hover,
 fieldset.glass-panel:hover {
   border-color: var(--border-highlight) !important;
+}
+
+.chart-map-section {
+  background: rgba(10, 8, 28, 0.25) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
 }
 
 /* --- Section Headings --- */
@@ -779,9 +810,9 @@ button.calc-submit-btn:hover,
   max-width: 100% !important;
   height: clamp(38rem, 84vh, 56rem) !important;
   min-height: clamp(38rem, 84vh, 56rem) !important;
-  background: rgba(3, 2, 8, 0.10) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  background: rgba(8, 7, 24, 0.15) !important;
+  backdrop-filter: blur(3px) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
   border-radius: 0 !important;
   border-left: none !important;
   border-right: none !important;
@@ -806,6 +837,11 @@ button.calc-submit-btn:hover,
   overflow: hidden !important;
   border-radius: 0 !important;
   transform: none !important;
+  background: transparent !important;
+}
+
+.celestial-system::before {
+  opacity: 0.12 !important;
 }
 
 /* Background Stars Opacity: Soft & Subtle ~20% Opacity */

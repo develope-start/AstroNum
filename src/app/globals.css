@@ -19,7 +19,7 @@
 
 @layer base {
   :root {
-    --bg-main: #070811;
+    --bg-main: #0a091e;
     --bg-card: rgba(16, 18, 31, 0.78);
     --bg-card-hover: rgba(22, 25, 43, 0.92);
     --border-color: rgba(148, 163, 184, 0.16);
@@ -5960,7 +5960,7 @@ canvas {
   height: 100% !important;
   object-fit: fill;
   transform-origin: right bottom;
-  animation: celestial-fire-expand 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: celestial-fire-expand 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
   pointer-events: none;
   user-select: none;
 }
@@ -5990,7 +5990,7 @@ canvas {
   object-position: center bottom !important;
   opacity: 0.95;
   filter: drop-shadow(0 0 1.2rem color-mix(in srgb, var(--stage-accent), transparent 60%));
-  animation: celestial-zodiac-appear 240ms ease-out both;
+  animation: celestial-zodiac-appear 120ms ease-out both;
 }
 
 .celestial-stage-image {
@@ -6007,7 +6007,7 @@ canvas {
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
-  animation: celestial-image-rise 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: celestial-image-rise 160ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @media (min-width: 641px) {

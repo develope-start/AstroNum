@@ -75,17 +75,17 @@ const CELESTIAL_PLANET_META = {
 } as const;
 
 const CELESTIAL_IMAGE: Record<keyof typeof CELESTIAL_PLANET_META | "earth", string> = {
-  sun: "/celestial/sun.png",
-  moon: "/celestial/moon.png",
-  mercury: "/celestial/mercury.png",
-  venus: "/celestial/venus.png",
-  earth: "/celestial/earth.png",
-  mars: "/celestial/mars.png",
-  jupiter: "/celestial/jupiter.png",
-  saturn: "/celestial/saturn.png",
-  uranus: "/celestial/uranus.png",
-  neptune: "/celestial/neptune.png",
-  pluto: "/celestial/pluto.png",
+  sun: "/celestial/sun-soft.webp",
+  moon: "/celestial/moon-soft.webp",
+  mercury: "/celestial/mercury-soft.webp",
+  venus: "/celestial/venus-soft.webp",
+  earth: "/celestial/earth-soft.webp",
+  mars: "/celestial/mars-soft.webp",
+  jupiter: "/celestial/jupiter-soft.webp",
+  saturn: "/celestial/saturn-soft.webp",
+  uranus: "/celestial/uranus-soft.webp",
+  neptune: "/celestial/neptune-soft.webp",
+  pluto: "/celestial/pluto-soft.webp",
 };
 
 const ZODIAC_IMAGE = [
@@ -101,7 +101,7 @@ const ZODIAC_IMAGE = [
   "/zodiac/10-თხის რქა.png",
   "/zodiac/11-მერწყული.png",
   "/zodiac/12-თვზები.png",
-].map((path) => encodeURI(path));
+].map((path) => encodeURI(path.replace(/\.png$/i, ".webp")));
 
 const ELEMENT_GROUPS = [
   { id: "fire", name: "ცეცხლი", symbol: ELEMENT_TEMPERAMENTS.fire.symbol, signs: [{ name: "ვერძი", symbol: "♈" }, { name: "ლომი", symbol: "♌" }, { name: "მშვილდოსანი", symbol: "♐" }], planets: [{ name: "მარსი", symbol: "♂" }, { name: "მზე", symbol: "☉" }, { name: "იუპიტერი", symbol: "♃" }] },
@@ -111,6 +111,21 @@ const ELEMENT_GROUPS = [
 ] as const;
 
 type CelestialTarget = number | "earth" | null;
+
+const preloadedCelestialImages = new Map<string, HTMLImageElement>();
+
+function preloadCelestialImages(sources: string[]) {
+  if (typeof window === "undefined") return;
+  sources.forEach((src) => {
+    if (preloadedCelestialImages.has(src)) return;
+    const image = new window.Image();
+    image.decoding = "async";
+    image.fetchPriority = "high";
+    image.src = src;
+    preloadedCelestialImages.set(src, image);
+    void image.decode().catch(() => undefined);
+  });
+}
 
 export default function HomePage() {
   const me = useMe();
@@ -137,16 +152,19 @@ export default function HomePage() {
 
   useEffect(() => {
     preloadCelestialFireVideo();
-    if (typeof window !== "undefined") {
-      ZODIAC_IMAGE.forEach((src) => {
-        const img = new window.Image();
-        img.src = src;
-      });
-      Object.values(CELESTIAL_IMAGE).forEach((src) => {
-        const img = new window.Image();
-        img.src = src;
-      });
-    }
+    preloadCelestialImages([...ZODIAC_IMAGE, ...Object.values(CELESTIAL_IMAGE)]);
+  }, []);
+
+  useEffect(() => {
+    const clearCelestialSelection = (event: PointerEvent) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest(".celestial-ruler, .celestial-earth")) return;
+      setSelectedCelestial(null);
+      setHoveredCelestial(null);
+    };
+
+    document.addEventListener("pointerdown", clearCelestialSelection, true);
+    return () => document.removeEventListener("pointerdown", clearCelestialSelection, true);
   }, []);
 
   useLayoutEffect(() => {
@@ -438,6 +456,10 @@ export default function HomePage() {
                   onClick={(event) => {
                     event.stopPropagation();
                     setHoveredCelestial(null);
+                    if (selectedCelestial === index) {
+                      setSelectedCelestial(null);
+                      return;
+                    }
                     setSelectedCelestial(index);
                     setCelestialAnimationRun((run) => run + 1);
                   }}
@@ -463,6 +485,10 @@ export default function HomePage() {
               onClick={(event) => {
                 event.stopPropagation();
                 setHoveredCelestial(null);
+                if (selectedCelestial === "earth") {
+                  setSelectedCelestial(null);
+                  return;
+                }
                 setSelectedCelestial("earth");
                 setCelestialAnimationRun((run) => run + 1);
               }}
@@ -479,7 +505,7 @@ export default function HomePage() {
                     ref={zodiacStageRef}
                     aria-hidden="true"
                   >
-                    <img className="celestial-zodiac-image" src={activeZodiacImage} alt="" loading="eager" decoding="sync" />
+                    <img className="celestial-zodiac-image" src={activeZodiacImage} alt="" loading="eager" decoding="async" fetchPriority="high" />
                   </div>
                 )}
                 <div
@@ -516,7 +542,8 @@ export default function HomePage() {
                   src={activeCelestialImage!}
                   alt=""
                   loading="eager"
-                  decoding="sync"
+                  decoding="async"
+                  fetchPriority="high"
                 />
                 <CelestialFireOverlay />
               </div>

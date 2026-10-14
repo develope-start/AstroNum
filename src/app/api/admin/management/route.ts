@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
 import { groupGuestCalculations } from "@/lib/calculationHistory";
@@ -70,7 +71,6 @@ export async function GET(req: NextRequest) {
         email: true,
         role: true,
         createdAt: true,
-        payments: { orderBy: { createdAt: "desc" }, select: { provider: true, status: true, plan: true, duration: true, amountTetri: true, currency: true, paidAt: true, periodEndsAt: true, createdAt: true } },
         calculations: { orderBy: { createdAt: "desc" }, select: calculationSelect },
         charts: {
           orderBy: { createdAt: "desc" },
@@ -113,6 +113,52 @@ export async function GET(req: NextRequest) {
       select: { id: true, originalId: true, type: true, summary: true, dataJson: true, deletedAt: true },
     }),
   ]);
+
+  let paymentHistoryAvailable = true;
+  let payments: Array<{
+    userId: string;
+    provider: string;
+    status: string;
+    plan: string;
+    duration: string;
+    amountTetri: number;
+    currency: string;
+    paidAt: Date | null;
+    periodEndsAt: Date | null;
+    createdAt: Date;
+  }> = [];
+  if (users.length > 0) {
+    try {
+      payments = await prisma.payment.findMany({
+        where: { userId: { in: users.map((user) => user.id) } },
+        orderBy: { createdAt: "desc" },
+        select: {
+          userId: true,
+          provider: true,
+          status: true,
+          plan: true,
+          duration: true,
+          amountTetri: true,
+          currency: true,
+          paidAt: true,
+          periodEndsAt: true,
+          createdAt: true,
+        },
+      });
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError) || !["P2021", "P2022"].includes(error.code)) {
+        throw error;
+      }
+      paymentHistoryAvailable = false;
+      console.error("Admin payment history is unavailable until the billing migration is applied:", error);
+    }
+  }
+  const paymentsByUser = new Map<string, typeof payments>();
+  for (const payment of payments) {
+    const userPayments = paymentsByUser.get(payment.userId) ?? [];
+    userPayments.push(payment);
+    paymentsByUser.set(payment.userId, userPayments);
+  }
 
   const dedupedUsers = users.map((user) => {
     const chartFallbacks = user.charts
@@ -164,6 +210,7 @@ export async function GET(req: NextRequest) {
 
     return {
       ...user,
+      payments: paymentsByUser.get(user.id) ?? [],
       calculations: [...user.calculations, ...chartFallbacks].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
       charts: undefined,
     };
@@ -173,6 +220,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     currentUserId: session.userId,
     currentUserAdminId: users.find((user) => user.id === session.userId)?.adminId ?? null,
+    paymentHistoryAvailable,
     users: dedupedUsers,
     guestCalculations,
     guestCalculationGroups,

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getActiveSessionFromRequest } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -13,15 +14,24 @@ export async function getCurrentEntitlement(userId: string): Promise<{
   paidUntil: Date | null;
 }> {
   const now = new Date();
-  const payments = await prisma.payment.findMany({
-    where: {
-      userId,
-      status: "PAID",
-      periodStartsAt: { lte: now },
-      periodEndsAt: { gt: now },
-    },
-    select: { plan: true, periodEndsAt: true },
-  });
+  let payments: Array<{ plan: string; periodEndsAt: Date | null }>;
+  try {
+    payments = await prisma.payment.findMany({
+      where: {
+        userId,
+        status: "PAID",
+        periodStartsAt: { lte: now },
+        periodEndsAt: { gt: now },
+      },
+      select: { plan: true, periodEndsAt: true },
+    });
+  } catch (error) {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError) || !["P2021", "P2022"].includes(error.code)) {
+      throw error;
+    }
+    console.error("Paid entitlements are unavailable until billing migrations are applied; using free access:", error);
+    return { plan: "free", paidUntil: null };
+  }
 
   let plan: BillingPlan = "free";
   let paidUntil: Date | null = null;

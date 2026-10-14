@@ -7,6 +7,7 @@ import DateSelect from "@/components/DateSelect";
 import TimeSelect from "@/components/TimeSelect";
 import PlaceAutocomplete from "@/components/PlaceAutocomplete";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
+import { matchesPaymentFilters } from "@/lib/billing/adminFilters";
 
 type NullableString = string | null;
 
@@ -103,6 +104,7 @@ interface DeletedCalculation {
 interface ManagementData {
   currentUserId: string;
   currentUserAdminId: string | null;
+  paymentHistoryAvailable?: boolean;
   users: ManagedUser[];
   guestCalculations: ManagedCalculation[];
   guestCalculationGroups: GuestCalculationGroup[];
@@ -137,6 +139,7 @@ interface ManagementFilters {
   time: string;
   place: string;
   paymentStatus: "ALL" | "PAID" | "UNPAID";
+  paymentProvider: "ALL" | "BOG" | "TBC";
   paymentPlan: "ALL" | "pro" | "enterprise";
   paymentAmountMin: string;
   paymentAmountMax: string;
@@ -159,6 +162,7 @@ const EMPTY_FILTERS: ManagementFilters = {
   time: "",
   place: "",
   paymentStatus: "ALL",
+  paymentProvider: "ALL",
   paymentPlan: "ALL",
   paymentAmountMin: "",
   paymentAmountMax: "",
@@ -427,23 +431,8 @@ export default function AdminUsersPage() {
   };
 
   const matchesPayment = (user: ManagedUser) => {
-    const paid = user.payments.filter((payment) => payment.status === "PAID");
-    const hasPaymentFilters = filters.paymentStatus !== "ALL" || filters.paymentPlan !== "ALL" || filters.paymentAmountMin !== "" || filters.paymentAmountMax !== "" || filters.paymentDateFrom !== "" || filters.paymentDateTo !== "";
-    if (!hasPaymentFilters) return true;
-    if (filters.paymentStatus === "PAID" && paid.length === 0) return false;
-    if (filters.paymentStatus === "UNPAID") return paid.length === 0;
-    if (paid.length === 0) return false;
-    const amountMin = filters.paymentAmountMin === "" ? null : Number(filters.paymentAmountMin);
-    const amountMax = filters.paymentAmountMax === "" ? null : Number(filters.paymentAmountMax);
-    return paid.some((payment) => {
-      const amount = payment.amountTetri / 100;
-      const paidDate = payment.paidAt?.slice(0, 10) ?? "";
-      return (filters.paymentPlan === "ALL" || payment.plan === filters.paymentPlan) &&
-        (amountMin === null || amount >= amountMin) &&
-        (amountMax === null || amount <= amountMax) &&
-        (!filters.paymentDateFrom || (paidDate && paidDate >= filters.paymentDateFrom)) &&
-        (!filters.paymentDateTo || (paidDate && paidDate <= filters.paymentDateTo));
-    });
+    if (data?.paymentHistoryAvailable === false) return true;
+    return matchesPaymentFilters(user.payments, filters);
   };
 
   const filteredData = useMemo(() => {
@@ -561,6 +550,7 @@ export default function AdminUsersPage() {
       {message && <p className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm text-emerald-400">{message}</p>}
       {error && <p className="rounded-lg border border-ember/40 bg-ember/10 p-3 text-sm text-ember">{error}</p>}
       {loading && <p className="text-parchment-dim">იტვირთება…</p>}
+      {data?.paymentHistoryAvailable === false && <p role="status" className="rounded-lg border border-amber-500/40 bg-amber-950/30 p-3 text-sm text-amber-200">მომხმარებლებისა და რუკების მართვა ხელმისაწვდომია, მაგრამ გადახდების ისტორია ჯერ არ ჩაიტვირთა. გადახდების ცხრილის migration უნდა გაეშვას; გადახდის ფილტრები დროებით გამორთულია.</p>}
 
       <section className="rounded-xl border border-line bg-ink-2/50 p-4">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -599,20 +589,26 @@ export default function AdminUsersPage() {
           </label>
           <label className="text-xs text-parchment-dim">
             გადახდის სტატუსი
-            <select value={filters.paymentStatus} onChange={(event) => setFilters((current) => ({ ...current, paymentStatus: event.target.value as ManagementFilters["paymentStatus"] }))} className={input}>
+            <select disabled={data?.paymentHistoryAvailable === false} value={filters.paymentStatus} onChange={(event) => setFilters((current) => ({ ...current, paymentStatus: event.target.value as ManagementFilters["paymentStatus"] }))} className={input}>
               <option value="ALL">ყველა</option><option value="PAID">გადახდილი</option><option value="UNPAID">გადახდის გარეშე</option>
             </select>
           </label>
           <label className="text-xs text-parchment-dim">
+            გადახდის ბანკი
+            <select disabled={data?.paymentHistoryAvailable === false} value={filters.paymentProvider} onChange={(event) => setFilters((current) => ({ ...current, paymentProvider: event.target.value as ManagementFilters["paymentProvider"] }))} className={input}>
+              <option value="ALL">ყველა ბანკი</option><option value="BOG">საქართველოს ბანკი</option><option value="TBC">თიბისი ბანკი</option>
+            </select>
+          </label>
+          <label className="text-xs text-parchment-dim">
             ფასიანი სერვისი
-            <select value={filters.paymentPlan} onChange={(event) => setFilters((current) => ({ ...current, paymentPlan: event.target.value as ManagementFilters["paymentPlan"] }))} className={input}>
+            <select disabled={data?.paymentHistoryAvailable === false} value={filters.paymentPlan} onChange={(event) => setFilters((current) => ({ ...current, paymentPlan: event.target.value as ManagementFilters["paymentPlan"] }))} className={input}>
               <option value="ALL">ყველა სერვისი</option><option value="pro">Pro</option><option value="enterprise">Enterprise</option>
             </select>
           </label>
-          <label className="text-xs text-parchment-dim">მინ. თანხა (₾)<input type="number" min="0" step="0.01" value={filters.paymentAmountMin} onChange={(event) => setFilters((current) => ({ ...current, paymentAmountMin: event.target.value }))} className={input} /></label>
-          <label className="text-xs text-parchment-dim">მაქს. თანხა (₾)<input type="number" min="0" step="0.01" value={filters.paymentAmountMax} onChange={(event) => setFilters((current) => ({ ...current, paymentAmountMax: event.target.value }))} className={input} /></label>
-          <label className="text-xs text-parchment-dim">გადახდილია თარიღიდან<input type="date" value={filters.paymentDateFrom} onChange={(event) => setFilters((current) => ({ ...current, paymentDateFrom: event.target.value }))} className={input} /></label>
-          <label className="text-xs text-parchment-dim">გადახდილია თარიღამდე<input type="date" value={filters.paymentDateTo} onChange={(event) => setFilters((current) => ({ ...current, paymentDateTo: event.target.value }))} className={input} /></label>
+          <label className="text-xs text-parchment-dim">მინ. თანხა (₾)<input disabled={data?.paymentHistoryAvailable === false} type="number" min="0" step="0.01" value={filters.paymentAmountMin} onChange={(event) => setFilters((current) => ({ ...current, paymentAmountMin: event.target.value }))} className={input} /></label>
+          <label className="text-xs text-parchment-dim">მაქს. თანხა (₾)<input disabled={data?.paymentHistoryAvailable === false} type="number" min="0" step="0.01" value={filters.paymentAmountMax} onChange={(event) => setFilters((current) => ({ ...current, paymentAmountMax: event.target.value }))} className={input} /></label>
+          <label className="text-xs text-parchment-dim">გადახდილია თარიღიდან<input disabled={data?.paymentHistoryAvailable === false} type="date" value={filters.paymentDateFrom} onChange={(event) => setFilters((current) => ({ ...current, paymentDateFrom: event.target.value }))} className={input} /></label>
+          <label className="text-xs text-parchment-dim">გადახდილია თარიღამდე<input disabled={data?.paymentHistoryAvailable === false} type="date" value={filters.paymentDateTo} onChange={(event) => setFilters((current) => ({ ...current, paymentDateTo: event.target.value }))} className={input} /></label>
           <label className="text-xs text-parchment-dim">
             მეილი
             <input value={filters.email} onChange={(event) => setFilters((current) => ({ ...current, email: event.target.value }))} placeholder="მომხმარებლის მეილი" className={input} />
@@ -705,6 +701,11 @@ export default function AdminUsersPage() {
 
                     <span><strong className="admin-id-label">აიდი:</strong> <span className="admin-id-value-registered">{user.publicId ?? user.adminId ?? "—"}</span></span>
                     <span className="font-semibold text-parchment">👤 {displayName}</span>
+                    {data?.paymentHistoryAvailable === false
+                      ? <span className="rounded-full border border-amber-500/40 bg-amber-950/30 px-2 py-0.5 text-[11px] font-semibold text-amber-200">გადახდის მონაცემი მიუწვდომელია</span>
+                      : user.payments.some((payment) => payment.status === "PAID")
+                        ? <span className="rounded-full border border-emerald-400/40 bg-emerald-950/40 px-2 py-0.5 text-[11px] font-semibold text-emerald-300">გადაიხადა</span>
+                        : <span className="rounded-full border border-slate-400/30 bg-slate-900/40 px-2 py-0.5 text-[11px] font-semibold text-slate-300">არ გადაუხდია</span>}
                     <span className="text-cyan-300 font-medium">📧 {user.email}</span>
                     <span className="rounded-md border border-purple-400/50 bg-purple-950/40 px-2 py-0.5 text-xs font-bold text-purple-200">
                       🗺️ რუკის #: {mapNum}
@@ -725,7 +726,7 @@ export default function AdminUsersPage() {
                       </p>
                       <p className="text-lg font-semibold text-parchment">{user.email} <span className="ml-2 text-sm admin-id-value-registered">{user.publicId ?? "—"}</span></p>
                       <p className="text-xs text-parchment-dim">შეიქმნა: {formatDate(user.createdAt)} · რუკები: {user.calculations.length}</p>
-                      {user.payments.some((payment) => payment.status === "PAID") && <p className="mt-1 text-xs font-semibold text-emerald-300">გადაიხადა: {user.payments.filter((payment) => payment.status === "PAID").length} გადახდა</p>}
+                      {data?.paymentHistoryAvailable !== false && user.payments.some((payment) => payment.status === "PAID") && <p className="mt-1 text-xs font-semibold text-emerald-300">გადაიხადა: {user.payments.filter((payment) => payment.status === "PAID").length} გადახდა</p>}
                     </div>
                     <div className="flex gap-2">
                       <button className={button} onClick={() => openEditUser(user)}>რედაქტირება</button>

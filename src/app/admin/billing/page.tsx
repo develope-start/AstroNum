@@ -5,7 +5,7 @@ import Link from "next/link";
 
 type Provider = { id: "BOG" | "TBC"; label: string; configured: boolean; enabled: boolean };
 type Feature = { id: string; enabled: boolean };
-type Controls = { providers: Provider[]; features: Feature[] };
+type Controls = { providers: Provider[]; features: Feature[]; settingsAvailable?: boolean };
 type ConnectionCheck = { state: "success" | "error"; message: string };
 const FEATURE_LABELS: Record<string, string> = {
   synastry: "სინასტრია",
@@ -90,6 +90,7 @@ export default function AdminBillingPage() {
     {notice && <p role="status" className="rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3 text-sm text-emerald-200">{notice}</p>}
     {!controls && !error && <p className="text-parchment-dim">იტვირთება…</p>}
     {controls && <>
+      {controls.settingsAvailable === false && <p role="status" className="rounded-xl border border-amber-500/40 bg-amber-950/30 p-3 text-sm leading-6 text-amber-100">გადახდების პარამეტრების ცხრილი ჯერ არ არსებობს ამ ბაზაში. ბანკების/სერვისების პარამეტრების შენახვამდე production migration-ები უნდა გაეშვას. ამ დროისთვის აქ მხოლოდ კონფიგურაციის readiness ჩანს; გადახდები გამორთულია.</p>}
       <section className="space-y-3 rounded-2xl border border-line bg-ink-2/50 p-5">
         <h2 className="text-lg font-bold text-parchment">გადახდის პროვაიდერები</h2>
         <p className="text-sm text-parchment-dim">ეს პანელი აჩვენებს ორივე ბანკს, მაგრამ credentials მხოლოდ სერვერზე უნდა დაემატოს. „კავშირის შემოწმება“ ადასტურებს მხოლოდ API ავტორიზაციას — არა Sandbox გადახდას, callback-ს ან თანხის ჩარიცხვას.</p>
@@ -97,24 +98,38 @@ export default function AdminBillingPage() {
           <div className="min-w-0 flex-1">
             <p className="font-semibold text-parchment">{provider.label}</p>
             <p className="text-xs text-parchment-dim">{provider.configured ? "სერვერის credentials შევსებულია; ბანკთან ავტორიზაცია ცალკე გადაამოწმეთ." : "სერვერის credentials არ არის კონფიგურირებული."}</p>
+            <details className="mt-2 text-xs text-parchment-dim">
+              <summary className="cursor-pointer text-cyan-200">ინტეგრაციის რეკვიზიტები და callback</summary>
+              <div className="mt-2 space-y-1 rounded-lg bg-slate-950/60 p-3">
+                <p>საჭირო Vercel Environment Variables (მნიშვნელობები მხოლოდ Vercel-ში შეიყვანეთ):</p>
+                <code className="block select-all text-cyan-100">{provider.id === "BOG"
+                  ? "BOG_ENVIRONMENT, BOG_CLIENT_ID, BOG_CLIENT_SECRET, BOG_CALLBACK_URL, BOG_CALLBACK_PUBLIC_KEY, APP_URL"
+                  : "TBC_DEVELOPER_API_KEY, TBC_CLIENT_ID, TBC_CLIENT_SECRET, TBC_API_BASE_URL (optional), APP_URL"}</code>
+                <p className="pt-1">Callback URL:</p>
+                <code className="block select-all break-all text-cyan-100">{provider.id === "BOG"
+                  ? "/api/billing/bog/callback"
+                  : "/api/billing/tbc/callback"}</code>
+                <p className="pt-1">Client secret და callback public key ამ პანელში არ შეინახოთ. მათი სტატუსი არ აჩვენებს, რომ ბანკის Sandbox checkout უკვე გამოცდილია.</p>
+              </div>
+            </details>
             {connectionChecks[provider.id] && <p role={connectionChecks[provider.id].state === "error" ? "alert" : "status"} className={`mt-2 text-xs ${connectionChecks[provider.id].state === "error" ? "text-rose-300" : "text-emerald-300"}`}>{connectionChecks[provider.id].message}</p>}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <button type="button" disabled={!provider.configured || busy !== null} onClick={() => void checkConnection(provider)} className="rounded-full border border-line px-4 py-2 text-sm font-bold text-parchment disabled:cursor-not-allowed disabled:opacity-50">
               {busy === `check-${provider.id}` ? "მოწმდება…" : "კავშირის შემოწმება"}
             </button>
-            <button type="button" disabled={!provider.configured || busy !== null} onClick={() => void update({ providers: { [provider.id]: !provider.enabled } }, provider.id)} className={`rounded-full px-4 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50 ${provider.enabled ? "bg-emerald-500/20 text-emerald-200" : "bg-slate-700/70 text-slate-200"}`}>
+            <button type="button" disabled={controls.settingsAvailable === false || !provider.configured || busy !== null} onClick={() => void update({ providers: { [provider.id]: !provider.enabled } }, provider.id)} className={`rounded-full px-4 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50 ${provider.enabled ? "bg-emerald-500/20 text-emerald-200" : "bg-slate-700/70 text-slate-200"}`}>
             {busy === provider.id ? "ინახება…" : provider.enabled ? "ჩართულია · გამორთვა" : "გამორთულია · ჩართვა"}
             </button>
           </div>
         </div>)}
-        <p className="rounded-xl bg-slate-900/70 p-3 text-xs leading-6 text-parchment-dim">TBC callback მისამართი: <code className="select-all text-cyan-200">/api/billing/tbc/callback</code>. სრული URL Vercel-ის დომენით დაამატეთ TBC Merchant Dashboard-ში.</p>
+        <p className="rounded-xl bg-slate-900/70 p-3 text-xs leading-6 text-parchment-dim">ბანკის Sandbox და production callback-ები შესაბამის Merchant Dashboard-ში ცალ-ცალკე უნდა იყოს დარეგისტრირებული, მაგალითად <code className="select-all text-cyan-200">https://&lt;domain&gt;/api/billing/bog/callback</code> და <code className="select-all text-cyan-200">https://&lt;domain&gt;/api/billing/tbc/callback</code>.</p>
       </section>
       <section className="space-y-3 rounded-2xl border border-line bg-ink-2/50 p-5">
         <h2 className="text-lg font-bold text-parchment">ფასიანი სერვისები</h2>
         <p className="text-sm text-parchment-dim">გამორთული სერვისი ფასიან ანგარიშებზეც მიუწვდომელია; ადმინის ანგარიში ამ შეზღუდვას გვერდს უვლის.</p>
         <div className="grid gap-3 sm:grid-cols-2">{controls.features.map((feature) => <label key={feature.id} className="flex items-center justify-between gap-3 rounded-xl border border-line/70 p-4 text-sm text-parchment">
-          <span>{FEATURE_LABELS[feature.id] ?? feature.id}</span><input type="checkbox" checked={feature.enabled} disabled={busy !== null} onChange={(event) => void update({ features: { [feature.id]: event.target.checked } }, feature.id)} className="h-5 w-5 accent-cyan-400" />
+          <span>{FEATURE_LABELS[feature.id] ?? feature.id}</span><input type="checkbox" checked={feature.enabled} disabled={controls.settingsAvailable === false || busy !== null} onChange={(event) => void update({ features: { [feature.id]: event.target.checked } }, feature.id)} className="h-5 w-5 accent-cyan-400" />
         </label>)}</div>
       </section>
     </>}

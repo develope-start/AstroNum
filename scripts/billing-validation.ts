@@ -5,6 +5,8 @@ import {
   periodEnd,
   PLAN_PRICES_TETRI,
 } from "../src/lib/billing/plans";
+import { getBillingConfigurationReadiness } from "../src/lib/billing/settings";
+import { matchesPaymentFilters, type PaymentFilterValues } from "../src/lib/billing/adminFilters";
 import { verifyBogCallback, verifyBogConnection } from "../src/lib/billing/bog";
 import { assertTbcBillingConfigured, createTbcOrder, getTbcPaymentDetails, verifyTbcConnection } from "../src/lib/billing/tbc";
 
@@ -31,6 +33,28 @@ const signature = sign("RSA-SHA256", body, privateKey).toString("base64");
 assert.equal(verifyBogCallback(body, signature, publicKey.export({ type: "spki", format: "pem" }).toString()), true);
 assert.equal(verifyBogCallback(Buffer.from(`${body.toString()} `), signature, publicKey.export({ type: "spki", format: "pem" }).toString()), false);
 assert.equal(verifyBogCallback(body, "invalid-signature", publicKey.export({ type: "spki", format: "pem" }).toString()), false);
+const billingReadiness = getBillingConfigurationReadiness();
+assert.equal(billingReadiness.settingsAvailable, false);
+assert.deepEqual(billingReadiness.providers.map(({ id, enabled }) => [id, enabled]), [["BOG", false], ["TBC", false]]);
+assert.ok(billingReadiness.providers.every(({ configured }) => typeof configured === "boolean"));
+
+const emptyPaymentFilters: PaymentFilterValues = {
+  paymentStatus: "ALL",
+  paymentProvider: "ALL",
+  paymentPlan: "ALL",
+  paymentAmountMin: "",
+  paymentAmountMax: "",
+  paymentDateFrom: "",
+  paymentDateTo: "",
+};
+const paidBogPro = [{ status: "PAID", provider: "BOG", plan: "pro", amountTetri: 499, paidAt: "2026-10-14T12:00:00.000Z" }];
+assert.equal(matchesPaymentFilters([], emptyPaymentFilters), true);
+assert.equal(matchesPaymentFilters([], { ...emptyPaymentFilters, paymentStatus: "UNPAID" }), true);
+assert.equal(matchesPaymentFilters([{ ...paidBogPro[0], status: "PENDING" }], { ...emptyPaymentFilters, paymentStatus: "UNPAID" }), true);
+assert.equal(matchesPaymentFilters(paidBogPro, { ...emptyPaymentFilters, paymentStatus: "UNPAID" }), false);
+assert.equal(matchesPaymentFilters([], { ...emptyPaymentFilters, paymentStatus: "UNPAID", paymentPlan: "pro" }), false);
+assert.equal(matchesPaymentFilters(paidBogPro, { ...emptyPaymentFilters, paymentProvider: "BOG", paymentPlan: "pro", paymentAmountMin: "4.99", paymentDateFrom: "2026-10-14" }), true);
+assert.equal(matchesPaymentFilters(paidBogPro, { ...emptyPaymentFilters, paymentProvider: "TBC" }), false);
 
 void (async () => {
   const originalFetch = globalThis.fetch;

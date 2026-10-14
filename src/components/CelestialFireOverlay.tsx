@@ -5,6 +5,12 @@ import { useEffect, useRef } from "react";
 const SOURCE = "/celestial/202610122306%20(1).mp4";
 const FRAME_WIDTH = 480;
 const FRAME_HEIGHT = 640;
+const LOOP_START_SECONDS = 5.3;
+const LOOP_END_SECONDS = 11.3;
+const LOOP_FPS = 18;
+const LOOP_FRAME_INTERVAL_MS = 1000 / LOOP_FPS;
+const CACHED_FRAME_WIDTH = 240;
+const CACHED_FRAME_HEIGHT = 320;
 
 let sharedFireVideo: HTMLVideoElement | null = null;
 
@@ -47,11 +53,17 @@ export default function CelestialFireOverlay() {
     let animationFrame = 0;
     let active = true;
     let lastVideoTime = -1;
+    let playbackMode: "source" | "reverse" | "forward" = "source";
+    let loopFrames: HTMLCanvasElement[] = [];
+    let loopFrameIndex = 0;
+    let lastLoopFrameTime = 0;
+    let lastCachedVideoTime = -Infinity;
 
     const stopPlayback = () => {
       active = false;
       window.cancelAnimationFrame(animationFrame);
       video.pause();
+      loopFrames = [];
       context.clearRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
     };
 
@@ -88,7 +100,10 @@ export default function CelestialFireOverlay() {
     if (stage) resizeObserver?.observe(stage);
 
     video.loop = false;
-    video.currentTime = 0;
+    video.playbackRate = 1;
+    // The shared video is preloaded while the page is open. Avoid seeking to
+    // zero when it is already there; that seek can blank the first painted frame.
+    if (video.ended || video.currentTime > 0.04) video.currentTime = 0;
     void video.play().catch(() => undefined);
 
     const smoothstep = (value: number) => {
@@ -96,8 +111,31 @@ export default function CelestialFireOverlay() {
       return t * t * (3 - 2 * t);
     };
 
-    const drawFrame = () => {
+    const drawFrame = (timestamp: number) => {
       if (!active) return;
+      if (playbackMode !== "source") {
+        if (timestamp - lastLoopFrameTime >= LOOP_FRAME_INTERVAL_MS && loopFrames.length > 1) {
+          context.clearRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+          context.drawImage(loopFrames[loopFrameIndex], 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+          lastLoopFrameTime = timestamp;
+
+          if (playbackMode === "reverse") {
+            loopFrameIndex -= 1;
+            if (loopFrameIndex < 0) {
+              playbackMode = "forward";
+              loopFrameIndex = 1;
+            }
+          } else {
+            loopFrameIndex += 1;
+            if (loopFrameIndex >= loopFrames.length) {
+              playbackMode = "reverse";
+              loopFrameIndex = loopFrames.length - 2;
+            }
+          }
+        }
+        animationFrame = window.requestAnimationFrame(drawFrame);
+        return;
+      }
       if (
         video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
         video.videoWidth &&
@@ -144,8 +182,38 @@ export default function CelestialFireOverlay() {
         }
 
         context.putImageData(frame, 0, 0);
+
+        const loopEnd = Number.isFinite(video.duration)
+          ? Math.min(LOOP_END_SECONDS, video.duration)
+          : LOOP_END_SECONDS;
+        const loopStart = Math.min(LOOP_START_SECONDS, Math.max(0, loopEnd - 0.5));
+        if (
+          video.currentTime >= loopStart &&
+          video.currentTime - lastCachedVideoTime >= 1 / LOOP_FPS
+        ) {
+          const cached = document.createElement("canvas");
+          cached.width = CACHED_FRAME_WIDTH;
+          cached.height = CACHED_FRAME_HEIGHT;
+          const cachedContext = cached.getContext("2d");
+          if (cachedContext) {
+            cachedContext.drawImage(canvas, 0, 0, CACHED_FRAME_WIDTH, CACHED_FRAME_HEIGHT);
+            loopFrames.push(cached);
+            lastCachedVideoTime = video.currentTime;
+          }
+        }
+
+        if (video.currentTime >= loopEnd && loopFrames.length > 1) {
+          // The 5.5–7s keyed frames are already in memory: bounce between them
+          // without seeking/reloading the MP4 at the loop boundary.
+          video.pause();
+          playbackMode = "reverse";
+          loopFrameIndex = loopFrames.length - 1;
+          lastLoopFrameTime = timestamp;
+        }
       }
-      if (!video.ended) animationFrame = window.requestAnimationFrame(drawFrame);
+      if (playbackMode !== "source" || !video.ended) {
+        animationFrame = window.requestAnimationFrame(drawFrame);
+      }
     };
 
     animationFrame = window.requestAnimationFrame(drawFrame);
