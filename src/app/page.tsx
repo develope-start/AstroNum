@@ -152,8 +152,17 @@ export default function HomePage() {
   const activeZodiacImage = activePlanetIndex === null ? null : ZODIAC_IMAGE[activePlanetIndex];
 
   useEffect(() => {
-    preloadCelestialFireVideo();
-    preloadCelestialImages([...ZODIAC_IMAGE, ...Object.values(CELESTIAL_IMAGE)]);
+    // Schedule background image preloading during browser idle time so initial paint is instant!
+    const warmUp = () => {
+      preloadCelestialImages([...ZODIAC_IMAGE, ...Object.values(CELESTIAL_IMAGE)]);
+    };
+    if (typeof window !== "undefined") {
+      if ("requestIdleCallback" in window) {
+        (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(warmUp);
+      } else {
+        setTimeout(warmUp, 1200);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -407,6 +416,7 @@ export default function HomePage() {
             ref={celestialSystemRef}
             role="group"
             aria-label="12 ზოდიაქოს ასტროლოგიური სარტყელი, მმართველი მნათობები და ცენტრში დედამიწა"
+            onPointerEnter={() => preloadCelestialFireVideo()}
             onClick={(event) => {
               const target = event.target as Element;
               if (!target.closest("button, .celestial-info-card")) {
@@ -459,7 +469,7 @@ export default function HomePage() {
                     event.stopPropagation();
                     setHoveredCelestial(null);
                     if (selectedCelestial === index) {
-                      setSelectedCelestial(null);
+                      setCelestialAnimationRun((run) => run + 1);
                       return;
                     }
                     setSelectedCelestial(index);
@@ -488,7 +498,7 @@ export default function HomePage() {
                 event.stopPropagation();
                 setHoveredCelestial(null);
                 if (selectedCelestial === "earth") {
-                  setSelectedCelestial(null);
+                  setCelestialAnimationRun((run) => run + 1);
                   return;
                 }
                 setSelectedCelestial("earth");
@@ -507,7 +517,7 @@ export default function HomePage() {
                     ref={zodiacStageRef}
                     aria-hidden="true"
                   >
-                    <img className="celestial-zodiac-image" src={activeZodiacImage} alt="" loading="eager" decoding="sync" fetchPriority="high" />
+                    <img className="celestial-zodiac-image" src={activeZodiacImage} alt="" loading="eager" decoding="async" fetchPriority="high" />
                   </div>
                 )}
                 <div
@@ -544,7 +554,7 @@ export default function HomePage() {
                   src={activeCelestialImage!}
                   alt=""
                   loading="eager"
-                  decoding="sync"
+                  decoding="async"
                   fetchPriority="high"
                 />
                 <CelestialFireOverlay />
