@@ -6002,7 +6002,7 @@ canvas {
   height: 100% !important;
   object-fit: contain;
   object-position: center bottom !important;
-  opacity: 1;
+  opacity: 0.75;
   filter: none;
   pointer-events: none;
   user-select: none;
@@ -6025,7 +6025,7 @@ canvas {
     transform: translateY(14px) scale(var(--celestial-stage-scale, 1));
   }
   to {
-    opacity: 1;
+    opacity: 0.75;
     transform: translateY(0) scale(var(--celestial-stage-scale, 1));
   }
 }
@@ -6060,7 +6060,7 @@ canvas {
 @media (prefers-reduced-motion: reduce) {
   .celestial-stage-image {
     animation: none !important;
-    opacity: 1 !important;
+    opacity: 0.75 !important;
     transform: scale(var(--celestial-stage-scale, 1)) !important;
   }
 

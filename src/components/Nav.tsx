@@ -78,14 +78,14 @@ export default function Nav() {
 
   return (
     <header className="site-header">
-      <div className="nav-shell px-3 py-2 sm:px-4">
-        <div className="flex items-center justify-between gap-3">
+      <div className="nav-shell px-2.5 py-2 sm:px-4">
+        <div className="flex items-center justify-between gap-2 sm:gap-3">
           <Link
             href="/"
-            className={`brand-link group flex shrink-0 items-center gap-3${isBrandLit ? " is-brand-lit" : ""}`}
+            className={`brand-link group flex shrink-0 items-center gap-2 sm:gap-3 pl-1 sm:pl-0${isBrandLit ? " is-brand-lit" : ""}`}
             onClick={triggerExplosion}
           >
-            <div className="brand-mark-container shrink-0">
+            <div className="brand-mark-container relative flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center">
               {/* 3D Stardust Orbital Ring on Hover */}
               <div className="brand-stardust-orbit" aria-hidden="true">
                 <svg viewBox="0 0 100 100" className="h-full w-full">
@@ -119,7 +119,7 @@ export default function Nav() {
 
               {/* Main Celestial Astrolabe Glass Emblem Logo */}
               <span className="brand-mark" aria-hidden="true">
-                <svg viewBox="0 0 48 48" className="h-7 w-7 text-violet-200 transition-transform duration-500 group-hover:scale-110" fill="none">
+                <svg viewBox="0 0 48 48" className="h-6 w-6 sm:h-7 sm:w-7 text-violet-200 transition-transform duration-500 group-hover:scale-110" fill="none">
                   {/* Outer Astrolabe Ring & Cardinal Star Ticks */}
                   <circle cx="24" cy="24" r="21" stroke="currentColor" strokeWidth="1.2" opacity="0.35" strokeDasharray="1 3" />
                   <circle cx="24" cy="24" r="17" stroke="currentColor" strokeWidth="1" opacity="0.6" />
@@ -154,8 +154,8 @@ export default function Nav() {
 
             {/* Brand title with the Georgia silhouette anchored to AstroNum's lower-right edge */}
             <span className="brand-title-wrap flex shrink-0 flex-col justify-center">
-              <span className="brand-title-row flex items-center gap-2">
-                <span className="whitespace-nowrap font-display text-lg font-bold tracking-tight text-slate-100 sm:text-xl drop-shadow-[0_0_10px_rgba(167,139,250,0.3)]">
+              <span className="brand-title-row flex items-center gap-1.5 sm:gap-2">
+                <span className="whitespace-nowrap font-display text-[0.95rem] font-bold tracking-tight text-slate-100 sm:text-xl drop-shadow-[0_0_10px_rgba(167,139,250,0.3)]">
                   Astro<span className="text-violet-300">Num</span><sup className="ml-0.5 text-[0.55em] font-extrabold text-violet-300">°</sup>
                 </span>
                 <svg
@@ -176,18 +176,38 @@ export default function Nav() {
             <Link href="/#calculator" className="nav-quiet-action"><Compass className="h-3.5 w-3.5" />რუკა</Link>
             <Link href="/#features" className="nav-quiet-action">შესაძლებლობები</Link>
             <Link href="/#academy" className="nav-quiet-action">აკადემია</Link>
-            <Link href="/#consultations" className="nav-quiet-action">კონსულტაციები</Link>
             <Link href="/#pricing" className="nav-quiet-action">ტარიფები</Link>
+            <Link href="/#consultations" className="nav-quiet-action">კონსულტაციები</Link>
             {me === null && <Link href="/cabinet" className="nav-action"><User className="h-3.5 w-3.5" />კაბინეტი</Link>}
             {me && <Link href="/cabinet/dashboard" className="nav-action"><LayoutDashboard className="h-3.5 w-3.5" />კაბინეტი</Link>}
             {isAdmin && <Link href="/admin" className="nav-quiet-action"><Shield className="h-3.5 w-3.5 text-violet-300" />ადმინი</Link>}
           </div>
 
-          <div className="flex items-center gap-2 xl:hidden">
-            {me === null && <Link href="/cabinet" className="nav-action" aria-label="კაბინეტში შესვლა" title="კაბინეტში შესვლა"><User className="h-3.5 w-3.5" /><span className="hidden sm:inline">კაბინეტი</span></Link>}
-            {me && <Link href="/cabinet/dashboard" className="nav-action" aria-label="პირადი კაბინეტი" title="პირადი კაბინეტი"><LayoutDashboard className="h-3.5 w-3.5" /></Link>}
-            {isAdmin && <Link href="/admin" className="nav-action" aria-label="ადმინისტრატორის პანელი" title="ადმინისტრატორის პანელი"><Shield className="h-3.5 w-3.5 text-violet-300" /><span className="hidden sm:inline">ადმინი</span></Link>}
-            <button type="button" onClick={() => setMobileMenuOpen((value) => !value)} className="nav-quiet-action px-2.5" aria-label="მენიუს გახსნა">
+          <div className="flex items-center gap-1.5 sm:gap-2 xl:hidden">
+            {me === null && (
+              <Link href="/cabinet" className="nav-action px-2.5 py-1.5 text-xs sm:px-3 sm:py-2" aria-label="კაბინეტში შესვლა" title="კაბინეტში შესვლა">
+                <User className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">კაბინეტი</span>
+              </Link>
+            )}
+            {me && (
+              <Link href="/cabinet/dashboard" className="nav-action px-2.5 py-1.5 text-xs sm:px-3 sm:py-2" aria-label="პირადი კაბინეტი" title="პირადი კაბინეტი">
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">კაბინეტი</span>
+              </Link>
+            )}
+            {isAdmin && (
+              <Link href="/admin" className="nav-action px-2.5 py-1.5 text-xs sm:px-3 sm:py-2" aria-label="ადმინისტრატორის პანელი" title="ადმინისტრატორის პანელი">
+                <Shield className="h-3.5 w-3.5 text-violet-300" />
+                <span className="hidden sm:inline">ადმინი</span>
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((value) => !value)}
+              className="nav-quiet-action flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl p-0"
+              aria-label="მენიუს გახსნა"
+            >
               {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
           </div>
@@ -198,8 +218,8 @@ export default function Nav() {
             <Link href="/#calculator" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start"><Compass className="h-4 w-4" />რუკის შექმნა</Link>
             <Link href="/#features" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">შესაძლებლობები</Link>
             <Link href="/#academy" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">აკადემია</Link>
-            <Link href="/#consultations" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">კონსულტაციები</Link>
             <Link href="/#pricing" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">ტარიფები</Link>
+            <Link href="/#consultations" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">კონსულტაციები</Link>
             {isAdmin && <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start"><Shield className="h-4 w-4 text-violet-300" />ადმინ პანელი</Link>}
             {me && <p className="truncate px-2 text-xs text-slate-500">{me.email}</p>}
           </div>

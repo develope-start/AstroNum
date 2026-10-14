@@ -229,14 +229,25 @@ body.app-body {
 }
 
 .brand-georgia-map {
-  width: 2.2rem !important;
-  height: 1.15rem !important;
+  width: clamp(1.4rem, 4.2vw, 2.2rem) !important;
+  height: auto !important;
+  max-height: 1.15rem !important;
   flex-shrink: 0 !important;
   display: inline-block !important;
   vertical-align: middle !important;
   fill: #c4b5fd !important;
-  filter: drop-shadow(0 0 7px rgba(167, 139, 250, 0.85)) !important;
+  filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.85)) !important;
   transition: all 0.25s ease !important;
+}
+
+@media (max-width: 640px) {
+  .brand-mark-container {
+    width: 2.2rem !important;
+    height: 2.2rem !important;
+  }
+  .brand-stardust-orbit {
+    inset: -0.15rem !important;
+  }
 }
 
 .brand-link:hover .brand-georgia-map {
@@ -1059,16 +1070,17 @@ main:has(.app-home) {
 
 @media (max-width: 360px) {
   .nav-shell {
-    padding-right: 0.75rem !important;
-    padding-left: 0.75rem !important;
+    padding-right: 0.5rem !important;
+    padding-left: 0.5rem !important;
   }
 
   .brand-link {
-    gap: 0.5rem !important;
+    gap: 0.4rem !important;
   }
 
   .brand-georgia-map {
-    display: none !important;
+    width: 1.35rem !important;
+    display: inline-block !important;
   }
 
   .prism-card .birth-gender-options {

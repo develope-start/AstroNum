@@ -75,17 +75,17 @@ const CELESTIAL_PLANET_META = {
 } as const;
 
 const CELESTIAL_IMAGE: Record<keyof typeof CELESTIAL_PLANET_META | "earth", string> = {
-  sun: "/celestial/sun-soft.webp",
-  moon: "/celestial/moon-soft.webp",
-  mercury: "/celestial/mercury-soft.webp",
-  venus: "/celestial/venus-soft.webp",
-  earth: "/celestial/earth-soft.webp",
-  mars: "/celestial/mars-soft.webp",
-  jupiter: "/celestial/jupiter-soft.webp",
-  saturn: "/celestial/saturn-soft.webp",
-  uranus: "/celestial/uranus-soft.webp",
-  neptune: "/celestial/neptune-soft.webp",
-  pluto: "/celestial/pluto-soft.webp",
+  sun: "/celestial/sun.webp",
+  moon: "/celestial/moon.webp",
+  mercury: "/celestial/mercury.webp",
+  venus: "/celestial/venus.webp",
+  earth: "/celestial/earth.webp",
+  mars: "/celestial/mars.webp",
+  jupiter: "/celestial/jupiter.webp",
+  saturn: "/celestial/saturn.webp",
+  uranus: "/celestial/uranus.webp",
+  neptune: "/celestial/neptune.webp",
+  pluto: "/celestial/pluto.webp",
 };
 
 const ZODIAC_IMAGE = [
@@ -601,75 +601,104 @@ export default function HomePage() {
             const isSelected = selectedElementInfo === element.id;
 
             return (
-              <button
-                type="button"
-                key={element.id}
-                onClick={(event) => {
-                  elementTriggerRef.current = event.currentTarget;
-                  toggleElementInfo(element.id);
-                }}
-                aria-expanded={isSelected}
-                aria-controls={isSelected ? "element-temperament-details" : undefined}
-                className={`celestial-element-card celestial-element-card-${element.id}${isSelected ? " is-active" : ""}`}
-              >
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="elem-symbol-box">
-                        {element.symbol}
-                      </span>
-                      <div>
-                        <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">
-                          სტიქია
+              <div key={element.id} className="flex flex-col">
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    elementTriggerRef.current = event.currentTarget;
+                    toggleElementInfo(element.id);
+                  }}
+                  aria-expanded={isSelected}
+                  aria-controls={isSelected ? `element-temperament-details-${element.id}` : undefined}
+                  className={`celestial-element-card celestial-element-card-${element.id}${isSelected ? " is-active" : ""}`}
+                >
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="elem-symbol-box">
+                          {element.symbol}
                         </span>
-                        <h4 className="font-display text-base elem-title">
-                          {element.name}
-                        </h4>
-                      </div>
-                    </div>
-                    <span className="elem-badge">
-                      {isSelected ? "დახურვა ✕" : "ტემპერამენტი ✦"}
-                    </span>
-                  </div>
-
-                  {/* Zodiacs Row */}
-                  <div className="mt-4 border-t border-white/[0.08] pt-3">
-                    <div className="mb-2 flex flex-col items-start gap-1 text-xs sm:flex-row sm:items-center sm:justify-between">
-                      <span className="text-[11px] opacity-75">ზოდიაქოები:</span>
-                      <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 font-bold">
-                        {element.signs.map((s) => (
-                          <span key={s.name} title={s.name} className="hover:opacity-100">
-                            {s.symbol} {s.name}
+                        <div>
+                          <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">
+                            სტიქია
                           </span>
-                        ))}
+                          <h4 className="font-display text-base elem-title">
+                            {element.name}
+                          </h4>
+                        </div>
                       </div>
+                      <span className="elem-badge">
+                        {isSelected ? "დახურვა ✕" : "ტემპერამენტი ✦"}
+                      </span>
                     </div>
 
-                    {/* Rulers Row */}
-                    <div className="flex flex-col items-start gap-1 text-xs sm:flex-row sm:items-center sm:justify-between">
-                      <span className="text-[11px] opacity-75">მმართველები:</span>
-                      <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 font-bold">
-                        {element.planets.map((p) => (
-                          <span key={p.name} title={p.name} className="hover:opacity-100">
-                            {p.symbol} {p.name}
-                          </span>
-                        ))}
+                    {/* Zodiacs Row */}
+                    <div className="mt-4 border-t border-white/[0.08] pt-3">
+                      <div className="mb-2 flex flex-col items-start gap-1 text-xs sm:flex-row sm:items-center sm:justify-between">
+                        <span className="text-[11px] opacity-75">ზოდიაქოები:</span>
+                        <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 font-bold">
+                          {element.signs.map((s) => (
+                            <span key={s.name} title={s.name} className="hover:opacity-100">
+                              {s.symbol} {s.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Rulers Row */}
+                      <div className="flex flex-col items-start gap-1 text-xs sm:flex-row sm:items-center sm:justify-between">
+                        <span className="text-[11px] opacity-75">მმართველები:</span>
+                        <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 font-bold">
+                          {element.planets.map((p) => (
+                            <span key={p.name} title={p.name} className="hover:opacity-100">
+                              {p.symbol} {p.name}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </button>
+                </button>
+
+                {/* Mobile / Tablet Inline Temperament Drawer: expands directly under this card */}
+                {isSelected && (
+                  <div
+                    id={`element-temperament-details-${element.id}`}
+                    role="region"
+                    aria-label={`${element.name} სტიქიის ტემპერამენტის დეტალები`}
+                    className="relative mt-3 rounded-2xl border border-white/15 bg-[#080d1a]/85 p-4 shadow-xl backdrop-blur-2xl duration-200 animate-in fade-in slide-in-from-top-2 lg:hidden sm:p-6"
+                  >
+                    <div className="flex items-center justify-between pb-2 mb-3 border-b border-white/10">
+                      <span className="text-xs font-bold text-violet-200">
+                        {element.name} — ტემპერამენტის ანალიზი
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedElementInfo(null);
+                        }}
+                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-white/10 text-slate-400 transition-all hover:bg-white/20 hover:text-white"
+                        aria-label="დახურვა"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <ElementTemperamentSummary element={element.id} />
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
 
-        {/* Selected Temperament Detail Drawer/Modal */}
+        {/* Desktop Selected Temperament Detail Drawer (full width below the 4-card grid) */}
         {selectedElementInfo && (
           <div
-            id="element-temperament-details"
+            id="element-temperament-details-desktop"
             role="region"
             aria-label={`${ELEMENT_GROUPS.find((element) => element.id === selectedElementInfo)?.name} სტიქიის ტემპერამენტის დეტალები`}
-            className="relative mt-6 rounded-3xl border border-white/15 bg-[#080d1a]/60 p-6 shadow-2xl backdrop-blur-2xl duration-200 animate-in fade-in sm:p-8"
+            className="hidden lg:block relative mt-6 rounded-3xl border border-white/15 bg-[#080d1a]/60 p-6 shadow-2xl backdrop-blur-2xl duration-200 animate-in fade-in sm:p-8"
           >
             <button
               type="button"
@@ -756,11 +785,11 @@ export default function HomePage() {
       {/* Astrological Knowledge Hub & Insights Academy */}
       <KnowledgeHub />
 
-      {/* 1-on-1 Certified Astrologer Consultation Booking */}
-      <ExpertConsultationBooking />
-
       {/* 3-Tier Pricing Table */}
       <PricingTable />
+
+      {/* 1-on-1 Certified Astrologer Consultation Booking */}
+      <ExpertConsultationBooking />
 
     </div>
   );

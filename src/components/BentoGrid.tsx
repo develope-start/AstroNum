@@ -66,12 +66,12 @@ export default function BentoGrid() {
     card.style.setProperty("--mouse-x", `${x}px`);
     card.style.setProperty("--mouse-y", `${y}px`);
 
-    // 3D Perspective Tilt
+    // 3D Perspective Tilt - bends card towards cursor
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rotateX = ((centerY - y) / centerY) * 4;
-    const rotateY = ((x - centerX) / centerX) * 4;
-    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+    const rotateX = ((centerY - y) / centerY) * 6;
+    const rotateY = ((x - centerX) / centerX) * 6;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-3px)`;
   };
 
   const handleSpotlightLeave = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -85,11 +85,11 @@ export default function BentoGrid() {
     "aria-pressed": selectedFeature === id,
     onMouseMove: handleSpotlightMove,
     onMouseLeave: handleSpotlightLeave,
-    onClick: () => setSelectedFeature(id),
+    onClick: () => setSelectedFeature((prev) => (prev === id ? null : id)),
     onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        setSelectedFeature(id);
+        setSelectedFeature((prev) => (prev === id ? null : id));
       }
     },
   });
@@ -161,8 +161,10 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("ephemeris")}
-          className={`cosmic-spotlight group relative order-1 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 md:col-span-2 lg:col-span-3 xl:col-span-3 ${
-            selectedFeature === "ephemeris" ? "border-cyan-400/70 ring-1 ring-cyan-400/40" : "border-white/[0.08]"
+          className={`cosmic-spotlight group relative order-1 cursor-pointer overflow-hidden rounded-2xl border p-6 shadow-xl backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 md:col-span-2 lg:col-span-3 xl:col-span-3 active:scale-[0.99] ${
+            selectedFeature === "ephemeris"
+              ? "border-2 border-cyan-400 bg-cyan-950/40 shadow-[0_0_40px_rgba(56,189,248,0.35)] ring-2 ring-cyan-400/60"
+              : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-cyan-400/50 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.2)]"
           }`}
         >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl transition-all group-hover:bg-cyan-500/20" />
@@ -288,8 +290,10 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("temperament")}
-          className={`cosmic-spotlight group relative order-2 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-amber-500/30 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${
-            selectedFeature === "temperament" ? "border-amber-400/70 ring-1 ring-amber-400/40" : "border-white/[0.08]"
+          className={`cosmic-spotlight group relative order-2 cursor-pointer overflow-hidden rounded-2xl border p-6 shadow-xl backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 active:scale-[0.99] ${
+            selectedFeature === "temperament"
+              ? "border-2 border-amber-400 bg-amber-950/40 shadow-[0_0_40px_rgba(245,158,11,0.35)] ring-2 ring-amber-400/60"
+              : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-amber-400/50 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.2)]"
           }`}
         >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-amber-500/10 blur-3xl transition-all group-hover:bg-amber-500/20" />
@@ -374,8 +378,10 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("synastry")}
-          className={`cosmic-spotlight group relative order-4 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-pink-500/30 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 ${
-            selectedFeature === "synastry" ? "border-pink-400/70 ring-1 ring-pink-400/40" : "border-white/[0.08]"
+          className={`cosmic-spotlight group relative order-4 cursor-pointer overflow-hidden rounded-2xl border p-6 shadow-xl backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 active:scale-[0.99] ${
+            selectedFeature === "synastry"
+              ? "border-2 border-pink-400 bg-pink-950/40 shadow-[0_0_40px_rgba(244,63,94,0.35)] ring-2 ring-pink-400/60"
+              : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-pink-400/50 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.2)]"
           }`}
         >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-pink-500/10 blur-3xl transition-all group-hover:bg-pink-500/20" />
@@ -433,62 +439,152 @@ export default function BentoGrid() {
         </div>
 
         {/* ═══════════════════════════════════════════════
-            Card 4: Gemini AI Astrology Intelligence
+            Column 3: Modular Astro Spaces (Left Side - 2 Frames)
             ═══════════════════════════════════════════════ */}
-        <div
-          {...featureSelectionProps("ai")}
-          className={`cosmic-spotlight group relative order-5 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-500/30 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
-            selectedFeature === "ai" ? "border-violet-400/70 ring-1 ring-violet-400/40" : "border-white/[0.08]"
-          }`}
-        >
-          <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl transition-all group-hover:bg-violet-500/20" />
-
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-violet-400/30 bg-violet-950/40 text-violet-300 shadow-inner">
-            <Sparkles className="h-6 w-6" />
+        <div className="order-5 flex flex-col gap-5 justify-between h-full xl:col-span-1">
+          {/* Frame 1 (Top) */}
+          <div
+            {...featureSelectionProps("modular-slot-1")}
+            className={`cosmic-spotlight group relative flex flex-1 flex-col justify-between overflow-hidden rounded-2xl border p-5 shadow-xl backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 active:scale-[0.99] ${
+              selectedFeature === "modular-slot-1"
+                ? "border-2 border-cyan-400 bg-cyan-950/40 shadow-[0_0_35px_rgba(56,189,248,0.35)] ring-2 ring-cyan-400/60"
+                : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-cyan-400/50 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.2)]"
+            }`}
+          >
+            <div className="absolute right-0 top-0 -mr-12 -mt-12 h-36 w-36 rounded-full bg-cyan-500/10 blur-2xl transition-all group-hover:bg-cyan-500/20" />
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-950/40 text-cyan-300 shadow-inner">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <span className="font-mono text-[11px] font-semibold text-cyan-400/80 bg-cyan-950/50 px-2.5 py-1 rounded-full border border-cyan-500/20">
+                  მოდულური ჩარჩო · 01
+                </span>
+              </div>
+              <h3 className="mt-3.5 font-display text-base font-bold text-white">
+                სინასტრიული რუკა & ასპექტარიუმი
+              </h3>
+              <p className="mt-1.5 text-xs text-slate-300 leading-relaxed">
+                ინდივიდუალური ასტრო-მოდული პარტნიორული რუკების, კომპოზიტებისა და ასპექტების სიღრმისეული ანალიზისთვის.
+              </p>
+            </div>
+            <div className="mt-4 flex items-center justify-between rounded-lg border border-dashed border-cyan-400/30 bg-cyan-950/20 p-2.5 text-[11px] font-mono text-cyan-300">
+              <span className="flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                მოდული აქტიურია
+              </span>
+              <span className="text-slate-400">კონფიგურირებადი</span>
+            </div>
           </div>
-          <h3 className="mt-5 font-display text-xl font-bold text-white">
-            Gemini AI ასტროლოგიური ინტელექტი
-          </h3>
-          <p className="mt-2 text-base text-slate-300">
-            ქართული ასტროლოგიური ინტერპრეტაცია გამოთვლილი რუკის მონაცემებზე დაყრდნობით. მუშაობს მხოლოდ სერვერზე Gemini API-ის გასაღების კონფიგურაციისას.
-          </p>
 
-          <div className="mt-5 flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-3 text-xs text-slate-300 font-mono">
-            <span className="flex items-center gap-1.5 text-cyan-300">
-              <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
-              Gemini API
-            </span>
-            <span className="text-violet-400 font-semibold">გასაღების კონფიგურაციაზეა დამოკიდებული</span>
+          {/* Frame 2 (Bottom) */}
+          <div
+            {...featureSelectionProps("modular-slot-2")}
+            className={`cosmic-spotlight group relative flex flex-1 flex-col justify-between overflow-hidden rounded-2xl border p-5 shadow-xl backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 active:scale-[0.99] ${
+              selectedFeature === "modular-slot-2"
+                ? "border-2 border-indigo-400 bg-indigo-950/40 shadow-[0_0_35px_rgba(99,102,241,0.35)] ring-2 ring-indigo-400/60"
+                : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-indigo-400/50 hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.2)]"
+            }`}
+          >
+            <div className="absolute right-0 top-0 -mr-12 -mt-12 h-36 w-36 rounded-full bg-indigo-500/10 blur-2xl transition-all group-hover:bg-indigo-500/20" />
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-indigo-400/30 bg-indigo-950/40 text-indigo-300 shadow-inner">
+                  <Activity className="h-5 w-5" />
+                </div>
+                <span className="font-mono text-[11px] font-semibold text-indigo-300/80 bg-indigo-950/50 px-2.5 py-1 rounded-full border border-indigo-500/20">
+                  მოდულური ჩარჩო · 02
+                </span>
+              </div>
+              <h3 className="mt-3.5 font-display text-base font-bold text-white">
+                ტრანზიტული ქრონომეტრი & ეფემერიდი
+              </h3>
+              <p className="mt-1.5 text-xs text-slate-300 leading-relaxed">
+                დროითი დინამიკის მოდული პლანეტარული ციკლებისა და კოსმოსური რეზონანსების უწყვეტი მონიტორინგისთვის.
+              </p>
+            </div>
+            <div className="mt-4 flex items-center justify-between rounded-lg border border-dashed border-indigo-400/30 bg-indigo-950/20 p-2.5 text-[11px] font-mono text-indigo-300">
+              <span className="flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                AstroNum Core
+              </span>
+              <span className="text-slate-400">რეალურ დროში</span>
+            </div>
           </div>
         </div>
 
         {/* ═══════════════════════════════════════════════
-            Card 5: Birth Time Rectification
+            Column 4: Stacked Feature Cards (Gemini AI + Rectification)
             ═══════════════════════════════════════════════ */}
-        <div
-          {...featureSelectionProps("rectification")}
-          className={`cosmic-spotlight group relative order-6 cursor-pointer overflow-hidden rounded-2xl border bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
-            selectedFeature === "rectification" ? "border-emerald-400/70 ring-1 ring-emerald-400/40" : "border-white/[0.08]"
-          }`}
-        >
-          <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl transition-all group-hover:bg-emerald-500/20" />
-
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-400/30 bg-emerald-950/40 text-emerald-300 shadow-inner">
-            <Compass className="h-6 w-6" />
+        <div className="order-6 flex flex-col gap-5 justify-between h-full xl:col-span-1">
+          {/* Gemini AI Intelligence */}
+          <div
+            {...featureSelectionProps("ai")}
+            className={`cosmic-spotlight group relative flex flex-1 flex-col justify-between overflow-hidden rounded-2xl border p-5 shadow-xl backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 active:scale-[0.99] ${
+              selectedFeature === "ai"
+                ? "border-2 border-violet-400 bg-violet-950/40 shadow-[0_0_35px_rgba(139,92,246,0.35)] ring-2 ring-violet-400/60"
+                : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-violet-500/50 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.2)]"
+            }`}
+          >
+            <div className="absolute right-0 top-0 -mr-12 -mt-12 h-36 w-36 rounded-full bg-violet-500/10 blur-2xl transition-all group-hover:bg-violet-500/20" />
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-400/30 bg-violet-950/40 text-violet-300 shadow-inner">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <span className="font-mono text-[11px] font-semibold text-violet-300/80 bg-violet-950/50 px-2.5 py-1 rounded-full border border-violet-500/20">
+                  Gemini API
+                </span>
+              </div>
+              <h3 className="mt-3.5 font-display text-base font-bold text-white">
+                Gemini AI ასტროლოგიური ინტელექტი
+              </h3>
+              <p className="mt-1.5 text-xs text-slate-300 leading-relaxed">
+                ქართული ასტროლოგიური ინტერპრეტაცია გამოთვლილი რუკის მონაცემებზე დაყრდნობით. მუშაობს სერვერზე Gemini API-ის კონფიგურაციით.
+              </p>
+            </div>
+            <div className="mt-4 flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-2.5 text-xs text-slate-300 font-mono">
+              <span className="flex items-center gap-1.5 text-cyan-300">
+                <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+                Gemini API
+              </span>
+              <span className="text-violet-400 font-semibold text-[11px]">კონფიგურირებადი</span>
+            </div>
           </div>
-          <h3 className="mt-5 font-display text-xl font-bold text-white">
-            დაბადების დროის რექტიფიკაცია
-          </h3>
-          <p className="mt-2 text-base text-slate-300">
-            შეადარეთ Swiss Ephemeris-ით გამოთვლილი Solar Arc დროითი კანდიდატები ცხოვრებისეულ მოვლენებს. ეს ინტერპრეტაციული რანჟირებაა და დაბადების ზუსტ დროს არ ადასტურებს.
-          </p>
 
-          <div className="mt-5 flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-3 text-xs">
-            <span className="flex items-center gap-1.5 text-slate-300">
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              Solar Arc · 1-წუთიანი სკანი
-            </span>
-            <span className="text-emerald-400 font-mono text-[11px]">ჰეურისტიკული შეფასება</span>
+          {/* Birth Time Rectification */}
+          <div
+            {...featureSelectionProps("rectification")}
+            className={`cosmic-spotlight group relative flex flex-1 flex-col justify-between overflow-hidden rounded-2xl border p-5 shadow-xl backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 active:scale-[0.99] ${
+              selectedFeature === "rectification"
+                ? "border-2 border-emerald-400 bg-emerald-950/40 shadow-[0_0_35px_rgba(16,185,129,0.35)] ring-2 ring-emerald-400/60"
+                : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-emerald-500/50 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.2)]"
+            }`}
+          >
+            <div className="absolute right-0 top-0 -mr-12 -mt-12 h-36 w-36 rounded-full bg-emerald-500/10 blur-2xl transition-all group-hover:bg-emerald-500/20" />
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-400/30 bg-emerald-950/40 text-emerald-300 shadow-inner">
+                  <Compass className="h-5 w-5" />
+                </div>
+                <span className="font-mono text-[11px] font-semibold text-emerald-300/80 bg-emerald-950/50 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                  Solar Arc მეთოდი
+                </span>
+              </div>
+              <h3 className="mt-3.5 font-display text-base font-bold text-white">
+                დაბადების დროის რექტიფიკაცია
+              </h3>
+              <p className="mt-1.5 text-xs text-slate-300 leading-relaxed">
+                Swiss Ephemeris-ით გამოთვლილი Solar Arc კანდიდატების შედარება ცხოვრებისეულ მოვლენებთან ჰეურისტიკული რანჟირებით.
+              </p>
+            </div>
+            <div className="mt-4 flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-2.5 text-xs">
+              <span className="flex items-center gap-1.5 text-slate-300">
+                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                Solar Arc · 1-წთ სკანი
+              </span>
+              <span className="text-emerald-400 font-mono text-[11px]">ჰეურისტიკა</span>
+            </div>
           </div>
         </div>
 
@@ -497,8 +593,10 @@ export default function BentoGrid() {
             ═══════════════════════════════════════════════ */}
         <div
           {...featureSelectionProps("lunar-calendar")}
-          className={`cosmic-spotlight group relative order-3 cursor-pointer overflow-hidden rounded-2xl border bg-[#0a0b1c]/50 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-violet-400/40 hover:shadow-[0_0_30px_-5px_rgba(167,139,250,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${
-            selectedFeature === "lunar-calendar" ? "border-violet-400/70 ring-1 ring-violet-400/40" : "border-violet-300/[0.12]"
+          className={`cosmic-spotlight group relative order-3 cursor-pointer overflow-hidden rounded-2xl border p-6 shadow-xl backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 active:scale-[0.99] ${
+            selectedFeature === "lunar-calendar"
+              ? "border-2 border-violet-400 bg-violet-950/60 shadow-[0_0_40px_rgba(167,139,250,0.35)] ring-2 ring-violet-400/60"
+              : "border-violet-300/[0.12] bg-[#0a0b1c]/50 hover:border-violet-400/50 hover:shadow-[0_0_30px_-5px_rgba(167,139,250,0.2)]"
           }`}
         >
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl transition-all group-hover:bg-violet-500/20" />

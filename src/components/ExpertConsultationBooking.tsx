@@ -102,28 +102,65 @@ export default function ExpertConsultationBooking() {
           return (
             <div
               key={srv.id}
-              className={`flex flex-col justify-between rounded-3xl p-6 transition-all backdrop-blur-xl ${
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedService(srv)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedService(srv);
+                }
+              }}
+              onMouseMove={(e) => {
+                const card = e.currentTarget;
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty("--mouse-x", `${x}px`);
+                card.style.setProperty("--mouse-y", `${y}px`);
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((centerY - y) / centerY) * 5;
+                const rotateY = ((x - centerX) / centerX) * 5;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-3px)`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)";
+              }}
+              className={`cosmic-spotlight group relative flex cursor-pointer flex-col justify-between rounded-3xl p-6 backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${
                 isSelected
-                  ? "border-2 border-cyan-400 bg-cyan-950/30 shadow-xl shadow-cyan-500/15"
-                  : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-white/20 hover:translate-y-[-2px]"
+                  ? "border-2 border-cyan-400/90 bg-cyan-950/30 shadow-[0_0_35px_-5px_rgba(56,189,248,0.3)] ring-1 ring-cyan-300/40 -translate-y-2 z-10"
+                  : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-cyan-400/50 hover:bg-[#0c1326]/50 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.2)] hover:-translate-y-2"
               }`}
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] text-cyan-300 border border-white/10">
+                  <div className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-300 shadow-inner ${
+                    isSelected
+                      ? "border-cyan-400/50 bg-cyan-950/60 text-cyan-200 shadow-cyan-500/20"
+                      : "border-white/10 bg-white/[0.04] text-cyan-300 group-hover:border-cyan-400/40 group-hover:bg-cyan-950/40 group-hover:scale-110"
+                  }`}>
                     <Icon className="h-5 w-5" />
                   </div>
-                  <span className="rounded-full bg-cyan-950/40 px-2.5 py-0.5 text-[10px] font-mono font-semibold text-cyan-300 border border-cyan-500/20">
-                    {srv.badge}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="rounded-full bg-cyan-950/50 px-2.5 py-0.5 text-[10px] font-mono font-semibold text-cyan-300 border border-cyan-500/20">
+                      {srv.badge}
+                    </span>
+                    {isSelected && (
+                      <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" title="არჩეულია" />
+                    )}
+                  </div>
                 </div>
 
-                <h4 className="mt-4 font-display text-base font-bold text-white min-h-[44px]">
+                <h4 className="mt-4 font-display text-base font-bold text-white min-h-[44px] group-hover:text-cyan-100 transition-colors">
                   {srv.name}
                 </h4>
 
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="font-mono text-2xl font-extrabold text-white">
+                  <span className={`font-mono text-2xl font-extrabold transition-colors duration-200 ${
+                    isSelected ? "text-stellar-gold" : "text-white group-hover:text-stellar-gold"
+                  }`}>
                     {srv.price}
                   </span>
                   <span className="text-[11px] text-slate-400 font-mono">
@@ -138,8 +175,15 @@ export default function ExpertConsultationBooking() {
 
               <button
                 type="button"
-                onClick={() => openBookingFor(srv)}
-                className="mt-6 w-full rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 py-3 text-center text-xs font-bold text-white shadow-lg shadow-cyan-500/15 hover:scale-102 transition-all cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openBookingFor(srv);
+                }}
+                className={`mt-6 w-full rounded-xl py-3 text-center text-xs font-bold transition-all cursor-pointer ${
+                  isSelected
+                    ? "bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-lg shadow-cyan-500/25 scale-[1.02] hover:shadow-cyan-500/40"
+                    : "border border-white/10 bg-white/[0.04] text-white hover:bg-gradient-to-r hover:from-cyan-500 hover:to-indigo-600 hover:border-transparent hover:shadow-md"
+                }`}
               >
                 სესიის დაჯავშნა
               </button>

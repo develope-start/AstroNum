@@ -187,38 +187,60 @@ export default function KnowledgeHub() {
           return (
             <article
               key={art.id}
-              className="group flex flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:translate-y-[-4px] hover:border-cyan-500/30 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.15)]"
+              role="button"
+              tabIndex={0}
+              onClick={() => setReadingArticle(art)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setReadingArticle(art);
+                }
+              }}
+              onMouseMove={(e) => {
+                const card = e.currentTarget;
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty("--mouse-x", `${x}px`);
+                card.style.setProperty("--mouse-y", `${y}px`);
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((centerY - y) / centerY) * 6;
+                const rotateY = ((x - centerX) / centerX) * 6;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)";
+              }}
+              className="cosmic-spotlight group relative flex cursor-pointer flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#080d1a]/35 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-cyan-400/50 hover:bg-[#0c1428]/50 hover:shadow-[0_0_35px_-5px_rgba(56,189,248,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 active:scale-[0.99]"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-mono font-semibold ${art.badgeColor}`}>
+                  <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-mono font-semibold transition-all group-hover:shadow-[0_0_12px_rgba(56,189,248,0.2)] ${art.badgeColor}`}>
                     {art.categoryLabel}
                   </span>
-                  <span className="text-[11px] text-slate-500">{art.readTime}</span>
+                  <span className="text-[11px] text-slate-400 font-mono">{art.readTime}</span>
                 </div>
 
                 <div className="mt-5 flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-cyan-300 group-hover:scale-110 transition-transform">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-cyan-300 transition-all duration-300 group-hover:scale-110 group-hover:border-cyan-400/40 group-hover:bg-cyan-950/50 group-hover:text-cyan-200 shadow-inner">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="font-display text-base font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-2">
+                  <h3 className="font-display text-base font-bold text-white transition-colors duration-200 group-hover:text-cyan-200 line-clamp-2">
                     {art.title}
                   </h3>
                 </div>
 
-                <p className="mt-3 text-xs leading-relaxed text-slate-400 line-clamp-3">
+                <p className="mt-3 text-xs leading-relaxed text-slate-300 line-clamp-3">
                   {art.excerpt}
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setReadingArticle(art)}
-                className="mt-6 flex items-center justify-between border-t border-white/[0.06] pt-4 text-xs font-semibold text-cyan-400 transition-colors group-hover:text-cyan-300 cursor-pointer"
-              >
+              <div className="mt-6 flex items-center justify-between border-t border-white/[0.06] pt-4 text-xs font-semibold text-cyan-400 transition-colors group-hover:text-cyan-200">
                 <span>სრული სტატიის წაკითხვა</span>
-                <span className="text-sm">→</span>
-              </button>
+                <span className="text-sm transition-transform duration-300 group-hover:translate-x-1.5">→</span>
+              </div>
             </article>
           );
         })}

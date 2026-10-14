@@ -88,7 +88,8 @@ const PLANS: PlanConfig[] = [
 
 export default function PricingTable() {
   const [duration, setDuration] = useState<Duration>("month");
-  const [selectedPlan, setSelectedPlan] = useState<PlanConfig["id"] | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PlanConfig["id"]>("pro");
+  const [hoveredPlan, setHoveredPlan] = useState<PlanConfig["id"] | null>(null);
   const [checkoutModalPlan, setCheckoutModalPlan] = useState<PlanConfig | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [availableProviders, setAvailableProviders] = useState<PaymentProvider[]>([]);
@@ -265,21 +266,39 @@ export default function PricingTable() {
       {/* 3-Tier Grid */}
       <div className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:gap-8 items-stretch">
         {PLANS.map((plan) => {
-          const isPro = plan.id === "pro";
+          const activePlanId = hoveredPlan ?? selectedPlan;
+          const isActive = activePlanId === plan.id;
+          const isSelected = selectedPlan === plan.id;
+
           return (
             <div
               key={plan.id}
               role="group"
               aria-label={`${plan.name} ტარიფი`}
+              onMouseEnter={() => setHoveredPlan(plan.id)}
+              onMouseLeave={(e) => {
+                setHoveredPlan(null);
+                e.currentTarget.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)";
+              }}
               onClick={() => setSelectedPlan(plan.id)}
-              className={`cosmic-spotlight relative flex cursor-pointer flex-col justify-between rounded-3xl p-7 shadow-2xl backdrop-blur-2xl transition-all duration-300 hover:translate-y-[-4px] focus-within:ring-2 focus-within:ring-cyan-300 ${
-                isPro
-                  ? `border-2 bg-[#12182c]/45 hover:border-cyan-400 hover:shadow-[0_0_40px_-5px_rgba(99,102,241,0.35)] md:-translate-y-2 ${
-                      selectedPlan === plan.id ? "border-cyan-300 ring-1 ring-cyan-300/50" : "border-indigo-500/80"
-                    }`
-                  : `border bg-[#080d1a]/35 hover:border-white/20 ${
-                      selectedPlan === plan.id ? "border-cyan-300/80 ring-1 ring-cyan-300/40" : "border-white/[0.08]"
-                    }`
+              onMouseMove={(e) => {
+                const card = e.currentTarget;
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty("--mouse-x", `${x}px`);
+                card.style.setProperty("--mouse-y", `${y}px`);
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((centerY - y) / centerY) * 5;
+                const rotateY = ((x - centerX) / centerX) * 5;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+              }}
+              className={`cosmic-spotlight relative flex cursor-pointer flex-col justify-between rounded-3xl p-7 shadow-2xl backdrop-blur-2xl transition-all duration-300 focus-within:ring-2 focus-within:ring-cyan-300 ${
+                isActive
+                  ? "border-2 border-cyan-400/90 bg-[#12182c]/65 shadow-[0_0_40px_-5px_rgba(56,189,248,0.35)] ring-1 ring-cyan-300/40 md:-translate-y-3 z-10"
+                  : "border border-white/[0.08] bg-[#080d1a]/35 hover:border-white/20 md:translate-y-0"
               }`}
             >
               {plan.badge && (
@@ -294,21 +313,25 @@ export default function PricingTable() {
                 <div className="flex items-center justify-between">
                   <h3 className="font-display text-lg font-bold text-white">{plan.name}</h3>
                   <div className="flex items-center gap-2">
-                    {isPro && (
+                    {plan.id === "pro" && (
                       <span className="rounded-lg bg-indigo-500/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-indigo-300 border border-indigo-500/20">
                         პოპულარული
                       </span>
                     )}
                     <button
                       type="button"
-                      aria-pressed={selectedPlan === plan.id}
+                      aria-pressed={isSelected}
                       onClick={(event) => {
                         event.stopPropagation();
                         setSelectedPlan(plan.id);
                       }}
-                      className="rounded-lg border border-white/10 px-2 py-1 text-[10px] font-semibold text-slate-300 transition-colors hover:border-cyan-300/50 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+                      className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${
+                        isActive
+                          ? "border border-cyan-400/60 bg-cyan-950/60 text-cyan-200 shadow-[0_0_12px_rgba(56,189,248,0.3)]"
+                          : "border border-white/10 text-slate-400 hover:border-cyan-300/40 hover:text-white"
+                      }`}
                     >
-                      {selectedPlan === plan.id ? "არჩეულია" : "არჩევა"}
+                      {isSelected ? "არჩეულია" : "არჩევა"}
                     </button>
                   </div>
                 </div>
@@ -316,7 +339,7 @@ export default function PricingTable() {
                 <p className="mt-1 text-xs text-slate-400 min-h-[34px]">{plan.description}</p>
 
                 <div className="mt-6 flex items-baseline gap-1.5">
-                  <span className={`font-display text-4xl font-extrabold ${isPro ? "text-stellar-gold" : "text-white"}`}>
+                  <span className={`font-display text-4xl font-extrabold transition-colors duration-200 ${isSelected ? "text-stellar-gold" : "text-white"}`}>
                     {plan.prices[duration]}
                   </span>
                   <span className="text-xs text-slate-400">/ {durationLabel}</span>
@@ -342,12 +365,13 @@ export default function PricingTable() {
                 type="button"
                 onClick={(event) => {
                   event.stopPropagation();
+                  setSelectedPlan(plan.id);
                   handleOpenCheckout(plan, event.currentTarget);
                 }}
                 className={`mt-8 w-full rounded-xl py-3.5 text-center text-xs font-bold transition-all cursor-pointer ${
-                  isPro
-                    ? "bg-gradient-to-r from-cyan-500 via-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25 hover:scale-102 hover:shadow-indigo-500/40"
-                    : "border border-white/10 bg-white/[0.04] text-white hover:bg-white/10"
+                  isActive
+                    ? "bg-gradient-to-r from-cyan-500 via-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/30 scale-[1.02] hover:shadow-indigo-500/50"
+                    : "border border-white/10 bg-white/[0.04] text-white hover:bg-white/10 hover:border-white/20"
                 }`}
               >
                 {plan.buttonText}
