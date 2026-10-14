@@ -7,6 +7,7 @@ import { readApiResponse } from "@/lib/apiResponse";
 import { formatPrice, type BillingDuration } from "@/lib/billing/plans";
 
 type Duration = BillingDuration;
+type PaymentProvider = { id: "BOG" | "TBC"; label: string };
 
 interface PlanConfig {
   id: "free" | "pro" | "enterprise";
@@ -90,6 +91,8 @@ export default function PricingTable() {
   const [selectedPlan, setSelectedPlan] = useState<PlanConfig["id"] | null>(null);
   const [checkoutModalPlan, setCheckoutModalPlan] = useState<PlanConfig | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [availableProviders, setAvailableProviders] = useState<PaymentProvider[]>([]);
+  const [selectedProvider, setSelectedProvider] = useState<PaymentProvider["id"]>("BOG");
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const checkoutTriggerRef = useRef<HTMLButtonElement | null>(null);
   const checkoutDialogRef = useRef<HTMLDivElement | null>(null);
@@ -116,7 +119,7 @@ export default function PricingTable() {
       const response = await fetch("/api/billing/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: checkoutModalPlan.id, duration }),
+        body: JSON.stringify({ plan: checkoutModalPlan.id, duration, provider: selectedProvider }),
       });
       const data = await readApiResponse<{ checkoutUrl?: string; error?: string }>(response);
       if (!response.ok) {
@@ -125,7 +128,9 @@ export default function PricingTable() {
       }
       if (!data.checkoutUrl) throw new Error("გადახდის გვერდის მისამართი არ დაბრუნებულა.");
       const checkoutUrl = new URL(data.checkoutUrl);
-      if (checkoutUrl.protocol !== "https:" || !(checkoutUrl.hostname === "bog.ge" || checkoutUrl.hostname.endsWith(".bog.ge"))) {
+      const isBogHost = checkoutUrl.hostname === "bog.ge" || checkoutUrl.hostname.endsWith(".bog.ge");
+      const isTbcHost = checkoutUrl.hostname === "tpay.tbcbank.ge" || checkoutUrl.hostname.endsWith(".tbcbank.ge");
+      if (checkoutUrl.protocol !== "https:" || !(selectedProvider === "BOG" ? isBogHost : isTbcHost)) {
         throw new Error("გადახდის პროვაიდერმა უსაფრთხო მისამართი არ დააბრუნა.");
       }
       window.location.assign(checkoutUrl.toString());
@@ -135,6 +140,26 @@ export default function PricingTable() {
       setCheckoutLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (!checkoutModalPlan) return;
+    let active = true;
+    setAvailableProviders([]);
+    setCheckoutError(null);
+    fetch("/api/billing/options", { cache: "no-store" })
+      .then(async (response) => {
+        const data = await readApiResponse<{ providers?: PaymentProvider[]; error?: string }>(response);
+        if (!response.ok) throw new Error(data.error || "გადახდის მეთოდები ვერ ჩაიტვირთა.");
+        const providers = data.providers ?? [];
+        if (!providers.length) throw new Error("ამჟამად გადახდის პროვაიდერი ჩართული არ არის.");
+        if (active) {
+          setAvailableProviders(providers);
+          setSelectedProvider((current) => providers.some((provider) => provider.id === current) ? current : providers[0]!.id);
+        }
+      })
+      .catch((error) => { if (active) setCheckoutError(error instanceof Error ? error.message : "გადახდის მეთოდები ვერ ჩაიტვირთა."); });
+    return () => { active = false; };
+  }, [checkoutModalPlan]);
 
   useEffect(() => {
     if (!checkoutModalPlan) {
@@ -360,9 +385,17 @@ export default function PricingTable() {
                 {checkoutModalPlan.name} · {durationLabel}
               </h3>
               <p id="checkout-description" className="mt-3 text-xs leading-relaxed text-slate-300">
-                გადასახდელი თანხა: <strong className="text-white">{checkoutModalPlan.prices[duration]}</strong>. გადახდა მუშავდება საქართველოს ბანკის დაცულ გვერდზე.
-                პაკეტი გააქტიურდება მხოლოდ ბანკის მიერ გადახდის დადასტურების შემდეგ; გამოწერა ავტომატურად არ განახლდება.
+                გადასახდელი თანხა: <strong className="text-white">{checkoutModalPlan.prices[duration]}</strong>. აირჩიე ბანკი უსაფრთხო გადახდის გასაგრძელებლად. პაკეტი გააქტიურდება მხოლოდ ბანკის მიერ გადახდის დადასტურების შემდეგ; გამოწერა ავტომატურად არ განახლდება.
               </p>
+              <fieldset className="mt-5 space-y-2 text-left" disabled={checkoutLoading || availableProviders.length === 0}>
+                <legend className="mb-2 text-xs font-semibold text-slate-300">გადახდის ბანკი</legend>
+                {availableProviders.map((provider) => (
+                  <label key={provider.id} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 text-sm transition ${selectedProvider === provider.id ? "border-cyan-400 bg-cyan-950/40 text-white" : "border-white/10 bg-white/[0.03] text-slate-300"}`}>
+                    <input type="radio" name="billing-provider" value={provider.id} checked={selectedProvider === provider.id} onChange={() => setSelectedProvider(provider.id)} className="accent-cyan-400" />
+                    {provider.label}
+                  </label>
+                ))}
+              </fieldset>
               {checkoutError && (
                 <div role="alert" className="mt-4 rounded-xl border border-rose-500/30 bg-rose-950/30 p-3 text-left text-xs text-rose-200">
                   <p>{checkoutError}</p>
@@ -374,7 +407,7 @@ export default function PricingTable() {
               <button
                 type="button"
                 onClick={() => void beginCheckout()}
-                disabled={checkoutLoading}
+                disabled={checkoutLoading || availableProviders.length === 0}
                 className="mt-6 w-full rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 py-3 text-xs font-bold text-white transition hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
               >
                 {checkoutLoading ? "გადახდის გვერდი მზადდება…" : "გადახდაზე გადასვლა"}

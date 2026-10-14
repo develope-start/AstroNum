@@ -17,6 +17,7 @@ import AiAstrologyAssistant from "@/components/AiAstrologyAssistant";
 import RectificationCalculator from "@/components/RectificationCandidateCalculator";
 import KnowledgeHub from "@/components/KnowledgeHub";
 import ExpertConsultationBooking from "@/components/ExpertConsultationBooking";
+import CelestialFireOverlay, { preloadCelestialFireVideo } from "@/components/CelestialFireOverlay";
 import { useMe } from "@/lib/useMe";
 
 type Tab = "natal" | "synastry" | "transit" | "advanced" | "ai" | "rectification";
@@ -132,6 +133,20 @@ export default function HomePage() {
     ? null
     : CELESTIAL_IMAGE[activeCelestial === "earth" ? "earth" : CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet];
   const activeZodiacImage = activePlanetIndex === null ? null : ZODIAC_IMAGE[activePlanetIndex];
+
+  useEffect(() => {
+    preloadCelestialFireVideo();
+    if (typeof window !== "undefined") {
+      ZODIAC_IMAGE.forEach((src) => {
+        const img = new window.Image();
+        img.src = src;
+      });
+      Object.values(CELESTIAL_IMAGE).forEach((src) => {
+        const img = new window.Image();
+        img.src = src;
+      });
+    }
+  }, []);
 
   useLayoutEffect(() => {
     if (selectedCelestial === null) return;
@@ -467,7 +482,7 @@ export default function HomePage() {
                     ref={zodiacStageRef}
                     aria-hidden="true"
                   >
-                    <Image className="celestial-zodiac-image" src={activeZodiacImage} alt="" fill sizes="50vw" />
+                    <img className="celestial-zodiac-image" src={activeZodiacImage} alt="" loading="eager" decoding="sync" />
                   </div>
                 )}
                 <div
@@ -503,7 +518,10 @@ export default function HomePage() {
                   className="celestial-stage-image"
                   src={activeCelestialImage!}
                   alt=""
+                  loading="eager"
+                  decoding="sync"
                 />
+                <CelestialFireOverlay />
               </div>
             )}
           </div>

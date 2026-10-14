@@ -40,6 +40,7 @@ export async function getCurrentEntitlement(userId: string): Promise<{
 export async function requirePlanAccess(
   req: NextRequest,
   minimumPlan: Exclude<BillingPlan, "free">,
+  feature?: PaidFeature,
 ): Promise<NextResponse | null> {
   const session = await getActiveSessionFromRequest(req);
   if (!session) {
@@ -49,6 +50,13 @@ export async function requirePlanAccess(
     );
   }
   if (session.role === "ADMIN") return null;
+
+  if (feature) {
+    const { isBillingFeatureEnabled } = await import("@/lib/billing/settings");
+    if (!(await isBillingFeatureEnabled(feature))) {
+      return NextResponse.json({ error: "სერვისი დროებით გამორთულია ადმინისტრატორის მიერ.", code: "FEATURE_DISABLED" }, { status: 503 });
+    }
+  }
 
   const entitlement = await getCurrentEntitlement(session.userId);
   if (PLAN_RANK[entitlement.plan] >= PLAN_RANK[minimumPlan]) return null;
@@ -67,5 +75,5 @@ export async function requirePlanAccess(
 }
 
 export function requireFeatureAccess(req: NextRequest, feature: PaidFeature): Promise<NextResponse | null> {
-  return requirePlanAccess(req, FEATURE_MINIMUM_PLAN[feature]);
+  return requirePlanAccess(req, FEATURE_MINIMUM_PLAN[feature], feature);
 }

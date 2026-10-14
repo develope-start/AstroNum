@@ -84,7 +84,7 @@ After the server starts, verify `GET /api/health`. It reports database connectiv
    `DATABASE_URL`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `APP_URL`,
    `RESEND_API_KEY`, `EMAIL_FROM`, `GEMINI_API_KEY` და (გადახდის გასააქტიურებლად)
    `BOG_ENVIRONMENT`, `BOG_CLIENT_ID`, `BOG_CLIENT_SECRET`,
-   `BOG_CALLBACK_URL`, `BOG_CALLBACK_PUBLIC_KEY`.
+   `BOG_CALLBACK_URL`, `BOG_CALLBACK_PUBLIC_KEY`; TBC-ისთვის კი `TBC_DEVELOPER_API_KEY`, `TBC_CLIENT_ID`, `TBC_CLIENT_SECRET` და საჭიროებისამებრ `TBC_API_BASE_URL`.
 
 4. **დომენი.** ჰოსტინგის პანელიდან მიაბით საკუთარი დომენი (მაგ. astro.ge).
 
@@ -114,6 +114,14 @@ After the server starts, verify `GET /api/health`. It reports database connectiv
    გადახდის მტკიცებულება არ არის. შეძენა ერთჯერადია და ავტომატურად არ განახლდება.
 5. Sandbox callback და სრული checkout HTTPS deployment-ზე შეამოწმეთ production
    რეჟიმში გადასვლამდე. Sandbox callback key production-ში არ გამოიყენოთ.
+
+### გადახდის პროვაიდერები და ადმინისტრატორის კონტროლი
+
+- TBC E-Commerce-ის credentials Vercel-ში დაამატეთ როგორც `TBC_DEVELOPER_API_KEY`, `TBC_CLIENT_ID` და `TBC_CLIENT_SECRET`. არასოდეს შეინახოთ ისინი Git-ში ან საჯარო კოდში. API base URL-ის ნაგულისხმევი მისამართია `https://api.tbcbank.ge`; ტესტ გარემოს ზუსტი მისამართი და credentials მიიღეთ TBC-ისგან.
+- TBC Merchant Dashboard-ში callback URL-ად დაამატეთ `https://<your-domain>/api/billing/tbc/callback`. TBC-ის callback-ში მიღებული PaymentId თავად არ ითვლება გადახდის მტკიცებულებად: სერვერი ავთენტიფიცირებული API-ით ამოწმებს payment status-ს, თანხასა და ვალუტას.
+- TBC-ის ჩართვამდე დაამატეთ გარემოს ცვლადები, გაუშვით `npm run db:deploy`, შემდეგ კი გახსენით `/admin/billing`. აქ შესაძლებელია ბანკის ჩართვა/გამორთვა და ფასიანი სერვისების ხელმისაწვდომობის მართვა. TBC-ის checkbox გააქტიურდება მხოლოდ მაშინ, როცა საჭირო credentials სერვერზე კონფიგურირებულია.
+- Admin API-ები გადახდის დონეს არ ამოწმებს, ამიტომ ADMIN ანგარიშს ყველა ფუნქციაზე წვდომა აქვს. სხვა მომხმარებლებისთვის სერვისის გამორთვა ფასიანი წვდომის შემოწმებამდე ხდება.
+- `/admin/users`-ში ჩანს მხოლოდ რეალურად დადასტურებული გადახდები (თარიღი, Pro/Enterprise, ვადა, თანხა და ბანკი); ფილტრებიც მოიცავს გადახდის სტატუსს, გეგმას, თანხის დიაპაზონსა და თარიღს. გადაუხდელი ანგარიშები ძველებურად რჩება.
 
 Gemini-ის გასაღების არქონისას ან Gemini API-ის შეცდომისას AI endpoint მკაფიო
 შეცდომას აბრუნებს; ლოკალურ fallback-ს Gemini-ის პასუხად არ ასაღებს.

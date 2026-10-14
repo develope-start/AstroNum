@@ -1064,6 +1064,12 @@ export default function AdminPage() {
         <div className="admin-header-actions flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
           {/* Left: მომხმარებლების მართვა (Users Management) */}
           <a
+            href="/admin/billing"
+            className="group flex items-center gap-2 rounded-2xl border-2 border-cyan-400/70 bg-cyan-950/50 px-5 py-2.5 text-xs sm:text-sm font-black text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all hover:scale-105 hover:border-cyan-200 hover:bg-cyan-900/60"
+          >
+            💳 გადახდები და სერვისები
+          </a>
+          <a
             href="/admin/users"
             className="group flex items-center gap-2 rounded-2xl border-2 border-dashed border-amber-400/70 bg-purple-950/50 px-5 py-2.5 text-xs sm:text-sm font-black text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.35)] ring-1 ring-amber-400/30 transition-all duration-300 hover:scale-105 hover:border-solid hover:border-white hover:bg-gradient-to-r hover:from-amber-400 hover:via-amber-500 hover:to-purple-600 hover:text-slate-950 hover:shadow-[0_0_35px_rgba(245,158,11,0.7)] active:scale-95 cursor-pointer"
           >

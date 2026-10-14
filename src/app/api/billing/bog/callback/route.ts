@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const payment = await prisma.payment.findUnique({ where: { externalOrderId } });
-    if (!payment || !payment.providerOrderId || payment.providerOrderId !== callbackOrderId) {
+    if (!payment || payment.provider !== "BOG" || !payment.providerOrderId || payment.providerOrderId !== callbackOrderId) {
       return callbackError(404, "Payment order not found");
     }
     if (!isBillablePlan(payment.plan) || !isBillingDuration(payment.duration)) {

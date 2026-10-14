@@ -184,6 +184,12 @@ model Payment {
   @@index([status, createdAt])
 }
 
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
 model IdSequence {
   key        String @id
   nextNumber Int    @default(1)

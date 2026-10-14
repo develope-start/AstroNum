@@ -48,8 +48,8 @@ body.app-body {
 }
 
 /* ==========================================================================
-   PRISMLINE AURORA — CONCENTRATED 30vh HORIZONTAL AURORA GLOW SYSTEM
-   Precise 30% viewport height, intense chromatic beams on deep cosmic void
+   PRISMLINE AURORA — REFINED HORIZONTAL AURORA GLOW SYSTEM
+   Wide Chromatic Aurora with Glassmorphic Navigation Integration
    Electric Cyan · Royal Indigo · Magenta
    ========================================================================== */
 
@@ -65,9 +65,9 @@ body.app-body {
 /* Overlapping ribbons share the viewport center and move continuously. */
 .aurora-horizontal-band {
   position: absolute;
-  left: -20vw;
-  width: 140vw;
-  height: clamp(13rem, 30vh, 26rem);
+  left: -15vw;
+  width: 130vw;
+  height: clamp(12rem, 25vh, 22rem);
   pointer-events: none;
   border-radius: 50%;
   mix-blend-mode: screen;
@@ -75,41 +75,41 @@ body.app-body {
 }
 
 .aurora-band-top {
-  top: calc(22vh - 6vh);
+  top: -0.5rem;
   background: radial-gradient(
-    ellipse 70% 34% at 50% 50%,
-    rgba(56, 189, 248, 0.58) 0%,
-    rgba(99, 102, 241, 0.46) 42%,
-    rgba(236, 72, 153, 0.3) 75%,
+    ellipse 68% 34% at 50% 50%,
+    rgba(56, 189, 248, 0.62) 0%,
+    rgba(99, 102, 241, 0.50) 42%,
+    rgba(236, 72, 153, 0.34) 75%,
     transparent 100%
   );
-  filter: blur(clamp(48px, 6vw, 95px)) saturate(1.45) drop-shadow(0 0 50px rgba(56, 189, 248, 0.3));
+  filter: blur(clamp(44px, 5.5vw, 90px)) saturate(1.5) drop-shadow(0 0 50px rgba(56, 189, 248, 0.32));
   animation: aurora-center-float 18s ease-in-out infinite;
 }
 
 .aurora-band-mid {
-  top: 22vh;
+  top: calc(var(--site-header-height, 4rem) * 0.35 + 1.5vh);
   background: radial-gradient(
     ellipse 64% 32% at 50% 50%,
-    rgba(99, 102, 241, 0.54) 0%,
-    rgba(236, 72, 153, 0.4) 45%,
-    rgba(56, 189, 248, 0.3) 75%,
+    rgba(99, 102, 241, 0.58) 0%,
+    rgba(236, 72, 153, 0.44) 45%,
+    rgba(56, 189, 248, 0.32) 75%,
     transparent 100%
   );
-  filter: blur(clamp(52px, 7vw, 110px)) saturate(1.5) drop-shadow(0 0 55px rgba(139, 92, 246, 0.34));
+  filter: blur(clamp(48px, 6vw, 98px)) saturate(1.55) drop-shadow(0 0 55px rgba(139, 92, 246, 0.34));
   animation: aurora-center-drift 23s ease-in-out infinite;
 }
 
 .aurora-band-bottom {
-  top: calc(22vh + 6vh);
+  top: calc(var(--site-header-height, 4rem) + 4vh);
   background: radial-gradient(
-    ellipse 68% 34% at 50% 50%,
-    rgba(56, 189, 248, 0.42) 0%,
-    rgba(99, 102, 241, 0.48) 42%,
-    rgba(168, 85, 247, 0.34) 75%,
+    ellipse 66% 34% at 50% 50%,
+    rgba(56, 189, 248, 0.46) 0%,
+    rgba(99, 102, 241, 0.52) 42%,
+    rgba(168, 85, 247, 0.36) 75%,
     transparent 100%
   );
-  filter: blur(clamp(52px, 7vw, 110px)) saturate(1.5) drop-shadow(0 0 55px rgba(129, 140, 248, 0.32));
+  filter: blur(clamp(48px, 6vw, 98px)) saturate(1.55) drop-shadow(0 0 55px rgba(129, 140, 248, 0.32));
   animation: aurora-center-float 21s ease-in-out infinite reverse;
 }
 
@@ -139,7 +139,7 @@ body.app-body {
   74% { transform: translate3d(1vw, 1.5vh, 0) scale3d(1, 0.98, 1); opacity: 0.78; }
 }
 
-/* --- Full-Width Premium Desktop Navigation --- */
+/* --- Full-Width Premium Desktop Navigation with Translucent Glassmorphism & Aurora Glow --- */
 .site-header {
   position: sticky;
   top: 0;
@@ -147,11 +147,35 @@ body.app-body {
   width: 100%;
   display: block;
   padding: 0;
-  background: linear-gradient(100deg, rgba(5, 7, 15, 0.96), rgba(14, 12, 31, 0.92) 52%, rgba(5, 10, 18, 0.96)) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
+  background: linear-gradient(180deg, rgba(7, 6, 20, 0.65) 0%, rgba(4, 3, 14, 0.52) 100%) !important;
+  backdrop-filter: blur(28px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6) !important;
+  box-shadow:
+    0 16px 36px -12px rgba(0, 0, 0, 0.65),
+    0 1px 0 0 rgba(255, 255, 255, 0.08) inset,
+    0 8px 24px -6px rgba(99, 102, 241, 0.22) !important;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Luminous Chromatic Hairline underneath the navigation */
+.site-header::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(56, 189, 248, 0.2) 15%,
+    rgba(139, 92, 246, 0.5) 50%,
+    rgba(236, 72, 153, 0.3) 85%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.45);
+  pointer-events: none;
 }
 
 .nav-shell {
@@ -159,7 +183,7 @@ body.app-body {
   width: 100%;
   max-width: 100% !important;
   margin: 0 auto;
-  padding: 0.75rem 1.25rem !important;
+  padding: 0.7rem 1.25rem !important;
   background: transparent !important;
   border-radius: 0 !important;
   border: none !important;
@@ -168,7 +192,7 @@ body.app-body {
 
 @media (min-width: 768px) {
   .nav-shell {
-    padding: 0.85rem 2rem !important;
+    padding: 0.75rem 2rem !important;
   }
 }
 
@@ -185,9 +209,14 @@ body.app-body {
   flex-shrink: 0 !important;
   display: inline-block !important;
   vertical-align: middle !important;
-  fill: #a78bfa !important;
-  filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.7)) !important;
+  fill: #c4b5fd !important;
+  filter: drop-shadow(0 0 7px rgba(167, 139, 250, 0.85)) !important;
   transition: all 0.25s ease !important;
+}
+
+.brand-link:hover .brand-georgia-map {
+  fill: #e0e7ff !important;
+  filter: drop-shadow(0 0 10px rgba(196, 181, 253, 0.95)) drop-shadow(0 0 18px rgba(139, 92, 246, 0.6)) !important;
 }
 
 .nav-action {
@@ -195,41 +224,55 @@ body.app-body {
   align-items: center;
   gap: 0.5rem;
   border-radius: 9999px;
-  padding: 0.45rem 1.15rem;
+  padding: 0.45rem 1.2rem;
   font-size: 0.8125rem;
   font-weight: 600;
   color: #ffffff !important;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35) !important;
-  transition: all 0.2s ease;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 52%, #9333ea 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  box-shadow:
+    0 4px 16px -2px rgba(99, 102, 241, 0.45),
+    0 0 14px -2px rgba(139, 92, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   text-decoration: none;
 }
 
 .nav-action:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5) !important;
+  transform: translateY(-1.5px);
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow:
+    0 8px 24px -2px rgba(129, 140, 248, 0.65),
+    0 0 20px rgba(56, 189, 248, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.55) !important;
 }
 
 .nav-quiet-action {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   border-radius: 9999px;
-  padding: 0.45rem 1rem;
+  padding: 0.42rem 0.95rem;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--text-muted) !important;
+  color: #cbd5e1 !important;
   background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid transparent !important;
-  transition: all 0.2s ease;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   text-decoration: none;
 }
 
 .nav-quiet-action:hover {
   color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.07) !important;
-  border-color: var(--border-subtle) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(167, 139, 250, 0.35) !important;
+  box-shadow:
+    0 4px 16px -2px rgba(129, 140, 248, 0.28),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
+  transform: translateY(-1px);
 }
 
 /* --- Hero Section & Typography --- */

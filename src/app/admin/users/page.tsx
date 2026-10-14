@@ -50,6 +50,18 @@ interface GuestCalculationGroup {
   calculations: ManagedCalculation[];
 }
 
+interface UserPayment {
+  provider: string;
+  status: string;
+  plan: string;
+  duration: string;
+  amountTetri: number;
+  currency: string;
+  paidAt: string | null;
+  periodEndsAt: string | null;
+  createdAt: string;
+}
+
 interface ManagedUser {
   id: string;
   publicId: string | null;
@@ -59,6 +71,7 @@ interface ManagedUser {
   email: string;
   role: string;
   createdAt: string;
+  payments: UserPayment[];
   calculations: CalculationData[];
 }
 
@@ -123,6 +136,12 @@ interface ManagementFilters {
   birthDate: string;
   time: string;
   place: string;
+  paymentStatus: "ALL" | "PAID" | "UNPAID";
+  paymentPlan: "ALL" | "pro" | "enterprise";
+  paymentAmountMin: string;
+  paymentAmountMax: string;
+  paymentDateFrom: string;
+  paymentDateTo: string;
 }
 
 const EMPTY_FILTERS: ManagementFilters = {
@@ -139,6 +158,12 @@ const EMPTY_FILTERS: ManagementFilters = {
   birthDate: "",
   time: "",
   place: "",
+  paymentStatus: "ALL",
+  paymentPlan: "ALL",
+  paymentAmountMin: "",
+  paymentAmountMax: "",
+  paymentDateFrom: "",
+  paymentDateTo: "",
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -401,6 +426,26 @@ export default function AdminUsersPage() {
     );
   };
 
+  const matchesPayment = (user: ManagedUser) => {
+    const paid = user.payments.filter((payment) => payment.status === "PAID");
+    const hasPaymentFilters = filters.paymentStatus !== "ALL" || filters.paymentPlan !== "ALL" || filters.paymentAmountMin !== "" || filters.paymentAmountMax !== "" || filters.paymentDateFrom !== "" || filters.paymentDateTo !== "";
+    if (!hasPaymentFilters) return true;
+    if (filters.paymentStatus === "PAID" && paid.length === 0) return false;
+    if (filters.paymentStatus === "UNPAID") return paid.length === 0;
+    if (paid.length === 0) return false;
+    const amountMin = filters.paymentAmountMin === "" ? null : Number(filters.paymentAmountMin);
+    const amountMax = filters.paymentAmountMax === "" ? null : Number(filters.paymentAmountMax);
+    return paid.some((payment) => {
+      const amount = payment.amountTetri / 100;
+      const paidDate = payment.paidAt?.slice(0, 10) ?? "";
+      return (filters.paymentPlan === "ALL" || payment.plan === filters.paymentPlan) &&
+        (amountMin === null || amount >= amountMin) &&
+        (amountMax === null || amount <= amountMax) &&
+        (!filters.paymentDateFrom || (paidDate && paidDate >= filters.paymentDateFrom)) &&
+        (!filters.paymentDateTo || (paidDate && paidDate <= filters.paymentDateTo));
+    });
+  };
+
   const filteredData = useMemo(() => {
     if (!data) return null;
     const hasCalculationFilters = Boolean(filters.createdFrom || filters.createdTo || filters.type !== "ALL" || filters.mapNumber || filters.name || filters.birthDate || filters.time || filters.place);
@@ -411,7 +456,7 @@ export default function AdminUsersPage() {
           ? user.calculations.filter((calculation) => matchesCalculation(calculation, [user.email]))
           : user.calculations,
       }))
-      .filter((user) => (user.adminId !== "ADMIN" || user.calculations.length > 0) && includes([user.email], filters.email) && includes([user.publicId, user.adminId], filters.publicId) && (!hasCalculationFilters || user.calculations.length > 0));
+      .filter((user) => (user.adminId !== "ADMIN" || user.calculations.length > 0) && includes([user.email], filters.email) && includes([user.publicId, user.adminId], filters.publicId) && (!hasCalculationFilters || user.calculations.length > 0) && matchesPayment(user));
 
     return {
       users,
@@ -553,6 +598,22 @@ export default function AdminUsersPage() {
             </select>
           </label>
           <label className="text-xs text-parchment-dim">
+            გადახდის სტატუსი
+            <select value={filters.paymentStatus} onChange={(event) => setFilters((current) => ({ ...current, paymentStatus: event.target.value as ManagementFilters["paymentStatus"] }))} className={input}>
+              <option value="ALL">ყველა</option><option value="PAID">გადახდილი</option><option value="UNPAID">გადახდის გარეშე</option>
+            </select>
+          </label>
+          <label className="text-xs text-parchment-dim">
+            ფასიანი სერვისი
+            <select value={filters.paymentPlan} onChange={(event) => setFilters((current) => ({ ...current, paymentPlan: event.target.value as ManagementFilters["paymentPlan"] }))} className={input}>
+              <option value="ALL">ყველა სერვისი</option><option value="pro">Pro</option><option value="enterprise">Enterprise</option>
+            </select>
+          </label>
+          <label className="text-xs text-parchment-dim">მინ. თანხა (₾)<input type="number" min="0" step="0.01" value={filters.paymentAmountMin} onChange={(event) => setFilters((current) => ({ ...current, paymentAmountMin: event.target.value }))} className={input} /></label>
+          <label className="text-xs text-parchment-dim">მაქს. თანხა (₾)<input type="number" min="0" step="0.01" value={filters.paymentAmountMax} onChange={(event) => setFilters((current) => ({ ...current, paymentAmountMax: event.target.value }))} className={input} /></label>
+          <label className="text-xs text-parchment-dim">გადახდილია თარიღიდან<input type="date" value={filters.paymentDateFrom} onChange={(event) => setFilters((current) => ({ ...current, paymentDateFrom: event.target.value }))} className={input} /></label>
+          <label className="text-xs text-parchment-dim">გადახდილია თარიღამდე<input type="date" value={filters.paymentDateTo} onChange={(event) => setFilters((current) => ({ ...current, paymentDateTo: event.target.value }))} className={input} /></label>
+          <label className="text-xs text-parchment-dim">
             მეილი
             <input value={filters.email} onChange={(event) => setFilters((current) => ({ ...current, email: event.target.value }))} placeholder="მომხმარებლის მეილი" className={input} />
           </label>
@@ -664,6 +725,7 @@ export default function AdminUsersPage() {
                       </p>
                       <p className="text-lg font-semibold text-parchment">{user.email} <span className="ml-2 text-sm admin-id-value-registered">{user.publicId ?? "—"}</span></p>
                       <p className="text-xs text-parchment-dim">შეიქმნა: {formatDate(user.createdAt)} · რუკები: {user.calculations.length}</p>
+                      {user.payments.some((payment) => payment.status === "PAID") && <p className="mt-1 text-xs font-semibold text-emerald-300">გადაიხადა: {user.payments.filter((payment) => payment.status === "PAID").length} გადახდა</p>}
                     </div>
                     <div className="flex gap-2">
                       <button className={button} onClick={() => openEditUser(user)}>რედაქტირება</button>
@@ -672,6 +734,10 @@ export default function AdminUsersPage() {
                       )}
                     </div>
                   </div>
+                  {user.payments.some((payment) => payment.status === "PAID") && <section className="mt-4 rounded-xl border border-emerald-500/25 bg-emerald-950/10 p-3">
+                    <h3 className="mb-2 text-xs font-bold text-emerald-300">დადასტურებული გადახდები</h3>
+                    <div className="space-y-2">{user.payments.filter((payment) => payment.status === "PAID").map((payment, index) => <p key={`${payment.provider}-${payment.createdAt}-${index}`} className="text-xs text-parchment">{payment.paidAt ? formatDate(payment.paidAt) : "თარიღი უცნობია"} · {payment.plan.toUpperCase()} · {payment.duration} · {(payment.amountTetri / 100).toFixed(2)} {payment.currency} · {payment.provider}</p>)}</div>
+                  </section>}
                   <div className="mt-3 space-y-3">
                     {user.calculations.length === 0 && <p className="text-xs text-parchment-dim">ამ ანგარიშს გამოთვლილი რუკა არ აქვს.</p>}
                     {user.calculations.map((calculation) => {

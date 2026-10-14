@@ -70,6 +70,7 @@ export async function GET(req: NextRequest) {
         email: true,
         role: true,
         createdAt: true,
+        payments: { orderBy: { createdAt: "desc" }, select: { provider: true, status: true, plan: true, duration: true, amountTetri: true, currency: true, paidAt: true, periodEndsAt: true, createdAt: true } },
         calculations: { orderBy: { createdAt: "desc" }, select: calculationSelect },
         charts: {
           orderBy: { createdAt: "desc" },

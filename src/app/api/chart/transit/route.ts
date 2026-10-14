@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
   if (periodLengthDays > 3_652) {
     return NextResponse.json({ error: "ტრანზიტის სკანირება მაქსიმუმ 10-წლიან პერიოდს მოიცავს." }, { status: 400 });
   }
-  const accessDenied = await requirePlanAccess(req, periodLengthDays > 366 ? "enterprise" : "pro");
+  const accessDenied = await requirePlanAccess(req, periodLengthDays > 366 ? "enterprise" : "pro", periodLengthDays > 366 ? "longTransit" : "transit");
   if (accessDenied) return accessDenied;
 
   let natalChart;
