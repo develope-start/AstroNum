@@ -154,7 +154,7 @@ function lonToSignInfo(lon: number) {
   const signIndex = Math.floor(norm / 30);
   const degInSign = norm - signIndex * 30;
   const deg = Math.floor(degInSign);
-  const min = Math.round((degInSign - deg) * 60);
+  const min = Math.floor((degInSign - deg) * 60);
   return {
     signIndex,
     signKa: SIGN_NAMES_KA[signIndex],

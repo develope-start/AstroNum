@@ -13,6 +13,56 @@ const CACHED_FRAME_WIDTH = 240;
 const CACHED_FRAME_HEIGHT = 320;
 
 let sharedFireVideo: HTMLVideoElement | null = null;
+let globalLoopFrames: HTMLCanvasElement[] = [];
+let globalFirstFrame: HTMLCanvasElement | null = null;
+
+const smoothstep = (value: number) => {
+  const t = Math.max(0, Math.min(1, value));
+  return t * t * (3 - 2 * t);
+};
+
+// Precomputed alpha falloff weight tables to avoid expensive math calls in the hot per-pixel loop
+const xAlphaMask = new Float32Array(FRAME_WIDTH);
+for (let x = 0; x < FRAME_WIDTH; x++) {
+  const left = smoothstep(x / (FRAME_WIDTH * 0.34));
+  const right = smoothstep((FRAME_WIDTH - 1 - x) / (FRAME_WIDTH * 0.1));
+  xAlphaMask[x] = left * right;
+}
+
+const yAlphaMask = new Float32Array(FRAME_HEIGHT);
+for (let y = 0; y < FRAME_HEIGHT; y++) {
+  yAlphaMask[y] = smoothstep(y / (FRAME_HEIGHT * 0.34));
+}
+
+function keyCanvasFrame(
+  source: CanvasImageSource,
+  context: CanvasRenderingContext2D,
+  sw: number,
+  sh: number,
+  sx: number,
+  sy: number,
+) {
+  context.drawImage(source, sx, sy, sw, sh, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+  const frame = context.getImageData(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+  const pixels = frame.data;
+
+  let p = 0;
+  for (let y = 0; y < FRAME_HEIGHT; y++) {
+    const yAlpha = yAlphaMask[y];
+    for (let x = 0; x < FRAME_WIDTH; x++, p += 4) {
+      const brightness = Math.max(pixels[p], pixels[p + 1], pixels[p + 2]);
+      if (brightness <= 24) {
+        pixels[p + 3] = 0;
+        continue;
+      }
+      const t = Math.min(1, (brightness - 24) / 88);
+      const alpha = (t * t * (3 - 2 * t)) * xAlphaMask[x] * yAlpha;
+      pixels[p + 3] = (alpha * 255) | 0;
+    }
+  }
+
+  context.putImageData(frame, 0, 0);
+}
 
 export function preloadCelestialFireVideo() {
   if (typeof document === "undefined") return;
@@ -32,12 +82,40 @@ export function preloadCelestialFireVideo() {
     video.style.height = "1px";
     video.style.opacity = "0";
     video.style.pointerEvents = "none";
+
+    // Warm up the initial keyframe as soon as metadata is parsed so frame 0 is ready on mount
+    video.addEventListener("loadeddata", () => {
+      if (!globalFirstFrame && video.videoWidth && video.videoHeight) {
+        const warmCanvas = document.createElement("canvas");
+        warmCanvas.width = FRAME_WIDTH;
+        warmCanvas.height = FRAME_HEIGHT;
+        const ctx = warmCanvas.getContext("2d", { willReadFrequently: true });
+        if (ctx) {
+          const sourceAspect = video.videoWidth / video.videoHeight;
+          const targetAspect = FRAME_WIDTH / FRAME_HEIGHT;
+          let sx = 0;
+          let sy = 0;
+          let sw = video.videoWidth;
+          let sh = video.videoHeight;
+          if (sourceAspect > targetAspect) {
+            sw = video.videoHeight * targetAspect;
+            sx = (video.videoWidth - sw) / 2;
+          } else {
+            sh = video.videoWidth / targetAspect;
+            sy = (video.videoHeight - sh) / 2;
+          }
+          keyCanvasFrame(video, ctx, sw, sh, sx, sy);
+          globalFirstFrame = warmCanvas;
+        }
+      }
+    }, { once: true });
+
     document.body.appendChild(video);
     sharedFireVideo = video;
   }
 }
 
-/** Chroma-keys the MP4's black matte into real per-pixel transparency. */
+/** Chroma-keys the MP4's black matte into real per-pixel transparency with instant warm cache. */
 export default function CelestialFireOverlay() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -50,11 +128,17 @@ export default function CelestialFireOverlay() {
 
     canvas.width = FRAME_WIDTH;
     canvas.height = FRAME_HEIGHT;
+
+    // Synchronously paint the first frame immediately so canvas is never blank on mount!
+    if (globalFirstFrame) {
+      context.drawImage(globalFirstFrame, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+    }
+
     let animationFrame = 0;
     let active = true;
     let lastVideoTime = -1;
-    let playbackMode: "source" | "reverse" | "forward" = "source";
-    let loopFrames: HTMLCanvasElement[] = [];
+    let playbackMode: "source" | "reverse" | "forward" = globalLoopFrames.length > 2 ? "forward" : "source";
+    let loopFrames: HTMLCanvasElement[] = globalLoopFrames;
     let loopFrameIndex = 0;
     let lastLoopFrameTime = 0;
     let lastCachedVideoTime = -Infinity;
@@ -62,8 +146,9 @@ export default function CelestialFireOverlay() {
     const stopPlayback = () => {
       active = false;
       window.cancelAnimationFrame(animationFrame);
-      video.pause();
-      loopFrames = [];
+      if (video && !video.paused) {
+        video.pause();
+      }
       context.clearRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
     };
 
@@ -74,11 +159,8 @@ export default function CelestialFireOverlay() {
       }
     };
 
-    // A new planet selection remounts the keyed stage and starts a fresh cycle.
-    // Any other click cancels the current effect immediately.
     document.addEventListener("pointerdown", handleOutsideSelection, true);
 
-    // Align canvas flush to the stage container (which is already pinned to bottom: 0)
     const syncCanvasToStage = () => {
       const stage = canvas.parentElement;
       if (!stage) return;
@@ -99,20 +181,19 @@ export default function CelestialFireOverlay() {
       : null;
     if (stage) resizeObserver?.observe(stage);
 
-    video.loop = false;
-    video.playbackRate = 1;
-    // The shared video is preloaded while the page is open. Avoid seeking to
-    // zero when it is already there; that seek can blank the first painted frame.
-    if (video.ended || video.currentTime > 0.04) video.currentTime = 0;
-    void video.play().catch(() => undefined);
-
-    const smoothstep = (value: number) => {
-      const t = Math.max(0, Math.min(1, value));
-      return t * t * (3 - 2 * t);
-    };
+    // If we already have loop frames cached globally, loop immediately without video decoding
+    if (playbackMode === "source") {
+      video.loop = false;
+      video.playbackRate = 1;
+      if (video.ended || video.currentTime > 0.04) {
+        video.currentTime = 0;
+      }
+      void video.play().catch(() => undefined);
+    }
 
     const drawFrame = (timestamp: number) => {
       if (!active) return;
+
       if (playbackMode !== "source") {
         if (timestamp - lastLoopFrameTime >= LOOP_FRAME_INTERVAL_MS && loopFrames.length > 1) {
           context.clearRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
@@ -136,6 +217,7 @@ export default function CelestialFireOverlay() {
         animationFrame = window.requestAnimationFrame(drawFrame);
         return;
       }
+
       if (
         video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
         video.videoWidth &&
@@ -150,7 +232,6 @@ export default function CelestialFireOverlay() {
         let sw = video.videoWidth;
         let sh = video.videoHeight;
 
-        // Fill the person's full portrait frame instead of leaving the video small/inset.
         if (sourceAspect > targetAspect) {
           sw = video.videoHeight * targetAspect;
           sx = (video.videoWidth - sw) / 2;
@@ -159,34 +240,25 @@ export default function CelestialFireOverlay() {
           sy = (video.videoHeight - sh) / 2;
         }
 
-        context.drawImage(video, sx, sy, sw, sh, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
-        const frame = context.getImageData(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
-        const pixels = frame.data;
+        keyCanvasFrame(video, context, sw, sh, sx, sy);
 
-        for (let i = 0; i < pixels.length; i += 4) {
-          const pixel = i / 4;
-          const x = pixel % FRAME_WIDTH;
-          const y = Math.floor(pixel / FRAME_WIDTH);
-          const brightness = Math.max(pixels[i], pixels[i + 1], pixels[i + 2]);
-          // Remove the dark matte more firmly; preserve the bright flame/smoke detail.
-          const t = Math.max(0, Math.min(1, (brightness - 24) / 88));
-          let alpha = t * t * (3 - 2 * t);
-
-          // Broad, soft alpha falloff blends smoke into the scene on top and sides.
-          // Bottom edge sits flush without artificial fade-out gap.
-          alpha *= smoothstep(x / (FRAME_WIDTH * 0.34));
-          alpha *= smoothstep((FRAME_WIDTH - 1 - x) / (FRAME_WIDTH * 0.1));
-          alpha *= smoothstep(y / (FRAME_HEIGHT * 0.34));
-
-          pixels[i + 3] = Math.round(alpha * 255);
+        // Store the very first rendered frame as global warmup frame
+        if (!globalFirstFrame) {
+          const firstCanvas = document.createElement("canvas");
+          firstCanvas.width = FRAME_WIDTH;
+          firstCanvas.height = FRAME_HEIGHT;
+          const firstCtx = firstCanvas.getContext("2d");
+          if (firstCtx) {
+            firstCtx.drawImage(canvas, 0, 0);
+            globalFirstFrame = firstCanvas;
+          }
         }
-
-        context.putImageData(frame, 0, 0);
 
         const loopEnd = Number.isFinite(video.duration)
           ? Math.min(LOOP_END_SECONDS, video.duration)
           : LOOP_END_SECONDS;
         const loopStart = Math.min(LOOP_START_SECONDS, Math.max(0, loopEnd - 0.5));
+
         if (
           video.currentTime >= loopStart &&
           video.currentTime - lastCachedVideoTime >= 1 / LOOP_FPS
@@ -198,19 +270,19 @@ export default function CelestialFireOverlay() {
           if (cachedContext) {
             cachedContext.drawImage(canvas, 0, 0, CACHED_FRAME_WIDTH, CACHED_FRAME_HEIGHT);
             loopFrames.push(cached);
+            globalLoopFrames = loopFrames;
             lastCachedVideoTime = video.currentTime;
           }
         }
 
         if (video.currentTime >= loopEnd && loopFrames.length > 1) {
-          // The 5.5–7s keyed frames are already in memory: bounce between them
-          // without seeking/reloading the MP4 at the loop boundary.
           video.pause();
           playbackMode = "reverse";
           loopFrameIndex = loopFrames.length - 1;
           lastLoopFrameTime = timestamp;
         }
       }
+
       if (playbackMode !== "source" || !video.ended) {
         animationFrame = window.requestAnimationFrame(drawFrame);
       }

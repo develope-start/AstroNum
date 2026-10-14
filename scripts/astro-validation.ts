@@ -8,6 +8,7 @@ import { findPlanetaryReturn } from "../src/lib/astro/returns";
 import { computeSolarArcDirections } from "../src/lib/astro/directions";
 import { calculateRectification } from "../src/lib/astro/rectification";
 import { calculateHarmonicAspects, calculateHarmonicPlanets, calculateMidpoints } from "../src/lib/astro/midpoints";
+import { formatDegree } from "../src/lib/astro/signs";
 import { dateToJulianDay, findNextSolarEclipse } from "@swisseph/node";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -18,6 +19,9 @@ function angularDifference(a: number, b: number): number {
   const raw = Math.abs(a - b) % 360;
   return Math.min(raw, 360 - raw);
 }
+
+assert(formatDegree(4.99999) === "4°59'", "degree formatting never rounds minutes to 60");
+assert(formatDegree(29.99999) === "29°59'", "degree formatting remains valid at a sign boundary");
 
 const input = {
   date: "2000-01-01",

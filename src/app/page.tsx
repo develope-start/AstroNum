@@ -503,11 +503,11 @@ export default function HomePage() {
                 {activeZodiacImage !== null && selectedCelestial !== null && (
                   <div
                     className={`celestial-zodiac-stage celestial-stage-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}
-                    key={activeZodiacImage}
+                    key={`zodiac-${activePlanetIndex}-${celestialAnimationRun}`}
                     ref={zodiacStageRef}
                     aria-hidden="true"
                   >
-                    <img className="celestial-zodiac-image" src={activeZodiacImage} alt="" loading="eager" decoding="async" fetchPriority="high" />
+                    <img className="celestial-zodiac-image" src={activeZodiacImage} alt="" loading="eager" decoding="sync" fetchPriority="high" />
                   </div>
                 )}
                 <div
@@ -535,7 +535,7 @@ export default function HomePage() {
             {selectedCelestial !== null && activeCelestial !== null && (
               <div
                 className={`celestial-stage ${activeCelestial === "earth" ? "celestial-stage-earth" : `celestial-stage-${CELESTIAL_CONSTELLATIONS[activePlanetIndex!].planet}`}`}
-                key={`${activeCelestial === "earth" ? "earth" : activePlanet?.name}-${celestialAnimationRun}`}
+                key={`stage-${activePlanetIndex ?? "earth"}-${celestialAnimationRun}`}
                 ref={celestialStageRef}
                 aria-hidden="true"
               >
@@ -544,7 +544,7 @@ export default function HomePage() {
                   src={activeCelestialImage!}
                   alt=""
                   loading="eager"
-                  decoding="async"
+                  decoding="sync"
                   fetchPriority="high"
                 />
                 <CelestialFireOverlay />

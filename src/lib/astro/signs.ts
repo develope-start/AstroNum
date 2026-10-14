@@ -57,6 +57,6 @@ export function eclipticToSign(longitude: number): { signIndex: number; signName
 
 export function formatDegree(degreeInSign: number): string {
   const deg = Math.floor(degreeInSign);
-  const minutes = Math.round((degreeInSign - deg) * 60);
+  const minutes = Math.floor((degreeInSign - deg) * 60);
   return `${deg}°${minutes.toString().padStart(2, "0")}'`;
 }
