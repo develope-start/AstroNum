@@ -17,6 +17,8 @@ import { calculateAngularity, calculateDeclinationContacts, calculateFixedStarCo
 import { appendElementBalanceInterpretation, ensureInterpretationFoundationLast } from "@/lib/interpretations/elementBalance";
 import { isValidPersonInput } from "@/lib/astro/inputSchemas";
 import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
+import { getCurrentEntitlement } from "@/lib/billing/access";
+import { PLAN_RANK } from "@/lib/billing/plans";
 
 const calculationSchema = z.object({
   ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
@@ -54,6 +56,23 @@ export async function POST(req: NextRequest) {
   if (!isValidPersonInput(data)) {
     return NextResponse.json({ error: "Invalid chart input" }, { status: 400 });
   }
+  const session = await getActiveSessionFromRequest(req);
+  if (data.save) {
+    if (!session) {
+      return NextResponse.json({ error: "რუკის შესანახად საჭიროა ანგარიშში შესვლა." }, { status: 401 });
+    }
+    if (session.role !== "ADMIN") {
+      const entitlement = await getCurrentEntitlement(session.userId);
+      if (PLAN_RANK[entitlement.plan] < PLAN_RANK.pro) {
+        return NextResponse.json({
+          error: "რუკის შენახვა ხელმისაწვდომია Pro ან Enterprise პაკეტით.",
+          code: "PLAN_REQUIRED",
+          requiredPlan: "pro",
+          currentPlan: entitlement.plan,
+        }, { status: 403 });
+      }
+    }
+  }
 
   let result;
   try {
@@ -83,18 +102,14 @@ export async function POST(req: NextRequest) {
   const elementBalanceInterpretation = await appendElementBalanceInterpretation(baseInterpretation, result);
   const builtInEntries = natalLibraryInsights(result.planets, result.aspects, (lon: number) => houseOfLongitude(lon, result.houseCusps));
   void persistLibraryEntries(builtInEntries);
-  const externalEntries = await translatedExternalLibraryEntries({
+  const externalEntries = session ? await translatedExternalLibraryEntries({
     chartType: "NATAL",
     planets: result.planets.map((planet) => ({ name: planet.name, sign: eclipticToSign(planet.longitude).signName, house: result.planetHouses[planet.name] })),
     aspects: result.aspects,
-  });
+  }) : [];
   const interpretation = ensureInterpretationFoundationLast([elementBalanceInterpretation ?? baseInterpretation, ...externalEntries].join("\n\n"));
 
   const responseBody = { result: { ...result, advanced }, interpretation };
-  const session = await getActiveSessionFromRequest(req);
-  if (data.save && !session) {
-    return NextResponse.json({ error: "რუკის შესანახად საჭიროა შესვლა კაბინეტში" }, { status: 401 });
-  }
   const sessionUserId = session?.userId ?? null;
   const requestInfo = getRequestInfo(req);
 
@@ -148,6 +163,22 @@ export async function POST(req: NextRequest) {
       await prisma.calculation.update({ where: { id: calculation.id }, data: { saved: true } });
     }
     return NextResponse.json({ ...responseBody, mapNumber, savedId: chart.id });
+  }
+
+  if (!session) {
+    const sun = result.planets.find((planet) => planet.name === "Sun");
+    const moon = result.planets.find((planet) => planet.name === "Moon");
+    if (!sun || !moon) {
+      return NextResponse.json({ error: "მოკლე ნატალური მიმოხილვისთვის საჭირო მონაცემები ვერ მოიძებნა." }, { status: 500 });
+    }
+    return NextResponse.json({
+      preview: {
+        sun: eclipticToSign(sun.longitude).signName,
+        moon: eclipticToSign(moon.longitude).signName,
+        ascendant: eclipticToSign(result.ascendant).signName,
+        mc: eclipticToSign(result.mc).signName,
+      },
+    });
   }
 
   return NextResponse.json({ ...responseBody, mapNumber: calculation?.mapNumber ?? null });

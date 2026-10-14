@@ -31,6 +31,7 @@ model User {
   calculations Calculation[]
   accountEvents AccountEvent[]
   actionTokens  ActionToken[]
+  payments      Payment[]
 }
 
 // ერთი "Chart" ინახავს ერთი ან ორი დაბადების პროფილს (სინასტრიისთვის ორივე)
@@ -158,6 +159,29 @@ model ActionToken {
   @@index([userId])
   @@index([expiresAt])
   @@index([type, expiresAt])
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          String   @default("BOG")
+  externalOrderId   String   @unique
+  providerOrderId   String?  @unique
+  plan              String
+  duration          String
+  amountTetri       Int
+  currency          String   @default("GEL")
+  status            String   @default("PENDING")
+  periodStartsAt    DateTime?
+  periodEndsAt      DateTime?
+  paidAt            DateTime?
+  callbackReceivedAt DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId, status, periodEndsAt])
+  @@index([status, createdAt])
 }
 
 model IdSequence {

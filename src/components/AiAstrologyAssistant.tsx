@@ -84,9 +84,14 @@ export default function AiAstrologyAssistant() {
         setError(data.error || "შეცდომა ანალიზის გენერირებისას");
         return;
       }
+      if (typeof data.analysis !== "string" || !data.analysis.trim()
+        || typeof data.provider !== "string" || !data.provider.trim()) {
+        setError("სერვერმა AI პროვაიდერისა და ინტერპრეტაციის დადასტურებული შედეგი ვერ დააბრუნა.");
+        return;
+      }
 
       setResult(data.analysis);
-      setProvider(data.provider || "AstroNum-ის ლოკალური ინტერპრეტაცია");
+      setProvider(data.provider);
     } catch {
       setError("ქსელის შეცდომა. გთხოვთ სცადოთ მოგვიანებით.");
     } finally {
@@ -204,7 +209,7 @@ export default function AiAstrologyAssistant() {
                     Gemini AI ასტროლოგიური ანალიტიკოსი
                   </h3>
                   <span className="text-[11px] text-cyan-400/80 font-mono">
-                    {provider || "Swiss Ephemeris + Gemini AI Synthesis"}
+                    {provider || "პასუხის პროვაიდერი ჯერ არ არის დადასტურებული"}
                   </span>
                 </div>
               </div>

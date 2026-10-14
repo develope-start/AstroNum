@@ -450,15 +450,15 @@ export default function BentoGrid() {
             Gemini AI ასტროლოგიური ინტელექტი
           </h3>
           <p className="mt-2 text-base text-slate-300">
-            Google Gemini 1.5 Flash-ის ღრმა ანალიზი ქართულ ენაზე: პიროვნული ბირთვი, პროფესია, კარიერა, სიყვარული და კარმული მისია.
+            ქართული ასტროლოგიური ინტერპრეტაცია გამოთვლილი რუკის მონაცემებზე დაყრდნობით. მუშაობს მხოლოდ სერვერზე Gemini API-ის გასაღების კონფიგურაციისას.
           </p>
 
           <div className="mt-5 flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-3 text-xs text-slate-300 font-mono">
             <span className="flex items-center gap-1.5 text-cyan-300">
               <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
-              Gemini 1.5 Flash AI
+              Gemini API
             </span>
-            <span className="text-violet-400 font-semibold">ინტეგრირებულია</span>
+            <span className="text-violet-400 font-semibold">გასაღების კონფიგურაციაზეა დამოკიდებული</span>
           </div>
         </div>
 
@@ -480,15 +480,15 @@ export default function BentoGrid() {
             დაბადების დროის რექტიფიკაცია
           </h3>
           <p className="mt-2 text-base text-slate-300">
-            დაადგინეთ დაბადების ზუსტი წუთი და ასცენდენტის გრადუსი ცხოვრებისეული მოვლენების (ქორწინება, კარიერა, შვილი) Solar Arc სკანირებით.
+            შეადარეთ Swiss Ephemeris-ით გამოთვლილი Solar Arc დროითი კანდიდატები ცხოვრებისეულ მოვლენებს. ეს ინტერპრეტაციული რანჟირებაა და დაბადების ზუსტ დროს არ ადასტურებს.
           </p>
 
           <div className="mt-5 flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-3 text-xs">
             <span className="flex items-center gap-1.5 text-slate-300">
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              პრიმარული დირექციები
+              Solar Arc · 1-წუთიანი სკანი
             </span>
-            <span className="text-emerald-400 font-mono text-[11px]">სიზუსტე ±1 წთ</span>
+            <span className="text-emerald-400 font-mono text-[11px]">ჰეურისტიკული შეფასება</span>
           </div>
         </div>
 

@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { computeNatalChart } from "@/lib/astro/chart";
 import { eclipticToSign } from "@/lib/astro/signs";
-import { houseOfLongitude } from "@/lib/astro/positions";
-import { generateNatalInterpretation } from "@/lib/interpretations/natal";
 import { ASTROLOGY_GEORGIAN_STYLE_GUIDE, normalizeGeorgianAstrologyTerms } from "@/lib/astrologyGeorgian";
 import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
+import { requireFeatureAccess } from "@/lib/billing/access";
 
 const requestSchema = z.object({
   type: z.enum(["natal", "career", "love", "karmic", "question"]),
@@ -38,12 +37,20 @@ export async function POST(req: NextRequest) {
       headers: { "Retry-After": String(limiter.retryAfterSeconds) },
     });
   }
+  const accessDenied = await requireFeatureAccess(req, "ai");
+  if (accessDenied) return accessDenied;
 
   try {
     const rawBody = await req.json().catch(() => null);
     const parsed = requestSchema.safeParse(rawBody);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "მონაცემები არასწორია" }, { status: 400 });
+    }
+    const apiKey = process.env.GEMINI_API_KEY?.trim();
+    if (!apiKey) {
+      return NextResponse.json({
+        error: "Gemini AI მიუწვდომელია: სერვერზე GEMINI_API_KEY ჯერ არ არის კონფიგურირებული.",
+      }, { status: 503 });
     }
     const { type, name, birthDate, birthTime, birthPlace, lat, lon, timezone, question } = parsed.data;
 
@@ -56,14 +63,6 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    const chartText = generateNatalInterpretation({
-      planets: chart.planets,
-      houseCusps: chart.houseCusps,
-      ascendant: chart.ascendant,
-      mc: chart.mc,
-      aspects: chart.aspects,
-      houseOfFn: (longitude) => houseOfLongitude(longitude, chart.houseCusps),
-    });
     const placements = chart.planets.map((planet) => {
       const sign = eclipticToSign(planet.longitude);
       return `${planet.name}: ${sign.signName} ${sign.degreeInSign.toFixed(2)}°, ${chart.planetHouses[planet.name] ?? "?"}-ე სახლი`;
@@ -74,10 +73,8 @@ export async function POST(req: NextRequest) {
       .map((aspect) => `${aspect.a} ${aspect.aspect} ${aspect.b} (orb ${aspect.orb}°)`)
       .join("\n") || "მოცემულ ორბებში ასპექტი არ დაფიქსირდა";
 
-    const apiKey = process.env.GEMINI_API_KEY;
     if (apiKey) {
-      try {
-        const prompt = `დაწერე მკაფიო, გამართული ქართული ასტროლოგიური ინტერპრეტაცია. ${ASTROLOGY_GEORGIAN_STYLE_GUIDE} ეს არის სიმბოლური ასტროლოგიური წაკითხვა და არა სამედიცინო, ფსიქოლოგიური ან ფინანსური დიაგნოზი.
+      const prompt = `დაწერე მკაფიო, გამართული ქართული ასტროლოგიური ინტერპრეტაცია. ${ASTROLOGY_GEORGIAN_STYLE_GUIDE} ეს არის სიმბოლური ასტროლოგიური წაკითხვა და არა სამედიცინო, ფსიქოლოგიური ან ფინანსური დიაგნოზი.
 
 ფოკუსი: ${FOCUS_LABELS[type]}
 სახელი: ${name || "მაძიებელი"}
@@ -95,61 +92,101 @@ ${aspects}
 
 განმარტე მხოლოდ მოწოდებულ მონაცემებზე დაყრდნობით. თუ შეკითხვას რუკა საკმარისად არ პასუხობს, პირდაპირ აღნიშნე ეს. მოერიდე გარანტირებულ წინასწარმეტყველებებსა და გამოგონილ ბიოგრაფიულ ფაქტებს.`;
 
-        const model = process.env.GEMINI_MODEL?.trim() || "gemini-3.8-flash";
+      const configuredModel = process.env.GEMINI_MODEL?.trim();
+      const candidateModels = Array.from(new Set([
+        configuredModel,
+        "gemini-3.8-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-2.5-flash",
+      ].filter((value): value is string => Boolean(value && value.trim()))));
+
+      let lastStatus = 0;
+      let lastDetail = "Gemini AI-ის პასუხი ვერ მიიღეს.";
+
+      for (const model of candidateModels) {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 25_000);
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { maxOutputTokens: 1500 },
-            }),
-            signal: controller.signal,
-          },
-        ).finally(() => clearTimeout(timeout));
+        let geminiRes: Response;
+        try {
+          geminiRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { maxOutputTokens: 1500 },
+              }),
+              signal: controller.signal,
+            },
+          );
+        } catch (error) {
+          const timedOut = error instanceof Error && error.name === "AbortError";
+          lastDetail = timedOut
+            ? "Gemini-ის მოთხოვნას დრო ამოეწურა. სცადეთ მოგვიანებით."
+            : "Gemini სერვისთან დაკავშირება ვერ მოხერხდა.";
+          lastStatus = 502;
+          break;
+        } finally {
+          clearTimeout(timeout);
+        }
 
         if (geminiRes.ok) {
-          const data = await geminiRes.json();
-          const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (typeof generatedText === "string" && generatedText.trim()) {
+          const data = await geminiRes.json().catch(() => null);
+          const generatedText = data?.candidates?.[0]?.content?.parts
+            ?.map((part: { text?: unknown }) => typeof part.text === "string" ? part.text : "")
+            .join("");
+          if (typeof generatedText !== "string" || !generatedText.trim()) {
+            console.error("Gemini API returned no text candidate");
             return NextResponse.json({
-              success: true,
-              analysis: normalizeGeorgianAstrologyTerms(generatedText),
-              provider: `Gemini (${model}) · ${chart.ephemeris.source}`,
-            });
+              error: "Gemini-მა გამოსაყენებელი ტექსტი არ დააბრუნა. სცადეთ სხვა შეკითხვით.",
+            }, { status: 502 });
           }
-        } else {
-          console.warn("Gemini API returned", geminiRes.status);
+
+          return NextResponse.json({
+            success: true,
+            analysis: normalizeGeorgianAstrologyTerms(generatedText),
+            provider: `Gemini (${model}) · ${chart.ephemeris.source}`,
+          });
         }
-      } catch (error) {
-        console.warn("Gemini request failed; using the local chart interpretation:", error);
+
+        if (geminiRes.status === 401 || geminiRes.status === 403) {
+          lastDetail = "GEMINI_API_KEY არასწორია ან ამ მოდელზე წვდომა არ აქვს.";
+          lastStatus = 401;
+          break;
+        }
+
+        if (geminiRes.status === 429) {
+          lastDetail = "Gemini API-ის მოთხოვნის ან კვოტის ლიმიტი ამოიწურა.";
+          lastStatus = 429;
+          break;
+        }
+
+        if (geminiRes.status === 404 || geminiRes.status === 400 || geminiRes.status === 503) {
+          lastStatus = geminiRes.status;
+          lastDetail = `Gemini მოდელი „${model}“ ამჟამად მიუწვდომელია; მცდარდება შემდეგი ხელმისაწვდომი მოდელი.`;
+          console.warn("Gemini model unavailable, trying fallback", { model, status: geminiRes.status });
+          continue;
+        }
+
+        lastStatus = geminiRes.status;
+        lastDetail = `Gemini API-მ მოთხოვნა უარყო (HTTP ${geminiRes.status}).`;
+        break;
       }
+
+      if (lastStatus) {
+        return NextResponse.json({ error: lastDetail }, { status: lastStatus === 429 ? 429 : 502 });
+      }
+
+      return NextResponse.json({
+        error: "Gemini AI-ის პასუხი ვერ დადასტურდა. შეამოწმეთ სერვერის კონფიგურაცია და სცადეთ ხელახლა.",
+      }, { status: 502 });
     }
 
     return NextResponse.json({
-      success: true,
-      analysis: normalizeGeorgianAstrologyTerms(generateLocalInterpretation(type, name || "მაძიებელი", chartText, question)),
-      provider: `AstroNum-ის ლოკალური ინტერპრეტაცია · ${chart.ephemeris.source}`,
-    });
+      error: "Gemini AI-ის პასუხი ვერ დადასტურდა. შეამოწმეთ სერვერის კონფიგურაცია და სცადეთ ხელახლა.",
+    }, { status: 502 });
   } catch {
     return NextResponse.json({ error: "ინტერპრეტაციის გენერირების შეცდომა" }, { status: 500 });
   }
-}
-
-function generateLocalInterpretation(
-  type: keyof typeof FOCUS_LABELS,
-  name: string,
-  chartText: string,
-  question?: string,
-) {
-  const focusNote = type === "question"
-    ? question
-      ? `თქვენი შეკითხვა: „${question}“. ადგილობრივი რეჟიმი შეკითხვას ცალკე ტექსტურად ვერ აანალიზებს; ქვემოთ მოცემულია გამოთვლილი ნატალური რუკა, რომელზეც პასუხის მოძებნა შეგიძლიათ.`
-      : "ადგილობრივ რეჟიმში შეკითხვაზე ცალკე ტექსტური პასუხი მიუწვდომელია; ქვემოთ მოცემულია გამოთვლილი ნატალური რუკა."
-    : `ფოკუსი: ${FOCUS_LABELS[type]}. ადგილობრივი რეჟიმი აჩვენებს გამოთვლილ რუკასა და მის წესებზე დაფუძნებულ განმარტებას; თემაზე თავისუფალი ტექსტის გენერირებისთვის Gemini API უნდა იყოს კონფიგურირებული.`;
-
-  return `# ${FOCUS_LABELS[type]} — ${name}\n\n${focusNote}\n\n${chartText}`;
 }

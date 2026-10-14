@@ -20,6 +20,11 @@ interface AccountSummary {
   expiresAt: string | null;
 }
 
+interface BillingSummary {
+  plan: "free" | "pro" | "enterprise";
+  paidUntil: string | null;
+}
+
 interface ChartSummary {
   id: string;
   mapNumber: string | null;
@@ -144,6 +149,7 @@ export default function DashboardPage() {
   const [loadingChart, setLoadingChart] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ChartSummary | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [billing, setBilling] = useState<BillingSummary | null>(null);
 
   useEffect(() => {
     if (!selected) return;
@@ -198,6 +204,18 @@ export default function DashboardPage() {
     });
     return () => { active = false; };
   }, [router]);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/billing/status", { cache: "no-store" }).then(async (res) => {
+      const data = await readApiResponse<BillingSummary & { error?: string }>(res);
+      if (!res.ok) throw new Error(data.error || "პაკეტის სტატუსის ჩატვირთვა ვერ მოხერხდა");
+      if (active) setBilling(data);
+    }).catch((cause) => {
+      if (active) setError(cause instanceof Error ? cause.message : "პაკეტის სტატუსის ჩატვირთვა ვერ მოხერხდა");
+    });
+    return () => { active = false; };
+  }, []);
 
   async function openChart(id: string) {
     setLoadingChart(id);
@@ -322,7 +340,7 @@ export default function DashboardPage() {
       </div>
 
       {account && (
-        <div className="prism-card grid gap-4 rounded-3xl p-5 text-xs sm:grid-cols-2 lg:grid-cols-5">
+        <div className="prism-card grid gap-4 rounded-3xl p-5 text-xs sm:grid-cols-2 lg:grid-cols-6">
           <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-3.5">
             <p className="text-slate-400 flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-sky-400" /> სახელი</p>
             <p className="mt-1 font-bold text-white text-sm">{account.name || "—"}</p>
@@ -344,6 +362,14 @@ export default function DashboardPage() {
             <p className="mt-1 font-bold tabular-nums text-sky-200 text-xs">
               <SessionCountdown expiresAt={account.expiresAt} onExpired={handleSessionExpired} />
             </p>
+          </div>
+          <div className="rounded-2xl border border-indigo-400/20 bg-indigo-500/[0.06] p-3.5">
+            <p className="text-indigo-200 flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5" /> პაკეტი</p>
+            <p className="mt-1 font-bold text-white text-sm">
+              {billing?.plan === "enterprise" ? "Enterprise" : billing?.plan === "pro" ? "Pro" : billing ? "უფასო" : "იტვირთება…"}
+            </p>
+            {billing?.paidUntil && <p className="mt-1 text-[10px] text-slate-400">მოქმედებს {new Date(billing.paidUntil).toLocaleDateString("ka-GE")}-მდე</p>}
+            {billing?.plan === "free" && <a href="/#pricing" className="mt-1 inline-block text-[10px] font-bold text-cyan-300 underline">პაკეტების ნახვა</a>}
           </div>
         </div>
       )}

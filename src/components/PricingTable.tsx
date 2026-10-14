@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Check, CreditCard, Sparkles, X, Zap } from "lucide-react";
+import Link from "next/link";
+import { readApiResponse } from "@/lib/apiResponse";
+import { formatPrice, type BillingDuration } from "@/lib/billing/plans";
 
-type Duration = "month" | "half_year" | "year";
+type Duration = BillingDuration;
 
 interface PlanConfig {
   id: "free" | "pro" | "enterprise";
@@ -11,7 +14,6 @@ interface PlanConfig {
   badge?: string;
   description: string;
   prices: Record<Duration, string>;
-  rawPrice: Record<Duration, number>;
   features: string[];
   excludedFeatures?: string[];
   buttonText: string;
@@ -24,11 +26,10 @@ const PLANS: PlanConfig[] = [
     name: "უფასო (Free)",
     description: "საბაზისო გამოთვლები და პირადი ნატალური რუკის კვლევა",
     prices: { month: "0 ₾", half_year: "0 ₾", year: "0 ₾" },
-    rawPrice: { month: 0, half_year: 0, year: 0 },
     buttonText: "უფასო წვდომა",
     features: [
       "Swiss Ephemeris v2.1 ციური კოორდინატები",
-      "ნატალური რუკის ულიმიტო გამოთვლა",
+      "სტუმრის მოკლე ნატალური მიმოხილვა; ანგარიშით — სრული რუკა",
       "10 ძირითადი პლანეტა, ასცენდენტი (ASC) და MC",
       "მაჟორული ასპექტები და ორბების ბაზა",
       "4 სტიქიის ტემპერამენტის საბაზისო მიმოხილვა",
@@ -48,39 +49,38 @@ const PLANS: PlanConfig[] = [
     name: "პროფესიონალი (Pro)",
     badge: "ყველაზე პოპულარული",
     description: "პრაქტიკოსი ასტროლოგებისთვის, სინასტრიისა და ტრანზიტული ანალიზისთვის",
-    prices: { month: "4.99 ₾", half_year: "25.45 ₾", year: "47.90 ₾" },
-    rawPrice: { month: 4.99, half_year: 25.45, year: 47.90 },
+    prices: {
+      month: formatPrice("pro", "month"),
+      half_year: formatPrice("pro", "half_year"),
+      year: formatPrice("pro", "year"),
+    },
     buttonText: "Pro პაკეტის არჩევა",
     highlighted: true,
     features: [
       "ყველაფერი Free პაკეტიდან +",
       "სინასტრია (პარტნიორული რუკა და თავსებადობის ქულები)",
       "დროის ტრანზიტები ნატალურ რუკასთან მიმართებით",
-      "4 სტიქიის ტემპერამენტის სრული ჰიპოკრატული სინთეზი",
-      "Gemini AI ასტროლოგიური ინტელექტი (პიროვნული, კარიერული, სიყვარულის ანალიზი)",
+      "Gemini AI ინტერპრეტაციები (სერვერზე API გასაღების არსებობისას; მოთხოვნებზე მოქმედებს ლიმიტი)",
       "მეორადი პროგრესიები (Secondary Progressions)",
       "სოლარული არკის დირექციები და პლანეტარული დაბრუნებები",
       "რუკების შენახვა კაბინეტში და პირადი არქივი",
-      "ბეჭდვისთვის მზა PDF რეპორტების ექსპორტი",
     ],
   },
   {
     id: "enterprise",
     name: "ექსპერტი და სტუდია",
     description: "მაქსიმალური შესაძლებლობები, რექტიფიკაცია და გაფართოებული მეთოდები",
-    prices: { month: "7.99 ₾", half_year: "40.75 ₾", year: "76.70 ₾" },
-    rawPrice: { month: 7.99, half_year: 40.75, year: 76.70 },
+    prices: {
+      month: formatPrice("enterprise", "month"),
+      half_year: formatPrice("enterprise", "half_year"),
+      year: formatPrice("enterprise", "year"),
+    },
     buttonText: "Enterprise არჩევა",
     features: [
       "ყველაფერი Pro პაკეტიდან +",
       "დაბადების დროის რექტიფიკაციის მოდული (Rectification)",
-      "შეუზღუდავი Gemini AI ინტერპრეტაციები და პირადი კითხვა-პასუხი",
-      "დაჩქარებული AI დამუშავება პრიორიტეტული რიგით",
       "დაბნელებების (Eclipses) და ჰარმონიკების / შუაწერტილების მოდული",
-      "დიდი პერიოდის ტრანზიტული სკანირება",
-      "სიდერიული / ვედური ზოდიაქო (6 აიანამშა: Lahiri, Raman, Fagan-Bradley)",
-      "შეუზღუდავი რუკების საცავი კაბინეტში",
-      "API წვდომა და პრიორიტეტული 24/7 მხარდაჭერა",
+      "გაფართოებული ტრანზიტის სკანირება (მაქსიმუმ 10 წელი)",
     ],
   },
 ];
@@ -89,6 +89,8 @@ export default function PricingTable() {
   const [duration, setDuration] = useState<Duration>("month");
   const [selectedPlan, setSelectedPlan] = useState<PlanConfig["id"] | null>(null);
   const [checkoutModalPlan, setCheckoutModalPlan] = useState<PlanConfig | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const checkoutTriggerRef = useRef<HTMLButtonElement | null>(null);
   const checkoutDialogRef = useRef<HTMLDivElement | null>(null);
   const checkoutCloseRef = useRef<HTMLButtonElement | null>(null);
@@ -101,9 +103,38 @@ export default function PricingTable() {
       el?.scrollIntoView({ behavior: "smooth" });
       return;
     }
+    setCheckoutError(null);
     checkoutTriggerRef.current = trigger;
     setCheckoutModalPlan(plan);
   };
+
+  async function beginCheckout() {
+    if (!checkoutModalPlan || checkoutModalPlan.id === "free" || checkoutLoading) return;
+    setCheckoutLoading(true);
+    setCheckoutError(null);
+    try {
+      const response = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: checkoutModalPlan.id, duration }),
+      });
+      const data = await readApiResponse<{ checkoutUrl?: string; error?: string }>(response);
+      if (!response.ok) {
+        setCheckoutError(data.error || "გადახდის შეკვეთის შექმნა ვერ მოხერხდა.");
+        return;
+      }
+      if (!data.checkoutUrl) throw new Error("გადახდის გვერდის მისამართი არ დაბრუნებულა.");
+      const checkoutUrl = new URL(data.checkoutUrl);
+      if (checkoutUrl.protocol !== "https:" || !(checkoutUrl.hostname === "bog.ge" || checkoutUrl.hostname.endsWith(".bog.ge"))) {
+        throw new Error("გადახდის პროვაიდერმა უსაფრთხო მისამართი არ დააბრუნა.");
+      }
+      window.location.assign(checkoutUrl.toString());
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : "ქსელთან დაკავშირება ვერ მოხერხდა.");
+    } finally {
+      setCheckoutLoading(false);
+    }
+  }
 
   useEffect(() => {
     if (!checkoutModalPlan) {
@@ -301,15 +332,14 @@ export default function PricingTable() {
         })}
       </div>
 
-      {/* Payment is unavailable until a real payment provider is integrated. */}
       {checkoutModalPlan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-md animate-in fade-in duration-200">
           <div
             ref={checkoutDialogRef}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="checkout-unavailable-title"
-            aria-describedby="checkout-unavailable-description"
+            aria-labelledby="checkout-title"
+            aria-describedby="checkout-description"
             className="relative w-full max-w-md rounded-3xl border border-white/15 bg-gradient-to-b from-[#131b2e] to-[#0a0f19] p-6 shadow-2xl sm:p-8"
           >
             <button
@@ -326,20 +356,35 @@ export default function PricingTable() {
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/15 text-amber-300">
                 <CreditCard className="h-7 w-7" />
               </div>
-              <h3 id="checkout-unavailable-title" className="mt-4 font-display text-xl font-bold text-white">
-                ონლაინ გადახდა ჯერ მიუწვდომელია
+              <h3 id="checkout-title" className="mt-4 font-display text-xl font-bold text-white">
+                {checkoutModalPlan.name} · {durationLabel}
               </h3>
-              <p id="checkout-unavailable-description" className="mt-3 text-xs leading-relaxed text-slate-300">
-                არჩეულია {checkoutModalPlan.name} · {durationLabel} · {checkoutModalPlan.prices[duration]}.
-                ამ ეტაპზე ბარათის მონაცემები არ მიიღება და პაკეტი არ აქტიურდება.
-                გადახდის გასააქტიურებლად საჭიროა რეალური გადახდის პროვაიდერის ინტეგრაცია.
+              <p id="checkout-description" className="mt-3 text-xs leading-relaxed text-slate-300">
+                გადასახდელი თანხა: <strong className="text-white">{checkoutModalPlan.prices[duration]}</strong>. გადახდა მუშავდება საქართველოს ბანკის დაცულ გვერდზე.
+                პაკეტი გააქტიურდება მხოლოდ ბანკის მიერ გადახდის დადასტურების შემდეგ; გამოწერა ავტომატურად არ განახლდება.
               </p>
+              {checkoutError && (
+                <div role="alert" className="mt-4 rounded-xl border border-rose-500/30 bg-rose-950/30 p-3 text-left text-xs text-rose-200">
+                  <p>{checkoutError}</p>
+                  {checkoutError.includes("შედით ან დარეგისტრირდით") && (
+                    <Link href="/cabinet" className="mt-2 inline-block font-bold underline">შესვლა ან რეგისტრაცია</Link>
+                  )}
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => void beginCheckout()}
+                disabled={checkoutLoading}
+                className="mt-6 w-full rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 py-3 text-xs font-bold text-white transition hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
+              >
+                {checkoutLoading ? "გადახდის გვერდი მზადდება…" : "გადახდაზე გადასვლა"}
+              </button>
               <button
                 type="button"
                 onClick={() => setCheckoutModalPlan(null)}
-                className="mt-6 w-full rounded-xl bg-white/10 py-3 text-xs font-bold text-white transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+                className="mt-3 w-full rounded-xl bg-white/10 py-3 text-xs font-bold text-white transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
               >
-                გასაგებია
+                დახურვა
               </button>
                 </div>
           </div>

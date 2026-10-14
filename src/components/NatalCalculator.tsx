@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
 import InterpretationText from "./InterpretationText";
 import ChartExportButton from "./ChartExportButton";
@@ -37,6 +38,13 @@ interface CacheShape {
   calculation?: CalculationOptions;
 }
 
+interface NatalPreview {
+  sun: string;
+  moon: string;
+  ascendant: string;
+  mc: string;
+}
+
 export default function NatalCalculator() {
   const me = useMe();
   const [birth, setBirth] = useState<BirthValue>(EMPTY_BIRTH);
@@ -48,10 +56,19 @@ export default function NatalCalculator() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [mapNumber, setMapNumber] = useState<string | null>(null);
+  const [preview, setPreview] = useState<NatalPreview | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
+    if (me === undefined) return;
+    if (me === null) {
+      clearGuestCache("natal");
+      setInterpretation(null);
+      setWheel(null);
+      setMapNumber(null);
+      return;
+    }
     const cached = loadGuestCache<CacheShape>("natal");
     if (!cached) return;
     validateGuestCache("natal").then((active) => {
@@ -77,6 +94,7 @@ export default function NatalCalculator() {
       setHouseSystem(cached.houseSystem);
       setCalculation({ ...DEFAULT_UI_CALCULATION, ...(cached.calculation ?? {}) });
       setInterpretation(cached.interpretation);
+      setPreview(null);
       setWheel(cached.wheel ? {
         ...cached.wheel,
         aspects: cached.wheel.aspects ?? [],
@@ -85,7 +103,7 @@ export default function NatalCalculator() {
       } : null);
       setMapNumber(cached.mapNumber ?? null);
     });
-  }, []);
+  }, [me]);
 
   async function calculate(save = false) {
     if (!birth.name || !birth.date || !birth.time || birth.lat === null || birth.lon === null || birth.timezone === null) {
@@ -94,6 +112,7 @@ export default function NatalCalculator() {
     }
     setLoading(true);
     setError(null);
+    setPreview(null);
     try {
       const res = await fetch("/api/chart/natal", {
         method: "POST",
@@ -111,9 +130,34 @@ export default function NatalCalculator() {
           save,
         }),
       });
-      const data = await readApiResponse(res);
+      const data = await readApiResponse<{
+        error?: string;
+        preview?: NatalPreview;
+        result?: {
+          ascendant: number;
+          mc: number;
+          houseCusps: number[];
+          planets: Array<{ name: string; longitude: number }>;
+          aspects?: AspectHit[];
+          advanced?: { fixedStarContacts?: WheelData["fixedStars"] };
+          planetHouses?: Record<string, number>;
+        };
+        interpretation?: string;
+        mapNumber?: string | null;
+      }>(res);
       if (!res.ok) {
         setError(data.error || `სერვერის შეცდომა (${res.status})`);
+        return;
+      }
+      if (data.preview) {
+        setPreview(data.preview);
+        setInterpretation(null);
+        setWheel(null);
+        setMapNumber(null);
+        return;
+      }
+      if (!data.result || !data.interpretation) {
+        setError("სერვერმა სრული ნატალური რუკა არ დააბრუნა.");
         return;
       }
       setInterpretation(data.interpretation);
@@ -206,6 +250,39 @@ export default function NatalCalculator() {
         </div>
       )}
 
+      {preview && (
+        <section className="rounded-2xl border border-cyan-400/25 bg-[#0a1022]/90 p-5 text-left shadow-lg sm:p-6" aria-label="უფასო ნატალური მიმოხილვა">
+          <div className="flex items-start gap-3">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300" />
+            <div className="min-w-0">
+              <h3 className="font-display text-lg font-bold text-white">მოკლე უფასო მიმოხილვა</h3>
+              <p className="mt-1 text-xs leading-5 text-slate-300">
+                სტუმრის რეჟიმში ნაჩვენებია მხოლოდ ოთხი ძირითადი ნიშანი. სრული რუკა, ასპექტები და ინტერპრეტაცია ანგარიშში შესვლის შემდეგ გაიხსნება.
+              </p>
+              <p className="mt-2 text-[11px] leading-5 text-slate-400">
+                კონფიდენციალურობა: შეყვანილი დაბადების მონაცემები და გამოთვლის შედეგი შესაძლოა ჩაიწეროს ანონიმურ სერვერულ ჟურნალში IP მისამართთან და user-agent-თან ერთად; ჩანაწერს ადმინისტრატორი ხედავს.
+              </p>
+              <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {[
+                  ["მზე", preview.sun],
+                  ["მთვარე", preview.moon],
+                  ["ასცენდენტი", preview.ascendant],
+                  ["MC", preview.mc],
+                ].map(([label, sign]) => (
+                  <div key={label} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                    <dt className="text-[10px] font-semibold text-slate-400">{label}</dt>
+                    <dd className="mt-1 text-sm font-bold text-cyan-100">{sign}</dd>
+                  </div>
+                ))}
+              </dl>
+              <Link href="/cabinet" className="mt-4 inline-flex rounded-full bg-cyan-400 px-4 py-2 text-xs font-bold text-slate-950">
+                შესვლა ან რეგისტრაცია
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       <div data-chart-export-root="true" className="chart-builder-result space-y-4 sm:space-y-6">
         {/* Chart Wheel Display */}
         {wheel && (
@@ -237,16 +314,6 @@ export default function NatalCalculator() {
               </button>
             )}
             <ChartExportButton className="flex items-center justify-center gap-1.5 rounded-full border border-cyan-400/40 bg-gradient-to-r from-cyan-950/60 via-indigo-950/60 to-purple-950/60 px-5 py-2.5 text-xs font-bold text-cyan-200 shadow-[0_0_20px_rgba(56,189,248,0.25)] transition-all hover:bg-cyan-400 hover:text-slate-950 cursor-pointer" />
-          </div>
-        )}
-
-        {!me && interpretation && (
-          <div className="flex items-start justify-center gap-2.5 rounded-2xl border border-cyan-500/30 bg-[#0a0e22]/80 p-3.5 sm:p-4 text-xs font-medium text-slate-200 backdrop-blur-md text-center shadow-lg">
-            <Info className="h-4 w-4 text-cyan-300 shrink-0 mt-0.5" />
-            <p>
-              დაურეგისტრირებელი მომხმარებელი — ეს შედეგი შენახული იქნება ამ მოწყობილობაზე 12 საათის განმავლობაში. მუდმივი
-              შენახვისთვის გახსენით <a href="/cabinet" className="font-bold text-cyan-300 underline decoration-cyan-400/50">კაბინეტი</a>.
-            </p>
           </div>
         )}
 

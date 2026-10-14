@@ -22,9 +22,16 @@ Next.js 14 + TypeScript აპლიკაცია, რომელიც ი�
 - **ადმინის პანელი** (`/admin`) — მხოლოდ `ADMIN` როლისთვის: ყველა რეგისტრირებული
   მომხმარებელი და მათ მიერ გამოთვლისას შეყვანილი ყველა მონაცემი (სახელი, დაბადების
   თარიღი/დრო/ადგილი).
-- **სტუმრის რეჟიმი** — დაურეგისტრირებელი მომხმარებლის შედეგი ინახება მხოლოდ მისივე
-  ბრაუზერში (`localStorage`), 12 საათით. ბაზაში არაფერი ინახება, სანამ ანგარიშზე არ
-  შევა და აქტიურად არ დააჭერს „შენახვა კაბინეტში".
+- **სტუმრის რეჟიმი** — სტუმარს ნატალური რუკიდან მხოლოდ ოთხი ძირითადი მაჩვენებლის
+  მიმოხილვა უბრუნდება; სრული რუკა და ინტერპრეტაცია ანგარიშში შესვლას მოითხოვს.
+  სერვერის ანონიმურ აუდიტის ჟურნალში შეიძლება ჩაიწეროს შეყვანილი დაბადების
+  მონაცემები, გამოთვლის შედეგი, IP მისამართი და ბრაუზერის user-agent; ჩანაწერები
+  ადმინისტრატორს შეუძლია ნახოს. UI სტუმრის სრულ რუკას ბრაუზერში აღარ ინახავს.
+- **პაკეტები და გადახდა** — სტუმრის შეზღუდული მიმოხილვის გარდა სრული ნატალური რუკა
+  უფასო ანგარიშითაა ხელმისაწვდომი; დამატებითი გამოთვლები და შენახული რუკები
+  სერვერზე მოწმდება Pro/Enterprise entitlement-ით. პაკეტის გააქტიურება ხდება
+  მხოლოდ საქართველოს ბანკის ხელმოწერილი callback-ისა და გადახდის ქვითრის
+  გადამოწმების შემდეგ.
 
 ## საწყისი გაშვება (დეველოპმენტი)
 
@@ -34,6 +41,8 @@ cp .env.example .env
 # .env ფაილში შეავსეთ JWT_SECRET (გენერირება: openssl rand -base64 48)
 # და ADMIN_EMAIL / ADMIN_PASSWORD — თქვენი, როგორც საიტის შემქმნელის, ანგარიშისთვის
 # რეალური ელფოსტებისთვის დაამატეთ APP_URL, RESEND_API_KEY და EMAIL_FROM
+# Gemini-ის რეალური პასუხებისთვის საჭიროა GEMINI_API_KEY.
+# BOG-ის გადახდა ჩაირთვება მხოლოდ ბანკის Sandbox credentials-ით და საჯარო HTTPS callback-ით.
 
 npx prisma migrate dev --name init   # იყენებს .env-ში მითითებულ PostgreSQL-ს
 npm run seed:admin                    # ქმნის თქვენს ADMIN ანგარიშს
@@ -73,7 +82,9 @@ After the server starts, verify `GET /api/health`. It reports database connectiv
 
 3. **გარემოს ცვლადები** ჰოსტინგის პანელში მიუთითეთ იგივე, რაც `.env.example`-შია:
    `DATABASE_URL`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `APP_URL`,
-   `RESEND_API_KEY`, `EMAIL_FROM`.
+   `RESEND_API_KEY`, `EMAIL_FROM`, `GEMINI_API_KEY` და (გადახდის გასააქტიურებლად)
+   `BOG_ENVIRONMENT`, `BOG_CLIENT_ID`, `BOG_CLIENT_SECRET`,
+   `BOG_CALLBACK_URL`, `BOG_CALLBACK_PUBLIC_KEY`.
 
 4. **დომენი.** ჰოსტინგის პანელიდან მიაბით საკუთარი დომენი (მაგ. astro.ge).
 
@@ -84,6 +95,28 @@ After the server starts, verify `GET /api/health`. It reports database connectiv
 6. დეპლოის შემდეგ ერთხელ გაუშვით `npm run seed:admin` (ან ხელით შექმენით ანგარიში
    და მონაცემთა ბაზაში როლი `ADMIN`-ზე შეცვალეთ) — ეს არის თქვენი, საიტის
    შემქმნელის, სპეციალური შესვლა.
+
+### გადახდების ჩართვა (საქართველოს ბანკი)
+
+1. ბანკისგან ცალკე მიიღეთ Sandbox-ის `client_id`, `client_secret` და შესაბამისი
+   `Callback-Signature` public key. Callback მისამართი საჯარო HTTPS-ით
+   ხელმისაწვდომი უნდა იყოს; `BOG_CALLBACK_URL` უნდა იყოს
+   `https://<your-domain>/api/billing/bog/callback`.
+2. `BOG_ENVIRONMENT=sandbox` რეჟიმში გამოიყენეთ მხოლოდ Sandbox credentials;
+   რეალური გადახდების დაწყებამდე ჩაანაცვლეთ ბანკის production credentials-ითა და
+   production callback key-ით. პირადი `client_secret` შეინახეთ მხოლოდ ჰოსტინგის
+   secret store-ში — არასოდეს ჩაწეროთ repository-ში ან commit-ში.
+3. `APP_URL`, `BOG_CLIENT_ID`, `BOG_CLIENT_SECRET`, `BOG_CALLBACK_URL` და
+   `BOG_CALLBACK_PUBLIC_KEY` დააკონფიგურირეთ. Prisma migration-ები release-ის
+   ცალკე ნაბიჯად გაუშვით `npm run db:deploy` ბრძანებით.
+4. Callback signature მოწმდება JSON-ის გაშიფვრამდე, ნედლ body-ზე; order ID,
+   თანხა, ვალუტა და BOG receipt თუ არ ემთხვევა, entitlement არ გაიცემა. Redirect
+   გადახდის მტკიცებულება არ არის. შეძენა ერთჯერადია და ავტომატურად არ განახლდება.
+5. Sandbox callback და სრული checkout HTTPS deployment-ზე შეამოწმეთ production
+   რეჟიმში გადასვლამდე. Sandbox callback key production-ში არ გამოიყენოთ.
+
+Gemini-ის გასაღების არქონისას ან Gemini API-ის შეცდომისას AI endpoint მკაფიო
+შეცდომას აბრუნებს; ლოკალურ fallback-ს Gemini-ის პასუხად არ ასაღებს.
 
 ## ხშირი შეცდომები დაყენებისას
 

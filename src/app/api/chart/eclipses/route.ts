@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { dateToJulianDay, findNextLunarEclipse, findNextSolarEclipse, julianDayToDate } from "@swisseph/node";
 import { z } from "zod";
 import { isWideDate, wideDateToUtcDate } from "@/lib/astro/wideDate";
+import { requireFeatureAccess } from "@/lib/billing/access";
+import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 
 const schema = z.object({
   type: z.enum(["solar", "lunar"]),
@@ -15,6 +17,15 @@ function dateFromJulianDay(julianDay: number): string {
 }
 
 export async function POST(req: NextRequest) {
+  const limiter = rateLimit(getRateLimitKey(req, "chart:eclipses"), 20, 5 * 60 * 1000);
+  if (!limiter.allowed) {
+    return NextResponse.json({ error: "მოთხოვნების ლიმიტი ამოიწურა. სცადეთ მოგვიანებით." }, {
+      status: 429,
+      headers: { "Retry-After": String(limiter.retryAfterSeconds) },
+    });
+  }
+  const accessDenied = await requireFeatureAccess(req, "eclipses");
+  if (accessDenied) return accessDenied;
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "არასწორი მონაცემები" }, { status: 400 });
   const start = wideDateToUtcDate(parsed.data.startDate);

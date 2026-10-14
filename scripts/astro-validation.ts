@@ -5,6 +5,7 @@ import { calculateAngularity, calculateDeclinationContacts, calculateFixedStarCo
 import { computeSecondaryProgression } from "../src/lib/astro/progressions";
 import { findPlanetaryReturn } from "../src/lib/astro/returns";
 import { computeSolarArcDirections } from "../src/lib/astro/directions";
+import { calculateRectification } from "../src/lib/astro/rectification";
 import { calculateHarmonicAspects, calculateHarmonicPlanets, calculateMidpoints } from "../src/lib/astro/midpoints";
 import { dateToJulianDay, findNextSolarEclipse } from "@swisseph/node";
 
@@ -72,6 +73,35 @@ const solarReturn = findPlanetaryReturn({ ...input, calculation: { ephemeris: "s
 assert(solarReturn.orb < 0.001, "solar return root finder reaches sub-arcminute precision");
 const solarArc = computeSolarArcDirections({ ...input, calculation: { ephemeris: "swiss" } }, "2025-01-01", "placidus");
 assert(solarArc.directedPlanets.length === swiss.planets.length, "solar arc directs every natal point");
+const rectificationBirth = {
+  name: "Test",
+  place: "Tbilisi",
+  date: "1992-04-17",
+  time: "14:26",
+  timezone: "Asia/Tbilisi",
+  lat: 41.7151,
+  lon: 44.8271,
+};
+const rectificationEvents = [
+  { type: "marriage" as const, date: "2015-06-20" },
+  { type: "career" as const, date: "2019-09-15" },
+  { type: "relocation" as const, date: "2022-03-12" },
+];
+const rectification = calculateRectification(rectificationBirth, rectificationEvents, 5);
+assert(rectification.scannedCandidates === 11, "rectification scans every minute in the selected interval");
+assert(rectification.candidates.length > 0, "rectification returns ranked real chart candidates");
+assert(rectification.candidates.every((candidate) => candidate.eventMatches.length === 3), "each candidate reports matches for all supplied events");
+assert(!("confidence" in rectification), "rectification does not report a fabricated confidence percentage");
+const changedEventDates = calculateRectification(
+  rectificationBirth,
+  [{ ...rectificationEvents[0]! }, { ...rectificationEvents[1]!, date: "2020-09-15" }, { ...rectificationEvents[2]! }],
+  5,
+);
+assert(
+  JSON.stringify(rectification.candidates.map((candidate) => candidate.eventMatches.map((match) => match.orb)))
+    !== JSON.stringify(changedEventDates.candidates.map((candidate) => candidate.eventMatches.map((match) => match.orb))),
+  "changing an event date changes the calculated Solar Arc event orbs",
+);
 const eclipse = findNextSolarEclipse(dateToJulianDay(new Date("2025-01-01T12:00:00.000Z")));
 assert(Number.isFinite(eclipse.maximum), "Swiss eclipse search returns a finite maximum time");
 
@@ -99,4 +129,4 @@ const interval = computeTransitInterval(swiss, start, end);
 assert(interval.samples.length > 1, "transit interval scans multiple samples");
 assert(interval.peakAspects.length >= 0, "transit interval returns peak aspect collection");
 
-console.log(`Astro validation passed: Swiss Ephemeris, fallback comparison, wide dates, and ${interval.samples.length} transit samples.`);
+console.log(`Astro validation passed: Swiss Ephemeris, fallback comparison, wide dates, ${interval.samples.length} transit samples, and real rectification candidate scans.`);

@@ -13,6 +13,7 @@ import { isValidPersonInput } from "@/lib/astro/inputSchemas";
 import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 import { aspectLibraryInsight } from "@/lib/interpretations/library";
 import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/interpretations/libraryStore";
+import { requirePlanAccess } from "@/lib/billing/access";
 
 const calculationSchema = z.object({
   ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
@@ -66,6 +67,17 @@ export async function POST(req: NextRequest) {
   if (compareWideDates(transitDate, transitStartDate) < 0 || compareWideDates(transitDate, transitEndDate) > 0) {
     return NextResponse.json({ error: "ტრანზიტის თარიღი არჩეული ინტერვალის ფარგლებში უნდა იყოს" }, { status: 400 });
   }
+  const transitStartUtc = wideDateToUtcDate(transitStartDate);
+  const transitEndUtc = wideDateToUtcDate(transitEndDate);
+  if (!transitStartUtc || !transitEndUtc) {
+    return NextResponse.json({ error: "ტრანზიტის პერიოდის თარიღები ვერ გარდაიქმნა" }, { status: 400 });
+  }
+  const periodLengthDays = (transitEndUtc.getTime() - transitStartUtc.getTime()) / 86_400_000;
+  if (periodLengthDays > 3_652) {
+    return NextResponse.json({ error: "ტრანზიტის სკანირება მაქსიმუმ 10-წლიან პერიოდს მოიცავს." }, { status: 400 });
+  }
+  const accessDenied = await requirePlanAccess(req, periodLengthDays > 366 ? "enterprise" : "pro");
+  if (accessDenied) return accessDenied;
 
   let natalChart;
   try {
@@ -80,11 +92,7 @@ export async function POST(req: NextRequest) {
   }
   // შუადღე UTC — ტრანზიტული დღის საერთო მდგომარეობისთვის
   const { transitPlanets, aspects } = computeTransitAspects(natalChart, transitUtc);
-  const transitStartUtc = wideDateToUtcDate(transitStartDate);
-  const transitEndUtc = wideDateToUtcDate(transitEndDate);
-  const interval = transitStartUtc && transitEndUtc
-    ? computeTransitInterval(natalChart, transitStartUtc, transitEndUtc)
-    : null;
+  const interval = computeTransitInterval(natalChart, transitStartUtc, transitEndUtc);
   const baseInterpretation = interval
     ? generateTransitIntervalInterpretation(aspects, transitDate, transitStartDate, transitEndDate, interval.peakAspects)
     : generateTransitInterpretation(aspects, transitDate);

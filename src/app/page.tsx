@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { type CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Activity, ArrowRight, Bot, Check, Clock, Compass, Heart, Orbit, Sparkles, Sun, X } from "lucide-react";
 import AdvancedCalculator from "@/components/AdvancedCalculator";
 import NatalCalculator from "@/components/NatalCalculator";
@@ -13,9 +14,10 @@ import SocialProofTicker from "@/components/SocialProofTicker";
 import BentoGrid from "@/components/BentoGrid";
 import PricingTable from "@/components/PricingTable";
 import AiAstrologyAssistant from "@/components/AiAstrologyAssistant";
-import RectificationCalculator from "@/components/RectificationCalculator";
+import RectificationCalculator from "@/components/RectificationCandidateCalculator";
 import KnowledgeHub from "@/components/KnowledgeHub";
 import ExpertConsultationBooking from "@/components/ExpertConsultationBooking";
+import { useMe } from "@/lib/useMe";
 
 type Tab = "natal" | "synastry" | "transit" | "advanced" | "ai" | "rectification";
 
@@ -24,8 +26,8 @@ const TABS = [
   { id: "synastry", label: "სინასტრია", hint: "ორი რუკის შედარება — ურთიერთქმედების ძლიერი და რთული წერტილები", icon: Heart },
   { id: "transit", label: "ტრანზიტები", hint: "მიმდინარე ციური მოძრაობა ნატალურ რუკასთან მიმართებით", icon: Activity },
   { id: "advanced", label: "გაფართოებული", hint: "პროგრესიები, დაბრუნებები, სოლარული არკი, დაბნელებები და ჰარმონიკები", icon: Orbit },
-  { id: "ai", label: "Gemini AI ანალიზი", hint: "ხელოვნური ინტელექტის სიღრმისეული ასტროლოგიური ინტერპრეტაცია", icon: Bot },
-  { id: "rectification", label: "რექტიფიკაცია", hint: "დაბადების ზუსტი წუთების დადგენა ცხოვრებისეული მოვლენების მიხედვით", icon: Clock },
+  { id: "ai", label: "Gemini AI ანალიზი", hint: "Gemini API-ით შექმნილი ასტროლოგიური ინტერპრეტაცია", icon: Bot },
+  { id: "rectification", label: "რექტიფიკაცია", hint: "Solar Arc-ის დროითი კანდიდატების შედარება ცხოვრებისეულ მოვლენებთან", icon: Clock },
 ] as const;
 
 const ZODIAC_SIGNS = [
@@ -110,6 +112,7 @@ const ELEMENT_GROUPS = [
 type CelestialTarget = number | "earth" | null;
 
 export default function HomePage() {
+  const me = useMe();
   const [tab, setTab] = useState<Tab>("natal");
   const [hoveredCelestial, setHoveredCelestial] = useState<CelestialTarget>(null);
   const [selectedCelestial, setSelectedCelestial] = useState<CelestialTarget>(null);
@@ -174,7 +177,7 @@ export default function HomePage() {
       // Moderate shift to the left away from the right frame border without leaving an empty void
       const frameRight = isMobile
         ? Math.max(6, Math.min(12, bounds.width * 0.018))
-        : Math.max(16, Math.min(32, bounds.width * 0.022));
+        : Math.max(38, Math.min(54, bounds.width * 0.032 + 12));
       const humanFrameBottom = 0; // Pinned flush to the bottom edge
 
       // Upper ceiling: allows enlarged human artwork to scale dynamically and proportionally with viewport
@@ -184,9 +187,9 @@ export default function HomePage() {
 
       // Horizontal space to the right of the central planetary ring
       const ringRightX = centerX + systemOuterRadius;
-      const safeCircleGapRight = isMobile ? 6 : 14;
+      const safeCircleGapRight = isMobile ? 6 : 10;
       const availableSpaceRight = Math.max(0, bounds.width - ringRightX - frameRight - safeCircleGapRight);
-      const maxHumanWidthCap = Math.min(620, bounds.width * (isMobile ? 0.40 : 0.48));
+      const maxHumanWidthCap = Math.min(680, bounds.width * (isMobile ? 0.40 : 0.52));
 
       let stageWidth: number;
       if (isMobile) {
@@ -195,7 +198,7 @@ export default function HomePage() {
         stageWidth = Math.max(110, Math.min(mobileTargetWidth, bounds.width - frameRight - 10));
       } else {
         // Desktop / tablet: 20% larger, dynamically and proportionally scaling with viewport width
-        const responsiveDesktopWidth = Math.min(bounds.width * 0.38, maxWidthFromHeight, maxHumanWidthCap);
+        const responsiveDesktopWidth = Math.min(bounds.width * 0.42 + 10, maxWidthFromHeight, maxHumanWidthCap);
         stageWidth = Math.max(165, responsiveDesktopWidth);
         if (stageWidth > availableSpaceRight && availableSpaceRight > 110) {
           stageWidth = availableSpaceRight;
@@ -276,10 +279,13 @@ export default function HomePage() {
         zodiacSize = bounds.width - frameLeft - 10;
       }
 
+      // Lower Virgo's artwork slightly, with an offset that scales with its responsive size.
+      const zodiacBottomOffset = activePlanetIndex === 5 ? zodiacSize * 0.07 : 0;
+
       zodiacStage.style.width = `${Math.round(zodiacSize)}px`;
       zodiacStage.style.height = `${Math.round(zodiacSize)}px`;
       zodiacStage.style.left = `${Math.round(frameLeft)}px`;
-      zodiacStage.style.bottom = `${Math.round(frameBottom)}px`;
+      zodiacStage.style.bottom = `${Math.round(Math.max(0, frameBottom - zodiacBottomOffset))}px`;
       zodiacStage.style.right = "auto";
       zodiacStage.style.top = "auto";
 
@@ -674,12 +680,31 @@ export default function HomePage() {
           <span className="live-beacon" />{activeTab.hint}
         </div>
         <div className="mt-8">
-          {tab === "natal" && <NatalCalculator />}
-          {tab === "synastry" && <SynastryCalculator />}
-          {tab === "transit" && <TransitCalculator />}
-          {tab === "advanced" && <AdvancedCalculator />}
-          {tab === "ai" && <AiAstrologyAssistant />}
-          {tab === "rectification" && <RectificationCalculator />}
+          {tab !== "natal" && me === null ? (
+            <div className="mx-auto max-w-xl rounded-3xl border border-cyan-400/20 bg-[#0b1020]/90 p-6 text-center sm:p-9">
+              <h3 className="font-display text-xl font-bold text-white">დამატებითი გამოთვლები ანგარიშით არის ხელმისაწვდომი</h3>
+              <p className="mt-3 text-sm leading-6 text-slate-300">
+                სტუმრისთვის ხელმისაწვდომია მოკლე ნატალური მიმოხილვა. სინასტრიის, ტრანზიტების, AI-ისა და სხვა სრული სერვისების გასახსნელად შექმენით ანგარიში და აირჩიეთ შესაბამისი პაკეტი.
+              </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-3">
+                <Link href="/cabinet" className="rounded-full bg-cyan-400 px-5 py-2.5 text-sm font-bold text-slate-950">
+                  შესვლა ან რეგისტრაცია
+                </Link>
+                <Link href="/#pricing" className="rounded-full border border-white/15 px-5 py-2.5 text-sm font-semibold text-white">
+                  პაკეტების ნახვა
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <>
+              {tab === "natal" && <NatalCalculator />}
+              {tab === "synastry" && <SynastryCalculator />}
+              {tab === "transit" && <TransitCalculator />}
+              {tab === "advanced" && <AdvancedCalculator />}
+              {tab === "ai" && <AiAstrologyAssistant />}
+              {tab === "rectification" && <RectificationCalculator />}
+            </>
+          )}
         </div>
       </section>
 

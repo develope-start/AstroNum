@@ -1,7 +1,6 @@
 {
     "recommendations": [
         "openai.chatgpt",
-        "saoudrizwan.claude-dev",
-        "google.geminicodeassist"
+        "saoudrizwan.claude-dev"
     ]
 }

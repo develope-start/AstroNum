@@ -5971,6 +5971,7 @@ canvas {
 }
 
 .celestial-stage-image {
+  --celestial-stage-scale: 1;
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -5986,14 +5987,21 @@ canvas {
   animation: celestial-image-rise 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+@media (min-width: 641px) {
+  .celestial-stage-image {
+    --celestial-stage-scale: 1.15;
+    transform-origin: right bottom;
+  }
+}
+
 @keyframes celestial-image-rise {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(14px) scale(var(--celestial-stage-scale, 1));
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(var(--celestial-stage-scale, 1));
   }
 }
 
@@ -6020,7 +6028,7 @@ canvas {
   .celestial-stage-image {
     animation: none !important;
     opacity: 1 !important;
-    transform: none !important;
+    transform: scale(var(--celestial-stage-scale, 1)) !important;
   }
 
   .celestial-zodiac-image {

@@ -13,6 +13,7 @@ import { isValidPersonInput } from "@/lib/astro/inputSchemas";
 import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 import { aspectLibraryInsight } from "@/lib/interpretations/library";
 import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/interpretations/libraryStore";
+import { requireFeatureAccess } from "@/lib/billing/access";
 
 const calculationSchema = z.object({
   ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
@@ -46,6 +47,8 @@ const schema = z.object({
 export async function POST(req: NextRequest) {
   const limiter = rateLimit(getRateLimitKey(req, "chart:synastry"), 20, 5 * 60 * 1000);
   if (!limiter.allowed) return NextResponse.json({ error: "Too many chart requests. Try again later." }, { status: 429, headers: { "Retry-After": String(limiter.retryAfterSeconds) } });
+  const accessDenied = await requireFeatureAccess(req, "synastry");
+  if (accessDenied) return accessDenied;
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
