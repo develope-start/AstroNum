@@ -1,6 +1,5 @@
 {
     "recommendations": [
-        "openai.chatgpt",
-        "saoudrizwan.claude-dev"
+        "openai.chatgpt"
     ]
 }
