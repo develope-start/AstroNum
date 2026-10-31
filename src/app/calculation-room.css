@@ -405,6 +405,32 @@
   padding-bottom: 18px;
 }
 
+/* The element panel lives beside the chart on wide screens.  Its own grid
+   must be sized by the panel, not by the browser viewport, so labels never
+   collapse into a vertical column on an otherwise large display. */
+.cr-element-panel .element-balance-indicators-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.cr-element-panel .element-balance-indicator-header {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.2rem;
+}
+.cr-element-panel .element-balance-indicator-value {
+  align-self: center;
+}
+.cr-element-panel .element-balance-title {
+  font-size: clamp(0.88rem, 1vw, 1.05rem);
+  line-height: 1.35;
+}
+
+@media (max-width: 1535px) {
+  .cr-element-panel .element-balance-indicators-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* Print styling */
 @media print {
   .cr-aurora,

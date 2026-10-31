@@ -525,7 +525,7 @@ export default function CalculationRoom({
       </nav>
 
       {/* ===== 4. Workspace Layout (Desktop Sidebar + Main Content) ===== */}
-      <div className="relative z-10 mx-auto flex max-w-[1520px] min-h-[calc(100vh-52px)]">
+      <div className="relative z-10 flex w-full min-h-[calc(100vh-52px)]">
         {/* Desktop Sticky Sidebar */}
         <aside className="cr-side hidden lg:flex sticky top-[52px] h-[calc(100vh-52px)] w-[276px] shrink-0 flex-col gap-3 p-4">
           <div className="cr-glass flex h-full flex-col p-4">
@@ -744,8 +744,8 @@ export default function CalculationRoom({
               </div>
 
               {wheel ? (
-                <div className="grid items-start gap-6 2xl:grid-cols-12">
-                  <section className="2xl:col-span-8">
+                <div className="grid items-start gap-6 2xl:grid-cols-[minmax(0,7fr)_minmax(28rem,5fr)]">
+                  <section className="min-w-0">
                     <ChartMapSection
                       title="ზოდიაქალური წრე v2"
                       subtitle="რუკა და ჩამოსაშლელი დეტალური მნიშვნელობები"
@@ -758,7 +758,7 @@ export default function CalculationRoom({
                       planetHouses={wheel.planetHouses ?? {}}
                     />
                   </section>
-                  <aside className="2xl:col-span-4">
+                  <aside className="cr-element-panel min-w-0">
                     <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />
                   </aside>
                 </div>

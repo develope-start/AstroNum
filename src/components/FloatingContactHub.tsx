@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { ArrowUp, Headphones, MessageCircle, Phone, Send, Sparkles, X, Globe, ExternalLink } from "lucide-react";
 import { SocialSettingsData } from "@/lib/socialSettings";
 
-export default function FloatingContactHub() {
+export default function FloatingContactHub({ className = "z-40" }: { className?: string }) {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [socials, setSocials] = useState<SocialSettingsData | null>(null);
@@ -70,7 +70,7 @@ export default function FloatingContactHub() {
   return (
     <>
       {/* Floating Buttons Bar (Bottom Right) */}
-      <div className="fixed bottom-5 right-1 sm:bottom-6 sm:right-1.5 z-40 flex flex-col items-center gap-3">
+      <div className={`fixed bottom-5 right-1 sm:bottom-6 sm:right-1.5 ${className} flex flex-col items-center gap-3`}>
         {/* Scroll to Top button */}
         <button
           type="button"
