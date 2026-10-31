@@ -6,7 +6,9 @@ import ChartMapSection from "@/components/ChartMapSection";
 import { type WheelFixedStar, type WheelPlanet } from "@/components/ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
+import CalculationRoom from "@/components/CalculationRoom";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
+import type { HouseSystem } from "@/lib/astro/positions";
 import { useEffect } from "react";
 import { X, Calendar, Clock, MapPin } from "lucide-react";
 
@@ -18,6 +20,9 @@ export type CalculationViewData = {
   date1: string;
   time1: string;
   place1: string;
+  lat1: number;
+  lon1: number;
+  tz1: string;
   date2: string | null;
   time2: string | null;
   place2: string | null;
@@ -93,6 +98,31 @@ export default function AdminCalculationViewer({
       document.removeEventListener("keydown", closeOnEscape);
     };
   }, [onClose]);
+
+  if (wheel) {
+    const houseSystem: HouseSystem = ["whole_sign", "equal", "porphyry", "placidus"].includes(calculation.houseSystem)
+      ? calculation.houseSystem as HouseSystem
+      : "placidus";
+    return (
+      <CalculationRoom
+        isOpen={true}
+        onClose={onClose}
+        birth={{
+          name: calculation.name1,
+          date: calculation.date1,
+          time: calculation.time1,
+          place: calculation.place1,
+          lat: Number.isFinite(calculation.lat1) ? calculation.lat1 : null,
+          lon: Number.isFinite(calculation.lon1) ? calculation.lon1 : null,
+          timezone: calculation.tz1 || null,
+        }}
+        wheel={wheel}
+        interpretation={calculation.interpretation}
+        mapNumber={calculation.mapNumber}
+        houseSystem={houseSystem}
+      />
+    );
+  }
 
   return (
     <div className="admin-calculation-viewer fixed inset-0 z-50 flex h-[100dvh] w-full items-stretch justify-center overflow-hidden overscroll-contain bg-[#060813]/95 backdrop-blur-2xl p-0">

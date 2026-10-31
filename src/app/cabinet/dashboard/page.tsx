@@ -8,6 +8,8 @@ import ChartMapSection from "@/components/ChartMapSection";
 import type { WheelFixedStar, WheelPlanet } from "@/components/ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
+import CalculationRoom from "@/components/CalculationRoom";
+import type { HouseSystem } from "@/lib/astro/positions";
 import { X, Trash2, Eye, Compass, User, Clock, Calendar, Sparkles } from "lucide-react";
 import { readApiResponse } from "@/lib/apiResponse";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
@@ -57,6 +59,9 @@ interface SelectedChart {
   date1: string;
   time1: string;
   place1: string;
+  lat1: number | null;
+  lon1: number | null;
+  tz1: string | null;
   date2: string | null;
   time2: string | null;
   place2: string | null;
@@ -245,6 +250,9 @@ export default function DashboardPage() {
         date1?: string;
         time1?: string;
         place1?: string;
+        lat1?: number | null;
+        lon1?: number | null;
+        tz1?: string | null;
         date2?: string | null;
         time2?: string | null;
         place2?: string | null;
@@ -271,6 +279,9 @@ export default function DashboardPage() {
         date1: data.date1 ?? "—",
         time1: data.time1 ?? "—",
         place1: data.place1 ?? "—",
+        lat1: data.lat1 ?? null,
+        lon1: data.lon1 ?? null,
+        tz1: data.tz1 ?? null,
         date2: data.date2 ?? null,
         time2: data.time2 ?? null,
         place2: data.place2 ?? null,
@@ -582,7 +593,32 @@ export default function DashboardPage() {
       )}
 
       {/* Selected Opened Chart View Modal / Card */}
-      {selected && (
+      {selected?.result && (() => {
+        const houseSystem: HouseSystem = ["whole_sign", "equal", "porphyry", "placidus"].includes(selected.houseSystem)
+          ? selected.houseSystem as HouseSystem
+          : "placidus";
+        return (
+          <CalculationRoom
+            isOpen={true}
+            onClose={() => setSelected(null)}
+            birth={{
+              name: selected.name1,
+              date: selected.date1,
+              time: selected.time1,
+              place: selected.place1,
+              lat: selected.lat1,
+              lon: selected.lon1,
+              timezone: selected.tz1,
+            }}
+            wheel={selected.result}
+            interpretation={selected.interpretation}
+            mapNumber={selected.mapNumber}
+            houseSystem={houseSystem}
+          />
+        );
+      })()}
+
+      {selected && !selected.result && (
         <div id="chart-view" data-chart-export-root="true" className="chart-view-panel fixed inset-0 z-[100] h-[100dvh] min-w-0 overflow-y-auto overscroll-contain bg-[#060813]/95 p-3 sm:p-8 backdrop-blur-2xl transition-all">
           
           {/* Top-Right Close Button */}

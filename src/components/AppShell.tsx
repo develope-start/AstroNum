@@ -27,7 +27,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <Footer />
-      <FloatingContactHub />
+      <FloatingContactHub className="z-[240]" />
     </>
   );
 }
