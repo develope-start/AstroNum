@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type CSSProperties, useEffect, useState } from "react";
-import { Compass, LayoutDashboard, Menu, Shield, User, X } from "lucide-react";
+import { Compass, LayoutDashboard, Shield, User } from "lucide-react";
 
 interface Me {
   userId: string;
@@ -214,10 +214,31 @@ export default function Nav() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((value) => !value)}
-              className="nav-quiet-action flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl p-0"
-              aria-label="მენიუს გახსნა"
+              className={`relative group flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border transition-all duration-300 cursor-pointer active:scale-95 ${
+                mobileMenuOpen
+                  ? "border-cyan-400/60 bg-gradient-to-br from-cyan-950/60 to-indigo-950/60 text-cyan-200 shadow-[0_0_15px_rgba(56,189,248,0.35)] ring-1 ring-cyan-400/30"
+                  : "border-violet-400/30 bg-gradient-to-b from-[#131b36]/90 via-[#0e162b]/80 to-[#080d1a]/90 text-violet-200 shadow-[0_0_12px_rgba(139,92,246,0.2)] hover:border-violet-300 hover:shadow-[0_0_18px_rgba(139,92,246,0.4)]"
+              }`}
+              aria-label={mobileMenuOpen ? "მენიუს დახურვა" : "მენიუს გახსნა"}
+              title="მენიუ"
             >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              <div className="flex h-4 w-4 flex-col items-center justify-center gap-1">
+                <span
+                  className={`h-[2px] w-4 rounded-full bg-violet-200 transition-all duration-300 ${
+                    mobileMenuOpen ? "translate-y-1.5 rotate-45 bg-cyan-300" : "group-hover:bg-white"
+                  }`}
+                />
+                <span
+                  className={`h-[2px] rounded-full bg-cyan-300 transition-all duration-300 ${
+                    mobileMenuOpen ? "w-0 opacity-0" : "w-3 group-hover:w-4 group-hover:bg-cyan-200"
+                  }`}
+                />
+                <span
+                  className={`h-[2px] w-4 rounded-full bg-violet-200 transition-all duration-300 ${
+                    mobileMenuOpen ? "-translate-y-1.5 -rotate-45 bg-cyan-300" : "group-hover:bg-white"
+                  }`}
+                />
+              </div>
             </button>
           </div>
         </div>
