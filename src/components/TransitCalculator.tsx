@@ -7,7 +7,7 @@ import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettin
 import HouseSystemSelect from "./HouseSystemSelect";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
 import type { HouseSystem } from "@/lib/astro/positions";
-import InterpretationText from "./InterpretationText";
+import InterpretationOverlay from "./InterpretationOverlay";
 import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
@@ -49,6 +49,7 @@ export default function TransitCalculator() {
   const [calculation, setCalculation] = useState<CalculationOptions>({ ...DEFAULT_UI_CALCULATION });
   const [interpretation, setInterpretation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isInterpretationOpen, setIsInterpretationOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [mapNumber, setMapNumber] = useState<string | null>(null);
@@ -98,6 +99,7 @@ export default function TransitCalculator() {
       setError("ტრანზიტის ინტერვალის „დან“ თარიღი უნდა იყოს „მდე“ თარიღზე ადრე ან იგივე.");
       return;
     }
+    setIsInterpretationOpen(true);
     setLoading(true);
     setError(null);
     try {
@@ -135,19 +137,27 @@ export default function TransitCalculator() {
           planRequired: data?.code === "PLAN_REQUIRED",
         });
         setError(null);
+        setIsInterpretationOpen(false);
         return;
       }
       if (!res.ok) {
         setError(data.error || `სერვერის შეცდომა (${res.status})`);
+        setIsInterpretationOpen(false);
+        return;
+      }
+      if (!data.interpretation) {
+        setError("სერვერმა ტრანზიტის ინტერპრეტაცია არ დააბრუნა.");
+        setIsInterpretationOpen(false);
         return;
       }
       setTeaserPreview(null);
-      setInterpretation(data.interpretation ?? null);
+      setInterpretation(data.interpretation);
       setMapNumber(data.mapNumber ?? null);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("transit", { birth, transitDate: calculationDate, transitStartDate: calculationStartDate, transitEndDate: calculationEndDate, inputMode: selectedMode, calculation, houseSystem, interpretation: data.interpretation ?? "", mapNumber: data.mapNumber ?? null });
+      else saveGuestCache<CacheShape>("transit", { birth, transitDate: calculationDate, transitStartDate: calculationStartDate, transitEndDate: calculationEndDate, inputMode: selectedMode, calculation, houseSystem, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
+      setIsInterpretationOpen(false);
     } finally {
       setLoading(false);
     }
@@ -394,25 +404,25 @@ export default function TransitCalculator() {
       )}
 
       {interpretation && (
-        <div className="glass-panel interpretation-container rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-2xl border-white/10 bg-[#0b0f19]/95 backdrop-blur-2xl text-left w-full">
-          <div className="mb-6 border-b border-white/10 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div>
-              <h3 className="text-xl sm:text-2xl font-bold text-white tracking-normal">
-                ასტროლოგიური ინტერპრეტაცია &amp; ტრანზიტული ანალიზი
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                მიმდინარე პლანეტარული ზეგავლენები და ციური მოვლენების ანალიზი
-              </p>
-            </div>
-            {mapNumber && (
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1 text-xs font-semibold text-indigo-300 self-start sm:self-auto">
-                <span>რუკის ნომერი: {mapNumber}</span>
-              </div>
-            )}
-          </div>
-          <InterpretationText text={interpretation} />
-        </div>
+        <button
+          type="button"
+          onClick={() => setIsInterpretationOpen(true)}
+          className="inline-flex items-center gap-2 rounded-full border border-violet-400/40 bg-violet-500/10 px-5 py-2.5 text-xs font-bold text-violet-100 transition hover:bg-violet-500/20 cursor-pointer"
+        >
+          <Sparkles className="h-4 w-4" />
+          ინტერპრეტაციის გახსნა
+        </button>
       )}
+
+      <InterpretationOverlay
+        open={isInterpretationOpen}
+        loading={loading}
+        title="ასტროლოგიური ინტერპრეტაცია და ტრანზიტული ანალიზი"
+        subtitle="მიმდინარე პლანეტარული ზეგავლენები და ციური მოვლენების ანალიზი"
+        interpretation={interpretation}
+        mapNumber={mapNumber}
+        onClose={() => setIsInterpretationOpen(false)}
+      />
     </div>
   );
 }

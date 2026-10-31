@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
-import InterpretationText from "./InterpretationText";
+import InterpretationOverlay from "./InterpretationOverlay";
 import ChartExportButton from "./ChartExportButton";
 import ChartMapSection from "./ChartMapSection";
 import type { WheelPlanet } from "./ChartWheel";
@@ -59,6 +59,7 @@ export default function NatalCalculator() {
   const [preview, setPreview] = useState<NatalPreview | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isInterpretationOpen, setIsInterpretationOpen] = useState(false);
 
   useEffect(() => {
     if (me === undefined) return;
@@ -110,6 +111,7 @@ export default function NatalCalculator() {
       setError("შეავსეთ სახელი, თარიღი, დრო და დაბადების ადგილი (დაადასტურეთ ადგილის მოძებნა).");
       return;
     }
+    setIsInterpretationOpen(true);
     setLoading(true);
     setError(null);
     setPreview(null);
@@ -147,6 +149,7 @@ export default function NatalCalculator() {
       }>(res);
       if (!res.ok) {
         setError(data.error || `სერვერის შეცდომა (${res.status})`);
+        setIsInterpretationOpen(false);
         return;
       }
       if (data.preview) {
@@ -154,10 +157,12 @@ export default function NatalCalculator() {
         setInterpretation(null);
         setWheel(null);
         setMapNumber(null);
+        setIsInterpretationOpen(false);
         return;
       }
       if (!data.result || !data.interpretation) {
         setError("სერვერმა სრული ნატალური რუკა არ დააბრუნა.");
+        setIsInterpretationOpen(false);
         return;
       }
       setInterpretation(data.interpretation);
@@ -183,6 +188,7 @@ export default function NatalCalculator() {
       else saveGuestCache<CacheShape>("natal", { birth, houseSystem, calculation, interpretation: data.interpretation ?? "", wheel: w, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
+      setIsInterpretationOpen(false);
     } finally {
       setLoading(false);
     }
@@ -303,6 +309,16 @@ export default function NatalCalculator() {
 
         {(wheel || interpretation) && (
           <div className="flex flex-wrap items-center justify-end gap-3">
+            {interpretation && (
+              <button
+                type="button"
+                onClick={() => setIsInterpretationOpen(true)}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-violet-400/40 bg-violet-500/10 px-5 py-2.5 text-xs font-bold text-violet-100 transition hover:bg-violet-500/20 cursor-pointer"
+              >
+                <Sparkles className="h-4 w-4" />
+                <span>ინტერპრეტაციის გახსნა</span>
+              </button>
+            )}
             {wheel && (
               <button
                 type="button"
@@ -317,28 +333,17 @@ export default function NatalCalculator() {
           </div>
         )}
 
-        {/* Full Width Interpretation Block */}
-        {interpretation && (
-          <div className="glass-panel interpretation-container rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-2xl border-white/10 bg-[#0b0f19]/95 backdrop-blur-2xl text-left w-full">
-            <div className="mb-6 border-b border-white/10 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <div>
-                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-normal">
-                  ასტროლოგიური ინტერპრეტაცია და ანალიზი
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                  დეტალური პირადი ანალიზი და ასტროლოგიური პოზიციების გაშიფვრა
-                </p>
-              </div>
-              {mapNumber && (
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1 text-xs font-semibold text-indigo-300 self-start sm:self-auto">
-                  <span>რუკის ნომერი: {mapNumber}</span>
-                </div>
-              )}
-            </div>
-            <InterpretationText text={interpretation} />
-          </div>
-        )}
       </div>
+
+      <InterpretationOverlay
+        open={isInterpretationOpen}
+        loading={loading}
+        title="ასტროლოგიური ინტერპრეტაცია და ანალიზი"
+        subtitle="დეტალური პირადი ანალიზი და ასტროლოგიური პოზიციების გაშიფვრა"
+        interpretation={interpretation}
+        mapNumber={mapNumber}
+        onClose={() => setIsInterpretationOpen(false)}
+      />
 
       {/* 1.5s Hypnotic Cosmic Reveal Accelerator */}
       {isRevealing && (

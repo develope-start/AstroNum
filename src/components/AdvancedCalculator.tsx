@@ -3,7 +3,7 @@
 import { useState } from "react";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
 import HouseSystemSelect from "./HouseSystemSelect";
-import InterpretationText from "./InterpretationText";
+import InterpretationOverlay from "./InterpretationOverlay";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
 import { Loader2, Sparkles, Orbit } from "lucide-react";
 import type { HouseSystem } from "@/lib/astro/positions";
@@ -42,6 +42,7 @@ export default function AdvancedCalculator() {
   const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isResultOpen, setIsResultOpen] = useState(false);
 
   function natalPayload() {
     return { name: birth.name, date: birth.date, time: birth.time, place: birth.place, lat: birth.lat, lon: birth.lon, timezone: birth.timezone };
@@ -52,6 +53,7 @@ export default function AdvancedCalculator() {
       setError("შეავსეთ დაბადების მონაცემები და დაადასტურეთ ადგილი.");
       return;
     }
+    setIsResultOpen(true);
     setLoading(true);
     setError(null);
     setResult(null);
@@ -66,10 +68,15 @@ export default function AdvancedCalculator() {
       if (mode === "harmonics") { endpoint = "/api/chart/harmonics"; body = { natal, harmonic: Number(harmonic) }; }
       const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const data = await readApiResponse<Record<string, unknown>>(response);
-      if (!response.ok) { setError(String(data.error ?? `სერვერის შეცდომა (${response.status})`)); return; }
+      if (!response.ok) {
+        setError(String(data.error ?? `სერვერის შეცდომა (${response.status})`));
+        setIsResultOpen(false);
+        return;
+      }
       setResult(data);
     } catch (requestError) {
       setError(getRequestError(requestError));
+      setIsResultOpen(false);
     } finally {
       setLoading(false);
     }
@@ -194,24 +201,28 @@ export default function AdvancedCalculator() {
       </div>
       
       {result && (
-        <div className="glass-panel interpretation-container rounded-2xl p-5 text-left sm:rounded-3xl sm:p-8 border-white/10 bg-[#0b0f19]/95 shadow-2xl">
-          <div className="mb-6 border-b border-white/10 pb-4">
-            <h3 className="text-xl sm:text-2xl font-bold text-white tracking-normal">
-              {modeLabels[mode]}
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              გაფართოებული ასტროლოგიური მოდულის გამოთვლის შედეგები
-            </p>
-          </div>
-          {typeof result.interpretation === "string" ? (
-            <InterpretationText text={result.interpretation} />
-          ) : (
-            <pre className="max-h-[38rem] overflow-auto whitespace-pre-wrap break-words rounded-xl bg-[#060814]/90 p-4 text-xs leading-relaxed text-slate-200 border border-white/10 shadow-inner font-mono">
-              {JSON.stringify(compactResult, null, 2)}
-            </pre>
-          )}
-        </div>
+        <button
+          type="button"
+          onClick={() => setIsResultOpen(true)}
+          className="inline-flex items-center gap-2 rounded-full border border-violet-400/40 bg-violet-500/10 px-5 py-2.5 text-xs font-bold text-violet-100 transition hover:bg-violet-500/20 cursor-pointer"
+        >
+          <Sparkles className="h-4 w-4" />
+          შედეგის გახსნა
+        </button>
       )}
+
+      <InterpretationOverlay
+        open={isResultOpen}
+        loading={loading}
+        title={modeLabels[mode]}
+        subtitle="გაფართოებული ასტროლოგიური მოდულის გამოთვლის შედეგები"
+        interpretation={typeof result?.interpretation === "string" ? result.interpretation : null}
+        onClose={() => setIsResultOpen(false)}
+      >
+        {result && typeof result.interpretation !== "string" && (
+          <pre className="max-h-[38rem] overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-[#060814]/90 p-4 text-xs leading-relaxed text-slate-200 shadow-inner font-mono">{JSON.stringify(compactResult, null, 2)}</pre>
+        )}
+      </InterpretationOverlay>
     </div>
   );
 }
