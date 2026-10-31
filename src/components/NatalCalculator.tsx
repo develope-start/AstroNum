@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
 import InterpretationOverlay from "./InterpretationOverlay";
 import ChartExportButton from "./ChartExportButton";
 import ChartMapSection from "./ChartMapSection";
+import ElementBalanceGuide from "./ElementBalanceGuide";
+import CosmicShareCardModal from "./CosmicShareCardModal";
+import CalculationRoom from "./CalculationRoom";
 import type { WheelPlanet } from "./ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
-import ElementBalanceGuide from "./ElementBalanceGuide";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
 import HouseSystemSelect from "./HouseSystemSelect";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
@@ -16,9 +19,7 @@ import type { HouseSystem } from "@/lib/astro/positions";
 import { saveGuestCache, loadGuestCache, clearGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
-import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Info, Maximize2 } from "lucide-react";
-import CosmicShareCardModal from "./CosmicShareCardModal";
-import CalculationRoom from "./CalculationRoom";
+import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Info } from "lucide-react";
 
 interface WheelData {
   ascendant: number;
@@ -47,6 +48,7 @@ interface NatalPreview {
 }
 
 export default function NatalCalculator() {
+  const router = useRouter();
   const me = useMe();
   const [birth, setBirth] = useState<BirthValue>(EMPTY_BIRTH);
   const [houseSystem, setHouseSystem] = useState<HouseSystem>("placidus");
@@ -58,10 +60,11 @@ export default function NatalCalculator() {
   const [saved, setSaved] = useState(false);
   const [mapNumber, setMapNumber] = useState<string | null>(null);
   const [preview, setPreview] = useState<NatalPreview | null>(null);
-  const [isRevealing, setIsRevealing] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [isInterpretationOpen, setIsInterpretationOpen] = useState(false);
+  // The legacy in-page result components remain mounted only for backwards
+  // compatibility with cached data; the visible result always lives at /chart/room.
   const [isRoomOpen, setIsRoomOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isRevealing] = useState(false);
 
   useEffect(() => {
     if (me === undefined) return;
@@ -113,8 +116,6 @@ export default function NatalCalculator() {
       setError("შეავსეთ სახელი, თარიღი, დრო და დაბადების ადგილი (დაადასტურეთ ადგილის მოძებნა).");
       return;
     }
-    setIsRoomOpen(true);
-    try { window.history.pushState(null, "", "/chart/room"); } catch {}
     setLoading(true);
     setError(null);
     setPreview(null);
@@ -152,8 +153,6 @@ export default function NatalCalculator() {
       }>(res);
       if (!res.ok) {
         setError(data.error || `სერვერის შეცდომა (${res.status})`);
-        setIsRoomOpen(false);
-        try { window.history.pushState(null, "", "/"); } catch {}
         return;
       }
       if (data.preview) {
@@ -161,14 +160,10 @@ export default function NatalCalculator() {
         setInterpretation(null);
         setWheel(null);
         setMapNumber(null);
-        setIsRoomOpen(false);
-        try { window.history.pushState(null, "", "/"); } catch {}
         return;
       }
       if (!data.result || !data.interpretation) {
         setError("სერვერმა სრული ნატალური რუკა არ დააბრუნა.");
-        setIsRoomOpen(false);
-        try { window.history.pushState(null, "", "/"); } catch {}
         return;
       }
       setInterpretation(data.interpretation);
@@ -186,13 +181,12 @@ export default function NatalCalculator() {
         planetHouses: data.result.planetHouses ?? {},
       };
       setWheel(w);
-      setIsRoomOpen(true);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("natal", { birth, houseSystem, calculation, interpretation: data.interpretation ?? "", wheel: w, mapNumber: data.mapNumber ?? null });
+      // The dedicated route reads this short-lived cache, for both guests and signed-in users.
+      saveGuestCache<CacheShape>("natal", { birth, houseSystem, calculation, interpretation: data.interpretation, wheel: w, mapNumber: data.mapNumber ?? null });
+      router.push("/chart/room");
     } catch (error) {
       setError(getRequestError(error));
-      setIsRoomOpen(false);
-      try { window.history.pushState(null, "", "/"); } catch {}
     } finally {
       setLoading(false);
     }
@@ -293,7 +287,7 @@ export default function NatalCalculator() {
         </section>
       )}
 
-      <div data-chart-export-root="true" className="chart-builder-result space-y-4 sm:space-y-6">
+      <div data-chart-export-root="true" className="hidden chart-builder-result space-y-4 sm:space-y-6" aria-hidden="true">
         {wheel && (
           <div className="flex justify-center pt-2 pb-1">
             <button
@@ -401,6 +395,14 @@ export default function NatalCalculator() {
           ascendant={wheel.ascendant}
         />
       )}
+
+      <InterpretationOverlay
+        open={loading}
+        loading={loading}
+        title="ნატალური რუკის გამოთვლა"
+        subtitle="გამოთვლის დასრულებისთანავე გაიხსნება თქვენი ცალკე ანალიზის ოთახი."
+        onClose={() => undefined}
+      />
     </div>
   );
 }

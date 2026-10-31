@@ -26,6 +26,8 @@ import {
   Maximize2
 } from "lucide-react";
 import type { WheelPlanet } from "./ChartWheel";
+import ChartMapSection from "./ChartMapSection";
+import ElementBalanceGuide from "./ElementBalanceGuide";
 import type { AspectHit } from "@/lib/astro/aspects";
 import type { HouseSystem } from "@/lib/astro/positions";
 
@@ -732,6 +734,41 @@ export default function CalculationRoom({
 
           {/* ================= SECTION 2: CHART (ნატალური რუკა) ================= */}
           {activeSec === "chart" && (
+            <div className="space-y-6">
+              <div className="cr-glass flex flex-col gap-2 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ნატალური რუკა</div>
+                  <h2 className="mt-1 text-2xl font-extrabold text-white sm:text-3xl">ზოდიაქალური წრე და სტიქიების სინთეზი</h2>
+                </div>
+                <p className="max-w-md text-xs leading-5 text-slate-400">რუკა, დეტალური მნიშვნელობები და სტიქიების პროცენტული ბალანსი ერთ სამუშაო სივრცეში.</p>
+              </div>
+
+              {wheel ? (
+                <div className="grid items-start gap-6 2xl:grid-cols-12">
+                  <section className="2xl:col-span-8">
+                    <ChartMapSection
+                      title="ზოდიაქალური წრე v2"
+                      subtitle="რუკა და ჩამოსაშლელი დეტალური მნიშვნელობები"
+                      planets={wheel.planets}
+                      ascendant={wheel.ascendant}
+                      mc={wheel.mc}
+                      houseCusps={wheel.houseCusps}
+                      aspects={wheel.aspects ?? []}
+                      fixedStars={wheel.fixedStars ?? []}
+                      planetHouses={wheel.planetHouses ?? {}}
+                    />
+                  </section>
+                  <aside className="2xl:col-span-4">
+                    <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />
+                  </aside>
+                </div>
+              ) : (
+                <div className="cr-glass p-8 text-center text-sm text-slate-300">რუკის მონაცემები ვერ მოიძებნა.</div>
+              )}
+            </div>
+          )}
+
+          {activeSec === "chart-legacy" && (
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
