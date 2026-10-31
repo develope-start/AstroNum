@@ -1827,7 +1827,7 @@ export default function CalculationRoom({
       </div>
 
       {/* ===== 5. Floating Action Buttons (FAB) ===== */}
-      <div className="cr-fab fixed bottom-5 right-5 z-50 flex flex-col gap-2">
+      <div className="cr-fab fixed bottom-24 right-5 z-50 flex flex-col gap-2 sm:bottom-28">
         <button
           onClick={() => setIsSearchModalOpen(true)}
           type="button"
