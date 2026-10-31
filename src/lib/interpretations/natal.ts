@@ -171,12 +171,13 @@ export function generateNatalInterpretation(input: PlacementInput): string {
 
   parts.push(`\n## რუკის აღწერა — პლანეტები, სახლები და ასპექტები`);
   parts.push("ქვემოთ მოცემული აღწერა აერთიანებს პლანეტის ნიშანს, სახლს, მის ცხოვრებისეულ თემას და სხვა წერტილებთან კავშირებს. ამიტომ თითოეული ფაქტი ცალკე სათაურად კი არა, ერთი მთლიანი რუკის სურათის ნაწილად იკითხება.");
+  parts.push("**მნიშვნელოვანი განმარტება:** სახლის კუსპიდის ნიშანი და ამ სახლში მყოფი პლანეტის/კვანძის ნიშანი სხვადასხვა რამაა. მაგალითად, მე-10 სახლის კუსპიდი შეიძლება ვერძში იწყებოდეს, ხოლო ამავე სახლში კუროში მყოფი სამხრეთ კვანძი იდგეს.");
   for (const p of planets) parts.push(planetLine(p, houseOfFn(p.longitude)));
 
   for (let index = 0; index < houseCusps.length; index += 1) {
     const house = index + 1;
     const cusp = eclipticToSign(houseCusps[index]!);
-    parts.push(`**${house} სახლი — ${cusp.signName} (${formatDegree(cusp.degreeInSign)})** — ${HOUSE_THEME_KA[index] ?? "რუკის შესაბამისი გამოცდილებები"} აქტიურდება ამ სფეროში; კუსპიდის ნიშანი აჩვენებს, როგორ შედიხართ ამ თემაში.`);
+    parts.push(`**${house}-ე სახლის კუსპიდი — ${cusp.signName} (${formatDegree(cusp.degreeInSign)})** — ${HOUSE_THEME_KA[index] ?? "რუკის შესაბამისი გამოცდილებები"} აქტიურდება ამ სფეროში; კუსპიდის ნიშანი აჩვენებს, როგორ შედიხართ ამ თემაში.`);
   }
 
   if (aspects.length) {

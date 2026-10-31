@@ -66,6 +66,22 @@ assert(swiss.ephemeris.source === "swiss", "Swiss metadata is present");
 assert(swiss.timeZone === "Asia/Tbilisi", "the resolved IANA timezone is retained in chart metadata");
 assert(swiss.utcOffsetMinutes === 240, "the historical IANA UTC offset is retained in chart metadata");
 assert(Math.abs(swiss.julianDay - 2451545) < 1e-9, "UTC instant is converted to the expected Swiss Julian Date");
+
+// Historical Georgian daylight-saving regression: Rustavi observed UTC+5 in June 1995.
+// This verifies that a modern UTC+4 offset is never incorrectly applied to old birth records.
+const rustavi1995 = computeNatalChart({
+  date: "1995-06-22",
+  time: "09:50",
+  timezone: "Asia/Tbilisi",
+  lat: 41.5495,
+  lon: 45.0,
+  calculation: { ephemeris: "swiss", zodiac: "tropical", nodeType: "mean" },
+}, "placidus");
+assert(rustavi1995.utcIso === "1995-06-22T04:50:00.000Z", "1995 Rustavi local time uses the historical UTC+5 daylight-saving offset");
+assert(rustavi1995.utcOffsetMinutes === 300, "1995 Rustavi UTC offset is +05:00");
+assert(Math.abs(rustavi1995.houseCusps[9]! - 29.473202062065987) < 1e-7, "1995 Rustavi Placidus tenth-house cusp remains Aries 29°28′");
+assert(rustavi1995.planetHouses.Moon === 9, "1995 Rustavi Moon remains in the ninth Placidus house");
+assert(rustavi1995.planetHouses.MeanNode === 4 && rustavi1995.planetHouses.SouthNode === 10, "1995 Rustavi lunar nodes remain in the fourth and tenth houses");
 assert(swiss.planets.some((planet) => planet.name === "MeanNode"), "Mean Node is explicitly identified");
 assert(swiss.planets.some((planet) => planet.name === "SouthNode"), "South Node is explicitly identified");
 const meanNode = swiss.planets.find((planet) => planet.name === "MeanNode");

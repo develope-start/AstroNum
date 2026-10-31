@@ -7,17 +7,8 @@ import { SocialSettingsData } from "@/lib/socialSettings";
 export default function FloatingContactHub() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [showProactiveBubble, setShowProactiveBubble] = useState(false);
   const [socials, setSocials] = useState<SocialSettingsData | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
-
-  // Show proactive bubble after 22 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowProactiveBubble(true);
-    }, 22000);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Monitor scroll position
   useEffect(() => {
@@ -79,7 +70,7 @@ export default function FloatingContactHub() {
   return (
     <>
       {/* Floating Buttons Bar (Bottom Right) */}
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-3">
+      <div className="fixed bottom-5 right-2 sm:bottom-6 sm:right-3 z-40 flex flex-col items-center gap-3">
         {/* Scroll to Top button */}
         <button
           type="button"
@@ -94,37 +85,6 @@ export default function FloatingContactHub() {
         >
           <ArrowUp className="h-5 w-5 transition-transform duration-300 group-hover:-translate-y-0.5" />
         </button>
-
-        {/* Proactive Greeting Bubble */}
-        {showProactiveBubble && !modalOpen && (
-          <div className="relative mb-1 max-w-[210px] rounded-2xl border border-cyan-400/40 bg-[#090e22]/95 p-3 text-left shadow-[0_10px_30px_rgba(0,0,0,0.85),0_0_20px_rgba(56,189,248,0.3)] backdrop-blur-2xl animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowProactiveBubble(false);
-              }}
-              className="absolute right-2 top-2 p-1 text-slate-400 hover:text-white cursor-pointer"
-              aria-label="დახურვა"
-            >
-              <X className="h-3 w-3" />
-            </button>
-            <div
-              onClick={() => {
-                setShowProactiveBubble(false);
-                setModalOpen(true);
-              }}
-              className="cursor-pointer pr-3"
-            >
-              <p className="text-[11px] font-bold text-white flex items-center gap-1">
-                <span>✦ გჭირდებათ დახმარება?</span>
-              </p>
-              <p className="mt-1 text-[10px] text-cyan-200/90 leading-snug">
-                მოგვწერეთ WhatsApp-ში ან დარეკეთ ასტროლოგთან
-              </p>
-            </div>
-          </div>
-        )}
 
         {/* Live Operator / Contact button */}
         <button
@@ -149,7 +109,7 @@ export default function FloatingContactHub() {
 
       {/* Floating Operator & Social Contact Popover Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end justify-end p-4 sm:p-8 sm:pb-24 pointer-events-none">
+        <div className="fixed inset-0 z-50 flex items-end justify-end p-2 sm:p-4 sm:pb-24 pointer-events-none">
           <div
             ref={modalRef}
             className="pointer-events-auto relative w-full max-w-sm rounded-3xl border border-cyan-400/40 bg-gradient-to-b from-[#101b33] via-[#0b1324] to-[#070c18] p-5 shadow-[0_0_50px_rgba(15,23,42,0.9),0_0_30px_rgba(56,189,248,0.25)] backdrop-blur-2xl animate-in fade-in slide-in-from-bottom-6 duration-200"
