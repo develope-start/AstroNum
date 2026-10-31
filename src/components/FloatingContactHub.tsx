@@ -70,7 +70,7 @@ export default function FloatingContactHub() {
   return (
     <>
       {/* Floating Buttons Bar (Bottom Right) */}
-      <div className="fixed bottom-5 right-2 sm:bottom-6 sm:right-3 z-40 flex flex-col items-center gap-3">
+      <div className="fixed bottom-5 right-1 sm:bottom-6 sm:right-1.5 z-40 flex flex-col items-center gap-3">
         {/* Scroll to Top button */}
         <button
           type="button"
@@ -109,7 +109,7 @@ export default function FloatingContactHub() {
 
       {/* Floating Operator & Social Contact Popover Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end justify-end p-2 sm:p-4 sm:pb-24 pointer-events-none">
+        <div className="fixed inset-0 z-50 flex items-end justify-end p-1 sm:p-2 sm:pb-24 pointer-events-none">
           <div
             ref={modalRef}
             className="pointer-events-auto relative w-full max-w-sm rounded-3xl border border-cyan-400/40 bg-gradient-to-b from-[#101b33] via-[#0b1324] to-[#070c18] p-5 shadow-[0_0_50px_rgba(15,23,42,0.9),0_0_30px_rgba(56,189,248,0.25)] backdrop-blur-2xl animate-in fade-in slide-in-from-bottom-6 duration-200"
