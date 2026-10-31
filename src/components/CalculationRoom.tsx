@@ -28,6 +28,8 @@ import {
 import type { WheelPlanet } from "./ChartWheel";
 import ChartMapSection from "./ChartMapSection";
 import ElementBalanceGuide from "./ElementBalanceGuide";
+import InterpretationText from "./InterpretationText";
+import RoomAiInsight from "./RoomAiInsight";
 import type { AspectHit } from "@/lib/astro/aspects";
 import type { HouseSystem } from "@/lib/astro/positions";
 
@@ -175,14 +177,10 @@ function numCalc(y: number, mo: number, d: number, year = new Date().getFullYear
   return { m1, d1, y1, lp, p: [p1, p2, p3, p4], ages, c: [c1, c2, c3, c4], py, bd, year };
 }
 
-function mxCalc(y: number, mo: number, d: number, method: "sub22" | "digit") {
+function mxCalc(y: number, mo: number, d: number) {
   const rd = (n: number) => {
     let cur = n;
-    if (method === "sub22") {
-      while (cur > 22) cur -= 22;
-    } else {
-      while (cur > 22) cur = String(cur).split("").reduce((a, b) => a + Number(b), 0);
-    }
+    while (cur > 22) cur = String(cur).split("").reduce((a, b) => a + Number(b), 0);
     return Math.max(1, cur);
   };
   const ds = (n: number) => String(n).split("").reduce((a, b) => a + Number(b), 0);
@@ -241,7 +239,6 @@ export default function CalculationRoom({
   const [selectedPlanet, setSelectedPlanet] = useState<string>("Sun");
   const [auroraInt, setAuroraInt] = useState(55);
   const [isCalm, setIsCalm] = useState(false);
-  const [matrixMethod, setMatrixMethod] = useState<"sub22" | "digit">("sub22");
   const [selectedMatrixPoint, setSelectedMatrixPoint] = useState<string>("X");
   const [psychTab, setPsychTab] = useState<string>("triad");
   const [planetFilter, setPlanetFilter] = useState<string>("all");
@@ -267,10 +264,11 @@ export default function CalculationRoom({
     return numCalc(birthDateParts.y, birthDateParts.m, birthDateParts.d);
   }, [birthDateParts]);
 
-  // Destiny Matrix computed from user's birth date
+  // One transparent convention only: digit reduction. The disputed
+  // "subtract 22" variant is intentionally not offered as a second result.
   const matrix = useMemo(() => {
-    return mxCalc(birthDateParts.y, birthDateParts.m, birthDateParts.d, matrixMethod);
-  }, [birthDateParts, matrixMethod]);
+    return mxCalc(birthDateParts.y, birthDateParts.m, birthDateParts.d);
+  }, [birthDateParts]);
 
   // Age calculation
   const currentAge = useMemo(() => {
@@ -1486,21 +1484,10 @@ export default function CalculationRoom({
                   <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ბედის მატრიცა</div>
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-white">არქეტიპული ოქტაგრამა (Destiny Matrix)</h2>
                 </div>
-                {/* Method switcher */}
-                <div className="cr-seg">
-                  <button
-                    onClick={() => setMatrixMethod("sub22")}
-                    className={matrixMethod === "sub22" ? "cr-on" : ""}
-                  >
-                    22-ის გამოკლება
-                  </button>
-                  <button
-                    onClick={() => setMatrixMethod("digit")}
-                    className={matrixMethod === "digit" ? "cr-on" : ""}
-                  >
-                    ციფრთა ჯამი
-                  </button>
-                </div>
+              </div>
+
+              <div className="rounded-2xl border border-cyan-400/20 bg-cyan-950/20 px-4 py-3 text-xs leading-5 text-cyan-100">
+                გამოთვლის კონვენცია: რიცხვები ერთიანი ციფრთა-ჯამის წესით მცირდება; „22-ის გამოკლებით“ ალტერნატიული ვარიანტი აღარ გამოიყენება. ეს სექცია სიმბოლური თვითრეფლექსიისთვისაა და არა ფაქტობრივი პროგნოზისთვის.
               </div>
 
               {/* Octagram SVG and Inspector Panel */}
@@ -1795,32 +1782,23 @@ export default function CalculationRoom({
               {/* Full Interpretation Content Display */}
               <div className="cr-glass p-6 sm:p-10 space-y-6 leading-relaxed">
                 {interpretation ? (
-                  <div className="space-y-6 text-sm text-slate-200">
-                    {interpretation.split(/\n\n+/).map((block, idx) => {
-                      const headingMatch = block.match(/^#{1,4}\s+(.+)$/);
-                      if (headingMatch) {
-                        return (
-                          <h3
-                            key={idx}
-                            className="pt-4 text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-indigo-200 to-amber-200 border-b border-white/10 pb-2"
-                          >
-                            {headingMatch[1]}
-                          </h3>
-                        );
-                      }
-                      return (
-                        <p key={idx} className="text-sm sm:text-base leading-relaxed text-slate-300">
-                          {block}
-                        </p>
-                      );
-                    })}
-                  </div>
+                  <InterpretationText text={interpretation} />
                 ) : (
                   <div className="text-center py-12 text-slate-400">
                     ინტერპრეტაცია ჯერ არ დაგენერირებულა.
                   </div>
                 )}
               </div>
+
+              <RoomAiInsight birth={birth} />
+
+              <details className="cr-glass p-5 text-sm text-slate-300">
+                <summary className="cursor-pointer font-bold text-cyan-200">მეთოდოლოგია, წყაროები და სიზუსტე</summary>
+                <div className="mt-4 space-y-3 leading-7 text-slate-300">
+                  <p>პლანეტების პოზიციები და სახლები გამოთვლილია Swiss Ephemeris-ით. ინტერპრეტაცია აერთიანებს აპის ქართულ ბიბლიოთეკას, შესაბამის ბიბლიოთეკურ ჩანაწერებს და საჭიროებისას მათ ქეშირებულ ქართულ თარგმანს.</p>
+                  <p>Gemini-ის პასუხი მოთხოვნით შექმნილი დამატებითი ფენაა; ის ვერ ცვლის გამოთვლილ მონაცემებს და არ არის სამედიცინო, ფსიქოლოგიური ან ფინანსური რჩევა.</p>
+                </div>
+              </details>
             </div>
           )}
         </main>

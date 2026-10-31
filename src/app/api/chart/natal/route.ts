@@ -102,11 +102,13 @@ export async function POST(req: NextRequest) {
   const elementBalanceInterpretation = await appendElementBalanceInterpretation(baseInterpretation, result);
   const builtInEntries = natalLibraryInsights(result.planets, result.aspects, (lon: number) => houseOfLongitude(lon, result.houseCusps));
   void persistLibraryEntries(builtInEntries);
-  const externalEntries = session ? await translatedExternalLibraryEntries({
+  // Curated external-language entries are public reading material. Their
+  // translations are cached, so they can enrich guest and account charts alike.
+  const externalEntries = await translatedExternalLibraryEntries({
     chartType: "NATAL",
     planets: result.planets.map((planet) => ({ name: planet.name, sign: eclipticToSign(planet.longitude).signName, house: result.planetHouses[planet.name] })),
     aspects: result.aspects,
-  }) : [];
+  });
   const interpretation = ensureInterpretationFoundationLast([elementBalanceInterpretation ?? baseInterpretation, ...externalEntries].join("\n\n"));
 
   const responseBody = { result: { ...result, advanced }, interpretation };
