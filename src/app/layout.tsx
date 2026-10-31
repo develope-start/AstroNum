@@ -15,6 +15,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import CosmicStarfield from "@/components/CosmicStarfield";
 import FloatingContactHub from "@/components/FloatingContactHub";
+import AppLoadingScreen from "@/components/AppLoadingScreen";
 
 export const viewport: Viewport = {
   themeColor: "#0a091e",
@@ -82,6 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Dynamic Interactive Canvas Starfield */}
         <CosmicStarfield />
 
+        <AppLoadingScreen />
         <Nav />
         <main className="relative mx-auto w-full max-w-full overflow-x-hidden px-4 pb-12 pt-3 sm:px-8 sm:pb-20 sm:pt-6 lg:px-12 xl:px-16">{children}</main>
         <Footer />

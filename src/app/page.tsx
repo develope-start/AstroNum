@@ -121,7 +121,8 @@ function preloadCelestialImages(sources: string[]) {
     if (preloadedCelestialImages.has(src)) return;
     const image = new window.Image();
     image.decoding = "async";
-    image.fetchPriority = "high";
+    // These are a convenience cache, never resources the first screen needs.
+    image.fetchPriority = "low";
     image.src = src;
     preloadedCelestialImages.set(src, image);
     void image.decode().catch(() => undefined);
@@ -152,8 +153,13 @@ export default function HomePage() {
   const activeZodiacImage = activePlanetIndex === null ? null : ZODIAC_IMAGE[activePlanetIndex];
 
   useEffect(() => {
-    // Schedule background image preloading during browser idle time so initial paint is instant!
+    // The full celestial gallery is useful on fast connections, but costs over
+    // 7 MB. Do not compete with the first screen on data-saver or 3G users.
     const warmUp = () => {
+      const connection = (navigator as Navigator & {
+        connection?: { saveData?: boolean; effectiveType?: string };
+      }).connection;
+      if (connection?.saveData || ["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "")) return;
       preloadCelestialImages([...ZODIAC_IMAGE, ...Object.values(CELESTIAL_IMAGE)]);
     };
     if (typeof window !== "undefined") {
