@@ -1,7 +1,9 @@
 const TTL_MS = 12 * 60 * 60 * 1000; // 12 საათი
+const ENGINE_REVISION = "2026-10-swiss-iana-utc-jd";
 
 interface CacheEntry<T> {
   savedAt: number;
+  engineRevision: string;
   data: T;
 }
 
@@ -11,7 +13,7 @@ function key(tab: string) {
 
 export function saveGuestCache<T>(tab: string, data: T) {
   if (typeof window === "undefined") return;
-  const entry: CacheEntry<T> = { savedAt: Date.now(), data };
+  const entry: CacheEntry<T> = { savedAt: Date.now(), engineRevision: ENGINE_REVISION, data };
   try {
     window.localStorage.setItem(key(tab), JSON.stringify(entry));
   } catch {
@@ -25,7 +27,7 @@ export function loadGuestCache<T>(tab: string): T | null {
     const raw = window.localStorage.getItem(key(tab));
     if (!raw) return null;
     const entry = JSON.parse(raw) as CacheEntry<T>;
-    if (Date.now() - entry.savedAt > TTL_MS) {
+    if (entry.engineRevision !== ENGINE_REVISION || Date.now() - entry.savedAt > TTL_MS) {
       window.localStorage.removeItem(key(tab));
       return null;
     }

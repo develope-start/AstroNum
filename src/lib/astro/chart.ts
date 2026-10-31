@@ -1,4 +1,5 @@
-import { DateTime } from "luxon";
+import { DateTime, IANAZone } from "luxon";
+import tzlookup from "tz-lookup";
 import {
   computeAngles,
   computeHouseCusps,
@@ -11,7 +12,15 @@ import {
 } from "./positions";
 import { computeAspects, AspectHit } from "./aspects";
 import { parseWideDate } from "./wideDate";
-import { CalculationOptions, metadata as ephemerisMetadata, EphemerisMetadata } from "./ephemeris";
+import {
+  CalculationOptions,
+  isSwissAvailableForDate,
+  metadata as ephemerisMetadata,
+  EphemerisMetadata,
+  resolveCalculationOptions,
+  swissFallbackReason,
+  toJulianDay,
+} from "./ephemeris";
 
 export interface BirthInput {
   date: string; // YYYY-MM-DD
@@ -24,6 +33,10 @@ export interface BirthInput {
 
 export interface NatalResult {
   utcIso: string;
+  /** Auditable conversion data: IANA local time -> UTC -> Julian Date. */
+  timeZone: string;
+  utcOffsetMinutes: number;
+  julianDay: number;
   planets: PlanetPosition[];
   ascendant: number;
   mc: number;
@@ -39,6 +52,21 @@ export interface NatalResult {
 }
 
 export function birthInputToUtcDate(input: BirthInput): Date {
+  if (!Number.isFinite(input.lat) || input.lat < -90 || input.lat > 90 || !Number.isFinite(input.lon) || input.lon < -180 || input.lon > 180) {
+    throw new Error("Invalid geographic coordinates.");
+  }
+  if (!IANAZone.isValidZone(input.timezone)) {
+    throw new Error("Timezone must be a valid IANA Time Zone Database identifier.");
+  }
+  let coordinateZone: string;
+  try {
+    coordinateZone = tzlookup(input.lat, input.lon);
+  } catch {
+    throw new Error("An IANA timezone could not be resolved for these coordinates.");
+  }
+  if (input.timezone !== coordinateZone) {
+    throw new Error(`Timezone ${input.timezone} does not match the IANA timezone ${coordinateZone} resolved from the coordinates.`);
+  }
   const date = parseWideDate(input.date);
   const [hourText, minuteText] = input.time.split(":");
   const hour = Number(hourText);
@@ -53,12 +81,28 @@ export function birthInputToUtcDate(input: BirthInput): Date {
   if (!dt.isValid) {
     throw new Error(`ბადრაბადის თარიღი/დრო/დროის ზონა არასწორია: ${dt.invalidExplanation}`);
   }
+  if (dt.getPossibleOffsets().length !== 1) {
+    throw new Error("The local time is ambiguous because of a daylight-saving transition; an exact UTC instant cannot be selected automatically.");
+  }
   return dt.toUTC().toJSDate();
+}
+
+function requireSwissOptions(date: Date, calculation?: CalculationOptions): Required<CalculationOptions> {
+  const options = resolveCalculationOptions(calculation);
+  if (options.ephemeris !== "swiss") {
+    throw new Error("Astrological chart calculations are available only through Swiss Ephemeris.");
+  }
+  if (!isSwissAvailableForDate(date, options)) {
+    throw new Error(`Swiss Ephemeris cannot calculate this date: ${swissFallbackReason() ?? "unknown reason"}`);
+  }
+  return options;
 }
 
 export function computeNatalChart(input: BirthInput, houseSystem: HouseSystem = "whole_sign"): NatalResult {
   const utcDate = birthInputToUtcDate(input);
-  return computeNatalChartAtUtc(utcDate, input.lat, input.lon, input.calculation, houseSystem);
+  const result = computeNatalChartAtUtc(utcDate, input.lat, input.lon, input.calculation, houseSystem);
+  const utcOffsetMinutes = DateTime.fromJSDate(utcDate, { zone: "utc" }).setZone(input.timezone).offset;
+  return { ...result, timeZone: input.timezone, utcOffsetMinutes };
 }
 
 /** Compute the same chart pipeline for a derived UTC moment (progressions/returns). */
@@ -69,13 +113,17 @@ export function computeNatalChartAtUtc(
   calculation?: CalculationOptions,
   houseSystem: HouseSystem = "whole_sign",
 ): NatalResult {
-  const planets = computePlanetPositions(utcDate, calculation, longitude, latitude);
-  const northNode = computeNorthNode(utcDate, calculation, longitude, latitude);
+  const options = requireSwissOptions(utcDate, calculation);
+  const planets = computePlanetPositions(utcDate, options, longitude, latitude);
+  const northNode = computeNorthNode(utcDate, options, longitude, latitude);
   const southNode = computeSouthNode(northNode);
   const allPoints = [...planets, northNode, southNode];
 
-  const angles = computeAngles(utcDate, longitude, latitude, calculation);
-  const houses = computeHouseCusps(angles, houseSystem, utcDate, longitude, latitude, calculation);
+  const angles = computeAngles(utcDate, longitude, latitude, options);
+  const houses = computeHouseCusps(angles, houseSystem, utcDate, longitude, latitude, options);
+  if (houseSystem === "placidus" && Math.abs((((houses.cusps[9]! - angles.mc) + 540) % 360) - 180) > 1e-7) {
+    throw new Error("Swiss Ephemeris Placidus MC and tenth-house cusp disagree; result was not published.");
+  }
 
   const planetHouses: Record<string, number> = {};
   for (const p of allPoints) {
@@ -86,6 +134,9 @@ export function computeNatalChartAtUtc(
 
   return {
     utcIso: utcDate.toISOString(),
+    timeZone: "UTC",
+    utcOffsetMinutes: 0,
+    julianDay: toJulianDay(utcDate),
     planets: allPoints,
     ascendant: angles.ascendant,
     mc: angles.mc,
@@ -97,7 +148,7 @@ export function computeNatalChartAtUtc(
     aspects,
     latitude,
     longitude,
-    ephemeris: ephemerisMetadata(calculation, utcDate),
+    ephemeris: ephemerisMetadata(options, utcDate),
   };
 }
 
@@ -111,7 +162,7 @@ export function computeTransitAspects(natal: NatalResult, transitDate: Date): {
 } {
   const calculation = natal.ephemeris;
   const options: CalculationOptions = {
-    ephemeris: calculation.source,
+    ephemeris: "swiss",
     zodiac: calculation.zodiac,
     nodeType: calculation.nodeType,
     topocentric: calculation.topocentric,

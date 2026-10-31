@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, CreditCard, Sparkles, X, Zap } from "lucide-react";
+import { Check, CreditCard, ShieldCheck, Sparkles, X, Zap } from "lucide-react";
 import Link from "next/link";
 import { readApiResponse } from "@/lib/apiResponse";
 import { formatPrice, type BillingDuration } from "@/lib/billing/plans";
@@ -379,6 +379,38 @@ export default function PricingTable() {
             </div>
           );
         })}
+      </div>
+
+      {/* Georgian Bank Security & Trust Badges Strip */}
+      <div className="mt-12 mx-auto max-w-4xl rounded-2xl border border-white/10 bg-[#070b14]/80 p-5 sm:p-6 backdrop-blur-xl shadow-xl">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-400/30 bg-emerald-500/15 text-emerald-300">
+              <ShieldCheck className="h-5 w-5" />
+            </div>
+            <div>
+              <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2 justify-center sm:justify-start">
+                <span>100% უსაფრთხო გადახდა ქართული ბანკებით</span>
+                <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">256-bit SSL</span>
+              </h4>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                გამოწერა არ ახლდება ავტომატურად. გაურკვეველი დაქვითვებისა და საკომისიოების გარეშე.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <span className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-200">
+              საქართველოს ბანკი (BOG)
+            </span>
+            <span className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-bold text-cyan-200">
+              თიბისი ბანკი (TBC)
+            </span>
+            <span className="rounded-xl border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs font-bold text-slate-200">
+              Visa · Mastercard
+            </span>
+          </div>
+        </div>
       </div>
 
       {checkoutModalPlan && (

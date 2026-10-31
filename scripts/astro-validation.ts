@@ -25,8 +25,10 @@ assert(formatDegree(29.99999) === "29°59'", "degree formatting remains valid at
 
 const input = {
   date: "2000-01-01",
-  time: "12:00",
-  timezone: "UTC",
+  // 16:00 Asia/Tbilisi is 12:00 UTC on this date; the reference below
+  // therefore verifies the mandatory local-time -> UTC conversion.
+  time: "16:00",
+  timezone: "Asia/Tbilisi",
   lat: 41.7151,
   lon: 44.8271,
 };
@@ -59,9 +61,16 @@ assert(sun, "Sun is present");
 assert(Math.abs(sun.longitude - 280.3689186985535) < 1e-7, "Swiss J2000 Sun reference changed");
 assert(Math.abs(swiss.ascendant - 78.45236330142991) < 1e-7, "Swiss Placidus Ascendant reference changed");
 assert(swiss.houseCusps.length === 12, "Swiss house cusp count is 12");
+assert(angularDifference(swiss.houseCusps[9]!, swiss.mc) < 1e-7, "Placidus tenth-house cusp is exactly the Swiss MC");
 assert(swiss.ephemeris.source === "swiss", "Swiss metadata is present");
+assert(swiss.timeZone === "Asia/Tbilisi", "the resolved IANA timezone is retained in chart metadata");
+assert(swiss.utcOffsetMinutes === 240, "the historical IANA UTC offset is retained in chart metadata");
+assert(Math.abs(swiss.julianDay - 2451545) < 1e-9, "UTC instant is converted to the expected Swiss Julian Date");
 assert(swiss.planets.some((planet) => planet.name === "MeanNode"), "Mean Node is explicitly identified");
 assert(swiss.planets.some((planet) => planet.name === "SouthNode"), "South Node is explicitly identified");
+const meanNode = swiss.planets.find((planet) => planet.name === "MeanNode");
+const southNode = swiss.planets.find((planet) => planet.name === "SouthNode");
+assert(meanNode && southNode && angularDifference(meanNode.longitude, southNode.longitude) === 180, "South Node is exactly opposite the selected North Node");
 
 const advanced = computeNatalChart(
   { ...input, calculation: { ephemeris: "swiss", zodiac: "sidereal", siderealMode: 1, nodeType: "true", topocentric: true, altitudeMeters: 120, includeAsteroids: true } },
@@ -142,12 +151,36 @@ for (const swissPlanet of swiss.planets.filter((planet) => !["MeanNode", "SouthN
   assert(angularDifference(swissPlanet.longitude, astronomyPlanet.longitude) < 0.5, `${swissPlanet.name} engine delta is below 0.5°`);
 }
 
+let coordinateTimezoneRejected = false;
+try {
+  computeNatalChart({ ...input, timezone: "UTC", calculation: { ephemeris: "swiss" } });
+} catch (error) {
+  coordinateTimezoneRejected = error instanceof Error && error.message.includes("does not match");
+}
+assert(coordinateTimezoneRejected, "static or coordinate-mismatched timezones are rejected");
+
+let nonSwissRejected = false;
+try {
+  computeNatalChart({ ...input, calculation: { ephemeris: "astronomy" } });
+} catch (error) {
+  nonSwissRejected = error instanceof Error && error.message.includes("Swiss Ephemeris");
+}
+assert(nonSwissRejected, "natal charts never silently fall back to another ephemeris engine");
+
 for (const value of ["-10000-01-01", "-5400-06-15", "10000-12-31"]) {
   const date = wideDateToUtcDate(value);
   assert(date && Number.isFinite(date.getTime()), `wide date ${value} converts to UTC`);
-  const chart = computeNatalChart({ ...input, date: value, calculation: { ephemeris: "swiss" } });
-  assert(chart.planets.every((planet) => Number.isFinite(planet.longitude)), `wide date ${value} has finite positions`);
-  if (chart.ephemeris.source === "astronomy") assert(chart.ephemeris.fallbackReason, `wide date ${value} records its Swiss fallback reason`);
+  let verified = false;
+  try {
+    const chart = computeNatalChart({ ...input, date: value, calculation: { ephemeris: "swiss" } });
+    assert(chart.planets.every((planet) => Number.isFinite(planet.longitude)), `wide date ${value} has finite Swiss positions`);
+    assert(chart.ephemeris.source === "swiss", `wide date ${value} never substitutes a different engine`);
+    verified = true;
+  } catch (error) {
+    if (!(error instanceof Error) || !error.message.includes("Swiss Ephemeris cannot calculate")) throw error;
+    verified = true;
+  }
+  assert(verified, `wide date ${value} is either Swiss-calculated or explicitly rejected`);
 }
 
 const start = new Date("2025-01-01T12:00:00.000Z");

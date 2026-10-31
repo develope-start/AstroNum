@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import InterpretationText from "@/components/InterpretationText";
 import ChartExportButton from "@/components/ChartExportButton";
@@ -150,6 +150,19 @@ export default function DashboardPage() {
   const [deleteTarget, setDeleteTarget] = useState<ChartSummary | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [billing, setBilling] = useState<BillingSummary | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState<"ALL" | "NATAL" | "SYNASTRY" | "TRANSIT">("ALL");
+
+  const filteredCharts = useMemo(() => {
+    if (!charts) return null;
+    return charts.filter((c) => {
+      if (filterType !== "ALL" && c.type !== filterType) return false;
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      const text = `${c.name1} ${c.name2 ?? ""} ${c.label ?? ""}`.toLowerCase();
+      return text.includes(q);
+    });
+  }, [charts, filterType, searchQuery]);
 
   useEffect(() => {
     if (!selected) return;
@@ -397,9 +410,63 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* Filter and Search Bar */}
+      {charts && charts.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#070b16]/75 p-3 sm:p-4 backdrop-blur-xl">
+          <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
+            {(
+              [
+                ["ALL", "ყველა რუკა"],
+                ["NATAL", "ნატალური"],
+                ["SYNASTRY", "სინასტრია"],
+                ["TRANSIT", "ტრანზიტები"],
+              ] as const
+            ).map(([type, label]) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => setFilterType(type)}
+                className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                  filterType === type
+                    ? "bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 shadow-[0_0_12px_rgba(56,189,248,0.25)]"
+                    : "text-slate-400 hover:text-white border border-transparent"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="relative w-full sm:w-64">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="ძებნა სახელით ან ნომრით…"
+              className="w-full rounded-xl border border-white/10 bg-[#060914] px-3.5 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-2 text-slate-400 hover:text-white text-xs"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {charts && charts.length > 0 && filteredCharts && filteredCharts.length === 0 && (
+        <div className="prism-card rounded-3xl p-8 text-center text-xs text-slate-400">
+          მითითებული ფილტრით ან საძიებო სიტყვით რუკა ვერ მოიძებნა.
+        </div>
+      )}
+
       {/* Grid of Saved Charts */}
       <div className="grid gap-5 sm:grid-cols-2">
-        {charts?.map((c) => {
+        {filteredCharts?.map((c: ChartSummary) => {
           const isSelected = selected?.id === c.id;
           return (
             <div

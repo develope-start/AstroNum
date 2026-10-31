@@ -55,7 +55,7 @@ export default function CalculationSettings({
         <div className="mt-4 grid gap-3 border-t border-white/10 pt-4 sm:grid-cols-2">
           <label className="text-[0.7rem] font-semibold text-slate-300">
             ეფემერიდის ძრავი
-            <select value={value.ephemeris ?? "swiss"} onChange={(event) => set("ephemeris", event.target.value as CalculationOptions["ephemeris"])} className="mt-1 w-full rounded-xl border border-white/10 bg-[#070a16] px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400">
+            <select value="swiss" disabled aria-label="Swiss Ephemeris is required" className="mt-1 w-full rounded-xl border border-cyan-400/30 bg-[#070a16] px-3 py-2 text-xs text-slate-300 opacity-90">
               <option value="swiss" className="bg-[#070a16]">Swiss Ephemeris — მთავარი</option>
               <option value="astronomy" className="bg-[#070a16]">Astronomy Engine — ალტერნატივა/შედარება</option>
             </select>

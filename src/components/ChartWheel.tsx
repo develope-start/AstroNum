@@ -3,9 +3,10 @@
 import { scrollToAscendantSection } from "@/lib/scrollToAscendant";
 import type { AspectHit } from "@/lib/astro/aspects";
 import { PLANET_NAMES_KA } from "@/lib/astro/signs";
-import type { KeyboardEvent } from "react";
+import { type KeyboardEvent, useState } from "react";
 
 const SIGN_SYMBOLS = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
+const SIGN_NAMES_KA = ["ვერძი", "კურო", "ტყუპები", "კირჩხიბი", "ლომი", "ქალწული", "სასწორი", "მორიელი", "მშვილდოსანი", "თხის რქა", "მერწყული", "თევზები"];
 const SIGN_COLORS = [
   "#fb7185", "#c8b72e", "#38bdf8", "#60a5fa", "#fb7185", "#c8b72e",
   "#38bdf8", "#60a5fa", "#fb7185", "#c8b72e", "#38bdf8", "#60a5fa",
@@ -75,6 +76,22 @@ export default function ChartWheel({
   const rHouseLine = size * 0.325;
   const rPlanetBase = size * 0.245;
   const rInner = size * 0.145;
+
+  const [activeTooltip, setActiveTooltip] = useState<{
+    x: number;
+    y: number;
+    title: string;
+    subtitle: string;
+    type: string;
+    key: string;
+  } | null>(null);
+
+  function getSignName(longitude: number) {
+    const norm = norm360(longitude);
+    const signIndex = Math.floor(norm / 30);
+    const deg = (norm % 30).toFixed(1);
+    return `${SIGN_NAMES_KA[signIndex]} ${deg}°`;
+  }
 
   function toXY(longitude: number, r: number) {
     const mathAngle = ((180 + (longitude - ascendant)) * Math.PI) / 180;
@@ -215,6 +232,15 @@ export default function ChartWheel({
             <g
               key={label}
               className="chart-focus-source chart-wheel-interactive chart-wheel-control"
+              onMouseEnter={() => setActiveTooltip({
+                x: pBadge.x,
+                y: pBadge.y,
+                title: label,
+                subtitle: getSignName(lon),
+                type: "angle",
+                key: label,
+              })}
+              onMouseLeave={() => setActiveTooltip((curr) => curr?.key === label ? null : curr)}
               onClick={isAsc ? scrollToAscendantSection : () => emitFocus({ type: "angle", key: label })}
               onKeyDown={(event) => activateOnKeyboard(event, isAsc ? scrollToAscendantSection : () => emitFocus({ type: "angle", key: label }))}
               role="button"
@@ -244,6 +270,15 @@ export default function ChartWheel({
               role="button"
               tabIndex={0}
               aria-label={`${PLANET_NAMES_KA[aspect.a] ?? aspect.a} ${aspect.aspectKa} ${PLANET_NAMES_KA[aspect.b] ?? aspect.b} — დეტალების ნახვა`}
+              onMouseEnter={() => setActiveTooltip({
+                x: (p1.x + p2.x) / 2,
+                y: (p1.y + p2.y) / 2,
+                title: `${aspect.aspectKa} (${aspect.orb.toFixed(1)}°)`,
+                subtitle: `${PLANET_NAMES_KA[aspect.a] ?? aspect.a} ✦ ${PLANET_NAMES_KA[aspect.b] ?? aspect.b}`,
+                type: "aspect",
+                key: `${aspect.a}|${aspect.aspect}|${aspect.b}`,
+              })}
+              onMouseLeave={() => setActiveTooltip((curr) => curr?.key === `${aspect.a}|${aspect.aspect}|${aspect.b}` ? null : curr)}
               onClick={focus}
               onKeyDown={(event) => activateOnKeyboard(event, focus)}
             >
@@ -307,7 +342,26 @@ export default function ChartWheel({
               role="button"
               tabIndex={0}
               aria-label={`${PLANET_NAMES_KA[planet.name] ?? planet.name} — დეტალების ნახვა`}
-              onClick={focus}
+              onMouseEnter={() => setActiveTooltip({
+                x: pos.x,
+                y: pos.y,
+                title: `${PLANET_NAMES_KA[planet.name] ?? planet.name} ${glyph}`,
+                subtitle: getSignName(planet.longitude),
+                type: "planet",
+                key: planet.name,
+              })}
+              onMouseLeave={() => setActiveTooltip((curr) => curr?.key === planet.name ? null : curr)}
+              onClick={() => {
+                setActiveTooltip({
+                  x: pos.x,
+                  y: pos.y,
+                  title: `${PLANET_NAMES_KA[planet.name] ?? planet.name} ${glyph}`,
+                  subtitle: getSignName(planet.longitude),
+                  type: "planet",
+                  key: planet.name,
+                });
+                focus();
+              }}
               onKeyDown={(event) => activateOnKeyboard(event, focus)}
             >
               <circle
@@ -361,6 +415,33 @@ export default function ChartWheel({
           <circle cx={cx} cy={cy} r={2.5} fill="#ffffff" />
         </g>
       </svg>
+
+      {/* Interactive Micro-Tooltip Overlay */}
+      {activeTooltip && (
+        <div
+          className="pointer-events-auto absolute z-40 -translate-x-1/2 -translate-y-full transform pb-3 transition-all duration-150 animate-in fade-in zoom-in-95"
+          style={{
+            left: `${(activeTooltip.x / size) * 100}%`,
+            top: `${(activeTooltip.y / size) * 100}%`,
+          }}
+        >
+          <div className="flex flex-col items-center rounded-2xl border border-cyan-400/40 bg-[#070b1a]/95 px-3.5 py-2 shadow-[0_12px_36px_rgba(0,0,0,0.85),0_0_20px_rgba(56,189,248,0.3)] backdrop-blur-2xl text-center">
+            <span className="text-xs font-black text-white whitespace-nowrap">{activeTooltip.title}</span>
+            <span className="text-[11px] font-semibold text-cyan-300 whitespace-nowrap">{activeTooltip.subtitle}</span>
+            <button
+              type="button"
+              onClick={() => {
+                emitFocus({ type: activeTooltip.type, key: activeTooltip.key });
+                setActiveTooltip(null);
+              }}
+              className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-cyan-400/20 px-2.5 py-0.5 text-[10px] font-bold text-cyan-200 hover:bg-cyan-400 hover:text-slate-950 transition-colors cursor-pointer"
+            >
+              <span>განმარტების ნახვა</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

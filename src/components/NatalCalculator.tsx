@@ -180,7 +180,7 @@ export default function NatalCalculator() {
         setIsRevealing(false);
       }, 1400);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("natal", { birth, houseSystem, calculation, interpretation: data.interpretation, wheel: w, mapNumber: data.mapNumber ?? null });
+      else saveGuestCache<CacheShape>("natal", { birth, houseSystem, calculation, interpretation: data.interpretation ?? "", wheel: w, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {

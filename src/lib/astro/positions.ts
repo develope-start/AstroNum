@@ -92,7 +92,10 @@ function eclipticLongitudeOf(body: Astronomy.Body, date: Date): number {
 export function computePlanetPositions(date: Date, inputOptions?: CalculationOptions, lon = 0, lat = 0): PlanetPosition[] {
   const options = resolveCalculationOptions(inputOptions);
   const dayMs = 24 * 60 * 60 * 1000;
-  if (options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, options, lon, lat)) {
+  if (options.ephemeris === "swiss") {
+    if (!isSwissAvailable() || !isSwissAvailableForDate(date, options, lon, lat)) {
+      throw new Error("Swiss Ephemeris is unavailable for this planetary calculation.");
+    }
     const planets: PlanetPosition[] = BODIES.map(({ swissKey, name }) => {
       const position = calculateSwissPosition(date, swissKey, options, lon, lat);
       const tropicalPosition = options.zodiac === "sidereal"
@@ -174,7 +177,10 @@ export function computePlanetPositions(date: Date, inputOptions?: CalculationOpt
  */
 export function computeNorthNode(date: Date, inputOptions?: CalculationOptions, observerLon = 0, lat = 0): PlanetPosition {
   const options = resolveCalculationOptions(inputOptions);
-  if (options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, options, observerLon, lat)) {
+  if (options.ephemeris === "swiss") {
+    if (!isSwissAvailable() || !isSwissAvailableForDate(date, options, observerLon, lat)) {
+      throw new Error("Swiss Ephemeris is unavailable for this lunar-node calculation.");
+    }
     const position = calculateSwissNode(date, options, observerLon, lat);
     const tropicalPosition = options.zodiac === "sidereal"
       ? calculateSwissNode(date, { ...options, zodiac: "tropical" }, observerLon, lat)
@@ -278,8 +284,9 @@ function dateToJulianDay(date: Date): number {
 /** ასცენდენტი და შუასამყაროს წერტილი (MC), დადასტურებული მზის ამოსვლა/კულმინაციაზე. */
 export function computeAngles(date: Date, lonDeg: number, latDeg: number, inputOptions?: CalculationOptions): ChartAngles {
   const options = resolveCalculationOptions(inputOptions);
-  if (options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, options, lonDeg, latDeg)) {
+  if (options.ephemeris === "swiss") {
     try {
+      if (!isSwissAvailable() || !isSwissAvailableForDate(date, options, lonDeg, latDeg)) throw new Error("Swiss Ephemeris is unavailable");
       const houses = calculateSwissHouses(date, latDeg, lonDeg, "P", options);
       return {
         ascendant: norm360(houses.ascendant),
@@ -291,9 +298,8 @@ export function computeAngles(date: Date, lonDeg: number, latDeg: number, inputO
         latitude: latDeg,
         placidusUnstable: false,
       };
-    } catch {
-      // Swiss Ephemeris can reject polar Placidus charts. The deterministic
-      // mathematical fallback below keeps the chart usable in that case.
+    } catch (error) {
+      throw new Error(`Swiss Ephemeris cannot calculate chart angles: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   const t = Astronomy.MakeTime(date);
@@ -416,15 +422,16 @@ export function computeHouseCusps(
     whole_sign: "W",
     porphyry: "O",
   };
-  if (date && lonDeg !== undefined && latDeg !== undefined && options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, options, lonDeg, latDeg)) {
+  if (date && lonDeg !== undefined && latDeg !== undefined && options.ephemeris === "swiss") {
     try {
+      if (!isSwissAvailable() || !isSwissAvailableForDate(date, options, lonDeg, latDeg)) throw new Error("Swiss Ephemeris is unavailable");
       const houses = calculateSwissHouses(date, latDeg, lonDeg, swissSystem[system], options);
       return {
         system,
         cusps: Array.from({ length: 12 }, (_, index) => norm360(houses.cusps[index + 1] ?? angles.ascendant + index * 30)),
       };
-    } catch {
-      // Fall back to the existing implementation for unsupported polar charts.
+    } catch (error) {
+      throw new Error(`Swiss Ephemeris cannot calculate ${system} house cusps: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   const cusps = new Array(12).fill(0);

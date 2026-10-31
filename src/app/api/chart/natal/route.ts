@@ -21,7 +21,7 @@ import { getCurrentEntitlement } from "@/lib/billing/access";
 import { PLAN_RANK } from "@/lib/billing/plans";
 
 const calculationSchema = z.object({
-  ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
+  ephemeris: z.literal("swiss").default("swiss"),
   zodiac: z.enum(["tropical", "sidereal"]).default("tropical"),
   siderealMode: z.number().int().min(0).max(255).default(1),
   nodeType: z.enum(["mean", "true"]).default("mean"),

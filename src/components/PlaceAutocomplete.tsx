@@ -184,6 +184,42 @@ export default function PlaceAutocomplete({
     });
   }
 
+  const autoResolveMatch = () => {
+    if (value.lat !== null && value.lon !== null && value.place === query) return;
+    const cleanQuery = query.trim().toLowerCase();
+    if (!cleanQuery) return;
+
+    const exactGeo = (GEORGIAN_CITIES || []).find(
+      (c) => c.name.toLowerCase() === cleanQuery || `${c.name}, საქართველო`.toLowerCase() === cleanQuery
+    );
+    if (exactGeo) {
+      selectHit({
+        label: `${exactGeo.name}, საქართველო`,
+        lat: exactGeo.lat,
+        lon: exactGeo.lon,
+        timezone: "Asia/Tbilisi",
+        source: "ge",
+      });
+      return;
+    }
+
+    const partialGeo = (GEORGIAN_CITIES || []).find((c) => c.name.toLowerCase().includes(cleanQuery));
+    if (partialGeo) {
+      selectHit({
+        label: `${partialGeo.name}, საქართველო`,
+        lat: partialGeo.lat,
+        lon: partialGeo.lon,
+        timezone: "Asia/Tbilisi",
+        source: "ge",
+      });
+      return;
+    }
+
+    if (remoteHits.length > 0) {
+      selectHit(remoteHits[0]!);
+    }
+  };
+
   useEffect(() => {
     if (!mapOpen || !mapDivRef.current) return;
     let cancelled = false;
@@ -263,6 +299,18 @@ export default function PlaceAutocomplete({
               setOpen(true);
               updateCoords();
               keepInputVisible();
+            }}
+            onBlur={() => {
+              setTimeout(() => {
+                autoResolveMatch();
+              }, 150);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                autoResolveMatch();
+                setOpen(false);
+              }
             }}
             onChange={(e) => {
               setQuery(e.target.value);

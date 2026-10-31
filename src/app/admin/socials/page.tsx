@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { MessageCircle, Phone, Send, Sparkles, Check, ArrowLeft, Globe, HelpCircle } from "lucide-react";
+import { MessageCircle, Phone, Send, Sparkles, Check, ArrowLeft, Globe, HelpCircle, Eye } from "lucide-react";
 import { SocialSettingsData } from "@/lib/socialSettings";
 
 export default function AdminSocialsPage() {
@@ -127,7 +127,8 @@ export default function AdminSocialsPage() {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="space-y-4 lg:col-span-7">
             {/* WhatsApp */}
             <div className="rounded-2xl border border-line bg-ink-2/50 p-5 space-y-3">
               <div className="flex items-center justify-between">
@@ -260,6 +261,98 @@ export default function AdminSocialsPage() {
               />
             </div>
           </div>
+
+          {/* Live Preview Simulator */}
+          <div className="lg:col-span-5 sticky top-6 space-y-4">
+            <div className="rounded-2xl border border-cyan-500/30 bg-ink-2/80 p-5 shadow-2xl backdrop-blur-md">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-cyan-400" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-cyan-300">ცოცხალი სიმულაცია (Live Preview)</span>
+                </div>
+                <span className="flex items-center gap-1.5 text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-medium">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  აქტიური
+                </span>
+              </div>
+
+              <p className="text-xs text-slate-400 mb-4">
+                ასე ხედავს ვიზიტორი საკონტაქტო ცენტრს საიტის მარჯვენა ქვედა კუთხეში:
+              </p>
+
+              {/* Simulated Floating Widget Modal */}
+              <div className="rounded-2xl border border-line/80 bg-slate-950/95 p-4 shadow-xl space-y-3">
+                <div className="flex items-center gap-3 pb-3 border-b border-line">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 text-white shadow-md shadow-cyan-500/20">
+                    <Sparkles className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white">AstroNum ასისტენტი</h4>
+                    <p className="text-[11px] text-emerald-400 flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block"></span>
+                      ონლაინ ოპერატორი
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  {whatsappEnabled && (
+                    <div className="flex items-center justify-between p-2.5 rounded-xl border border-emerald-500/20 bg-emerald-950/30 text-emerald-200">
+                      <div className="flex items-center gap-2">
+                        <MessageCircle className="h-4 w-4 text-emerald-400" />
+                        <span className="font-medium">WhatsApp ჩატი</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{whatsappVal || "ნომერი არ არის"}</span>
+                    </div>
+                  )}
+
+                  {messengerEnabled && (
+                    <div className="flex items-center justify-between p-2.5 rounded-xl border border-blue-500/20 bg-blue-950/30 text-blue-200">
+                      <div className="flex items-center gap-2">
+                        <Globe className="h-4 w-4 text-blue-400" />
+                        <span className="font-medium">Messenger</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{messengerVal || "ბმული არ არის"}</span>
+                    </div>
+                  )}
+
+                  {telegramEnabled && (
+                    <div className="flex items-center justify-between p-2.5 rounded-xl border border-sky-500/20 bg-sky-950/30 text-sky-200">
+                      <div className="flex items-center gap-2">
+                        <Send className="h-4 w-4 text-sky-400" />
+                        <span className="font-medium">Telegram არხი</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{telegramVal || "სახელი არ არის"}</span>
+                    </div>
+                  )}
+
+                  {phoneEnabled && (
+                    <div className="flex items-center justify-between p-2.5 rounded-xl border border-amber-500/20 bg-amber-950/30 text-amber-200">
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-amber-400" />
+                        <span className="font-medium">პირდაპირი ზარი</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{phoneVal || "ნომერი არ არის"}</span>
+                    </div>
+                  )}
+
+                  {!whatsappEnabled && !messengerEnabled && !telegramEnabled && !phoneEnabled && (
+                    <div className="text-center py-4 text-slate-500 text-xs italic">
+                      ყველა საკონტაქტო არხი გამორთულია.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-3 text-[11px] text-slate-500 flex items-center justify-center gap-1.5">
+                <span>სტატუსი:</span>
+                <span className="text-slate-300 font-medium">
+                  {[whatsappEnabled, messengerEnabled, telegramEnabled, phoneEnabled].filter(Boolean).length} / 4 არხი აქტიურია
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
 
           <div className="flex justify-end pt-4">
             <button

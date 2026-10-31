@@ -52,6 +52,7 @@ export default function TransitCalculator() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [mapNumber, setMapNumber] = useState<string | null>(null);
+  const [teaserPreview, setTeaserPreview] = useState<{ name: string; transitDate: string; planRequired?: boolean } | null>(null);
 
   useEffect(() => {
     const cached = loadGuestCache<CacheShape>("transit");
@@ -121,15 +122,30 @@ export default function TransitCalculator() {
           save,
         }),
       });
-      const data = await readApiResponse(res);
+      const data = await readApiResponse<{
+        error?: string;
+        code?: string;
+        interpretation?: string;
+        mapNumber?: string | null;
+      }>(res);
+      if (res.status === 401 || data?.code === "AUTH_REQUIRED" || data?.code === "PLAN_REQUIRED") {
+        setTeaserPreview({
+          name: birth.name,
+          transitDate: calculationDate,
+          planRequired: data?.code === "PLAN_REQUIRED",
+        });
+        setError(null);
+        return;
+      }
       if (!res.ok) {
         setError(data.error || `სერვერის შეცდომა (${res.status})`);
         return;
       }
-      setInterpretation(data.interpretation);
+      setTeaserPreview(null);
+      setInterpretation(data.interpretation ?? null);
       setMapNumber(data.mapNumber ?? null);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("transit", { birth, transitDate: calculationDate, transitStartDate: calculationStartDate, transitEndDate: calculationEndDate, inputMode: selectedMode, calculation, houseSystem, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
+      else saveGuestCache<CacheShape>("transit", { birth, transitDate: calculationDate, transitStartDate: calculationStartDate, transitEndDate: calculationEndDate, inputMode: selectedMode, calculation, houseSystem, interpretation: data.interpretation ?? "", mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {
@@ -297,6 +313,66 @@ export default function TransitCalculator() {
         <div className="flex items-center gap-2.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 px-4 py-3.5 text-xs font-semibold text-rose-300 shadow-lg justify-center backdrop-blur-xl">
           <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
           <span>{error}</span>
+        </div>
+      )}
+
+      {teaserPreview && (
+        <div className="relative overflow-hidden rounded-3xl border border-cyan-400/30 bg-gradient-to-b from-[#0b1429]/95 via-[#070e1c]/90 to-[#040812]/95 p-6 sm:p-9 text-center shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-300">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-400/40 bg-cyan-500/15 text-cyan-300 shadow-[0_0_25px_rgba(56,189,248,0.4)]">
+            <Clock className="h-6 w-6 text-cyan-400 animate-pulse" />
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-950/40 px-3.5 py-1 text-xs font-bold text-cyan-300 shadow-md">
+            <span>ტრანზიტული ციკლები · წინასწარი მიმოხილვა</span>
+          </div>
+          <h3 className="mt-3 font-display text-xl sm:text-2xl font-black text-white">
+            {teaserPreview.name} · {teaserPreview.transitDate}
+          </h3>
+          <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-lg mx-auto">
+            მიმდინარე პლანეტარული ზეგავლენები გამოთვლილია! აღმოჩენილია აქტიური ტრანზიტები თქვენს ნატალურ მზესთან, ასცენდენტთან და პლანეტარულ სახლებთან.
+          </p>
+
+          <div className="my-6 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-left">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 backdrop-blur-md">
+              <span className="text-[10px] uppercase font-bold text-amber-300 tracking-wider">მზის ტრანზიტი</span>
+              <p className="mt-1 text-sm font-bold text-white">ენერგიის კონცენტრაცია</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">აქტიური ცხოვრებისეული სფერო</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 backdrop-blur-md">
+              <span className="text-[10px] uppercase font-bold text-cyan-300 tracking-wider">სწრაფი ტრანზიტები</span>
+              <p className="mt-1 text-sm font-bold text-white">მთვარე &amp; მერკური</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">დღის ემოციური &amp; გონებრივი რიტმი</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 backdrop-blur-md">
+              <span className="text-[10px] uppercase font-bold text-violet-300 tracking-wider">ძირითადი ციკლები</span>
+              <p className="mt-1 text-sm font-bold text-white">იუპიტერი &amp; სატურნი</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">გრძელვადიანი შესაძლებლობები</p>
+            </div>
+          </div>
+
+          <div className="relative mx-auto max-w-xl rounded-2xl border border-white/10 bg-slate-950/60 p-4 text-center">
+            <div className="filter blur-sm select-none opacity-40 text-xs text-slate-300 pointer-events-none line-clamp-3">
+              მიმდინარე პერიოდში იუპიტერის ჰარმონიული ტრანზიტი ააქტიურებს კარიერულ და შემოქმედებით შესაძლებლობებს. მზის კავშირი მე-10 სახლთან ქმნის წინსვლის საფუძველს...
+            </div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-3 bg-[#070c18]/80 backdrop-blur-xs rounded-2xl">
+              <p className="text-xs sm:text-sm font-extrabold text-white">
+                {teaserPreview.planRequired ? "სრული ტრანზიტული ანალიზი ხელმისაწვდომია Pro ან Enterprise პაკეტით" : "სრული ტრანზიტული კალენდრისა და ინტერპრეტაციის სანახავად შედით ანგარიშში"}
+              </p>
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-2.5">
+                <a
+                  href="/cabinet"
+                  className="rounded-full bg-gradient-to-r from-cyan-400 to-indigo-500 px-5 py-2 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/30 hover:brightness-110 transition-all cursor-pointer"
+                >
+                  ✦ სრული ტრანზიტის გახსნა (ანგარიში)
+                </a>
+                <a
+                  href="/#pricing"
+                  className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 transition-all cursor-pointer"
+                >
+                  პაკეტების ნახვა
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

@@ -360,8 +360,18 @@ export default function HomePage() {
 
   const toggleElementInfo = (elementId: ElementTemperamentId) => {
     setSelectedElementInfo((current) => {
-      const isSameElement = current === elementId;
-      return isSameElement ? null : elementId;
+      const next = current === elementId ? null : elementId;
+      if (next) {
+        setTimeout(() => {
+          const target = document.getElementById(
+            window.innerWidth >= 1024
+              ? "element-temperament-details-desktop"
+              : `element-temperament-details-${elementId}`
+          );
+          target?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 100);
+      }
+      return next;
     });
   };
 
@@ -673,6 +683,12 @@ export default function HomePage() {
                   </div>
                 </button>
 
+                {isSelected && (
+                  <div className="hidden lg:flex justify-center -mb-2 mt-1 text-cyan-300 font-mono text-xs animate-bounce" aria-hidden="true">
+                    ▼
+                  </div>
+                )}
+
                 {/* Mobile / Tablet Inline Temperament Drawer: expands directly under this card */}
                 {isSelected && (
                   <div
@@ -767,31 +783,34 @@ export default function HomePage() {
           <span className="live-beacon" />{activeTab.hint}
         </div>
         <div className="mt-8">
-          {tab !== "natal" && me === null ? (
-            <div className="mx-auto max-w-xl rounded-3xl border border-cyan-400/20 bg-[#0b1020]/90 p-6 text-center sm:p-9">
-              <h3 className="font-display text-xl font-bold text-white">დამატებითი გამოთვლები ანგარიშით არის ხელმისაწვდომი</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-300">
-                სტუმრისთვის ხელმისაწვდომია მოკლე ნატალური მიმოხილვა. სინასტრიის, ტრანზიტების, AI-ისა და სხვა სრული სერვისების გასახსნელად შექმენით ანგარიში და აირჩიეთ შესაბამისი პაკეტი.
-              </p>
-              <div className="mt-5 flex flex-wrap justify-center gap-3">
-                <Link href="/cabinet" className="rounded-full bg-cyan-400 px-5 py-2.5 text-sm font-bold text-slate-950">
-                  შესვლა ან რეგისტრაცია
-                </Link>
-                <Link href="/#pricing" className="rounded-full border border-white/15 px-5 py-2.5 text-sm font-semibold text-white">
-                  პაკეტების ნახვა
-                </Link>
+          {tab !== "natal" && me === null && (
+            <div className="mb-6 mx-auto max-w-4xl rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-500/10 via-indigo-950/40 to-amber-500/10 p-4 text-center backdrop-blur-xl shadow-lg animate-in fade-in">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-400/20 text-amber-300 font-bold">✦</span>
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-bold text-amber-200">სტუმრის რეჟიმი: მონაცემების შეყვანა & წინასწარი დათვლა აქტიურია</h4>
+                    <p className="text-[11px] sm:text-xs text-slate-300">სრული რუკის, ასპექტებისა და შენახვისთვის გაიარეთ სწრაფი რეგისტრაცია.</p>
+                  </div>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <Link href="/cabinet" className="rounded-full bg-gradient-to-r from-amber-400 to-amber-300 px-4 py-1.5 text-xs font-bold text-slate-950 shadow-md hover:brightness-110 transition-all">
+                    შესვლა / რეგისტრაცია
+                  </Link>
+                  <a href="#pricing" className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition-all">
+                    ტარიფები
+                  </a>
+                </div>
               </div>
             </div>
-          ) : (
-            <>
-              {tab === "natal" && <NatalCalculator />}
-              {tab === "synastry" && <SynastryCalculator />}
-              {tab === "transit" && <TransitCalculator />}
-              {tab === "advanced" && <AdvancedCalculator />}
-              {tab === "ai" && <AiAstrologyAssistant />}
-              {tab === "rectification" && <RectificationCalculator />}
-            </>
           )}
+
+          {tab === "natal" && <NatalCalculator />}
+          {tab === "synastry" && <SynastryCalculator />}
+          {tab === "transit" && <TransitCalculator />}
+          {tab === "advanced" && <AdvancedCalculator />}
+          {tab === "ai" && <AiAstrologyAssistant />}
+          {tab === "rectification" && <RectificationCalculator />}
         </div>
       </section>
 

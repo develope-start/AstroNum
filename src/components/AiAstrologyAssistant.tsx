@@ -45,6 +45,7 @@ export default function AiAstrologyAssistant() {
   const [provider, setProvider] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [teaserPreview, setTeaserPreview] = useState<{ mode: AnalysisType; name: string; planRequired?: boolean } | null>(null);
 
   const activeMode = ANALYSIS_MODES.find((m) => m.id === mode) ?? ANALYSIS_MODES[0];
 
@@ -79,7 +80,16 @@ export default function AiAstrologyAssistant() {
         }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401 || data?.code === "AUTH_REQUIRED" || data?.code === "PLAN_REQUIRED") {
+        setTeaserPreview({
+          mode,
+          name: birth.name || "მაძიებელი",
+          planRequired: data?.code === "PLAN_REQUIRED",
+        });
+        setError(null);
+        return;
+      }
       if (!res.ok || data.error) {
         setError(data.error || "შეცდომა ანალიზის გენერირებისას");
         return;
@@ -247,6 +257,49 @@ export default function AiAstrologyAssistant() {
                 <p className="mt-1.5 max-w-sm text-xs text-slate-400">
                   მითითებული დროის ზონისა და კოორდინატების გათვალისწინებით
                 </p>
+              </div>
+            ) : teaserPreview ? (
+              <div className="py-8 text-center animate-in fade-in duration-300">
+                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-400/40 bg-cyan-500/15 text-cyan-300 shadow-[0_0_25px_rgba(56,189,248,0.35)]">
+                  <Bot className="h-7 w-7 text-cyan-300 animate-pulse" />
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-950/40 px-3.5 py-1 text-xs font-bold text-cyan-300 shadow-md">
+                  <span>Gemini AI ასტროლოგიური ინტელექტი</span>
+                </div>
+                <h3 className="mt-3 font-display text-lg sm:text-xl font-black text-white">
+                  {teaserPreview.name} · {activeMode.label}
+                </h3>
+                <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-md mx-auto">
+                  Gemini API-მ დაამუშავა თქვენი ციური რუკა! პასუხი მოიცავს პლანეტარულ დისპოზიციებს, სახლების მმართველებსა და ფსიქოლოგიურ რეკომენდაციებს.
+                </p>
+
+                <div className="relative mx-auto mt-6 max-w-lg rounded-2xl border border-white/10 bg-slate-950/70 p-5 text-center">
+                  <div className="filter blur-sm select-none opacity-40 text-xs text-slate-300 pointer-events-none space-y-2">
+                    <p>თქვენი ნატალური რუკის მიხედვით, მზისა და ასცენდენტის კომბინაცია ქმნის უნიკალურ ლიდერულ პოტენციალს...</p>
+                    <p>მე-10 სახლის მმართველის ასპექტები მიუთითებს მაღალ ინტელექტუალურ და სტრატეგიულ უნარებზე...</p>
+                  </div>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-3 bg-[#0a0f1d]/85 backdrop-blur-xs rounded-2xl">
+                    <p className="text-xs sm:text-sm font-extrabold text-white">
+                      {teaserPreview.planRequired
+                        ? "Gemini AI ანალიზი ხელმისაწვდომია Pro ან Enterprise პაკეტით"
+                        : "სრული AI ინტერპრეტაციის გასახსნელად შედით ანგარიშში"}
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center justify-center gap-2.5">
+                      <a
+                        href="/cabinet"
+                        className="rounded-full bg-gradient-to-r from-cyan-400 to-indigo-500 px-5 py-2 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/30 hover:brightness-110 transition-all cursor-pointer"
+                      >
+                        ✦ AI ანალიზის გახსნა (ანგარიში)
+                      </a>
+                      <a
+                        href="/#pricing"
+                        className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 transition-all cursor-pointer"
+                      >
+                        პაკეტების ნახვა
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : result ? (
               <div className="mt-6 max-h-[550px] overflow-y-auto pr-2 text-sm leading-relaxed text-slate-200">

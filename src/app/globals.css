@@ -2615,7 +2615,9 @@ a[class*="from-amber-400"][class*="to-amber-600"]:hover {
   border-radius: 50%;
   padding: clamp(0.75rem, 1.8vw, 1.1rem);
   text-align: center;
-  background: radial-gradient(circle at 50% 35%, rgba(38, 43, 80, 0.84), rgba(8, 11, 23, 0.94) 72%);
+  background: radial-gradient(circle at 50% 35%, rgba(38, 43, 80, 0.9), rgba(8, 11, 23, 0.96) 72%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 0 0 1px rgba(8, 10, 22, 0.62), 0 0 32px var(--celestial-info-glow, rgba(167, 139, 250, 0.28)), inset 0 1px rgba(255, 255, 255, 0.1);
   transform: translate(-50%, -50%);
   pointer-events: none;

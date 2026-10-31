@@ -27,6 +27,13 @@ const PLANET_GLYPHS: Record<string, string> = {
   Pluto: "♇",
 };
 
+const ELEMENT_INSIGHTS: Record<string, string> = {
+  fire: "დომინირებს ცეცხლის სტიქია — ინიციატივის, ენერგიისა და თამამი გადაწყვეტილებების ხელსაყრელი პერიოდია.",
+  earth: "დომინირებს მიწის სტიქია — პრაქტიკული საქმეების, ფინანსური დაგეგმვისა და სტაბილურობის დღეა.",
+  air: "დომინირებს ჰაერის სტიქია — კომუნიკაციის, იდეების გაცვლისა და ახალი კავშირების დამყარების ფაზაა.",
+  water: "დომინირებს წყლის სტიქია — ინტუიციის, ემოციური გააზრებისა და შემოქმედებითი ჰარმონიის დროა.",
+};
+
 function formatTimestamp(value: string) {
   return new Date(value).toLocaleString("ka-GE", {
     dateStyle: "medium",
@@ -66,24 +73,40 @@ export default function CurrentTransitElementBalance() {
     };
   }, [refresh]);
 
+  const dominantElement = snapshot
+    ? [...snapshot.elements].sort((a, b) => b.percentage - a.percentage)[0]
+    : null;
+
   return (
-    <details className="mb-5 rounded-2xl border border-cyan-400/25 bg-slate-950/55 p-4 shadow-[0_0_30px_rgba(34,211,238,0.07)] sm:p-5" aria-label="მიმდინარე ტრანზიტული სტიქიების ბალანსი">
+    <details open className="group mb-5 rounded-3xl border border-cyan-400/30 bg-gradient-to-b from-[#090f22]/90 via-[#070b18]/85 to-[#050813]/90 p-4 sm:p-6 shadow-[0_15px_45px_rgba(34,211,238,0.1)] backdrop-blur-2xl transition-all" aria-label="მიმდინარე ტრანზიტული სტიქიების ბალანსი">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-base sm:text-lg font-bold text-white transition hover:text-cyan-200 marker:hidden">
-        <span>დღევანდელი ცის სტიქიური ბალანსი</span>
-        <span aria-hidden="true" className="text-cyan-300 font-mono text-sm">⌄</span>
+        <div className="flex items-center gap-2.5">
+          <span className="live-beacon shrink-0" />
+          <span className="font-display font-bold tracking-tight">დღევანდელი ცის სტიქიური ბალანსი & ცოცხალი ტრანზიტი</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-mono font-medium text-cyan-300/80 hidden sm:inline">SWISS EPHEMERIS LIVE</span>
+          <span aria-hidden="true" className="text-cyan-300 font-mono text-sm transition-transform duration-200 group-open:rotate-180">▼</span>
+        </div>
       </summary>
       <div className="mt-4 pt-3 border-t border-cyan-400/15 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-950/30 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-cyan-300">
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-950/40 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.2)]">
             <span className="live-beacon shrink-0" />
-            <span>მიმდინარე ტრანზიტი · ცოცხალი გამოთვლა</span>
+            <span>მიმდინარე ტრანზიტი · 10 პლანეტის რეალური კოორდინატი</span>
           </div>
-          <p className="mt-2 max-w-3xl text-xs leading-relaxed text-slate-300">
-            პროცენტი ითვლება 10 ძირითადი პლანეტის ზოდიაქოს სტიქიაში მდებარეობით — თითო პლანეტა თანაბრად, ჯამში 100%. ასპექტები ნაჩვენებია ცალკე და პროცენტს არ ცვლის, რადგან მათთვის განსხვავებული წონა ამ მაჩვენებელში განსაზღვრული არ არის.
+          {dominantElement && dominantElement.percentage > 25 && (
+            <p className="mt-2.5 text-xs sm:text-sm font-semibold text-cyan-200 flex items-center gap-2">
+              <span className="text-base">{ELEMENT_STYLE[dominantElement.id].icon}</span>
+              <span>{ELEMENT_INSIGHTS[dominantElement.id]}</span>
+            </p>
+          )}
+          <p className="mt-1.5 max-w-3xl text-xs leading-relaxed text-slate-300">
+            პროცენტი ითვლება 10 ძირითადი პლანეტის ზოდიაქოს სტიქიაში მდებარეობით — თითო პლანეტა თანაბრად (10%), ჯამში 100%. ასპექტები ნაჩვენებია ქვემოთ და პროცენტს არ ცვლის.
           </p>
         </div>
-        <button type="button" onClick={() => void refresh()} disabled={refreshing} className="rounded-full border border-cyan-300/30 px-3 py-1.5 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200 disabled:opacity-50">
-          {refreshing ? "ახლდება…" : "განახლება"}
+        <button type="button" onClick={() => void refresh()} disabled={refreshing} className="rounded-full border border-cyan-400/40 bg-cyan-950/40 px-3.5 py-1.5 text-xs font-bold text-cyan-200 shadow-[0_0_15px_rgba(56,189,248,0.2)] transition hover:bg-cyan-400 hover:text-slate-950 disabled:opacity-50 cursor-pointer">
+          {refreshing ? "ახლდება…" : "✦ განახლება"}
         </button>
       </div>
 
@@ -98,19 +121,25 @@ export default function CurrentTransitElementBalance() {
 
       {snapshot && (
         <>
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-5 grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
             {snapshot.elements.map((element) => {
               const style = ELEMENT_STYLE[element.id];
               return (
-                <div key={element.id} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                <div key={element.id} className="rounded-2xl border border-white/10 bg-[#090d1e]/70 p-4 backdrop-blur-xl shadow-lg transition-all hover:border-white/20 hover:bg-[#090d1e]/90">
                   <div className="flex items-center justify-between gap-2">
-                    <span className={`text-sm font-bold ${style.text}`}>{style.icon} {element.name}</span>
-                    <span className="font-mono text-lg font-black text-white">{element.percentage}%</span>
+                    <span className={`text-sm font-bold flex items-center gap-1.5 ${style.text}`}>
+                      <span className="text-base">{style.icon}</span>
+                      <span>{element.name}</span>
+                    </span>
+                    <span className="font-mono text-xl font-black text-white">{element.percentage}%</span>
                   </div>
-                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label={`${element.name} სტიქიის წილი`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={element.percentage}>
-                    <div className={`h-full rounded-full ${style.bar} transition-[width] duration-500`} style={{ width: `${element.percentage}%` }} />
+                  <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/10 p-[1px]" role="progressbar" aria-label={`${element.name} სტიქიის წილი`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={element.percentage}>
+                    <div className={`h-full rounded-full ${style.bar} shadow-[0_0_10px_currentColor] transition-[width] duration-700 ease-out`} style={{ width: `${element.percentage}%` }} />
                   </div>
-                  <p className="mt-1.5 text-[11px] text-slate-400">{element.count} / {snapshot.balance.total} პლანეტა</p>
+                  <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
+                    <span>{element.count} პლანეტა</span>
+                    <span className="font-mono opacity-80">{element.count * 10}%</span>
+                  </div>
                 </div>
               );
             })}

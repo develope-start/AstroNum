@@ -16,7 +16,7 @@ import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/i
 import { requirePlanAccess } from "@/lib/billing/access";
 
 const calculationSchema = z.object({
-  ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
+  ephemeris: z.literal("swiss").default("swiss"),
   zodiac: z.enum(["tropical", "sidereal"]).default("tropical"),
   siderealMode: z.number().int().min(0).max(255).default(1),
   nodeType: z.enum(["mean", "true"]).default("mean"),

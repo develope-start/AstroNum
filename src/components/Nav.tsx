@@ -184,6 +184,15 @@ export default function Nav() {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 xl:hidden">
+            <Link
+              href="/#calculator"
+              className="flex items-center gap-1 rounded-full border border-cyan-400/50 bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 px-2.5 py-1.5 text-xs font-bold text-cyan-200 shadow-[0_0_12px_rgba(56,189,248,0.25)] hover:border-cyan-400 hover:text-white transition-all active:scale-95"
+              aria-label="რუკის გამოთვლა"
+            >
+              <Compass className="h-3.5 w-3.5 text-cyan-300" />
+              <span>რუკა</span>
+            </Link>
+
             {me === null && (
               <Link href="/cabinet" className="nav-action px-2.5 py-1.5 text-xs sm:px-3 sm:py-2" aria-label="კაბინეტში შესვლა" title="კაბინეტში შესვლა">
                 <User className="h-3.5 w-3.5" />

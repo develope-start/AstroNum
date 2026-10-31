@@ -176,6 +176,9 @@ export function calculateSwissHouses(
 ) {
   const swiss = loadSwiss();
   if (!swiss) throw new Error(swissLoadError ?? "Swiss Ephemeris is unavailable");
+  // Sidereal mode is global state in Swiss Ephemeris. Configure it immediately
+  // before the house calculation so a prior request cannot affect these cusps.
+  configureSwiss(options, lon, lat);
   const result = swiss.calculateHouses(toJulianDay(date), lat, lon, system as Swiss.HouseSystem);
   if (options.zodiac !== "sidereal") return result;
 

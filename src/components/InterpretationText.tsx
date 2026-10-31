@@ -378,6 +378,73 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
         </div>
       </div>
 
+      {/* Key Takeaways / Executive Summary Navigator */}
+      <div className="rounded-2xl border border-indigo-400/25 bg-gradient-to-r from-indigo-950/40 via-[#0a0f24]/60 to-purple-950/40 p-4 sm:p-5 backdrop-blur-xl shadow-xl">
+        <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3 mb-3.5">
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-300 text-xs">✦</span>
+            <h4 className="font-display text-xs sm:text-sm font-bold text-white tracking-wide">
+              რუკის საკვანძო ორიენტირები (ექსპრეს-ნავიგატორი)
+            </h4>
+          </div>
+          <span className="text-[10px] sm:text-xs text-indigo-300/80 font-mono hidden sm:inline">დააწკაპეთ სექციის გასახსნელად</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("scroll-to-ascendant"))}
+            className="flex flex-col text-left rounded-xl border border-white/10 bg-white/[0.03] p-3 transition hover:border-amber-400/50 hover:bg-amber-950/20 cursor-pointer group"
+          >
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 flex items-center justify-between">
+              <span>🌅 პიროვნება &amp; ASC</span>
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+            </span>
+            <span className="mt-1 text-xs font-bold text-white">ასცენდენტი &amp; გარესამყარო</span>
+            <span className="mt-0.5 text-[11px] text-slate-400">თვითგამოხატვა, პირველი შთაბეჭდილება და ფიზიკური ენერგია</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("focus-interpretation", { detail: { type: "planet", key: "Sun" } }))}
+            className="flex flex-col text-left rounded-xl border border-white/10 bg-white/[0.03] p-3 transition hover:border-cyan-400/50 hover:bg-cyan-950/20 cursor-pointer group"
+          >
+            <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-300 flex items-center justify-between">
+              <span>☉ მზის ბირთვი</span>
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+            </span>
+            <span className="mt-1 text-xs font-bold text-white">იდენტობა &amp; ნებისყოფა</span>
+            <span className="mt-0.5 text-[11px] text-slate-400">შემოქმედებითი ძალა, ეგო და ცხოვრების მთავარი მოტივაცია</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("focus-interpretation", { detail: { type: "planet", key: "Moon" } }))}
+            className="flex flex-col text-left rounded-xl border border-white/10 bg-white/[0.03] p-3 transition hover:border-violet-400/50 hover:bg-violet-950/20 cursor-pointer group"
+          >
+            <span className="text-[10px] font-bold uppercase tracking-wider text-violet-300 flex items-center justify-between">
+              <span>☽ მთვარის სამყარო</span>
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+            </span>
+            <span className="mt-1 text-xs font-bold text-white">ემოციური უსაფრთხოება</span>
+            <span className="mt-0.5 text-[11px] text-slate-400">შინაგანი მოთხოვნილებები, ქვეცნობიერი და ინტუიცია</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("focus-interpretation", { detail: { type: "planet", key: "TrueNode" } }))}
+            className="flex flex-col text-left rounded-xl border border-white/10 bg-white/[0.03] p-3 transition hover:border-emerald-400/50 hover:bg-emerald-950/20 cursor-pointer group"
+          >
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 flex items-center justify-between">
+              <span>🧭 კარმული ვექტორი</span>
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+            </span>
+            <span className="mt-1 text-xs font-bold text-white">მთვარის კვანძები (Rahu/Ketu)</span>
+            <span className="mt-0.5 text-[11px] text-slate-400">სულის ევოლუცია, წარსული ჩვევები და ზრდის მიმართულება</span>
+          </button>
+        </div>
+      </div>
+
       {/* Main interpretation blocks */}
       <div className="interpretation-body space-y-4 sm:space-y-6 leading-relaxed text-slate-100 w-full max-w-full overflow-x-hidden">
         {preface.map((block, index) => (

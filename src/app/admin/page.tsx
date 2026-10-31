@@ -650,6 +650,17 @@ export default function AdminPage() {
   const [viewingCalculation, setViewingCalculation] = useState<CalculationViewData | null>(null);
   const [viewLoading, setViewLoading] = useState(false);
 
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayCalculations = useMemo(() => {
+    if (!calculations) return 0;
+    return calculations.filter((c) => c.createdAt.startsWith(todayStr)).length;
+  }, [calculations, todayStr]);
+
+  const registeredCalcsCount = useMemo(() => {
+    if (!calculations) return 0;
+    return calculations.filter((c) => Boolean(c.user)).length;
+  }, [calculations]);
+
   useEffect(() => {
     let cancelled = false;
     let requestInFlight = false;
@@ -1101,6 +1112,49 @@ export default function AdminPage() {
           <span className="text-xl font-black tracking-wide text-emerald-200 sm:text-2xl">ადმინი</span>
         </div>
       </div>
+
+      {/* 4 Analytics Overview Cards */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="rounded-2xl border border-cyan-400/30 bg-gradient-to-br from-cyan-950/40 via-[#070e1c] to-[#040812] p-5 shadow-lg backdrop-blur-xl">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-cyan-300">გამოთვლები</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-400/20 text-cyan-300 font-bold">📊</span>
+          </div>
+          <p className="mt-3 text-3xl font-black text-white">{calculations?.length ?? "—"}</p>
+          <p className="mt-1 text-xs text-cyan-200/80">დღეს შესრულდა: <strong className="text-white">{todayCalculations}</strong></p>
+        </div>
+
+        <div className="rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-emerald-950/40 via-[#071710] to-[#040812] p-5 shadow-lg backdrop-blur-xl">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">მომხმარებლები</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-400/20 text-emerald-300 font-bold">👥</span>
+          </div>
+          <p className="mt-3 text-3xl font-black text-white">{users?.length ?? "—"}</p>
+          <p className="mt-1 text-xs text-emerald-200/80">რეგისტრირებული რუკები: <strong className="text-white">{registeredCalcsCount}</strong></p>
+        </div>
+
+        <div className="rounded-2xl border border-purple-400/30 bg-gradient-to-br from-purple-950/40 via-[#140b24] to-[#040812] p-5 shadow-lg backdrop-blur-xl">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-purple-300">სტუმრების რუკები</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-400/20 text-purple-300 font-bold">🗺️</span>
+          </div>
+          <p className="mt-3 text-3xl font-black text-white">{guestCalculationGroups.length}</p>
+          <p className="mt-1 text-xs text-purple-200/80">ანონიმური ნაკადები &amp; პოტენციალი</p>
+        </div>
+
+        <div className="rounded-2xl border border-amber-400/30 bg-gradient-to-br from-amber-950/40 via-[#1c1206] to-[#040812] p-5 shadow-lg backdrop-blur-xl">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-300">ძრავა &amp; სერვისები</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-400/20 text-amber-300 font-bold">⚡</span>
+          </div>
+          <p className="mt-3 text-lg font-black text-amber-200">Swiss Ephemeris</p>
+          <p className="mt-1 text-xs text-amber-200/80 flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>BOG &amp; TBC მზადყოფნა</span>
+          </p>
+        </div>
+      </div>
+
       {users === null && <p className="text-parchment-dim">იტვირთება…</p>}
 
       <section className="mb-8">

@@ -32,6 +32,7 @@ export default function SynastryCalculator() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [mapNumber, setMapNumber] = useState<string | null>(null);
+  const [teaserPreview, setTeaserPreview] = useState<{ nameA: string; nameB: string; planRequired?: boolean } | null>(null);
 
   useEffect(() => {
     const cached = loadGuestCache<CacheShape>("synastry");
@@ -81,15 +82,30 @@ export default function SynastryCalculator() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ personA: toPerson(a), personB: toPerson(b), calculation, houseSystem, save }),
       });
-      const data = await readApiResponse(res);
+      const data = await readApiResponse<{
+        error?: string;
+        code?: string;
+        interpretation?: string;
+        mapNumber?: string | null;
+      }>(res);
+      if (res.status === 401 || data?.code === "AUTH_REQUIRED" || data?.code === "PLAN_REQUIRED") {
+        setTeaserPreview({
+          nameA: a.name,
+          nameB: b.name,
+          planRequired: data?.code === "PLAN_REQUIRED",
+        });
+        setError(null);
+        return;
+      }
       if (!res.ok) {
         setError(data.error || `სერვერის შეცდომა (${res.status})`);
         return;
       }
-      setInterpretation(data.interpretation);
+      setTeaserPreview(null);
+      setInterpretation(data.interpretation ?? null);
       setMapNumber(data.mapNumber ?? null);
       if (save) setSaved(true);
-      else saveGuestCache<CacheShape>("synastry", { a, b, calculation, houseSystem, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
+      else saveGuestCache<CacheShape>("synastry", { a, b, calculation, houseSystem, interpretation: data.interpretation ?? "", mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
     } finally {
@@ -158,6 +174,66 @@ export default function SynastryCalculator() {
         <div className="flex items-center gap-2.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 px-4 py-3.5 text-xs font-semibold text-rose-300 shadow-lg justify-center backdrop-blur-xl">
           <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
           <span>{error}</span>
+        </div>
+      )}
+
+      {teaserPreview && (
+        <div className="relative overflow-hidden rounded-3xl border border-rose-500/30 bg-gradient-to-b from-[#180d22]/95 via-[#0e0717]/90 to-[#07040d]/95 p-6 sm:p-9 text-center shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-300">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-rose-400/40 bg-rose-500/15 text-rose-300 shadow-[0_0_25px_rgba(244,63,94,0.4)]">
+            <Heart className="h-6 w-6 text-rose-400 animate-pulse" />
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-rose-400/30 bg-rose-950/40 px-3.5 py-1 text-xs font-bold text-rose-300 shadow-md">
+            <span>სინასტრიული რეზონანსი · წინასწარი შეფასება</span>
+          </div>
+          <h3 className="mt-3 font-display text-xl sm:text-2xl font-black text-white">
+            {teaserPreview.nameA} &amp; {teaserPreview.nameB}
+          </h3>
+          <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-lg mx-auto">
+            ორი რუკის სინთეზი მზადაა! აღმოჩენილია ურთიერთქმედების საკვანძო ასპექტები, ვენერა-მარსის მიზიდულობა და კარმული კავშირი.
+          </p>
+
+          <div className="my-6 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-left">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 backdrop-blur-md">
+              <span className="text-[10px] uppercase font-bold text-rose-300 tracking-wider">ქიმია &amp; მიზიდულობა</span>
+              <p className="mt-1 text-sm font-bold text-white">ვენერა ✦ მარსი</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">ძლიერი მაგნიტური მიზიდულობა</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 backdrop-blur-md">
+              <span className="text-[10px] uppercase font-bold text-cyan-300 tracking-wider">ემოციური კომფორტი</span>
+              <p className="mt-1 text-sm font-bold text-white">მთვარე ✦ მზე</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">შინაგანი გაგება &amp; სითბო</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 backdrop-blur-md">
+              <span className="text-[10px] uppercase font-bold text-amber-300 tracking-wider">ურთიერთობის მისია</span>
+              <p className="mt-1 text-sm font-bold text-white">კარმული კვანძები</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">ზრდისა და განვითარების გაკვეთილი</p>
+            </div>
+          </div>
+
+          <div className="relative mx-auto max-w-xl rounded-2xl border border-white/10 bg-slate-950/60 p-4 text-center">
+            <div className="filter blur-sm select-none opacity-40 text-xs text-slate-300 pointer-events-none line-clamp-3">
+              პარტნიორებს შორის შეინიშნება უშუალო ემოციური თანხვედრა. პირველი პარტნიორის ვენერის მდებარეობა მეორე პარტნიორის ასცენდენტთან ქმნის მყისიერ სიმპათიას, ხოლო მთვარის ტრიგონი უზრუნველყოფს ხანგრძლივ უსაფრთხოებას...
+            </div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-3 bg-[#0a0712]/80 backdrop-blur-xs rounded-2xl">
+              <p className="text-xs sm:text-sm font-extrabold text-white">
+                {teaserPreview.planRequired ? "სრული სინასტრიული რუკა ხელმისაწვდომია Pro ან Enterprise პაკეტით" : "სრული ანალიზისა და ასპექტების გასახსნელად შედით ანგარიშში"}
+              </p>
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-2.5">
+                <a
+                  href="/cabinet"
+                  className="rounded-full bg-gradient-to-r from-rose-500 to-pink-500 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-rose-500/30 hover:brightness-110 transition-all cursor-pointer"
+                >
+                  ✦ სრული რუკის გახსნა (ანგარიში)
+                </a>
+                <a
+                  href="/#pricing"
+                  className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 transition-all cursor-pointer"
+                >
+                  პაკეტების ნახვა
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
