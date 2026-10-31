@@ -79,7 +79,7 @@ export default function Nav() {
   return (
     <header className="site-header">
       <div className="nav-shell px-2.5 py-2 sm:px-4">
-        <div className="flex items-center justify-between gap-2 sm:gap-3">
+        <div className="flex items-center justify-between gap-2 sm:gap-3 flex-nowrap w-full">
           <Link
             href="/"
             className={`brand-link group flex shrink-0 items-center gap-2 sm:gap-3 pl-1 sm:pl-0${isBrandLit ? " is-brand-lit" : ""}`}
@@ -183,10 +183,10 @@ export default function Nav() {
             {isAdmin && <Link href="/admin" className="nav-quiet-action"><Shield className="h-3.5 w-3.5 text-violet-300" />ადმინი</Link>}
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 xl:hidden">
+          <div className="flex items-center gap-1.5 sm:gap-2 xl:hidden shrink-0">
             <Link
               href="/#calculator"
-              className="flex items-center gap-1 rounded-full border border-cyan-400/50 bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 px-2.5 py-1.5 text-xs font-bold text-cyan-200 shadow-[0_0_12px_rgba(56,189,248,0.25)] hover:border-cyan-400 hover:text-white transition-all active:scale-95"
+              className="flex h-8 sm:h-9 items-center gap-1 rounded-xl border border-cyan-400/50 bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 px-2.5 sm:px-3 text-xs font-bold text-cyan-200 shadow-[0_0_12px_rgba(56,189,248,0.25)] hover:border-cyan-400 hover:text-white transition-all active:scale-95 shrink-0"
               aria-label="რუკის გამოთვლა"
             >
               <Compass className="h-3.5 w-3.5 text-cyan-300" />
@@ -194,27 +194,42 @@ export default function Nav() {
             </Link>
 
             {me === null && (
-              <Link href="/cabinet" className="nav-action px-2.5 py-1.5 text-xs sm:px-3 sm:py-2" aria-label="კაბინეტში შესვლა" title="კაბინეტში შესვლა">
+              <Link
+                href="/cabinet"
+                className="flex h-8 w-8 sm:h-9 sm:w-auto sm:px-3 items-center justify-center gap-1.5 rounded-xl border border-indigo-400/30 bg-gradient-to-b from-[#181d38]/90 to-[#0e1224]/90 text-indigo-200 shadow-[0_0_12px_rgba(99,102,241,0.2)] hover:border-indigo-300 hover:text-white transition-all active:scale-95 shrink-0"
+                aria-label="კაბინეტში შესვლა"
+                title="კაბინეტში შესვლა"
+              >
                 <User className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">კაბინეტი</span>
+                <span className="hidden sm:inline text-xs font-bold">კაბინეტი</span>
               </Link>
             )}
             {me && (
-              <Link href="/cabinet/dashboard" className="nav-action px-2.5 py-1.5 text-xs sm:px-3 sm:py-2" aria-label="პირადი კაბინეტი" title="პირადი კაბინეტი">
+              <Link
+                href="/cabinet/dashboard"
+                className="flex h-8 w-8 sm:h-9 sm:w-auto sm:px-3 items-center justify-center gap-1.5 rounded-xl border border-indigo-400/30 bg-gradient-to-b from-[#181d38]/90 to-[#0e1224]/90 text-indigo-200 shadow-[0_0_12px_rgba(99,102,241,0.2)] hover:border-indigo-300 hover:text-white transition-all active:scale-95 shrink-0"
+                aria-label="პირადი კაბინეტი"
+                title="პირადი კაბინეტი"
+              >
                 <LayoutDashboard className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">კაბინეტი</span>
+                <span className="hidden sm:inline text-xs font-bold">კაბინეტი</span>
               </Link>
             )}
             {isAdmin && (
-              <Link href="/admin" className="nav-action px-2.5 py-1.5 text-xs sm:px-3 sm:py-2" aria-label="ადმინისტრატორის პანელი" title="ადმინისტრატორის პანელი">
+              <Link
+                href="/admin"
+                className="flex h-8 w-8 sm:h-9 sm:w-auto sm:px-3 items-center justify-center gap-1.5 rounded-xl border border-violet-400/30 bg-gradient-to-b from-[#1a1738]/90 to-[#0f0e24]/90 text-violet-200 shadow-[0_0_12px_rgba(139,92,246,0.2)] hover:border-violet-300 hover:text-white transition-all active:scale-95 shrink-0"
+                aria-label="ადმინისტრატორის პანელი"
+                title="ადმინისტრატორის პანელი"
+              >
                 <Shield className="h-3.5 w-3.5 text-violet-300" />
-                <span className="hidden sm:inline">ადმინი</span>
+                <span className="hidden sm:inline text-xs font-bold">ადმინი</span>
               </Link>
             )}
             <button
               type="button"
               onClick={() => setMobileMenuOpen((value) => !value)}
-              className={`relative group flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border transition-all duration-300 cursor-pointer active:scale-95 ${
+              className={`relative group flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl border transition-all duration-300 cursor-pointer active:scale-95 ${
                 mobileMenuOpen
                   ? "border-cyan-400/60 bg-gradient-to-br from-cyan-950/60 to-indigo-950/60 text-cyan-200 shadow-[0_0_15px_rgba(56,189,248,0.35)] ring-1 ring-cyan-400/30"
                   : "border-violet-400/30 bg-gradient-to-b from-[#131b36]/90 via-[#0e162b]/80 to-[#080d1a]/90 text-violet-200 shadow-[0_0_12px_rgba(139,92,246,0.2)] hover:border-violet-300 hover:shadow-[0_0_18px_rgba(139,92,246,0.4)]"
