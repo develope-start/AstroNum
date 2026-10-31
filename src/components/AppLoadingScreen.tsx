@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
 type LoadingPhase = "initial" | "navigation" | null;
@@ -8,7 +8,6 @@ type LoadingPhase = "initial" | "navigation" | null;
 const INITIAL_MINIMUM_MS = 800;
 const NAVIGATION_MINIMUM_MS = 550;
 const EXIT_ANIMATION_MS = 220;
-const STARS = Array.from({ length: 12 }, (_, index) => index);
 
 /**
  * Gives the first visit and real route changes a consistent visual handoff.
@@ -120,19 +119,23 @@ export default function AppLoadingScreen() {
       aria-live="polite"
       aria-label={isInitial ? "აპლიკაცია იტვირთება" : "გვერდი იტვირთება"}
     >
-      <div className="app-loading-aurora" aria-hidden="true" />
       <div className="app-loading-content">
-        <div className="app-loading-orbit app-loading-orbit-outer" aria-hidden="true">
-          {STARS.map((star) => <span key={star} className="app-loading-star" style={{ "--star-angle": `${star * 30}deg` } as CSSProperties} />)}
-        </div>
-        <div className="app-loading-orbit app-loading-orbit-inner" aria-hidden="true" />
         <div className="app-loading-logo-wrap">
-          <span className="app-loading-logo-glow" aria-hidden="true" />
-          <img src="/brand-mark.png" alt="" width={112} height={112} className="app-loading-logo" />
+          <div className="brand-stardust-orbit app-loading-brand-orbit" aria-hidden="true">
+            <svg viewBox="0 0 100 100" className="h-full w-full">
+              <circle cx="50" cy="50" r="42" stroke="rgba(167, 139, 250, 0.4)" strokeWidth="1" strokeDasharray="3 6" fill="none" />
+              <circle cx="50" cy="8" r="2.5" fill="#f43f5e" className="drop-shadow-[0_0_6px_#f43f5e]" />
+              <circle cx="92" cy="50" r="2" fill="#38bdf8" className="drop-shadow-[0_0_6px_#38bdf8]" />
+              <circle cx="50" cy="92" r="2.5" fill="#eab308" className="drop-shadow-[0_0_6px_#eab308]" />
+              <circle cx="8" cy="50" r="2" fill="#a855f7" className="drop-shadow-[0_0_6px_#a855f7]" />
+            </svg>
+          </div>
+          <span className="brand-mark app-loading-logo-mark" aria-hidden="true">
+            <img src="/icon-512.png" alt="" width={512} height={512} className="app-loading-logo" />
+          </span>
         </div>
         <p className="app-loading-title">Astro<span>Num</span><b>Ge</b></p>
         <p className="app-loading-label">{isInitial ? "ვარსკვლავური სივრცე მზადდება" : "გადავდივართ ახალ სივრცეში"}</p>
-        <span className="app-loading-progress" aria-hidden="true"><i /></span>
       </div>
     </div>
   );

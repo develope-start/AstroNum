@@ -16,8 +16,9 @@ import type { HouseSystem } from "@/lib/astro/positions";
 import { saveGuestCache, loadGuestCache, clearGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
-import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Info } from "lucide-react";
+import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Info, Maximize2 } from "lucide-react";
 import CosmicShareCardModal from "./CosmicShareCardModal";
+import CalculationRoom from "./CalculationRoom";
 
 interface WheelData {
   ascendant: number;
@@ -60,6 +61,7 @@ export default function NatalCalculator() {
   const [isRevealing, setIsRevealing] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isInterpretationOpen, setIsInterpretationOpen] = useState(false);
+  const [isRoomOpen, setIsRoomOpen] = useState(false);
 
   useEffect(() => {
     if (me === undefined) return;
@@ -111,7 +113,8 @@ export default function NatalCalculator() {
       setError("შეავსეთ სახელი, თარიღი, დრო და დაბადების ადგილი (დაადასტურეთ ადგილის მოძებნა).");
       return;
     }
-    setIsInterpretationOpen(true);
+    setIsRoomOpen(true);
+    try { window.history.pushState(null, "", "/chart/room"); } catch {}
     setLoading(true);
     setError(null);
     setPreview(null);
@@ -149,7 +152,8 @@ export default function NatalCalculator() {
       }>(res);
       if (!res.ok) {
         setError(data.error || `სერვერის შეცდომა (${res.status})`);
-        setIsInterpretationOpen(false);
+        setIsRoomOpen(false);
+        try { window.history.pushState(null, "", "/"); } catch {}
         return;
       }
       if (data.preview) {
@@ -157,12 +161,14 @@ export default function NatalCalculator() {
         setInterpretation(null);
         setWheel(null);
         setMapNumber(null);
-        setIsInterpretationOpen(false);
+        setIsRoomOpen(false);
+        try { window.history.pushState(null, "", "/"); } catch {}
         return;
       }
       if (!data.result || !data.interpretation) {
         setError("სერვერმა სრული ნატალური რუკა არ დააბრუნა.");
-        setIsInterpretationOpen(false);
+        setIsRoomOpen(false);
+        try { window.history.pushState(null, "", "/"); } catch {}
         return;
       }
       setInterpretation(data.interpretation);
@@ -180,15 +186,13 @@ export default function NatalCalculator() {
         planetHouses: data.result.planetHouses ?? {},
       };
       setWheel(w);
-      setIsRevealing(true);
-      setTimeout(() => {
-        setIsRevealing(false);
-      }, 1400);
+      setIsRoomOpen(true);
       if (save) setSaved(true);
       else saveGuestCache<CacheShape>("natal", { birth, houseSystem, calculation, interpretation: data.interpretation ?? "", wheel: w, mapNumber: data.mapNumber ?? null });
     } catch (error) {
       setError(getRequestError(error));
-      setIsInterpretationOpen(false);
+      setIsRoomOpen(false);
+      try { window.history.pushState(null, "", "/"); } catch {}
     } finally {
       setLoading(false);
     }
@@ -290,6 +294,22 @@ export default function NatalCalculator() {
       )}
 
       <div data-chart-export-root="true" className="chart-builder-result space-y-4 sm:space-y-6">
+        {wheel && (
+          <div className="flex justify-center pt-2 pb-1">
+            <button
+              type="button"
+              onClick={() => {
+                setIsRoomOpen(true);
+                try { window.history.pushState(null, "", "/chart/room"); } catch {}
+              }}
+              className="btn-shimmer flex items-center justify-center gap-2.5 rounded-full border border-cyan-400/50 bg-gradient-to-r from-emerald-500/25 via-indigo-900/60 to-cyan-500/30 px-8 py-3.5 text-xs sm:text-sm font-extrabold text-white shadow-[0_0_35px_rgba(56,189,248,0.35)] transition-all hover:scale-105 cursor-pointer"
+            >
+              <Sparkles className="h-4 w-4 text-cyan-300" />
+              <span>✦ საანგარიშო რუმის გახსნა (სრული ეკრანი)</span>
+            </button>
+          </div>
+        )}
+
         {/* Chart Wheel Display */}
         {wheel && (
           <ChartMapSection
@@ -312,11 +332,14 @@ export default function NatalCalculator() {
             {interpretation && (
               <button
                 type="button"
-                onClick={() => setIsInterpretationOpen(true)}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-violet-400/40 bg-violet-500/10 px-5 py-2.5 text-xs font-bold text-violet-100 transition hover:bg-violet-500/20 cursor-pointer"
+                onClick={() => {
+                  setIsRoomOpen(true);
+                  try { window.history.pushState(null, "", "/chart/room"); } catch {}
+                }}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-500/10 px-5 py-2.5 text-xs font-bold text-cyan-100 transition hover:bg-cyan-500/20 cursor-pointer"
               >
-                <Sparkles className="h-4 w-4" />
-                <span>ინტერპრეტაციის გახსნა</span>
+                <Sparkles className="h-4 w-4 text-cyan-300" />
+                <span>საანგარიშო რუმი (სრული ანალიზი) →</span>
               </button>
             )}
             {wheel && (
@@ -335,14 +358,19 @@ export default function NatalCalculator() {
 
       </div>
 
-      <InterpretationOverlay
-        open={isInterpretationOpen}
-        loading={loading}
-        title="ასტროლოგიური ინტერპრეტაცია და ანალიზი"
-        subtitle="დეტალური პირადი ანალიზი და ასტროლოგიური პოზიციების გაშიფვრა"
+      <CalculationRoom
+        isOpen={isRoomOpen}
+        onClose={() => {
+          setIsRoomOpen(false);
+          try { window.history.pushState(null, "", "/"); } catch {}
+        }}
+        birth={birth}
+        wheel={wheel}
         interpretation={interpretation}
         mapNumber={mapNumber}
-        onClose={() => setIsInterpretationOpen(false)}
+        houseSystem={houseSystem}
+        isLoading={loading}
+        onOpenShareModal={() => setIsShareModalOpen(true)}
       />
 
       {/* 1.5s Hypnotic Cosmic Reveal Accelerator */}

@@ -11,6 +11,7 @@ import "@fontsource/noto-serif-georgian/latin-400.css";
 import "@fontsource/noto-serif-georgian/latin-700.css";
 import "./globals.css";
 import "./prismline-aurora.css";
+import "./calculation-room.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import CosmicStarfield from "@/components/CosmicStarfield";
