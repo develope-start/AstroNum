@@ -57,6 +57,12 @@ export interface CalculationRoomProps {
   interpretation: string | null;
   mapNumber?: string | null;
   houseSystem?: HouseSystem;
+  calculationContext?: {
+    type: string;
+    secondaryProfile?: { name: string; date: string | null; time: string | null; place: string | null } | null;
+    transitDate?: string | null;
+    createdAt?: string | null;
+  };
   isLoading?: boolean;
   onOpenShareModal?: () => void;
 }
@@ -232,9 +238,15 @@ export default function CalculationRoom({
   interpretation,
   mapNumber,
   houseSystem = "placidus",
+  calculationContext,
   isLoading = false,
   onOpenShareModal,
 }: CalculationRoomProps) {
+  const chartTypeLabel = calculationContext?.type === "SYNASTRY"
+    ? "სინასტრია"
+    : calculationContext?.type === "TRANSIT"
+      ? "ტრანზიტი"
+      : "ნატალური რუკა";
   const [activeSec, setActiveSec] = useState("home");
   const [selectedPlanet, setSelectedPlanet] = useState<string>("Sun");
   const [auroraInt, setAuroraInt] = useState(55);
@@ -465,6 +477,11 @@ export default function CalculationRoom({
             <span className="text-slate-300">{birth.date} {birth.time}</span>
             <span className="text-slate-400">·</span>
             <span className="text-cyan-300">{birth.place}</span>
+            {calculationContext && (
+              <span className="rounded-md border border-violet-400/30 bg-violet-500/10 px-1.5 py-0.5 text-[10px] font-bold text-violet-200">
+                {chartTypeLabel}
+              </span>
+            )}
             <span className="rounded-md border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[10px] uppercase font-mono text-slate-300">
               {houseSystem === "placidus" ? "Placidus" : "Whole Sign"}
             </span>
@@ -623,6 +640,16 @@ export default function CalculationRoom({
                         {birth.lat !== null && birth.lon !== null ? `${birth.lat.toFixed(2)}°N, ${birth.lon.toFixed(2)}°E` : ""}
                       </span>
                     </div>
+
+                    {calculationContext && (calculationContext.secondaryProfile || calculationContext.transitDate || calculationContext.createdAt) && (
+                      <div className="grid gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs text-slate-300 sm:grid-cols-2">
+                        {calculationContext.secondaryProfile && (
+                          <p><span className="text-slate-400">მეორე პროფილი: </span><strong className="text-white">{calculationContext.secondaryProfile.name}</strong>{calculationContext.secondaryProfile.date ? ` · ${calculationContext.secondaryProfile.date}` : ""}{calculationContext.secondaryProfile.time ? ` ${calculationContext.secondaryProfile.time}` : ""}{calculationContext.secondaryProfile.place ? ` · ${calculationContext.secondaryProfile.place}` : ""}</p>
+                        )}
+                        {calculationContext.transitDate && <p><span className="text-slate-400">ტრანზიტის თარიღი: </span><strong className="text-violet-200">{calculationContext.transitDate}</strong></p>}
+                        {calculationContext.createdAt && <p><span className="text-slate-400">შედგენის დრო: </span>{new Date(calculationContext.createdAt).toLocaleString("ka-GE")}</p>}
+                      </div>
+                    )}
 
                     <div className="flex flex-wrap gap-3 pt-3">
                       <button

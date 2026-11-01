@@ -180,26 +180,6 @@ export default function AdminCalculationViewer({
             <ChartExportButton className="flex items-center justify-center gap-2 rounded-xl border border-sky-400/40 bg-sky-500/15 px-5 py-2.5 text-xs font-bold text-sky-200 hover:bg-sky-400 hover:text-slate-950 transition-all cursor-pointer shadow-[0_0_15px_rgba(56,189,248,0.2)]" />
           </div>
 
-          {wheel && (
-            <ChartMapSection
-              className="admin-calculation-wheel mx-auto my-4 min-w-0 w-full max-w-3xl"
-              ascendant={wheel.ascendant}
-              mc={wheel.mc}
-              houseCusps={wheel.houseCusps}
-              planets={wheel.planets}
-              aspects={wheel.aspects}
-              fixedStars={wheel.fixedStars}
-              planetHouses={wheel.planetHouses}
-            />
-          )}
-
-          {wheel && (
-            <ElementBalanceGuide
-              planets={wheel.planets}
-              ascendant={wheel.ascendant}
-            />
-          )}
-
           <div className="admin-calculation-interpretation min-w-0 border-t border-white/10 pt-6">
             <h3 className="font-display mb-4 border-b border-white/10 pb-3 text-center text-xl font-bold text-white sm:text-2xl">
               ასტროლოგიური <span className="bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">ინტერპრეტაცია &amp; ანალიზი</span>

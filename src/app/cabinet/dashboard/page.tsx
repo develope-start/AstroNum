@@ -512,11 +512,10 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (isSelected) {
-                      setSelected(null);
-                    } else {
-                      openChart(c.id);
-                    }
+                    // The full viewer owns the next route; retaining the current
+                    // value avoids a transient stale modal during navigation.
+                    setSelected((current) => current);
+                    router.push(`/chart/${c.id}`);
                   }}
                   disabled={loadingChart === c.id}
                   className={`flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 transition-all cursor-pointer disabled:opacity-50 ${
@@ -668,28 +667,6 @@ export default function DashboardPage() {
             <div className="flex flex-col items-stretch gap-3 bg-white/[0.02] p-3.5 rounded-2xl border border-white/10 sm:flex-row sm:flex-wrap sm:items-center">
               <ChartExportButton className="flex w-full items-center justify-center gap-2 rounded-xl border border-sky-400/40 bg-sky-500/15 px-5 py-2.5 text-center text-xs sm:w-auto sm:text-sm font-bold text-sky-200 hover:bg-sky-400 hover:text-slate-950 transition-all cursor-pointer shadow-[0_0_15px_rgba(56,189,248,0.2)]" />
             </div>
-
-            {/* Large Zodiac Chart Wheel Display */}
-            {selected.result && (
-              <ChartMapSection
-                title="ზოდიაქალური წრე"
-                className="chart-view-wheel mx-auto my-4 w-full max-w-3xl"
-                ascendant={selected.result.ascendant}
-                mc={selected.result.mc}
-                houseCusps={selected.result.houseCusps}
-                planets={selected.result.planets}
-                aspects={selected.result.aspects}
-                fixedStars={selected.result.fixedStars}
-                planetHouses={selected.result.planetHouses}
-              />
-            )}
-
-            {selected.result && (
-              <ElementBalanceGuide
-                planets={selected.result.planets}
-                ascendant={selected.result.ascendant}
-              />
-            )}
 
             {/* Full Interpretation Text Section */}
             <div className="chart-view-interpretation min-w-0 pt-4">

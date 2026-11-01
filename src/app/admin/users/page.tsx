@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import AdminCalculationViewer, { CalculationViewData } from "@/components/AdminCalculationViewer";
 import DateSelect from "@/components/DateSelect";
@@ -282,6 +283,7 @@ function Modal({ children, onClose }: { children: React.ReactNode; onClose?: () 
 }
 
 export default function AdminUsersPage() {
+  const router = useRouter();
   const [data, setData] = useState<ManagementData | null>(null);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [draft, setDraft] = useState<CalculationDraft>(EMPTY_DRAFT);
@@ -770,7 +772,7 @@ export default function AdminUsersPage() {
                           </summary>
 
                           <div className="mt-3 border-t border-line/40 pt-3">
-                            <CalculationDetails calculation={calculation} onView={openCalculationView} />
+                            <CalculationDetails calculation={calculation} onView={(item) => router.push(`/admin/calculation/${item.id}`)} />
                             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-line/40 pt-2.5">
                               <div className="flex items-center">
                                 {isCreatedAfterRegistration ? (
@@ -856,7 +858,7 @@ export default function AdminUsersPage() {
                       <button className={dangerButton} onClick={() => setModal({ kind: "delete-calculation", calculation })}>რუკის წაშლა</button>
                     </div>
                   </div>
-                  <CalculationDetails calculation={calculation} onView={openCalculationView} />
+                  <CalculationDetails calculation={calculation} onView={(item) => router.push(`/admin/calculation/${item.id}`)} />
                   <GuestCalculationPicker
                     group={group}
                     activeId={calculation.id}
@@ -1023,7 +1025,7 @@ export default function AdminUsersPage() {
               <div className="mt-4 border-t border-line/60 pt-4 flex flex-wrap items-center justify-between gap-3">
                 <div className="space-y-2 w-full sm:w-auto">
                   <p className="text-xs text-parchment-dim">{calculation.summary} · წაშლილია: {formatDate(calculation.deletedAt)}</p>
-                  <CalculationDetails calculation={calculation.data} onView={() => openDeletedCalculationView(calculation)} />
+                  <CalculationDetails calculation={calculation.data} onView={() => router.push(`/admin/calculation/${calculation.id}?archived=1`)} />
                 </div>
                 <div className="flex justify-end w-full sm:w-auto mt-2 sm:mt-0">
                   <button className={button} onClick={() => setModal({ kind: "restore-calculation", deletedCalculation: calculation })}>აღდგენა</button>
