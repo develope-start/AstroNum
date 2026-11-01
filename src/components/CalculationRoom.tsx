@@ -263,6 +263,12 @@ export default function CalculationRoom({
   const [transitDate, setTransitDate] = useState(() => new Date().toISOString().slice(0, 10));
 
   const starsCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const roomRef = useRef<HTMLDivElement | null>(null);
+
+  const openSection = (sectionId: string) => {
+    setActiveSec(sectionId);
+    roomRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Parse birth date numbers
   const birthDateParts = useMemo(() => {
@@ -442,6 +448,7 @@ export default function CalculationRoom({
 
   return (
     <div
+      ref={roomRef}
       className={`calc-room-root fixed inset-0 z-[200] overflow-y-auto overflow-x-hidden ${isCalm ? "cr-calm" : ""}`}
       style={{ "--cr-aur-int": auroraInt / 100 } as React.CSSProperties}
     >
@@ -457,7 +464,7 @@ export default function CalculationRoom({
       </div>
 
       {/* ===== 2. Top Header Utility Bar ===== */}
-      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-white/15 bg-[#050816]/85 px-4 py-2.5 backdrop-blur-2xl sm:px-6">
+      <header className="cr-topbar sticky top-0 z-50 flex items-center justify-between border-b border-white/15 bg-[#050816]/85 px-4 py-2.5 backdrop-blur-2xl sm:px-6">
         <div className="flex items-center gap-3">
           <button
             onClick={onClose}
@@ -466,7 +473,7 @@ export default function CalculationRoom({
             title="კალკულატორში დაბრუნება"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>← ახალი გამოთვლა</span>
+            <span className="cr-back-label">← ახალი გამოთვლა</span>
           </button>
 
           <div className="hidden h-5 w-[1px] bg-white/15 sm:block" />
@@ -524,12 +531,12 @@ export default function CalculationRoom({
       </header>
 
       {/* ===== 3. Mobile Horizontal Chips Bar ===== */}
-      <nav className="cr-mnav lg:hidden sticky top-[51px] z-40 border-b border-white/10 bg-[#050816]/90 backdrop-blur-xl px-2 py-2">
+      <nav aria-label="რუკის სექციები" className="cr-mnav lg:hidden sticky top-[51px] z-40 border-b border-white/10 bg-[#050816]/90 backdrop-blur-xl px-2 py-2">
         <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-0.5">
           {SECTIONS.map(s => (
             <button
               key={s.id}
-              onClick={() => setActiveSec(s.id)}
+              onClick={() => openSection(s.id)}
               className={`cr-chip shrink-0 text-xs px-3 py-1.5 ${activeSec === s.id ? "cr-on font-bold" : ""}`}
             >
               <span className="text-sm">{s.glyph}</span>
@@ -570,7 +577,7 @@ export default function CalculationRoom({
               {SECTIONS.map(s => (
                 <li key={s.id}>
                   <button
-                    onClick={() => setActiveSec(s.id)}
+                    onClick={() => openSection(s.id)}
                     className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left font-medium transition-all cursor-pointer ${
                       activeSec === s.id
                         ? "bg-gradient-to-r from-emerald-500/25 via-indigo-500/30 to-pink-500/20 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] border border-white/20 font-bold"
@@ -607,12 +614,12 @@ export default function CalculationRoom({
         </aside>
 
         {/* Main Content Sections */}
-        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 pb-32">
+        <main className="cr-workspace-main flex-1 min-w-0 p-4 sm:p-6 lg:p-8 pb-32">
           {/* ================= SECTION 1: HOME (მიმოხილვა) ================= */}
           {activeSec === "home" && (
             <div className="space-y-6">
               {/* Hero Banner Card */}
-              <div className="cr-glass cr-accent p-6 sm:p-8">
+              <div className="cr-glass cr-hero cr-accent p-6 sm:p-8">
                 <div className="grid gap-6 lg:grid-cols-12 lg:items-center">
                   <div className="lg:col-span-7 space-y-4">
                     <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
@@ -653,13 +660,13 @@ export default function CalculationRoom({
 
                     <div className="flex flex-wrap gap-3 pt-3">
                       <button
-                        onClick={() => setActiveSec("chart")}
+                        onClick={() => openSection("chart")}
                         className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-indigo-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-[0_4px_20px_rgba(99,102,241,0.4)] transition hover:brightness-110 cursor-pointer"
                       >
                         <span>ინტერაქტიული რუკა →</span>
                       </button>
                       <button
-                        onClick={() => setActiveSec("synthesis")}
+                        onClick={() => openSection("synthesis")}
                         className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/[0.08] px-5 py-2.5 text-xs sm:text-sm font-bold text-white transition hover:bg-white/[0.14] cursor-pointer"
                       >
                         <span>სრული ინტერპრეტაცია ❖</span>
@@ -1898,7 +1905,7 @@ export default function CalculationRoom({
                 <button
                   key={s.id}
                   onClick={() => {
-                    setActiveSec(s.id);
+                    openSection(s.id);
                     setIsSearchModalOpen(false);
                   }}
                   className="flex w-full items-center justify-between rounded-xl p-2.5 text-left transition hover:bg-white/10 text-white"
@@ -1916,7 +1923,7 @@ export default function CalculationRoom({
                   key={k}
                   onClick={() => {
                     setSelectedPlanet(k);
-                    setActiveSec("chart");
+                    openSection("chart");
                     setIsSearchModalOpen(false);
                   }}
                   className="flex w-full items-center justify-between rounded-xl p-2.5 text-left transition hover:bg-white/10 text-white"
