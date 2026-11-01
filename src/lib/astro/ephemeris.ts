@@ -41,6 +41,7 @@ function loadSwiss(): SwissModule | null {
   } catch (error) {
     swissModule = null;
     swissLoadError = error instanceof Error ? error.message : String(error);
+    console.error("Unable to load Swiss Ephemeris native module:", swissLoadError);
   }
   return swissModule;
 }
