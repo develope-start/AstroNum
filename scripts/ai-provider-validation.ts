@@ -50,6 +50,40 @@ async function run() {
     ]);
 
     requests.length = 0;
+    globalThis.fetch = async (input) => {
+      requests.push(String(input));
+      if (requests.length === 1) {
+        const error = new Error("request timed out");
+        error.name = "AbortError";
+        throw error;
+      }
+      return new Response("", { status: 429 });
+    };
+    await assert.rejects(
+      () => generateAiText("system", "chart facts"),
+      (error: unknown) =>
+        error instanceof AiProviderError
+        && error.status === 502
+        && error.message.includes("OpenRouter")
+        && error.message.includes("პასუხის დრო ამოეწურა")
+        && error.message.includes("Groq")
+        && error.message.includes("429"),
+    );
+
+    requests.length = 0;
+    globalThis.fetch = async (input) => {
+      requests.push(String(input));
+      return new Response("", { status: 429 });
+    };
+    await assert.rejects(
+      () => generateAiText("system", "chart facts"),
+      (error: unknown) =>
+        error instanceof AiProviderError
+        && error.status === 429
+        && error.message.includes("OpenRouter, Groq"),
+    );
+
+    requests.length = 0;
     setEnvironment({
       OPENROUTER_API_KEY: "test-openrouter",
       OPENROUTER_MODEL: "openai/gpt-oss-120b",

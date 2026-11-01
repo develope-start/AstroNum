@@ -81,7 +81,7 @@ export async function generateAiText(
     );
   }
 
-  let rateLimited = false;
+  const failures: Array<{ provider: ProviderConfig["name"]; reason: "rate-limit" | "timeout" | "http" | "short" }> = [];
   for (const provider of providers) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 25_000);
@@ -111,7 +111,7 @@ export async function generateAiText(
       });
 
       if (!response.ok) {
-        rateLimited ||= response.status === 429;
+        failures.push({ provider: provider.name, reason: response.status === 429 ? "rate-limit" : "http" });
         console.warn(`${provider.name} astrology interpretation failed`, {
           status: response.status,
           model: provider.model,
@@ -122,6 +122,7 @@ export async function generateAiText(
       const payload: unknown = await response.json();
       const text = extractText(payload);
       if (text.length < MINIMUM_RESPONSE_LENGTH) {
+        failures.push({ provider: provider.name, reason: "short" });
         console.warn(`${provider.name} returned a short astrology interpretation`, {
           model: provider.model,
           characters: text.length,
@@ -130,16 +131,35 @@ export async function generateAiText(
       }
       return { text, provider: `${provider.name} · ${provider.model}` };
     } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        failures.push({ provider: provider.name, reason: "timeout" });
+      } else {
+        failures.push({ provider: provider.name, reason: "http" });
+      }
       console.warn(`${provider.name} astrology interpretation request failed`, error instanceof Error ? error.name : "unknown error");
     } finally {
       clearTimeout(timeout);
     }
   }
 
+  const rateLimited = failures.filter((failure) => failure.reason === "rate-limit");
+  const timedOut = failures.filter((failure) => failure.reason === "timeout");
+  if (rateLimited.length || timedOut.length) {
+    const details = [
+      timedOut.length ? `პასუხის დრო ამოეწურა: ${timedOut.map((failure) => failure.provider).join(", ")}` : "",
+      rateLimited.length ? `429 მოთხოვნის ლიმიტი დააბრუნა: ${rateLimited.map((failure) => failure.provider).join(", ")}` : "",
+    ].filter(Boolean).join("; ");
+    const allRateLimited = rateLimited.length === providers.length;
+    throw new AiProviderError(
+      `${details}. ${allRateLimited
+        ? "მოგვიანებით სცადეთ ხელახლა."
+        : "შეამოწმეთ მითითებული პროვაიდერის Usage/Rate Limits ან მოგვიანებით სცადეთ."}`,
+      allRateLimited ? 429 : 502,
+    );
+  }
+
   throw new AiProviderError(
-    rateLimited
-      ? "AI პროვაიდერების დროებითი მოთხოვნის ლიმიტი ამოიწურა. სცადეთ ცოტა მოგვიანებით."
-      : "OpenRouter-მა და Groq-მა სრული ინტერპრეტაცია ვერ დააბრუნეს. სცადეთ ხელახლა.",
-    rateLimited ? 429 : 502,
+    "OpenRouter-მა და Groq-მა სრული ინტერპრეტაცია ვერ დააბრუნეს. სცადეთ ხელახლა.",
+    502,
   );
 }
