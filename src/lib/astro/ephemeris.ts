@@ -1,5 +1,4 @@
 import type * as Swiss from "@swisseph/node";
-import { createRequire } from "node:module";
 
 export type EphemerisSource = "swiss" | "astronomy";
 export type Zodiac = "tropical" | "sidereal";
@@ -35,8 +34,9 @@ let swissLoadError: string | undefined;
 function loadSwiss(): SwissModule | null {
   if (swissModule !== undefined) return swissModule;
   try {
-    const makeRequire = createRequire;
-    const requireFromApp = makeRequire(`${process.cwd()}/package.json`);
+    const nodeModule = process.getBuiltinModule("module") as typeof import("node:module") | undefined;
+    if (!nodeModule) throw new Error("Node module loader is unavailable");
+    const requireFromApp = nodeModule.createRequire(`${process.cwd()}/package.json`);
     swissModule = requireFromApp("@swisseph/node") as SwissModule;
   } catch (error) {
     swissModule = null;
