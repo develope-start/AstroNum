@@ -54,7 +54,7 @@ export default function ChartRoomPage() {
         <div className="cr-glass max-w-md p-8 space-y-4">
           <h2 className="text-xl font-bold text-cyan-300">გამოთვლის მონაცემები ვერ მოიძებნა</h2>
           <p className="text-xs text-slate-300">
-            საანგარიშო რუმში შესასვლელად ჯერ შეიყვანეთ დაბადების მონაცემები მთავარ გვერდზე.
+            ასტროლოგიურ კაბინეტში შესასვლელად ჯერ შეიყვანეთ დაბადების მონაცემები მთავარ გვერდზე.
           </p>
           <Link
             href="/"
@@ -80,4 +80,3 @@ export default function ChartRoomPage() {
     />
   );
 }
-

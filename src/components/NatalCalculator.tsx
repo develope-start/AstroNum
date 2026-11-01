@@ -299,7 +299,7 @@ export default function NatalCalculator() {
               className="btn-shimmer flex items-center justify-center gap-2.5 rounded-full border border-cyan-400/50 bg-gradient-to-r from-emerald-500/25 via-indigo-900/60 to-cyan-500/30 px-8 py-3.5 text-xs sm:text-sm font-extrabold text-white shadow-[0_0_35px_rgba(56,189,248,0.35)] transition-all hover:scale-105 cursor-pointer"
             >
               <Sparkles className="h-4 w-4 text-cyan-300" />
-              <span>✦ საანგარიშო რუმის გახსნა (სრული ეკრანი)</span>
+              <span>✦ ასტროლოგიური კაბინეტის გახსნა (სრული ეკრანი)</span>
             </button>
           </div>
         )}
@@ -333,7 +333,7 @@ export default function NatalCalculator() {
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-500/10 px-5 py-2.5 text-xs font-bold text-cyan-100 transition hover:bg-cyan-500/20 cursor-pointer"
               >
                 <Sparkles className="h-4 w-4 text-cyan-300" />
-                <span>საანგარიშო რუმი (სრული ანალიზი) →</span>
+                <span>ასტროლოგიური კაბინეტი (სრული ანალიზი) →</span>
               </button>
             )}
             {wheel && (
@@ -400,7 +400,7 @@ export default function NatalCalculator() {
         open={loading}
         loading={loading}
         title="ნატალური რუკის გამოთვლა"
-        subtitle="გამოთვლის დასრულებისთანავე გაიხსნება თქვენი ცალკე ანალიზის ოთახი."
+        subtitle="გამოთვლის დასრულებისთანავე გაიხსნება თქვენი პირადი ასტროლოგიური კაბინეტი."
         onClose={() => undefined}
       />
     </div>

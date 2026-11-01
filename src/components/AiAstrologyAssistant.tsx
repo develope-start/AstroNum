@@ -1,40 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bot, Briefcase, Check, Copy, Flame, Heart, Loader2, MessageSquare, Orbit, Share2, Sparkles, Wand2 } from "lucide-react";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
+import AiFormattedText from "./AiFormattedText";
 
 type AnalysisType = "natal" | "career" | "love" | "karmic" | "question";
 
 const ANALYSIS_MODES: { id: AnalysisType; label: string; icon: typeof Sparkles; hint: string }[] = [
   { id: "natal", label: "პიროვნული პროფილი", icon: Sparkles, hint: "მზის, მთვარისა და ასცენდენტის ფსიქოლოგიური სინთეზი" },
-  { id: "career", label: "კარიერა & ფინანსები", icon: Briefcase, hint: "MC, მე-10, მე-2 და მე-6 სახლების რეალიზაციის ანალიზი" },
-  { id: "love", label: "სიყვარული & სინასტრია", icon: Heart, hint: "ვენერა, მარსი, მე-7 სახლი და პარტნიორული ჰარმონია" },
+  { id: "career", label: "კარიერა", icon: Briefcase, hint: "MC, მე-10, მე-2 და მე-6 სახლების თემები" },
+  { id: "love", label: "ურთიერთობები", icon: Heart, hint: "ვენერა, მარსი, მთვარე და მე-7 სახლის თემები" },
   { id: "karmic", label: "კარმული მისია", icon: Orbit, hint: "ჩრდილოეთის კვანძი (Rahu), ქირონი და სულის ევოლუცია" },
   { id: "question", label: "შეკითხვა ასტროლოგს", icon: MessageSquare, hint: "დაუსვით კონკრეტული შეკითხვა თქვენს ნატალურ რუკაზე" },
 ];
-
-function renderAssistantMarkup(text: string) {
-  function inline(value: string, keyPrefix: string) {
-    return value.split(/(\*\*[^*]+\*\*)/g).map((part, index) =>
-      part.startsWith("**") && part.endsWith("**")
-        ? <strong key={`${keyPrefix}-${index}`} className="font-bold text-white">{part.slice(2, -2)}</strong>
-        : <span key={`${keyPrefix}-${index}`}>{part}</span>,
-    );
-  }
-
-  return text.split(/\n{2,}/).map((block, index) => {
-    const heading = block.match(/^#{1,3}\s+(.+)$/);
-    if (heading) return <h4 key={index} className="font-display text-base font-bold text-white">{inline(heading[1]!, `heading-${index}`)}</h4>;
-
-    const lines = block.split("\n");
-    if (lines.every((line) => /^[-*]\s+/.test(line))) {
-      return <ul key={index} className="list-disc space-y-1 pl-5">{lines.map((line, lineIndex) => <li key={lineIndex}>{inline(line.replace(/^[-*]\s+/, ""), `list-${index}-${lineIndex}`)}</li>)}</ul>;
-    }
-
-    return <p key={index} className="whitespace-pre-line text-sm leading-relaxed text-slate-200">{inline(block, `paragraph-${index}`)}</p>;
-  });
-}
 
 export default function AiAstrologyAssistant() {
   const [birth, setBirth] = useState<BirthValue>(EMPTY_BIRTH);
@@ -46,8 +25,22 @@ export default function AiAstrologyAssistant() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [teaserPreview, setTeaserPreview] = useState<{ mode: AnalysisType; name: string; planRequired?: boolean } | null>(null);
+  const requestController = useRef<AbortController | null>(null);
 
   const activeMode = ANALYSIS_MODES.find((m) => m.id === mode) ?? ANALYSIS_MODES[0];
+
+  useEffect(() => () => requestController.current?.abort(), []);
+
+  function selectMode(nextMode: AnalysisType) {
+    requestController.current?.abort();
+    requestController.current = null;
+    setMode(nextMode);
+    setLoading(false);
+    setResult(null);
+    setProvider("");
+    setError(null);
+    setTeaserPreview(null);
+  }
 
   async function handleAnalyze() {
     if (!birth.date) {
@@ -59,6 +52,9 @@ export default function AiAstrologyAssistant() {
       return;
     }
 
+    requestController.current?.abort();
+    const controller = new AbortController();
+    requestController.current = controller;
     setLoading(true);
     setError(null);
     setResult(null);
@@ -67,6 +63,7 @@ export default function AiAstrologyAssistant() {
       const res = await fetch("/api/ai/interpret", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           type: mode,
           name: birth.name || "მაძიებელი",
@@ -81,6 +78,7 @@ export default function AiAstrologyAssistant() {
       });
 
       const data = await res.json().catch(() => ({}));
+      if (controller.signal.aborted) return;
       if (res.status === 401 || data?.code === "AUTH_REQUIRED" || data?.code === "PLAN_REQUIRED") {
         setTeaserPreview({
           mode,
@@ -103,9 +101,14 @@ export default function AiAstrologyAssistant() {
       setResult(data.analysis);
       setProvider(data.provider);
     } catch {
-      setError("ქსელის შეცდომა. გთხოვთ სცადოთ მოგვიანებით.");
+      if (!controller.signal.aborted) {
+        setError("ქსელის შეცდომა. გთხოვთ სცადოთ მოგვიანებით.");
+      }
     } finally {
-      setLoading(false);
+      if (requestController.current === controller) {
+        requestController.current = null;
+        setLoading(false);
+      }
     }
   }
 
@@ -137,7 +140,8 @@ export default function AiAstrologyAssistant() {
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => setMode(item.id)}
+                    onClick={() => selectMode(item.id)}
+                    aria-pressed={isSelected}
                     className={`flex items-start gap-3 rounded-xl border p-3 text-left transition-all ${
                       isSelected
                         ? "border-cyan-400 bg-cyan-950/40 text-white shadow-[0_0_20px_rgba(56,189,248,0.2)]"
@@ -303,7 +307,7 @@ export default function AiAstrologyAssistant() {
               </div>
             ) : result ? (
               <div className="mt-6 max-h-[550px] overflow-y-auto pr-2 text-sm leading-relaxed text-slate-200">
-                <div className="font-sans space-y-4">{renderAssistantMarkup(result)}</div>
+                <AiFormattedText text={result} className="text-sm leading-relaxed text-slate-200" />
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-20 text-center text-slate-400">

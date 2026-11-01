@@ -267,9 +267,23 @@ export default function CalculationRoom({
   const roomRef = useRef<HTMLDivElement | null>(null);
 
   const openSection = (sectionId: string) => {
+    if (!SECTIONS.some((section) => section.id === sectionId)) return;
     setActiveSec(sectionId);
+    if (window.location.hash !== `#${sectionId}`) {
+      window.history.pushState({ roomSection: sectionId }, "", `#${sectionId}`);
+    }
     roomRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  useEffect(() => {
+    const syncSectionFromHash = () => {
+      const sectionId = window.location.hash.slice(1);
+      setActiveSec(SECTIONS.some((section) => section.id === sectionId) ? sectionId : "home");
+    };
+    syncSectionFromHash();
+    window.addEventListener("popstate", syncSectionFromHash);
+    return () => window.removeEventListener("popstate", syncSectionFromHash);
+  }, []);
 
   // Parse birth date numbers
   const birthDateParts = useMemo(() => {
@@ -536,7 +550,9 @@ export default function CalculationRoom({
           {SECTIONS.map(s => (
             <button
               key={s.id}
+              type="button"
               onClick={() => openSection(s.id)}
+              aria-pressed={activeSec === s.id}
               className={`cr-chip shrink-0 text-xs px-3 py-1.5 ${activeSec === s.id ? "cr-on font-bold" : ""}`}
             >
               <span className="text-sm">{s.glyph}</span>
@@ -577,7 +593,9 @@ export default function CalculationRoom({
               {SECTIONS.map(s => (
                 <li key={s.id}>
                   <button
+                    type="button"
                     onClick={() => openSection(s.id)}
+                    aria-pressed={activeSec === s.id}
                     className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left font-medium transition-all cursor-pointer ${
                       activeSec === s.id
                         ? "bg-gradient-to-r from-emerald-500/25 via-indigo-500/30 to-pink-500/20 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] border border-white/20 font-bold"
@@ -623,7 +641,7 @@ export default function CalculationRoom({
                 <div className="grid gap-6 lg:grid-cols-12 lg:items-center">
                   <div className="lg:col-span-7 space-y-4">
                     <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
-                      <span>ცის ატლასი · სრული საანგარიშო რუმი</span>
+                      <span>ცის ატლასი · პირადი ასტროლოგიური კაბინეტი</span>
                       <span className="h-[1px] w-16 bg-cyan-400/40" />
                     </div>
 
@@ -1865,7 +1883,7 @@ export default function CalculationRoom({
           onClick={onClose}
           type="button"
           className="flex h-11 w-11 items-center justify-center rounded-full border border-rose-500/40 bg-rose-950/80 text-rose-200 shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-rose-900 cursor-pointer"
-          title="რუმის დახურვა"
+          title="კაბინეტის დახურვა"
         >
           <X className="h-4 w-4" />
         </button>

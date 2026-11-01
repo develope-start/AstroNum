@@ -4,7 +4,29 @@ import { AiProviderError, generateAiText } from "../src/lib/ai/generateText";
 const originalFetch = globalThis.fetch;
 const environmentKeys = ["OPENROUTER_API_KEY", "OPENROUTER_MODEL", "GROQ_API_KEY", "GROQ_MODEL"] as const;
 const originalEnvironment = Object.fromEntries(environmentKeys.map((key) => [key, process.env[key]]));
-const longAnswer = "ეს არის სრულყოფილი ქართული ასტროლოგიური განმარტება კონკრეტული რუკის მონაცემებზე დაყრდნობით. ".repeat(20);
+const longAnswer = [
+  "მზე ვერძში ინიციატივის გამოხატვას აძლიერებს, თუმცა შედეგს ყოველდღიური პასუხისმგებლობა განსაზღვრავს.",
+  "მთვარე კირჩხიბში ემოციური უსაფრთხოების საჭიროებას აჩენს და ახლობლებთან გულწრფელ საუბარს უწყობს ხელს.",
+  "ასცენდენტი სასწორში პირველ შთაბეჭდილებას დიპლომატიურობას უკავშირებს, მაგრამ არჩევანის გადადება შეიძლება დამღლელი გახდეს.",
+  "მერკური ტყუპებში სწრაფ აზროვნებას აღწერს; ინფორმაციის სიღრმისეულად გადამოწმება გადაწყვეტილებებს უფრო მყარ საფუძველს აძლევს.",
+  "ვენერა კუროში სტაბილურ სიახლოვეს აფასებს, ხოლო მარსი ლომში სურვილების ღიად გამოხატვისკენ იხრება.",
+  "სატურნის ასპექტი მოთმინების განვითარებას მოითხოვს, იუპიტერის კავშირი კი სწავლისა და გამოცდილების გაფართოებას უსვამს ხაზს.",
+  "მეექვსე სახლის აქცენტი სამუშაო რიტმსა და პრაქტიკულ ჩვევებზე მიუთითებს, არა წინასწარ განსაზღვრულ პროფესიაზე.",
+  "მეათე სახლის კუსპი მიზნების დაგეგმვას უკავშირდება; რეალური კარიერული გზა ინტერესებისა და გარემოებების მიხედვით ყალიბდება.",
+  "ჰაერის სტიქიის სიჭარბე იდეების გაცვლას ამარტივებს, თუმცა კონკრეტული გეგმა ყურადღების გაფანტვას ამცირებს.",
+  "წყლის ელემენტი მგრძნობელობას მატებს; საზღვრების მკაფიოდ გამოხატვა ურთიერთგაგებას უფრო მდგრადს ხდის.",
+  "კვადრატული ასპექტი ორ საჭიროებას შორის დაძაბულობას აჩენს, რომელსაც პატარა ნაბიჯებით და თანმიმდევრული არჩევანით შეიძლება მიუდგე.",
+  "ტრინი ბუნებრივ რესურსზე მიანიშნებს, მაგრამ მისი გამოყენება მიზანმიმართულ პრაქტიკას მაინც საჭიროებს.",
+  "პლანეტის რეტროგრადული მოძრაობა ასტროლოგიურ ინტერპრეტაციაში შინაგანი გადახედვის სიმბოლოდ განიხილება და არა შეფერხების გარანტიად.",
+  "მეორე სახლის მაჩვენებლები პირად ღირებულებებსა და რესურსების მართვის ჩვევებს ეხება, არა მომავალ შემოსავალს.",
+  "მეშვიდე სახლის თემები ურთიერთობის მოლოდინების შესახებ დაფიქრების შესაძლებლობას იძლევა; პარტნიორის მონაცემი ამ რუკაში არ შედის.",
+  "ჩრდილოეთის კვანძი განვითარების სიმბოლურ მიმართულებას აღნიშნავს და ცხოვრების ერთადერთ დანიშნულებას არ ადგენს.",
+  "ქირონის მდებარეობა მოწყვლადობის გააზრებას შეიძლება უკავშირდებოდეს, თუმცა სამედიცინო ან ფსიქოლოგიურ დასკვნას არ წარმოადგენს.",
+  "თითოეული ასპექტის მნიშვნელობა მთელ რუკასთან ერთად უნდა განიხილებოდეს, ცალკე აღებული მაჩვენებელი სრულ სურათს ვერ აღწერს.",
+  "მონაცემებში არსებული ნიშნები რამდენიმე ალტერნატიულ შესაძლებლობას აჩვენებს; მათგან რომელი გამოიხატება, პირად არჩევანზეც არის დამოკიდებული.",
+  "თვითრეფლექსიისთვის იკითხე, რომელი ჩვევა გაძლიერებს და რა მცირე ქმედება დაგეხმარება ამ კვირაში.",
+].join("\n\n");
+const repetitiveAnswer = "მუტაბელური ".repeat(250);
 
 function setEnvironment(values: Partial<Record<typeof environmentKeys[number], string | undefined>>) {
   for (const key of environmentKeys) {
@@ -52,6 +74,24 @@ async function run() {
     requests.length = 0;
     globalThis.fetch = async (input) => {
       requests.push(String(input));
+      return requests.length === 1 ? completion(repetitiveAnswer) : completion(longAnswer);
+    };
+    const qualityFallback = await generateAiText("system", "chart facts");
+    assert.match(qualityFallback.provider, /^Groq/);
+
+    requests.length = 0;
+    globalThis.fetch = async () => completion(repetitiveAnswer);
+    await assert.rejects(
+      () => generateAiText("system", "chart facts"),
+      (error: unknown) =>
+        error instanceof AiProviderError
+        && error.status === 502
+        && error.message.includes("არასრული ან განმეორებადი"),
+    );
+
+    requests.length = 0;
+    globalThis.fetch = async (input) => {
+      requests.push(String(input));
       if (requests.length === 1) {
         const error = new Error("request timed out");
         error.name = "AbortError";
@@ -65,7 +105,7 @@ async function run() {
         error instanceof AiProviderError
         && error.status === 502
         && error.message.includes("OpenRouter")
-        && error.message.includes("პასუხის დრო ამოეწურა")
+        && error.message.includes("პასუხის დრო ამოიწურა")
         && error.message.includes("Groq")
         && error.message.includes("429"),
     );
@@ -80,7 +120,9 @@ async function run() {
       (error: unknown) =>
         error instanceof AiProviderError
         && error.status === 429
-        && error.message.includes("OpenRouter, Groq"),
+        && error.message.includes("OpenRouter")
+        && error.message.includes("Groq")
+        && error.message.includes("429"),
     );
 
     requests.length = 0;
