@@ -41,7 +41,7 @@ cp .env.example .env
 # .env ფაილში შეავსეთ JWT_SECRET (გენერირება: openssl rand -base64 48)
 # და ADMIN_EMAIL / ADMIN_PASSWORD — თქვენი, როგორც საიტის შემქმნელის, ანგარიშისთვის
 # რეალური ელფოსტებისთვის დაამატეთ APP_URL, RESEND_API_KEY და EMAIL_FROM
-# Gemini-ის რეალური პასუხებისთვის საჭიროა GEMINI_API_KEY.
+# Gemini-ის რეალური პასუხებისთვის საჭიროა GEMINI_API_KEY; ვებ-ძიებისთვის — TAVILY_API_KEY.
 # BOG-ის გადახდა ჩაირთვება მხოლოდ ბანკის Sandbox credentials-ით და საჯარო HTTPS callback-ით.
 
 npx prisma migrate dev --name init   # იყენებს .env-ში მითითებულ PostgreSQL-ს
@@ -82,7 +82,8 @@ After the server starts, verify `GET /api/health`. It reports database connectiv
 
 3. **გარემოს ცვლადები** ჰოსტინგის პანელში მიუთითეთ იგივე, რაც `.env.example`-შია:
    `DATABASE_URL`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `APP_URL`,
-   `RESEND_API_KEY`, `EMAIL_FROM`, `GEMINI_API_KEY` და (გადახდის გასააქტიურებლად)
+   `RESEND_API_KEY`, `EMAIL_FROM`, `OPENROUTER_API_KEY`, `GROQ_API_KEY`,
+   `TAVILY_API_KEY` და (გადახდის გასააქტიურებლად)
    `BOG_ENVIRONMENT`, `BOG_CLIENT_ID`, `BOG_CLIENT_SECRET`,
    `BOG_CALLBACK_URL`, `BOG_CALLBACK_PUBLIC_KEY`; TBC-ისთვის კი `TBC_DEVELOPER_API_KEY`, `TBC_CLIENT_ID`, `TBC_CLIENT_SECRET` და საჭიროებისამებრ `TBC_API_BASE_URL`.
 
@@ -221,7 +222,25 @@ npm run db:deploy
 npm run import:interpretations -- .\\path\\to\\licensed-entries.json
 ```
 
-თარგმანი სრულდება სერვერზე LibreTranslate/Argos Translate-compatible პროვაიდერით; ბრაუზერში API key არ გადის. `LIBRETRANSLATE_URL` ცარიელი თუ დარჩა, ჩაშენებული ქართული ბიბლიოთეკა მაინც მუშაობს და გარე ტექსტი ორიგინალად ბრუნდება. თარგმანის ნაწილები სერვისში ცალკე chunk-ებად მუშავდება და ქეშდება; მომხმარებლისთვის უწყვეტი streaming-გამოტანა შემდეგი UI ეტაპია.
+### პირადი დოკუმენტების ბიბლიოთეკა
+
+შესული მომხმარებლისთვის `/cabinet/library` მხარს უჭერს PDF, DOCX და UTF-8 TXT ფაილებს (მაქს. 3.5 MB თითო ფაილზე, 80,000 ამოღებულ სიმბოლოზე და 100 დოკუმენტზე ანგარიშზე). ფაილის ორიგინალი არ ინახება; ამოღებული ტექსტი და თარგმანი PostgreSQL-ში ინახება მხოლოდ ატვირთვის მომხმარებლის ანგარიშზე მიბმით. ატვირთვა და თარგმნა მოითხოვს ავტორიზაციას. დასკანერებული PDF-ის OCR ამ ეტაპზე მხარდაჭერილი არ არის.
+
+თარგმანი ნაწილებად სრულდება და ნაწილობრივი შედეგები შენახული რჩება, რომ quota/ქსელის შეფერხების შემდეგ თავიდან გაგრძელდეს. პროვაიდერების პრიორიტეტია `OPENROUTER_API_KEY` (უფასო მოდელების router; `OPENROUTER_MODEL`-ში ფასიანი მოდელი უარყოფილია), `GROQ_API_KEY`, სურვილისამებრ `GEMINI_API_KEY`, შემდეგ `LIBRETRANSLATE_URL`. გასაღებები ბრაუზერში არასდროს გადის. Translation cache მომხმარებლის ID-ით არის იზოლირებული. უფასო მოდელებს აქვთ ცვალებადი კვოტა/ლიმიტი და გარანტირებული შეუზღუდავი ღრუბლოვანი გამოყენება არ არსებობს.
+
+OpenRouter-ის უფასო router-სთვის `openrouter/free` გამოიყენება და ფასიან მოდელებზე გადასვლა გამორთულია. OpenRouter-ის დოკუმენტაციით უფასო მოდელების სტანდარტული ლიმიტი 50 მოთხოვნაა დღეში, თუ ანგარიშს მინიმუმ $10 კრედიტი არ შეუძენია (ასეთ შემთხვევაში ზღვარი შეიძლება 1,000-მდე იყოს). Groq-ის ლიმიტები განსხვავდება მოდელისა და ანგარიშის გეგმის მიხედვით; ზუსტი ლიმიტი Groq Console-ის Limits გვერდზე შეამოწმეთ.
+
+ახალ deployment-ზე მიგრაცია ცალკე გაუშვით (`npm run db:deploy`). უფასო AI fallback-ებისთვის Vercel-ის Environment Variables-ში მიუთითეთ `OPENROUTER_API_KEY` და/ან `GROQ_API_KEY`; სურვილისამებრ შეგიძლიათ Gemini და LibreTranslate დაამატოთ. OpenRouter-ის უფასო მოდელები/ლიმიტები და Groq-ის account rate limits პროვაიდერის პირობებზეა დამოკიდებული.
+
+გასაღებების შექმნა: [OpenRouter Keys](https://openrouter.ai/settings/keys), [Groq API Keys](https://console.groq.com/keys), [Tavily API](https://app.tavily.com/home). შემდეგ Vercel პროექტში გახსენით **Settings → Environment Variables** და server-side სახელებით დაამატეთ `OPENROUTER_API_KEY`, `GROQ_API_KEY`, `TAVILY_API_KEY` (თარგმნისთვის პირველი ორი ან ერთ-ერთი, ძიებისთვის Tavily აუცილებელია). აირჩიეთ Production და საჭიროების შემთხვევაში Preview გარემოც, შეინახეთ და გაუშვით ახალი deployment. არასოდეს გამოიყენოთ `NEXT_PUBLIC_` prefix გასაღებებზე.
+
+OpenRouter-ის უფასო რეჟიმი: `OPENROUTER_MODEL=openrouter/free` (ნაგულისხმევი). Groq: `GROQ_MODEL=openai/gpt-oss-20b` (ნაგულისხმევი). `GEMINI_API_KEY` არასავალდებულოა და Google AI Studio-ის რეგიონული შეზღუდვის გამო შეიძლება მიუწვდომელი იყოს.
+
+### ვებ-ძიება
+
+`/cabinet/search` იყენებს Tavily Basic Search-ს (თითო ძიებაზე მაქსიმუმ ხუთი საჯარო შედეგი), იღებს წყაროს ტექსტს და ავტომატურად თარგმნის ქართულად. თითო შედეგზე ნაჩვენებია წყაროს ბმული; ძალიან გრძელი ტექსტი 6,000 სიმბოლოზე იჭრება და სრული ვერსიისთვის საჭიროა წყაროს გახსნა. Tavily-ის [ამჟამინდელი უფასო გეგმა](https://www.tavily.com/pricing) მიუთითებს 1,000 API კრედიტს თვეში, ხოლო აპლიკაცია დამატებით უსაფრთხოების მიზნით ყველა მომხმარებელზე ჯამურად 900 ძიების თვიურ ლიმიტს აწესებს. პროვაიდერის პირობები და უფასო კვოტა შეიძლება შეიცვალოს.
+
+Vercel-ში `TAVILY_API_KEY` შეინახეთ Environment Variables-ში; გასაღები ბრაუზერში არ გადის. ძიება მოითხოვს შესვლას. ძიების კვოტის მრიცხველი PostgreSQL-ში ინახება, რომ Vercel-ის სხვადასხვა serverless instance-მა ერთი საერთო ზღვარი დაიცვას.
 
 ## პროფესიული ტექნიკური სინთეზი
 

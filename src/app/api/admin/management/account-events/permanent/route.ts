@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getActiveSessionFromRequest } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-const schema = z.object({ ids: z.array(z.string().min(1)).min(1) });
+const schema = z.object({ ids: z.array(z.string().min(1).max(128)).min(1).max(100) });
 
 function parseEvents(value: string) {
   try {

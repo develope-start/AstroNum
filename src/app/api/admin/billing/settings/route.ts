@@ -5,7 +5,14 @@ import { getActiveSessionFromRequest } from "@/lib/auth";
 import { BILLING_FEATURES, getBillingConfigurationReadiness, getBillingControls } from "@/lib/billing/settings";
 import { prisma } from "@/lib/db";
 
-const schema = z.object({ providers: z.record(z.boolean()).optional(), features: z.record(z.boolean()).optional() }).strict();
+const schema = z.object({
+  providers: z.record(z.string().max(40), z.boolean())
+    .refine((value) => Object.keys(value).length <= 10, "ძალიან ბევრი პროვაიდერია მითითებული.")
+    .optional(),
+  features: z.record(z.string().max(64), z.boolean())
+    .refine((value) => Object.keys(value).length <= 20, "ძალიან ბევრი სერვისია მითითებული.")
+    .optional(),
+}).strict();
 async function adminOnly(req: NextRequest) {
   const session = await getActiveSessionFromRequest(req);
   return session?.role === "ADMIN" ? null : NextResponse.json({ error: "წვდომა აკრძალულია." }, { status: 403 });

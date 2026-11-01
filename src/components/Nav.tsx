@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type CSSProperties, useEffect, useState } from "react";
-import { Compass, LayoutDashboard, Shield, User } from "lucide-react";
+import { BookOpen, Compass, LayoutDashboard, Search, Shield, User } from "lucide-react";
 
 interface Me {
   userId: string;
@@ -192,6 +192,8 @@ export default function Nav() {
             <Link href="/#academy" className="nav-quiet-action">აკადემია</Link>
             <Link href="/#pricing" className="nav-quiet-action">ტარიფები</Link>
             <Link href="/#consultations" className="nav-quiet-action">კონსულტაციები</Link>
+            {me && <Link href="/cabinet/library" className="nav-quiet-action"><BookOpen className="h-3.5 w-3.5" />ბიბლიოთეკა</Link>}
+            {me && <Link href="/cabinet/search" className="nav-quiet-action"><Search className="h-3.5 w-3.5" />ძიება</Link>}
             {me === null && <Link href="/cabinet" className="nav-action"><User className="h-3.5 w-3.5" />კაბინეტი</Link>}
             {me && <Link href="/cabinet/dashboard" className="nav-action"><LayoutDashboard className="h-3.5 w-3.5" />კაბინეტი</Link>}
             {isAdmin && <Link href="/admin" className="nav-quiet-action"><Shield className="h-3.5 w-3.5 text-violet-300" />ადმინი</Link>}
@@ -279,6 +281,8 @@ export default function Nav() {
             <Link href="/#academy" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">აკადემია</Link>
             <Link href="/#pricing" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">ტარიფები</Link>
             <Link href="/#consultations" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start">კონსულტაციები</Link>
+            {me && <Link href="/cabinet/library" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start"><BookOpen className="h-4 w-4" />პირადი ბიბლიოთეკა</Link>}
+            {me && <Link href="/cabinet/search" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start"><Search className="h-4 w-4" />ვებ-ძიება</Link>}
             {isAdmin && <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="nav-quiet-action justify-start"><Shield className="h-4 w-4 text-violet-300" />ადმინ პანელი</Link>}
             {me && <p className="truncate px-2 text-xs text-slate-500">{me.email}</p>}
           </div>

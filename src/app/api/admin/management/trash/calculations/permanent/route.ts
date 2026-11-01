@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getActiveSessionFromRequest } from "@/lib/auth";
 
-const schema = z.object({ ids: z.array(z.string().min(1)).min(1) });
+const schema = z.object({ ids: z.array(z.string().min(1).max(128)).min(1).max(100) });
 
 export async function DELETE(req: NextRequest) {
   const session = await getActiveSessionFromRequest(req);

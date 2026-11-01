@@ -28,6 +28,7 @@ model User {
   role         String   @default("USER") // "USER" ან "ADMIN"
   createdAt    DateTime @default(now())
   charts       Chart[]
+  libraryDocuments LibraryDocument[]
   calculations Calculation[]
   accountEvents AccountEvent[]
   actionTokens  ActionToken[]
@@ -230,6 +231,29 @@ model TranslationCache {
   updatedAt       DateTime @updatedAt
 
   @@index([sourceLanguage, targetLanguage])
+}
+
+model LibraryDocument {
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title                String
+  fileName             String
+  fileType             String
+  sourceLanguage       String
+  sourceText           String
+  translatedText       String?
+  translatedChunksJson String   @default("[]")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([userId, updatedAt])
+}
+
+model WebSearchQuota {
+  key       String   @id
+  requests  Int      @default(0)
+  updatedAt DateTime @updatedAt
 }
 
 // Cached percentage-based synthesis for recurring element distributions.

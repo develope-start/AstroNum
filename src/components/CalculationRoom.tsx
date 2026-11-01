@@ -30,6 +30,7 @@ import ChartMapSection from "./ChartMapSection";
 import ElementBalanceGuide from "./ElementBalanceGuide";
 import InterpretationText from "./InterpretationText";
 import RoomAiInsight from "./RoomAiInsight";
+import FloatingContactHub from "./FloatingContactHub";
 import type { AspectHit } from "@/lib/astro/aspects";
 import type { HouseSystem } from "@/lib/astro/positions";
 
@@ -250,7 +251,7 @@ export default function CalculationRoom({
   const [activeSec, setActiveSec] = useState("home");
   const [selectedPlanet, setSelectedPlanet] = useState<string>("Sun");
   const [auroraInt, setAuroraInt] = useState(55);
-  const [isCalm, setIsCalm] = useState(false);
+  const [isLightTheme, setIsLightTheme] = useState(false);
   const [selectedMatrixPoint, setSelectedMatrixPoint] = useState<string>("X");
   const [psychTab, setPsychTab] = useState<string>("triad");
   const [planetFilter, setPlanetFilter] = useState<string>("all");
@@ -393,10 +394,8 @@ export default function CalculationRoom({
     const render = () => {
       ctx.clearRect(0, 0, width, height);
       stars.forEach(s => {
-        if (!isCalm) {
-          s.alpha += s.delta;
-          if (s.alpha > 0.95 || s.alpha < 0.15) s.delta = -s.delta;
-        }
+        s.alpha += s.delta;
+        if (s.alpha > 0.95 || s.alpha < 0.15) s.delta = -s.delta;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.1, Math.min(1, s.alpha))})`;
@@ -410,7 +409,7 @@ export default function CalculationRoom({
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", onResize);
     };
-  }, [isCalm]);
+  }, []);
 
   if (!isOpen) return null;
 
@@ -442,6 +441,7 @@ export default function CalculationRoom({
             გაუქმება / უკან
           </button>
         </div>
+        <FloatingContactHub className="z-[210]" />
       </div>
     );
   }
@@ -449,7 +449,7 @@ export default function CalculationRoom({
   return (
     <div
       ref={roomRef}
-      className={`calc-room-root fixed inset-0 z-[200] overflow-y-auto overflow-x-hidden ${isCalm ? "cr-calm" : ""}`}
+      className={`calc-room-root fixed inset-0 z-[200] overflow-y-auto overflow-x-hidden ${isLightTheme ? "cr-light" : ""}`}
       style={{ "--cr-aur-int": auroraInt / 100 } as React.CSSProperties}
     >
       {/* ===== 1. Aurora Dynamic Backdrop ===== */}
@@ -478,7 +478,7 @@ export default function CalculationRoom({
 
           <div className="hidden h-5 w-[1px] bg-white/15 sm:block" />
 
-          <div className="hidden items-center gap-2 text-xs sm:flex">
+          <div className="hidden items-center gap-2 text-xs xl:flex">
             <span className="font-bold text-white">{birth.name || "უცნობი"}</span>
             <span className="text-slate-400">·</span>
             <span className="text-slate-300">{birth.date} {birth.time}</span>
@@ -495,12 +495,12 @@ export default function CalculationRoom({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="mr-36 flex items-center gap-2 sm:mr-40">
           {onOpenShareModal && (
             <button
               onClick={onOpenShareModal}
               type="button"
-              className="flex items-center gap-1.5 rounded-xl border border-amber-400/40 bg-amber-500/15 px-3 py-1.5 text-xs font-bold text-amber-200 transition hover:bg-amber-500/25 cursor-pointer"
+              className="hidden sm:flex items-center gap-1.5 rounded-xl border border-amber-400/40 bg-amber-500/15 px-3 py-1.5 text-xs font-bold text-amber-200 transition hover:bg-amber-500/25 cursor-pointer"
               title="ჰოლოგრაფიული ბარათი"
             >
               <Share2 className="h-3.5 w-3.5 text-amber-300" />
@@ -511,7 +511,7 @@ export default function CalculationRoom({
           <button
             onClick={() => window.print()}
             type="button"
-            className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-bold text-slate-200 transition hover:bg-white/10 cursor-pointer"
+            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-bold text-slate-200 transition hover:bg-white/10 cursor-pointer"
             title="ბეჭდვა / PDF"
           >
             <Printer className="h-3.5 w-3.5" />
@@ -521,7 +521,7 @@ export default function CalculationRoom({
           <button
             onClick={() => setIsSearchModalOpen(true)}
             type="button"
-            className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-bold text-slate-200 transition hover:bg-white/10 cursor-pointer"
+            className="hidden items-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-bold text-slate-200 transition hover:bg-white/10 cursor-pointer"
             title="ძებნა (Ctrl+K)"
           >
             <Search className="h-3.5 w-3.5 text-cyan-300" />
@@ -1838,8 +1838,8 @@ export default function CalculationRoom({
         </main>
       </div>
 
-      {/* ===== 5. Floating Action Buttons (FAB) ===== */}
-      <div className="cr-fab fixed bottom-24 right-5 z-50 flex flex-col gap-2 sm:bottom-28">
+      {/* ===== 5. Top-right workspace controls ===== */}
+      <div className="cr-fab fixed right-3 top-3 z-[70] flex items-center gap-2 sm:right-5 sm:top-3.5">
         <button
           onClick={() => setIsSearchModalOpen(true)}
           type="button"
@@ -1850,12 +1850,13 @@ export default function CalculationRoom({
         </button>
 
         <button
-          onClick={() => setIsCalm(prev => !prev)}
+          onClick={() => setIsLightTheme(prev => !prev)}
           type="button"
           className={`flex h-11 w-11 items-center justify-center rounded-full border border-white/20 shadow-xl backdrop-blur-xl transition hover:scale-105 cursor-pointer ${
-            isCalm ? "bg-gradient-to-br from-emerald-500 to-indigo-600 text-white" : "bg-[#141a3c]/90 text-slate-300"
+            isLightTheme ? "bg-gradient-to-br from-amber-300 to-orange-500 text-slate-950" : "bg-[#141a3c]/90 text-slate-300"
           }`}
-          title={isCalm ? "ანიმაციის გაშვება" : "ანიმაციის შეჩერება"}
+          aria-pressed={isLightTheme}
+          title={isLightTheme ? "მუქ ფონზე დაბრუნება" : "ღია ფონზე გადასვლა"}
         >
           <Snowflake className="h-4 w-4" />
         </button>
@@ -1869,6 +1870,9 @@ export default function CalculationRoom({
           <X className="h-4 w-4" />
         </button>
       </div>
+
+      {/* Fixed readers do not expose the page-level hub, so each room owns it. */}
+      <FloatingContactHub className="z-[120]" scrollContainerRef={roomRef} />
 
       {/* ===== 6. Global Quick Search Modal ===== */}
       {isSearchModalOpen && (

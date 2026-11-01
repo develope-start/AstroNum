@@ -123,6 +123,51 @@
   animation: none !important;
 }
 
+/* ===== Light workspace theme ===== */
+.calc-room-root.cr-light {
+  --cr-bg0: #edf4ff;
+  --cr-bg1: #dbeafe;
+  --cr-tx: #10213d;
+  --cr-tx2: #40516f;
+  --cr-tx3: #5b6c88;
+  --cr-glass-bg: linear-gradient(160deg, rgba(255, 255, 255, 0.92), rgba(239, 246, 255, 0.8));
+  --cr-glass-bd: rgba(71, 85, 105, 0.22);
+}
+.cr-light .cr-aurora {
+  background: radial-gradient(120% 90% at 50% -10%, #ffffff 0%, #dbeafe 48%, #e9d5ff 100%);
+}
+.cr-light .cr-aurora .cr-blob,
+.cr-light .cr-aurora .cr-ribbon {
+  mix-blend-mode: multiply;
+  opacity: calc(var(--cr-aur-int) * 0.25);
+}
+.cr-light .cr-aurora .cr-grain { opacity: 0.025; }
+.cr-light .cr-topbar,
+.cr-light .cr-mnav {
+  background: rgba(248, 250, 252, 0.9) !important;
+  border-color: rgba(71, 85, 105, 0.2) !important;
+}
+.cr-light .cr-glass {
+  box-shadow: 0 14px 44px rgba(71, 85, 105, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.cr-light .cr-stat,
+.cr-light .cr-chip,
+.cr-light .cr-tag,
+.cr-light .cr-seg,
+.cr-light .cr-mx td {
+  background-color: rgba(255, 255, 255, 0.58);
+  border-color: rgba(71, 85, 105, 0.22);
+}
+.cr-light .text-white { color: #10213d !important; }
+.cr-light .text-slate-100,
+.cr-light .text-slate-200,
+.cr-light .text-slate-300 { color: #334155 !important; }
+.cr-light .text-slate-400 { color: #64748b !important; }
+.cr-light .cr-chip,
+.cr-light .cr-tag,
+.cr-light .cr-stat .cr-l { color: #40516f; }
+.cr-light .cr-fab button:not(:last-child) { background-color: rgba(255, 255, 255, 0.92); }
+
 /* ===== Glass Components ===== */
 .cr-glass {
   position: relative;
@@ -516,8 +561,9 @@
   }
 
   .cr-fab {
+    top: max(0.5rem, env(safe-area-inset-top)) !important;
     right: 0.75rem !important;
-    bottom: max(0.85rem, env(safe-area-inset-bottom)) !important;
+    bottom: auto !important;
     flex-direction: row;
     gap: 0.5rem;
   }

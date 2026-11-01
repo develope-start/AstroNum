@@ -1,23 +1,36 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, type RefObject } from "react";
 import { ArrowUp, Headphones, MessageCircle, Phone, Send, Sparkles, X, Globe, ExternalLink } from "lucide-react";
 import { SocialSettingsData } from "@/lib/socialSettings";
 
-export default function FloatingContactHub({ className = "z-40" }: { className?: string }) {
+type FloatingContactHubProps = {
+  className?: string;
+  /** The calculation room uses its own scroller instead of the browser window. */
+  scrollContainerRef?: RefObject<HTMLElement | null>;
+};
+
+export default function FloatingContactHub({
+  className = "z-40",
+  scrollContainerRef,
+}: FloatingContactHubProps) {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [socials, setSocials] = useState<SocialSettingsData | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  // Monitor scroll position
+  // Monitor the page normally, or the full-screen calculation room when it
+  // owns scrolling. This keeps the upward arrow available in every room.
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 320);
+      const container = scrollContainerRef?.current;
+      setShowScrollTop(container ? container.scrollTop > 320 : window.scrollY > 320);
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    const target = scrollContainerRef?.current ?? window;
+    handleScroll();
+    target.addEventListener("scroll", handleScroll, { passive: true });
+    return () => target.removeEventListener("scroll", handleScroll);
+  }, [scrollContainerRef]);
 
   // Fetch social links
   useEffect(() => {
@@ -43,6 +56,11 @@ export default function FloatingContactHub({ className = "z-40" }: { className?:
   }, [modalOpen]);
 
   const scrollToTop = () => {
+    const container = scrollContainerRef?.current;
+    if (container) {
+      container.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
