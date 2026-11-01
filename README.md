@@ -89,9 +89,10 @@ After the server starts, verify `GET /api/health`. It reports database connectiv
 
 4. **დომენი.** ჰოსტინგის პანელიდან მიაბით საკუთარი დომენი (მაგ. astro.ge).
 
-5. **მიგრაციები.** `npm run build` ქმნის Prisma Client-ს და Next.js build-ს;
-   მონაცემთა ბაზის მიგრაციებს ავტომატურად არ უშვებს. Deployment-მდე ცალკე
-   შეასრულეთ `npm run db:deploy` სწორი production `DATABASE_URL`-ით.
+5. **მიგრაციები.** Vercel-ის production build გაშვებამდე ავტომატურად ასრულებს
+   `npm run db:deploy`-ს Vercel-ის Production `DATABASE_URL`-ით. Preview და
+   ადგილობრივი build-ები მიგრაციას არ უშვებს. ახალი deployment-მდე production
+   ბაზის სარეზერვო ასლი შეინახეთ; სხვა ჰოსტინგზე მიგრაცია ცალკე გაუშვით.
 
 6. დეპლოის შემდეგ ერთხელ გაუშვით `npm run seed:admin` (ან ხელით შექმენით ანგარიში
    და მონაცემთა ბაზაში როლი `ADMIN`-ზე შეცვალეთ) — ეს არის თქვენი, საიტის
