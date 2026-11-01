@@ -7,17 +7,14 @@ import FloatingContactHub from "@/components/FloatingContactHub";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isCalculationRoom = pathname === "/chart/room";
+  const isCalculationWorkspace = pathname === "/chart/room"
+    || pathname.startsWith("/chart/")
+    || pathname.startsWith("/admin/calculation/");
 
   // The calculation room is a complete workspace, not a panel inside the public site.
-  // Keeping the contact hub preserves support access without rendering the public footer.
-  if (isCalculationRoom) {
-    return (
-      <>
-        {children}
-        <FloatingContactHub className="z-[240]" />
-      </>
-    );
+  // Do not mount any global chrome here: it would overlay the reader.
+  if (isCalculationWorkspace) {
+    return <>{children}</>;
   }
 
   return (

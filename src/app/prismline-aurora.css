@@ -145,6 +145,14 @@ body.app-body {
   z-index: 1;
 }
 
+/* A full-screen reader opened from an ordinary page must escape its main
+   container's stacking context; otherwise the subsequent footer paints over it. */
+.app-body > main:has(.calc-room-root),
+.app-body > main:has(.chart-view-panel),
+.app-body > main:has(.admin-calculation-viewer) {
+  z-index: 300;
+}
+
 .star-matrix-overlay {
   position: absolute;
   inset: 0;
