@@ -9,6 +9,14 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   serverExternalPackages: ["@swisseph/node"],
+  outputFileTracingIncludes: {
+    "/*": [
+      "./node_modules/@swisseph/node/**/*",
+      "./node_modules/@swisseph/core/**/*",
+      "./node_modules/node-gyp-build/**/*",
+      "./node_modules/node-addon-api/**/*",
+    ],
+  },
   async headers() {
     return [
       {

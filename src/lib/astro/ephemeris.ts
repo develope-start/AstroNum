@@ -35,14 +35,9 @@ let swissLoadError: string | undefined;
 function loadSwiss(): SwissModule | null {
   if (swissModule !== undefined) return swissModule;
   try {
-    let dynamicRequire: (moduleName: string) => SwissModule;
-    try {
-      dynamicRequire = eval("require") as (moduleName: string) => SwissModule;
-    } catch {
-      const makeRequire = createRequire;
-      dynamicRequire = makeRequire(`${process.cwd()}/package.json`) as (moduleName: string) => SwissModule;
-    }
-    swissModule = dynamicRequire("@swisseph/node");
+    const makeRequire = createRequire;
+    const requireFromApp = makeRequire(`${process.cwd()}/package.json`);
+    swissModule = requireFromApp("@swisseph/node") as SwissModule;
   } catch (error) {
     swissModule = null;
     swissLoadError = error instanceof Error ? error.message : String(error);
