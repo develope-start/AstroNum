@@ -514,10 +514,10 @@ export default function BentoGrid() {
         </div>
 
         {/* ═══════════════════════════════════════════════
-            Column 4: Stacked Feature Cards (Gemini AI + Rectification)
+            Column 4: Stacked Feature Cards (AI interpretation + Rectification)
             ═══════════════════════════════════════════════ */}
         <div className="order-6 flex flex-col gap-5 justify-between h-full xl:col-span-1">
-          {/* Gemini AI Intelligence */}
+          {/* AI Interpretation */}
           <div
             {...featureSelectionProps("ai")}
             className={`cosmic-spotlight group relative flex flex-1 flex-col justify-between overflow-hidden rounded-2xl border p-5 shadow-xl backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 active:scale-[0.99] ${
@@ -533,20 +533,20 @@ export default function BentoGrid() {
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <span className="font-mono text-[11px] font-semibold text-violet-300/80 bg-violet-950/50 px-2.5 py-1 rounded-full border border-violet-500/20">
-                  Gemini API
+                  OpenRouter · Groq
                 </span>
               </div>
               <h3 className="mt-3.5 font-display text-base font-bold text-white">
-                Gemini AI ასტროლოგიური ინტელექტი
+                ხელოვნური ინტელექტის ინტერპრეტაცია
               </h3>
               <p className="mt-1.5 text-xs text-slate-300 leading-relaxed">
-                ქართული ასტროლოგიური ინტერპრეტაცია გამოთვლილი რუკის მონაცემებზე დაყრდნობით. მუშაობს სერვერზე Gemini API-ის კონფიგურაციით.
+                ვრცელი ქართული ასტროლოგიური ინტერპრეტაცია გამოთვლილი რუკის მონაცემებზე დაყრდნობით.
               </p>
             </div>
             <div className="mt-4 flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#070b13]/80 p-2.5 text-xs text-slate-300 font-mono">
               <span className="flex items-center gap-1.5 text-cyan-300">
                 <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
-                Gemini API
+                AI პროვაიდერები
               </span>
               <span className="text-violet-400 font-semibold text-[11px]">კონფიგურირებადი</span>
             </div>

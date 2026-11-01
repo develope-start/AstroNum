@@ -3,14 +3,13 @@ import path from "node:path";
 
 const baselineName = "20260918120000_postgresql_baseline";
 const baselineFile = path.join("prisma", "migrations", baselineName, "migration.sql");
-const prismaCommand = path.join(process.cwd(), "node_modules", ".bin", process.platform === "win32" ? "prisma.cmd" : "prisma");
+const prismaCommand = path.join(process.cwd(), "node_modules", "prisma", "build", "index.js");
 
 function runPrisma(args) {
-  const result = spawnSync(prismaCommand, args, {
+  const result = spawnSync(process.execPath, [prismaCommand, ...args], {
     cwd: process.cwd(),
     env: process.env,
     encoding: "utf8",
-    shell: process.platform === "win32",
   });
   const output = `${result.stdout ?? ""}${result.stderr ?? ""}${result.error ? `\n${result.error.message}\n` : ""}`;
   process.stdout.write(output);

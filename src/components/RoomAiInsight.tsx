@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Bot, Loader2, Sparkles } from "lucide-react";
+import type { HouseSystem } from "@/lib/astro/positions";
 
 type AnalysisType = "natal" | "career" | "love" | "karmic" | "question";
 
@@ -21,7 +22,8 @@ function renderText(text: string) {
   });
 }
 
-export default function RoomAiInsight({ birth }: {
+export default function RoomAiInsight({ birth, houseSystem }: {
+  houseSystem: HouseSystem;
   birth: { name: string; date: string; time: string; place: string; lat: number | null; lon: number | null; timezone: string | null };
 }) {
   const [mode, setMode] = useState<AnalysisType>("natal");
@@ -55,16 +57,17 @@ export default function RoomAiInsight({ birth }: {
           lat: birth.lat,
           lon: birth.lon,
           timezone: birth.timezone,
+          houseSystem,
           question: mode === "question" ? question.trim() : undefined,
         }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok || typeof data.analysis !== "string") {
-        setError(typeof data.error === "string" ? data.error : "Gemini AI-ის პასუხი ვერ მივიღეთ. სცადეთ მოგვიანებით.");
+        setError(typeof data.error === "string" ? data.error : "AI ინტერპრეტაცია ვერ მივიღეთ. სცადეთ მოგვიანებით.");
         return;
       }
       setResult(data.analysis);
-      setProvider(typeof data.provider === "string" ? data.provider : "Gemini AI");
+      setProvider(typeof data.provider === "string" ? data.provider : "AI პროვაიდერი");
     } catch {
       setError("ქსელთან კავშირი ვერ მოხერხდა. სცადეთ მოგვიანებით.");
     } finally {
@@ -73,13 +76,18 @@ export default function RoomAiInsight({ birth }: {
   }
 
   return (
-    <section className="cr-glass cr-accent p-5 sm:p-6" aria-label="Gemini AI ანალიზი">
+    <section className="cr-glass cr-accent p-5 sm:p-6" aria-label="ხელოვნური ინტელექტით ინტერპრეტაცია">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300"><Bot className="h-5 w-5" /></span>
           <div>
-            <h3 className="text-base font-bold text-white">Gemini AI — დამატებითი ანალიზი</h3>
-            <p className="mt-1 text-xs leading-5 text-slate-400">ინტერპრეტაცია ეფუძნება უკვე გამოთვლილ Swiss Ephemeris მონაცემებს; ის სიმბოლური, არადიაგნოსტიკური წაკითხვაა.</p>
+            <h3 className="text-base font-bold text-white">ხელოვნური ინტელექტით სრული ინტერპრეტაცია</h3>
+            <p className="mt-1 text-xs leading-5 text-slate-400">
+              რუკის შედგენა ჯერ გამოთვლილ მონაცემებსა და ბიბლიოთეკის განმარტებებს აჩვენებს. ქვემოთ ღილაკით მიიღებთ ამ კონკრეტულ რუკაზე მორგებულ, ვრცელ AI ანალიზს.
+            </p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              გამოიყენება OpenRouter, ხოლო საჭიროებისას Groq. AI-ს გადაეცემა რუკის პოზიციები და თქვენ მიერ მითითებული შეკითხვა; Tavily მხოლოდ ვებ-ძიებისთვის გამოიყენება.
+            </p>
           </div>
         </div>
         {provider && <span className="shrink-0 text-[11px] text-cyan-300">{provider}</span>}
@@ -103,9 +111,9 @@ export default function RoomAiInsight({ birth }: {
         <button type="button" onClick={generate} disabled={loading}
           className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-cyan-950/40 transition hover:brightness-110 disabled:cursor-wait disabled:opacity-60">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-          {loading ? "Gemini ამუშავებს რუკას…" : "AI ანალიზის შექმნა"}
+          {loading ? "AI ამუშავებს რუკის მონაცემებს…" : "ხელოვნური ინტელექტით ინტერპრეტაცია"}
         </button>
-        <span className="text-[11px] text-slate-500">შესაძლოა მოითხოვოს თქვენს პაკეტზე AI წვდომა.</span>
+        <span className="text-[11px] text-slate-500">საჭიროა ანგარიშში შესვლა და შესაბამისი პაკეტი.</span>
       </div>
 
       {error && <p className="mt-4 rounded-xl border border-rose-400/30 bg-rose-950/20 p-3 text-xs leading-5 text-rose-200">{error}</p>}

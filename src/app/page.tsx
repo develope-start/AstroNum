@@ -28,7 +28,7 @@ const TABS = [
   { id: "synastry", label: "სინასტრია", hint: "ორი რუკის შედარება — ურთიერთქმედების ძლიერი და რთული წერტილები", icon: Heart },
   { id: "transit", label: "ტრანზიტები", hint: "მიმდინარე ციური მოძრაობა ნატალურ რუკასთან მიმართებით", icon: Activity },
   { id: "advanced", label: "გაფართოებული", hint: "პროგრესიები, დაბრუნებები, სოლარული არკი, დაბნელებები და ჰარმონიკები", icon: Orbit },
-  { id: "ai", label: "Gemini AI ანალიზი", hint: "Gemini API-ით შექმნილი ასტროლოგიური ინტერპრეტაცია", icon: Bot },
+  { id: "ai", label: "ხელოვნური ინტელექტის ანალიზი", hint: "OpenRouter-ით და Groq-ით შექმნილი პერსონალიზებული ინტერპრეტაცია", icon: Bot },
   { id: "rectification", label: "რექტიფიკაცია", hint: "Solar Arc-ის დროითი კანდიდატების შედარება ცხოვრებისეულ მოვლენებთან", icon: Clock },
 ] as const;
 

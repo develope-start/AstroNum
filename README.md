@@ -41,7 +41,8 @@ cp .env.example .env
 # .env ფაილში შეავსეთ JWT_SECRET (გენერირება: openssl rand -base64 48)
 # და ADMIN_EMAIL / ADMIN_PASSWORD — თქვენი, როგორც საიტის შემქმნელის, ანგარიშისთვის
 # რეალური ელფოსტებისთვის დაამატეთ APP_URL, RESEND_API_KEY და EMAIL_FROM
-# Gemini-ის რეალური პასუხებისთვის საჭიროა GEMINI_API_KEY; ვებ-ძიებისთვის — TAVILY_API_KEY.
+# AI ინტერპრეტაციისთვის საჭიროა OPENROUTER_API_KEY და/ან GROQ_API_KEY;
+# ვებ-ძიებისთვის — TAVILY_API_KEY.
 # BOG-ის გადახდა ჩაირთვება მხოლოდ ბანკის Sandbox credentials-ით და საჯარო HTTPS callback-ით.
 
 npx prisma migrate dev --name init   # იყენებს .env-ში მითითებულ PostgreSQL-ს
@@ -127,8 +128,11 @@ After the server starts, verify `GET /api/health`. It reports database connectiv
 - Admin API-ები გადახდის დონეს არ ამოწმებს, ამიტომ ADMIN ანგარიშს ყველა ფუნქციაზე წვდომა აქვს. სხვა მომხმარებლებისთვის სერვისის გამორთვა ფასიანი წვდომის შემოწმებამდე ხდება.
 - `/admin/users`-ში ჩანს მხოლოდ რეალურად დადასტურებული გადახდები (თარიღი, Pro/Enterprise, ვადა, თანხა და ბანკი); ფილტრებიც მოიცავს გადახდის სტატუსს, გეგმას, თანხის დიაპაზონსა და თარიღს. გადაუხდელი ანგარიშები ძველებურად რჩება.
 
-Gemini-ის გასაღების არქონისას ან Gemini API-ის შეცდომისას AI endpoint მკაფიო
-შეცდომას აბრუნებს; ლოკალურ fallback-ს Gemini-ის პასუხად არ ასაღებს.
+რუკის გამოთვლა თავდაპირველად აჩვენებს აპის ქართული ბიბლიოთეკის ინტერპრეტაციას.
+რუკის გვერდზე „ხელოვნური ინტელექტით სრული ინტერპრეტაცია“ ღილაკი იძახებს
+OpenRouter-ს, ხოლო მისი შეფერხებისას — Groq-ს. OpenRouter-ის ნაგულისხმევი
+`openrouter/free` router ფასიან მოდელზე არ გადადის; მოკლე პასუხი სრულ შედეგად
+არ მიიღება. Tavily გამოიყენება ვებ-ძიებისთვის და არა ასტროლოგიური ტექსტის შესაქმნელად.
 
 ## ხშირი შეცდომები დაყენებისას
 
@@ -231,7 +235,7 @@ npm run import:interpretations -- .\\path\\to\\licensed-entries.json
 
 OpenRouter-ის უფასო router-სთვის `openrouter/free` გამოიყენება და ფასიან მოდელებზე გადასვლა გამორთულია. OpenRouter-ის დოკუმენტაციით უფასო მოდელების სტანდარტული ლიმიტი 50 მოთხოვნაა დღეში, თუ ანგარიშს მინიმუმ $10 კრედიტი არ შეუძენია (ასეთ შემთხვევაში ზღვარი შეიძლება 1,000-მდე იყოს). Groq-ის ლიმიტები განსხვავდება მოდელისა და ანგარიშის გეგმის მიხედვით; ზუსტი ლიმიტი Groq Console-ის Limits გვერდზე შეამოწმეთ.
 
-ახალ deployment-ზე მიგრაცია ცალკე გაუშვით (`npm run db:deploy`). უფასო AI fallback-ებისთვის Vercel-ის Environment Variables-ში მიუთითეთ `OPENROUTER_API_KEY` და/ან `GROQ_API_KEY`; სურვილისამებრ შეგიძლიათ Gemini და LibreTranslate დაამატოთ. OpenRouter-ის უფასო მოდელები/ლიმიტები და Groq-ის account rate limits პროვაიდერის პირობებზეა დამოკიდებული.
+Vercel-ის production build მიგრაციას ავტომატურად უშვებს. უფასო AI პროვაიდერებისთვის Vercel-ის Environment Variables-ში მიუთითეთ `OPENROUTER_API_KEY` და/ან `GROQ_API_KEY`; დოკუმენტების თარგმნისთვის სურვილისამებრ შეგიძლიათ Gemini და LibreTranslate დაამატოთ. OpenRouter-ის უფასო მოდელები/ლიმიტები და Groq-ის account rate limits პროვაიდერის პირობებზეა დამოკიდებული.
 
 გასაღებების შექმნა: [OpenRouter Keys](https://openrouter.ai/settings/keys), [Groq API Keys](https://console.groq.com/keys), [Tavily API](https://app.tavily.com/home). შემდეგ Vercel პროექტში გახსენით **Settings → Environment Variables** და server-side სახელებით დაამატეთ `OPENROUTER_API_KEY`, `GROQ_API_KEY`, `TAVILY_API_KEY` (თარგმნისთვის პირველი ორი ან ერთ-ერთი, ძიებისთვის Tavily აუცილებელია). აირჩიეთ Production და საჭიროების შემთხვევაში Preview გარემოც, შეინახეთ და გაუშვით ახალი deployment. არასოდეს გამოიყენოთ `NEXT_PUBLIC_` prefix გასაღებებზე.
 

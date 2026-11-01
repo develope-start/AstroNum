@@ -1,18 +1,17 @@
 import { spawnSync } from "node:child_process";
+import path from "node:path";
 import process from "node:process";
 
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-
-function runNpm(args) {
-  const result = spawnSync(npmCommand, args, {
+function runNodeScript(script, args = []) {
+  const command = path.join(process.cwd(), script);
+  const result = spawnSync(process.execPath, [command, ...args], {
     cwd: process.cwd(),
     env: process.env,
     stdio: "inherit",
-    shell: process.platform === "win32",
   });
 
   if (result.error) {
-    throw new Error(`Failed to run npm ${args.join(" ")}: ${result.error.message}`);
+    throw new Error(`Failed to run ${script}: ${result.error.message}`);
   }
 
   if (result.status !== 0) {
@@ -21,7 +20,8 @@ function runNpm(args) {
 }
 
 if (process.env.VERCEL === "1" && process.env.VERCEL_ENV === "production") {
-  runNpm(["run", "db:deploy"]);
+  runNodeScript("scripts/deploy-db.mjs");
 }
 
-runNpm(["run", "build"]);
+runNodeScript("node_modules/prisma/build/index.js", ["generate"]);
+runNodeScript("node_modules/next/dist/bin/next", ["build"]);

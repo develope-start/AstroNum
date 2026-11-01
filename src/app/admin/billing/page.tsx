@@ -13,7 +13,7 @@ const FEATURE_LABELS: Record<string, string> = {
   progression: "პროგრესიები",
   solarArc: "სოლარული რკალი",
   return: "პლანეტარული დაბრუნებები",
-  ai: "Gemini AI ინტერპრეტაცია",
+  ai: "ხელოვნური ინტელექტით ინტერპრეტაცია",
   rectification: "დაბადების დროის რექტიფიკაცია",
   eclipses: "დაბნელებები",
   harmonics: "ჰარმონიკები და შუაწერტილები",

@@ -1791,8 +1791,8 @@ export default function CalculationRoom({
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">სინთეზი და ინტერპრეტაცია</div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">სრული დეტალური ანალიზი</h2>
+                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">რუკის მონაცემები და ბიბლიოთეკა</div>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">საბაზისო ინტერპრეტაცია</h2>
                 </div>
 
                 {/* Copy & Print actions */}
@@ -1813,6 +1813,8 @@ export default function CalculationRoom({
                 </div>
               </div>
 
+              <RoomAiInsight birth={birth} houseSystem={houseSystem ?? "placidus"} />
+
               {/* Full Interpretation Content Display */}
               <div className="cr-glass p-6 sm:p-10 space-y-6 leading-relaxed">
                 {interpretation ? (
@@ -1824,13 +1826,11 @@ export default function CalculationRoom({
                 )}
               </div>
 
-              <RoomAiInsight birth={birth} />
-
               <details className="cr-glass p-5 text-sm text-slate-300">
                 <summary className="cursor-pointer font-bold text-cyan-200">მეთოდოლოგია, წყაროები და სიზუსტე</summary>
                 <div className="mt-4 space-y-3 leading-7 text-slate-300">
                   <p>პლანეტების პოზიციები და სახლები გამოთვლილია Swiss Ephemeris-ით. ინტერპრეტაცია აერთიანებს აპის ქართულ ბიბლიოთეკას, შესაბამის ბიბლიოთეკურ ჩანაწერებს და საჭიროებისას მათ ქეშირებულ ქართულ თარგმანს.</p>
-                  <p>Gemini-ის პასუხი მოთხოვნით შექმნილი დამატებითი ფენაა; ის ვერ ცვლის გამოთვლილ მონაცემებს და არ არის სამედიცინო, ფსიქოლოგიური ან ფინანსური რჩევა.</p>
+                  <p>ხელოვნური ინტელექტის პასუხი ღილაკზე დაჭერის შემდეგ იქმნება OpenRouter-ით, საჭიროებისას Groq-ის სათადარიგო სერვისით. ის ვერ ცვლის გამოთვლილ მონაცემებს და არ არის სამედიცინო, ფსიქოლოგიური ან ფინანსური რჩევა.</p>
                 </div>
               </details>
             </div>

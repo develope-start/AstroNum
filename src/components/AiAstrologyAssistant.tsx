@@ -194,7 +194,7 @@ export default function AiAstrologyAssistant() {
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Gemini AI ამუშავებს ციურ მონაცემებს...</span>
+                  <span>AI ამუშავებს ციურ მონაცემებს...</span>
                 </>
               ) : (
                 <>
@@ -216,7 +216,7 @@ export default function AiAstrologyAssistant() {
                 </div>
                 <div>
                   <h3 className="font-display text-base font-bold text-white sm:text-lg">
-                    Gemini AI ასტროლოგიური ანალიტიკოსი
+                    ხელოვნური ინტელექტით ასტროლოგიური ანალიზი
                   </h3>
                   <span className="text-[11px] text-cyan-400/80 font-mono">
                     {provider || "პასუხის პროვაიდერი ჯერ არ არის დადასტურებული"}
@@ -264,13 +264,13 @@ export default function AiAstrologyAssistant() {
                   <Bot className="h-7 w-7 text-cyan-300 animate-pulse" />
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-950/40 px-3.5 py-1 text-xs font-bold text-cyan-300 shadow-md">
-                  <span>Gemini AI ასტროლოგიური ინტელექტი</span>
+                  <span>ხელოვნური ინტელექტით ასტროლოგიური ანალიზი</span>
                 </div>
                 <h3 className="mt-3 font-display text-lg sm:text-xl font-black text-white">
                   {teaserPreview.name} · {activeMode.label}
                 </h3>
                 <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-md mx-auto">
-                  Gemini API-მ დაამუშავა თქვენი ციური რუკა! პასუხი მოიცავს პლანეტარულ დისპოზიციებს, სახლების მმართველებსა და ფსიქოლოგიურ რეკომენდაციებს.
+                  შეიყვანეთ მონაცემები და შესაბამისი პაკეტის შემთხვევაში შექმენით თქვენი რუკის პოზიციებზე დაფუძნებული სრული ქართული ინტერპრეტაცია.
                 </p>
 
                 <div className="relative mx-auto mt-6 max-w-lg rounded-2xl border border-white/10 bg-slate-950/70 p-5 text-center">
@@ -281,7 +281,7 @@ export default function AiAstrologyAssistant() {
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-3 bg-[#0a0f1d]/85 backdrop-blur-xs rounded-2xl">
                     <p className="text-xs sm:text-sm font-extrabold text-white">
                       {teaserPreview.planRequired
-                        ? "Gemini AI ანალიზი ხელმისაწვდომია Pro ან Enterprise პაკეტით"
+                        ? "AI ინტერპრეტაცია ხელმისაწვდომია Pro ან Enterprise პაკეტით"
                         : "სრული AI ინტერპრეტაციის გასახსნელად შედით ანგარიშში"}
                     </p>
                     <div className="mt-3 flex flex-wrap items-center justify-center gap-2.5">
