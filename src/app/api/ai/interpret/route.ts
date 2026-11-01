@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { computeNatalChart } from "@/lib/astro/chart";
+import { computeNatalChart, type NatalResult } from "@/lib/astro/chart";
+import { houseOfLongitude } from "@/lib/astro/positions";
 import { eclipticToSign } from "@/lib/astro/signs";
 import { ASTROLOGY_GEORGIAN_STYLE_GUIDE, normalizeGeorgianAstrologyTerms } from "@/lib/astrologyGeorgian";
 import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 import { requireFeatureAccess } from "@/lib/billing/access";
 import { AiProviderError, generateAiText } from "@/lib/ai/generateText";
+import { natalLibraryInsights } from "@/lib/interpretations/library";
 
 const requestSchema = z.object({
   type: z.enum(["natal", "career", "love", "karmic", "question"]),
@@ -87,6 +89,51 @@ const MODALITY_BY_SIGN: Record<string, string> = {
   მშვილდოსანი: "მუტაბელური",
   თევზები: "მუტაბელური",
 };
+
+type AnalysisType = z.infer<typeof requestSchema>["type"];
+
+function localLibraryInterpretation(type: AnalysisType, chart: NatalResult): string {
+  const houseOfFn = (longitude: number) => houseOfLongitude(longitude, chart.houseCusps);
+  const includedPlanets: Record<AnalysisType, string[]> = {
+    natal: ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"],
+    career: ["Sun", "Mercury", "Mars", "Jupiter", "Saturn"],
+    love: ["Moon", "Venus", "Mars"],
+    karmic: ["TrueNode", "MeanNode", "SouthNode", "Chiron", "Pluto"],
+    question: ["Sun", "Moon", "Mercury", "Venus", "Mars"],
+  };
+  const focusHouses: Partial<Record<AnalysisType, number[]>> = {
+    career: [2, 6, 10],
+    love: [5, 7, 8],
+    karmic: [8, 12],
+  };
+  const focusPlanets = new Set(includedPlanets[type]);
+  const planets = chart.planets.filter((planet) =>
+    focusPlanets.has(planet.name) || focusHouses[type]?.includes(houseOfFn(planet.longitude)),
+  );
+  const selectedPlanetNames = new Set(planets.map((planet) => planet.name));
+  const aspects = chart.aspects
+    .filter((aspect) => selectedPlanetNames.has(aspect.a) || selectedPlanetNames.has(aspect.b))
+    .sort((left, right) => left.orb - right.orb);
+  const insights = natalLibraryInsights(planets, aspects, houseOfFn);
+  const placementInsights = insights.filter((entry) => entry.key.startsWith("natal.placement.")).slice(0, 7);
+  const aspectInsights = insights.filter((entry) => entry.key.startsWith("natal.aspect.")).slice(0, 4);
+  const sections = [
+    `## ${FOCUS_LABELS[type]} — AstroNum-ის ქართული ბიბლიოთეკა`,
+    "AI პროვაიდერებმა ამჯერად გამოსაყენებელი პასუხი ვერ დააბრუნეს. ქვემოთ მოცემული ტექსტი შედგენილია აპის ქართულ ბიბლიოთეკაში არსებული განმარტებებითა და ამ რუკის გამოთვლილი პოზიციებით; ეს არ არის AI-ის მიერ შექმნილი ან თავისუფალ შეკითხვაზე გაცემული პასუხი.",
+    "### რუკის შესაბამისი პლანეტები და სახლები",
+    ...(placementInsights.length
+      ? placementInsights.map((entry) => `- ${entry.text}`)
+      : ["- არჩეული ფოკუსისთვის შესაბამისი პლანეტური განმარტება ბიბლიოთეკაში ვერ მოიძებნა."]),
+    "### მნიშვნელოვანი ასპექტები",
+    ...(aspectInsights.length
+      ? aspectInsights.map((entry) => `- ${entry.text}`)
+      : ["- ამ ფოკუსთან დაკავშირებული ასპექტი გამოთვლილ რუკაში არ გამოვლენილა."]),
+    ...(type === "question"
+      ? ["### შეკითხვაზე პასუხი", "თავისუფალ ტექსტზე მორგებული პასუხის გასაცემად საჭიროა AI პროვაიდერის ხელმისაწვდომობა. ზემოთ ნაჩვენებია მხოლოდ რუკის შესაბამისი ფაქტები და ბიბლიოთეკის განმარტებები."]
+      : ["### გასათვალისწინებელი", "ასტროლოგიური განმარტებები სიმბოლური თვითშემეცნების მასალაა და არა გარანტირებული პროგნოზი ან პროფესიული რჩევა."]),
+  ];
+  return normalizeGeorgianAstrologyTerms(sections.join("\n\n"));
+}
 
 export const maxDuration = 60;
 
@@ -192,12 +239,25 @@ export async function POST(req: NextRequest) {
       },
       question: question || null,
     });
-    const generated = await generateAiText(systemPrompt, userPrompt);
+    let generated: { text: string; provider: string; fallback?: boolean; notice?: string };
+    try {
+      generated = await generateAiText(systemPrompt, userPrompt);
+    } catch (error) {
+      if (!(error instanceof AiProviderError)) throw error;
+      generated = {
+        text: localLibraryInterpretation(type, chart),
+        provider: "AstroNum · ქართული ბიბლიოთეკა",
+        fallback: true,
+        notice: "AI ამჯერად მიუწვდომელია; ნაჩვენებია რუკაზე დაფუძნებული ქართული ბიბლიოთეკის განმარტება.",
+      };
+    }
 
     return NextResponse.json({
       success: true,
       analysis: normalizeGeorgianAstrologyTerms(generated.text),
       provider: `${generated.provider} · ${chart.ephemeris.source}`,
+      fallback: generated.fallback ?? false,
+      notice: generated.notice,
     });
   } catch (error) {
     if (error instanceof AiProviderError) {

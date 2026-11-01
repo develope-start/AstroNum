@@ -24,6 +24,7 @@ export default function RoomAiInsight({ birth, houseSystem }: {
   const [result, setResult] = useState<string | null>(null);
   const [provider, setProvider] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const requestController = useRef<AbortController | null>(null);
 
@@ -37,6 +38,7 @@ export default function RoomAiInsight({ birth, houseSystem }: {
     setResult(null);
     setProvider(null);
     setError(null);
+    setNotice(null);
   }
 
   async function generate() {
@@ -55,6 +57,7 @@ export default function RoomAiInsight({ birth, houseSystem }: {
     setResult(null);
     setProvider(null);
     setError(null);
+    setNotice(null);
     try {
       const response = await fetch("/api/ai/interpret", {
         method: "POST",
@@ -81,6 +84,7 @@ export default function RoomAiInsight({ birth, houseSystem }: {
       }
       setResult(data.analysis);
       setProvider(typeof data.provider === "string" ? data.provider : "AI პროვაიდერი");
+      setNotice(typeof data.notice === "string" ? data.notice : null);
     } catch {
       if (!controller.signal.aborted) {
         setError("ქსელთან კავშირი ვერ მოხერხდა. სცადეთ მოგვიანებით.");
@@ -139,6 +143,7 @@ export default function RoomAiInsight({ birth, houseSystem }: {
       {result && (
         <div className="mt-5 border-t border-white/10 pt-5">
           <h4 className="mb-3 text-sm font-bold text-cyan-100">{MODES.find((item) => item.id === mode)?.label}</h4>
+          {notice && <p className="mb-4 rounded-xl border border-amber-400/30 bg-amber-950/20 p-3 text-xs leading-5 text-amber-100">{notice}</p>}
           <AiFormattedText text={result} />
         </div>
       )}

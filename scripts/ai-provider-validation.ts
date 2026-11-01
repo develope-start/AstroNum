@@ -27,6 +27,12 @@ const longAnswer = [
   "თვითრეფლექსიისთვის იკითხე, რომელი ჩვევა გაძლიერებს და რა მცირე ქმედება დაგეხმარება ამ კვირაში.",
 ].join("\n\n");
 const repetitiveAnswer = "მუტაბელური ".repeat(250);
+const naturallyRepeatedWordAnswer = [
+  longAnswer,
+  ...Array.from({ length: 24 }, (_, index) =>
+    `მე-${index + 1} სახლის თემა განსხვავებულ გამოცდილებას უკავშირდება და გააზრებულ არჩევანს მოითხოვს.`,
+  ),
+].join("\n\n");
 
 function setEnvironment(values: Partial<Record<typeof environmentKeys[number], string | undefined>>) {
   for (const key of environmentKeys) {
@@ -56,6 +62,10 @@ async function run() {
     const openRouter = await generateAiText("system", "chart facts");
     assert.match(openRouter.provider, /^OpenRouter/);
     assert.equal(requests.length, 1, "the preferred provider is used first");
+
+    globalThis.fetch = async () => completion(naturallyRepeatedWordAnswer);
+    const naturalRepetition = await generateAiText("system", "chart facts");
+    assert.match(naturalRepetition.provider, /^OpenRouter/, "one common Georgian word may recur without rejecting a coherent response");
 
     requests.length = 0;
     globalThis.fetch = async (input) => {

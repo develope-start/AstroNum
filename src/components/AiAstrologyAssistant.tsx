@@ -22,6 +22,7 @@ export default function AiAstrologyAssistant() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [provider, setProvider] = useState<string>("");
+  const [notice, setNotice] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [teaserPreview, setTeaserPreview] = useState<{ mode: AnalysisType; name: string; planRequired?: boolean } | null>(null);
@@ -39,6 +40,7 @@ export default function AiAstrologyAssistant() {
     setResult(null);
     setProvider("");
     setError(null);
+    setNotice(null);
     setTeaserPreview(null);
   }
 
@@ -58,6 +60,7 @@ export default function AiAstrologyAssistant() {
     setLoading(true);
     setError(null);
     setResult(null);
+    setNotice(null);
 
     try {
       const res = await fetch("/api/ai/interpret", {
@@ -100,6 +103,7 @@ export default function AiAstrologyAssistant() {
 
       setResult(data.analysis);
       setProvider(data.provider);
+      setNotice(typeof data.notice === "string" ? data.notice : null);
     } catch {
       if (!controller.signal.aborted) {
         setError("ქსელის შეცდომა. გთხოვთ სცადოთ მოგვიანებით.");
@@ -307,6 +311,7 @@ export default function AiAstrologyAssistant() {
               </div>
             ) : result ? (
               <div className="mt-6 max-h-[550px] overflow-y-auto pr-2 text-sm leading-relaxed text-slate-200">
+                {notice && <p className="mb-4 rounded-xl border border-amber-400/30 bg-amber-950/20 p-3 text-xs leading-5 text-amber-100">{notice}</p>}
                 <AiFormattedText text={result} className="text-sm leading-relaxed text-slate-200" />
               </div>
             ) : (

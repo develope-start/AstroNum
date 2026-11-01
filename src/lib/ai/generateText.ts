@@ -22,7 +22,6 @@ interface ProviderConfig {
 
 const MINIMUM_RESPONSE_LENGTH = 900;
 const MINIMUM_RESPONSE_WORDS = 180;
-const REPEATED_WORDS = new Set(["რომ", "რომელიც", "რომლის", "რომლებიც", "არის", "იყო", "აქვს", "მისი", "მათი", "შენი", "თქვენი", "this", "that", "with", "from", "your", "their"]);
 
 type ProviderFailure = {
   provider: ProviderConfig["name"];
@@ -86,12 +85,6 @@ function responseIsUsable(text: string): boolean {
   const normalizedWords = words.map((word) => word.toLocaleLowerCase("ka"));
   const uniqueRatio = new Set(normalizedWords).size / normalizedWords.length;
   if (uniqueRatio < 0.3) return false;
-
-  const meaningfulWords = normalizedWords.filter((word) => word.length >= 5 && !REPEATED_WORDS.has(word));
-  const counts = new Map<string, number>();
-  for (const word of meaningfulWords) counts.set(word, (counts.get(word) ?? 0) + 1);
-  const repeatedWordLimit = Math.max(10, Math.floor(normalizedWords.length * 0.04));
-  if ([...counts.values()].some((count) => count > repeatedWordLimit)) return false;
 
   let repeatedRun = 1;
   for (let index = 1; index < normalizedWords.length; index += 1) {
