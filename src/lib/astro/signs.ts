@@ -32,6 +32,13 @@ export const PLANET_NAMES_KA: Record<string, string> = {
 PLANET_NAMES_KA.Lilith = "ლილითი";
 PLANET_NAMES_KA.Selena = "სელენა";
 PLANET_NAMES_KA.Chiron = "ქირონი";
+PLANET_NAMES_KA.Ceres = "ცერერა";
+PLANET_NAMES_KA.Pallas = "პალასი";
+PLANET_NAMES_KA.Juno = "იუნონა";
+PLANET_NAMES_KA.Vesta = "ვესტა";
+PLANET_NAMES_KA.Vertex = "ვერტექსი";
+PLANET_NAMES_KA.Fortune = "ბედის წილი";
+PLANET_NAMES_KA.Spirit = "სულის წილი";
 
 export const HOUSE_LABELS_KA = [
   "I — პიროვნება, გარეგნობა",

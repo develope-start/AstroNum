@@ -15,6 +15,7 @@ import type { AspectHit } from "@/lib/astro/aspects";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
 import HouseSystemSelect from "./HouseSystemSelect";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
+import type { EphemerisMetadata } from "@/lib/astro/ephemeris";
 import type { HouseSystem } from "@/lib/astro/positions";
 import { saveGuestCache, loadGuestCache, clearGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
@@ -29,6 +30,7 @@ interface WheelData {
   aspects: AspectHit[];
   fixedStars: Array<{ star: string; planet: string; longitude: number; orb: number }>;
   planetHouses: Record<string, number>;
+  ephemeris?: EphemerisMetadata;
 }
 
 interface CacheShape {
@@ -86,7 +88,9 @@ export default function NatalCalculator() {
         setMapNumber(null);
         return;
       }
-      const requiredPoints = new Set(["Lilith", "Selena", "Chiron", "SouthNode"]);
+      const requiredPoints = new Set(cached.calculation?.ephemeris === "astronomy"
+        ? ["Lilith", "Selena", "SouthNode", "Fortune", "Spirit"]
+        : ["Lilith", "Selena", "Chiron", "SouthNode", "Fortune", "Spirit"]);
       const hasExpandedPointSet = cached.wheel?.planets?.some((planet) => requiredPoints.has(planet.name)) &&
         [...requiredPoints].every((name) => cached.wheel?.planets?.some((planet) => planet.name === name));
       if (cached.wheel && !hasExpandedPointSet) {
@@ -147,6 +151,7 @@ export default function NatalCalculator() {
           aspects?: AspectHit[];
           advanced?: { fixedStarContacts?: WheelData["fixedStars"] };
           planetHouses?: Record<string, number>;
+          ephemeris?: EphemerisMetadata;
         };
         interpretation?: string;
         mapNumber?: string | null;
@@ -179,6 +184,7 @@ export default function NatalCalculator() {
         aspects: data.result.aspects ?? [],
         fixedStars: data.result.advanced?.fixedStarContacts ?? [],
         planetHouses: data.result.planetHouses ?? {},
+        ephemeris: data.result.ephemeris,
       };
       setWheel(w);
       if (save) setSaved(true);
@@ -203,9 +209,12 @@ export default function NatalCalculator() {
 
         {/* House System Filter & Action Card */}
         <div className="glass-panel relative z-10 space-y-5 rounded-2xl sm:rounded-[28px] p-4 sm:p-7 border-white/10 bg-[#090d1e]/85 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.15)] text-center w-full lg:col-span-5 lg:h-full flex flex-col justify-center">
-          <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} />
+          <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} ephemeris={calculation.ephemeris ?? "swiss"} />
 
-          <CalculationSettings value={calculation} onChange={setCalculation} />
+          <CalculationSettings value={calculation} onChange={(next) => {
+            setCalculation(next);
+            if (next.ephemeris === "astronomy" && !["placidus", "whole_sign", "equal", "porphyry"].includes(houseSystem)) setHouseSystem("placidus");
+          }} />
 
           <div className="flex flex-col gap-3 pt-2">
             <button

@@ -4,6 +4,16 @@ import { isValidPersonInput } from "@/lib/astro/inputSchemas";
 import { calculateRectification } from "@/lib/astro/rectification";
 import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 import { requireFeatureAccess } from "@/lib/billing/access";
+import type { CalculationOptions } from "@/lib/astro/ephemeris";
+
+const calculationSchema = z.object({
+  ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
+  zodiac: z.enum(["tropical", "sidereal"]).default("tropical"),
+  siderealMode: z.number().int().min(0).max(255).default(1),
+  nodeType: z.enum(["mean", "true"]).default("mean"),
+  topocentric: z.boolean().default(false), altitudeMeters: z.number().finite().min(-500).max(10000).default(0),
+  includeAsteroids: z.boolean().default(false),
+}) satisfies z.ZodType<CalculationOptions>;
 
 const schema = z.object({
   birth: z.object({
@@ -14,6 +24,7 @@ const schema = z.object({
     lat: z.number().finite().min(-90).max(90),
     lon: z.number().finite().min(-180).max(180),
     timezone: z.string().trim().min(1).max(64),
+    calculation: calculationSchema.optional(),
   }),
   uncertaintyMinutes: z.number().int().min(5).max(120),
   events: z.array(z.object({
@@ -43,7 +54,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const result = calculateRectification(
-      parsed.data.birth,
+      { ...parsed.data.birth, calculation: parsed.data.birth.calculation },
       parsed.data.events,
       parsed.data.uncertaintyMinutes,
     );

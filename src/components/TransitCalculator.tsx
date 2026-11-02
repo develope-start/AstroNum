@@ -283,8 +283,11 @@ export default function TransitCalculator() {
             </div>
           )}
 
-          <CalculationSettings value={calculation} onChange={setCalculation} />
-          <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} />
+          <CalculationSettings value={calculation} onChange={(next) => {
+            setCalculation(next);
+            if (next.ephemeris === "astronomy" && !["placidus", "whole_sign", "equal", "porphyry"].includes(houseSystem)) setHouseSystem("placidus");
+          }} />
+          <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} ephemeris={calculation.ephemeris ?? "swiss"} />
 
           <div className="flex flex-col gap-3 pt-2">
             <button

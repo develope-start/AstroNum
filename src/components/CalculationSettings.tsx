@@ -33,6 +33,14 @@ export default function CalculationSettings({
   const set = <K extends keyof CalculationOptions>(key: K, next: CalculationOptions[K]) => {
     onChange({ ...value, [key]: next });
   };
+  const setEngine = (ephemeris: NonNullable<CalculationOptions["ephemeris"]>) => {
+    // Astronomy Engine is a fully independent MIT alternative. Normalize
+    // fields it cannot calculate so the server never needs to guess.
+    onChange(ephemeris === "astronomy"
+      ? { ...value, ephemeris, zodiac: "tropical", nodeType: "mean", includeAsteroids: false }
+      : { ...value, ephemeris });
+  };
+  const astronomyEngine = value.ephemeris === "astronomy";
 
   return (
     <div className="w-full rounded-2xl border border-white/10 bg-[#090d1e]/85 backdrop-blur-2xl p-3 text-left sm:p-4 shadow-[0_12px_35px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.12)]">
@@ -44,7 +52,7 @@ export default function CalculationSettings({
       >
         <span>
           <span className="block text-xs font-bold uppercase tracking-wider text-slate-200">გამოთვლის პარამეტრები</span>
-          <span className="mt-0.5 block text-[0.68rem] text-slate-400">Swiss Ephemeris-ის რეჟიმი და დამატებითი კოორდინატები</span>
+          <span className="mt-0.5 block text-[0.68rem] text-slate-400">ძრავის არჩევა, ზოდიაქო და დაკვირვების კოორდინატები</span>
         </span>
         <span className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-[0.68rem] font-bold text-cyan-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition hover:bg-white/[0.08] hover:border-cyan-400/40">
           {open ? "დახურვა" : "გახსნა"}
@@ -55,21 +63,26 @@ export default function CalculationSettings({
         <div className="mt-4 grid gap-3 border-t border-white/10 pt-4 sm:grid-cols-2">
           <label className="text-[0.7rem] font-semibold text-slate-300">
             ეფემერიდის ძრავი
-            <select value="swiss" disabled aria-label="Swiss Ephemeris is required" className="mt-1 w-full rounded-xl border border-cyan-400/30 bg-[#070a16] px-3 py-2 text-xs text-slate-300 opacity-90">
+            <select value={value.ephemeris ?? "swiss"} onChange={(event) => setEngine(event.target.value as NonNullable<CalculationOptions["ephemeris"]>)} aria-label="ეფემერიდის ძრავი" className="mt-1 w-full rounded-xl border border-cyan-400/30 bg-[#070a16] px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400">
               <option value="swiss" className="bg-[#070a16]">Swiss Ephemeris — მთავარი</option>
-              <option value="astronomy" className="bg-[#070a16]">Astronomy Engine — ალტერნატივა/შედარება</option>
+              <option value="astronomy" className="bg-[#070a16]">Astronomy Engine — MIT, დამოუკიდებელი</option>
             </select>
+            <span className="mt-1 block text-[0.65rem] font-normal text-slate-400">
+              {astronomyEngine
+                ? "MIT რეჟიმი: ტროპიკული ზოდიაქო, საშუალო კვანძი და 10 მთავარი პლანეტა; ასტეროიდები/ქირონი, true node და სიდერიული რეჟიმები არ არის ამ ძრავის ნაწილები."
+                : "Swiss რეჟიმი: სრული სიდერიული, true node და ასტეროიდების ნაკრები."}
+            </span>
           </label>
 
           <label className="text-[0.7rem] font-semibold text-slate-300">
             ზოდიაქოს სისტემა
-            <select value={value.zodiac ?? "tropical"} onChange={(event) => set("zodiac", event.target.value as CalculationOptions["zodiac"])} className="mt-1 w-full rounded-xl border border-white/10 bg-[#070a16] px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400">
+            <select value={value.zodiac ?? "tropical"} disabled={astronomyEngine} onChange={(event) => set("zodiac", event.target.value as CalculationOptions["zodiac"])} className="mt-1 w-full rounded-xl border border-white/10 bg-[#070a16] px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-50">
               <option value="tropical" className="bg-[#070a16]">ტროპიკული</option>
               <option value="sidereal" className="bg-[#070a16]">სიდერიული</option>
             </select>
           </label>
 
-          {value.zodiac === "sidereal" && (
+          {value.zodiac === "sidereal" && !astronomyEngine && (
             <label className="text-[0.7rem] font-semibold text-slate-300">
               აიანამშას სისტემა
               <select value={value.siderealMode ?? 1} onChange={(event) => set("siderealMode", Number(event.target.value))} className="mt-1 w-full rounded-xl border border-white/10 bg-[#070a16] px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400">
@@ -80,7 +93,7 @@ export default function CalculationSettings({
 
           <label className="text-[0.7rem] font-semibold text-slate-300">
             მთვარის კვანძი
-            <select value={value.nodeType ?? "mean"} onChange={(event) => set("nodeType", event.target.value as CalculationOptions["nodeType"])} className="mt-1 w-full rounded-xl border border-white/10 bg-[#070a16] px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400">
+            <select value={value.nodeType ?? "mean"} disabled={astronomyEngine} onChange={(event) => set("nodeType", event.target.value as CalculationOptions["nodeType"])} className="mt-1 w-full rounded-xl border border-white/10 bg-[#070a16] px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-50">
               <option value="mean" className="bg-[#070a16]">საშუალო კვანძი</option>
               <option value="true" className="bg-[#070a16]">ჭეშმარიტი კვანძი</option>
             </select>
@@ -99,7 +112,7 @@ export default function CalculationSettings({
           )}
 
           <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#070a16]/60 px-3 py-2 text-xs font-semibold text-slate-300 sm:col-span-2">
-            <input type="checkbox" checked={value.includeAsteroids ?? false} onChange={(event) => set("includeAsteroids", event.target.checked)} className="h-4 w-4 accent-cyan-400" />
+            <input type="checkbox" disabled={astronomyEngine} checked={value.includeAsteroids ?? false} onChange={(event) => set("includeAsteroids", event.target.checked)} className="h-4 w-4 accent-cyan-400 disabled:cursor-not-allowed" />
             დამატებითი ასტეროიდები — Ceres, Pallas, Juno და Vesta (ქირონი რუკაში ყოველთვის ჩანს)
           </label>
         </div>

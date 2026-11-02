@@ -16,7 +16,7 @@ import { persistLibraryEntries, translatedExternalLibraryEntries } from "@/lib/i
 import { requirePlanAccess } from "@/lib/billing/access";
 
 const calculationSchema = z.object({
-  ephemeris: z.literal("swiss").default("swiss"),
+  ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
   zodiac: z.enum(["tropical", "sidereal"]).default("tropical"),
   siderealMode: z.number().int().min(0).max(255).default(1),
   nodeType: z.enum(["mean", "true"]).default("mean"),
@@ -41,7 +41,7 @@ const schema = z.object({
   transitDate: wideDateSchema,
   transitStartDate: wideDateSchema.optional(),
   transitEndDate: wideDateSchema.optional(),
-  houseSystem: z.enum(["whole_sign", "equal", "porphyry", "placidus"]).default("placidus"),
+  houseSystem: z.enum(["placidus", "koch", "regiomontanus", "campanus", "alcabitius", "topocentric", "porphyry", "equal", "whole_sign"]).default("placidus"),
   save: z.boolean().default(false),
   label: z.string().optional(),
   calculation: calculationSchema.optional(),

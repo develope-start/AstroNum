@@ -21,7 +21,7 @@ import { getCurrentEntitlement } from "@/lib/billing/access";
 import { PLAN_RANK } from "@/lib/billing/plans";
 
 const calculationSchema = z.object({
-  ephemeris: z.literal("swiss").default("swiss"),
+  ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
   zodiac: z.enum(["tropical", "sidereal"]).default("tropical"),
   siderealMode: z.number().int().min(0).max(255).default(1),
   nodeType: z.enum(["mean", "true"]).default("mean"),
@@ -39,7 +39,7 @@ const schema = z.object({
   lon: z.number(),
   timezone: z.string().min(1),
   calculation: calculationSchema.optional(),
-  houseSystem: z.enum(["whole_sign", "equal", "porphyry", "placidus"]).default("placidus"),
+  houseSystem: z.enum(["placidus", "koch", "regiomontanus", "campanus", "alcabitius", "topocentric", "porphyry", "equal", "whole_sign"]).default("placidus"),
   save: z.boolean().default(false),
   label: z.string().optional(),
 });
@@ -96,6 +96,8 @@ export async function POST(req: NextRequest) {
     ascendant: result.ascendant,
     mc: result.mc,
     aspects: result.aspects,
+    patterns: result.patterns,
+    ephemeris: result.ephemeris,
     houseOfFn: (lon: number) => houseOfLongitude(lon, result.houseCusps),
     advanced,
   });

@@ -15,13 +15,15 @@ export async function GET() {
   }
 
   const swiss = isSwissAvailable();
-  const healthy = database && swiss;
+  // Astronomy Engine is bundled under MIT and is always the deploy-safe
+  // baseline. Swiss is optional, so its absence must not make the app fail.
+  const healthy = database;
   return NextResponse.json(
     {
       ok: healthy,
       node: process.version,
       database: { connected: database },
-      ephemeris: { swissAvailable: swiss, fallbackAvailable: true },
+      ephemeris: { astronomyAvailable: true, swissAvailable: swiss },
       checkedAt: new Date().toISOString(),
     },
     { status: healthy ? 200 : 503 },

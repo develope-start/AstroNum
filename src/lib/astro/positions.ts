@@ -12,7 +12,11 @@ import {
   SWISS_PLANETS,
 } from "./ephemeris";
 
-export type HouseSystem = "whole_sign" | "equal" | "porphyry" | "placidus";
+export const HOUSE_SYSTEM_VALUES = [
+  "placidus", "koch", "regiomontanus", "campanus", "alcabitius", "topocentric", "porphyry", "equal", "whole_sign",
+] as const;
+
+export type HouseSystem = (typeof HOUSE_SYSTEM_VALUES)[number];
 
 export interface PlanetPosition {
   name: string;
@@ -36,6 +40,8 @@ export interface ChartAngles {
   obliquity: number; // ეკლიპტიკის დახრილობა, გრადუსი
   latitude: number; // დაბადების ადგილის გეოგრაფიული განედი, გრადუსი
   placidusUnstable: boolean; // true, თუ განედი Placidus-ისთვის ზღვრულია (პოლარული წრის მახლობლად)
+  /** დასავლური ასტროლოგიის დამატებითი, ლოკალური წერტილი. Swiss Ephemeris-ის House შედეგიდან. */
+  vertex?: number;
 }
 
 export interface HouseCusps {
@@ -86,6 +92,22 @@ function eclipticLongitudeOf(body: Astronomy.Body, date: Date): number {
   const vec = Astronomy.GeoVector(body, date, true);
   const ecl = Astronomy.Ecliptic(vec);
   return norm360(ecl.elon);
+}
+
+function topocentricEclipticOf(body: Astronomy.Body, date: Date, lon: number, lat: number, altitudeMeters: number) {
+  const equatorial = Astronomy.Equator(body, date, new Astronomy.Observer(lat, lon, altitudeMeters), true, true);
+  const epsilon = Astronomy.e_tilt(Astronomy.MakeTime(date)).tobl;
+  const ra = (equatorial.ra * 15 * Math.PI) / 180;
+  const dec = (equatorial.dec * Math.PI) / 180;
+  const eps = (epsilon * Math.PI) / 180;
+  const longitude = norm360((Math.atan2(
+    Math.sin(ra) * Math.cos(eps) + Math.tan(dec) * Math.sin(eps),
+    Math.cos(ra),
+  ) * 180) / Math.PI);
+  const latitude = (Math.asin(
+    Math.sin(dec) * Math.cos(eps) - Math.cos(dec) * Math.sin(eps) * Math.sin(ra),
+  ) * 180) / Math.PI;
+  return { longitude, latitude, rightAscension: norm360(equatorial.ra * 15), declination: equatorial.dec };
 }
 
 /** ყველა პლანეტის გეოცენტრული პოზიცია და დღიური სიჩქარე (რეტროგრადულობის დასადგენად). */
@@ -145,28 +167,30 @@ export function computePlanetPositions(date: Date, inputOptions?: CalculationOpt
   const fallbackPlanets: PlanetPosition[] = BODIES.map(({ key, name }) => {
     const vector = Astronomy.GeoVector(key, date, true);
     const ecliptic = Astronomy.Ecliptic(vector);
-    const lon = norm360(ecliptic.elon);
-    const lonNext = eclipticLongitudeOf(key, new Date(date.getTime() + dayMs));
-    let speed = lonNext - lon;
+    const observed = options.topocentric
+      ? topocentricEclipticOf(key, date, lon, lat, options.altitudeMeters)
+      : { longitude: norm360(ecliptic.elon), latitude: ecliptic.elat, ...positionMetadata(date, norm360(ecliptic.elon), ecliptic.elat) };
+    const longitude = observed.longitude;
+    const nextObserved = options.topocentric
+      ? topocentricEclipticOf(key, new Date(date.getTime() + dayMs), lon, lat, options.altitudeMeters)
+      : { longitude: eclipticLongitudeOf(key, new Date(date.getTime() + dayMs)) };
+    const lonNext = nextObserved.longitude;
+    let speed = lonNext - longitude;
     // 360°-ის ხაზზე გადასვლის კორექცია
     if (speed > 180) speed -= 360;
     if (speed < -180) speed += 360;
-    return { name, longitude: lon, speed, retrograde: speed < 0, ...positionMetadata(date, lon, ecliptic.elat) };
+    return {
+      name,
+      longitude,
+      speed,
+      retrograde: speed < 0,
+      eclipticLatitude: observed.latitude,
+      rightAscension: observed.rightAscension,
+      declination: observed.declination,
+    };
   });
-  const swissFallbackOptions = { ...options, ephemeris: "swiss" as const };
-  if (isSwissAvailable() && isSwissAvailableForDate(date, swissFallbackOptions, lon, lat)) {
-    const position = calculateSwissPosition(date, 15, swissFallbackOptions, lon, lat);
-    const tropicalPosition = options.zodiac === "sidereal"
-      ? calculateSwissPosition(date, 15, { ...swissFallbackOptions, zodiac: "tropical" }, lon, lat)
-      : position;
-    fallbackPlanets.push({
-      name: "Chiron",
-      longitude: norm360(position.longitude),
-      speed: position.longitudeSpeed,
-      retrograde: position.longitudeSpeed < 0,
-      ...positionMetadata(date, tropicalPosition.longitude, tropicalPosition.latitude),
-    });
-  }
+  // Do not borrow Chiron or asteroids from Swiss Ephemeris in the independent
+  // Astronomy Engine path. A missing feature is safer than mixed provenance.
   fallbackPlanets.push(...computeLunarApogeePoints(date, options, lon, lat));
   return fallbackPlanets;
 }
@@ -246,7 +270,27 @@ export function computeSouthNode(northNode: PlanetPosition): PlanetPosition {
 function meanLunarApogeeLongitude(date: Date): number {
   const jd = dateToJulianDay(date);
   const t = (jd - 2451545.0) / 36525;
-  return norm360(83.3532465 + 4069.0137287 * t - 0.01032 * t * t - (t * t * t) / 80053 + (t * t * t * t) / 18999000);
+  // Meeus gives the longitude of the mean *perigee* measured in the
+  // inclined lunar orbit. Lilith is the opposite point (apogee). Projecting
+  // that point through the mean 5.145396° lunar inclination is essential:
+  // treating the orbital longitude as an ecliptic longitude can be wrong by
+  // several arcminutes.
+  const perigee = norm360(83.3532465 + 4069.0137287 * t - 0.01032 * t * t - (t * t * t) / 80053 + (t * t * t * t) / 18999000);
+  const node = norm360(
+    125.0445479 -
+    1934.1362891 * t +
+    0.0020754 * t * t +
+    (t * t * t) / 467441 -
+    (t * t * t * t) / 60616000,
+  );
+  const degrees = Math.PI / 180;
+  const argument = (norm360(perigee + 180) - node) * degrees;
+  const ascendingNode = node * degrees;
+  const inclination = 5.145396 * degrees;
+  return norm360((Math.atan2(
+    Math.sin(ascendingNode) * Math.cos(argument) + Math.cos(ascendingNode) * Math.sin(argument) * Math.cos(inclination),
+    Math.cos(ascendingNode) * Math.cos(argument) - Math.sin(ascendingNode) * Math.sin(argument) * Math.cos(inclination),
+  ) * 180) / Math.PI);
 }
 
 /** Returns Black Moon Lilith and White Moon Selena as chart points. */
@@ -261,7 +305,7 @@ export function computeLunarApogeePoints(
   let speed = meanLunarApogeeLongitude(new Date(date.getTime() + 86400000)) - longitude;
 
   const swissOptions = { ...options, ephemeris: "swiss" as const };
-  if (isSwissAvailable() && isSwissAvailableForDate(date, swissOptions, observerLon, lat)) {
+  if (options.ephemeris === "swiss" && isSwissAvailable() && isSwissAvailableForDate(date, swissOptions, observerLon, lat)) {
     const position = calculateSwissLilith(date, swissOptions, observerLon, lat);
     const tomorrow = calculateSwissLilith(new Date(date.getTime() + 86400000), swissOptions, observerLon, lat);
     longitude = norm360(position.longitude);
@@ -297,6 +341,7 @@ export function computeAngles(date: Date, lonDeg: number, latDeg: number, inputO
         obliquity: Astronomy.e_tilt(Astronomy.MakeTime(date)).tobl,
         latitude: latDeg,
         placidusUnstable: false,
+        vertex: norm360(houses.vertex),
       };
     } catch (error) {
       throw new Error(`Swiss Ephemeris cannot calculate chart angles: ${error instanceof Error ? error.message : String(error)}`);
@@ -330,6 +375,29 @@ export function computeAngles(date: Date, lonDeg: number, latDeg: number, inputO
     // Placidus-ის ფორმულა იშლება, როცა |განედი| + დახრილობა 90°-ს აჭარბებს (პოლარული წრის მახლობლად)
     placidusUnstable: Math.abs(latDeg) + obliquityDeg > 90,
   };
+}
+
+/**
+ * Adds two traditional Lots after the houses are known. They are mathematical
+ * points, not astronomical bodies, so their speed and declination are omitted.
+ * The day/night formula is explicit to keep the result auditable.
+ */
+export function computeTraditionalLots(
+  ascendant: number,
+  sunLongitude: number,
+  moonLongitude: number,
+  isDayChart: boolean,
+): PlanetPosition[] {
+  const fortune = isDayChart
+    ? ascendant + moonLongitude - sunLongitude
+    : ascendant + sunLongitude - moonLongitude;
+  const spirit = isDayChart
+    ? ascendant + sunLongitude - moonLongitude
+    : ascendant + moonLongitude - sunLongitude;
+  return [
+    { name: "Fortune", longitude: norm360(fortune), speed: 0, retrograde: false },
+    { name: "Spirit", longitude: norm360(spirit), speed: 0, retrograde: false },
+  ];
 }
 
 /** დღის (DSA) და ღამის (SNA) ნახევარრკალები, Placidus-ის იტერაციისთვის — გამოხატული უშუალოდ RA-ს მეშვეობით. */
@@ -418,6 +486,11 @@ export function computeHouseCusps(
   const options = resolveCalculationOptions(inputOptions);
   const swissSystem: Record<HouseSystem, string> = {
     placidus: "P",
+    koch: "K",
+    regiomontanus: "R",
+    campanus: "C",
+    alcabitius: "B",
+    topocentric: "T",
     equal: "A",
     whole_sign: "W",
     porphyry: "O",

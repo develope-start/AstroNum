@@ -7,6 +7,8 @@ import InterpretationOverlay from "./InterpretationOverlay";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
 import { Loader2, Sparkles, Orbit } from "lucide-react";
 import type { HouseSystem } from "@/lib/astro/positions";
+import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
+import type { CalculationOptions } from "@/lib/astro/ephemeris";
 
 type AdvancedMode = "progression" | "directions" | "return" | "eclipse" | "harmonics";
 
@@ -33,6 +35,7 @@ export default function AdvancedCalculator() {
   const [birth, setBirth] = useState<BirthValue>(EMPTY_BIRTH);
   const [mode, setMode] = useState<AdvancedMode>("progression");
   const [houseSystem, setHouseSystem] = useState<HouseSystem>("placidus");
+  const [calculation, setCalculation] = useState<CalculationOptions>({ ...DEFAULT_UI_CALCULATION });
   const [targetDate, setTargetDate] = useState(today());
   const [startDate, setStartDate] = useState(today());
   const [endDate, setEndDate] = useState(nextYear());
@@ -45,7 +48,7 @@ export default function AdvancedCalculator() {
   const [isResultOpen, setIsResultOpen] = useState(false);
 
   function natalPayload() {
-    return { name: birth.name, date: birth.date, time: birth.time, place: birth.place, lat: birth.lat, lon: birth.lon, timezone: birth.timezone };
+    return { name: birth.name, date: birth.date, time: birth.time, place: birth.place, lat: birth.lat, lon: birth.lon, timezone: birth.timezone, calculation };
   }
 
   async function calculate() {
@@ -61,11 +64,11 @@ export default function AdvancedCalculator() {
       let endpoint = "";
       let body: Record<string, unknown> = {};
       const natal = natalPayload();
-      if (mode === "progression") { endpoint = "/api/chart/progression"; body = { natal, targetDate, houseSystem }; }
-      if (mode === "directions") { endpoint = "/api/chart/directions"; body = { natal, targetDate, houseSystem: "placidus" }; }
-      if (mode === "return") { endpoint = "/api/chart/return"; body = { natal, planet, startDate, endDate, houseSystem }; }
+      if (mode === "progression") { endpoint = "/api/chart/progression"; body = { natal, targetDate, houseSystem, calculation }; }
+      if (mode === "directions") { endpoint = "/api/chart/directions"; body = { natal, targetDate, houseSystem, calculation }; }
+      if (mode === "return") { endpoint = "/api/chart/return"; body = { natal, planet, startDate, endDate, houseSystem, calculation }; }
       if (mode === "eclipse") { endpoint = "/api/chart/eclipses"; body = { type: eclipseType, startDate, backward: false }; }
-      if (mode === "harmonics") { endpoint = "/api/chart/harmonics"; body = { natal, harmonic: Number(harmonic) }; }
+      if (mode === "harmonics") { endpoint = "/api/chart/harmonics"; body = { natal, harmonic: Number(harmonic), calculation }; }
       const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const data = await readApiResponse<Record<string, unknown>>(response);
       if (!response.ok) {
@@ -115,7 +118,12 @@ export default function AdvancedCalculator() {
             </select>
           </label>
 
-          {(mode === "progression" || mode === "return") && <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} />}
+          {mode !== "eclipse" && <CalculationSettings value={calculation} onChange={(next) => {
+            setCalculation(next);
+            if (next.ephemeris === "astronomy" && !["placidus", "whole_sign", "equal", "porphyry"].includes(houseSystem)) setHouseSystem("placidus");
+          }} />}
+
+          {(mode === "progression" || mode === "return" || mode === "directions") && <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} ephemeris={calculation.ephemeris ?? "swiss"} />}
 
           {(mode === "progression" || mode === "directions") && (
             <label className="block text-xs font-bold text-slate-300">

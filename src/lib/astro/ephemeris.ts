@@ -1,5 +1,3 @@
-import type * as Swiss from "@swisseph/node";
-
 export type EphemerisSource = "swiss" | "astronomy";
 export type Zodiac = "tropical" | "sidereal";
 export type NodeType = "mean" | "true";
@@ -24,9 +22,39 @@ export interface EphemerisMetadata {
   siderealMode?: number;
   precision: "swiss" | "astronomy-engine";
   fallbackReason?: string;
+  /** Features that are calculated natively by the selected engine. */
+  capabilities: {
+    houseSystems: string[];
+    sidereal: boolean;
+    trueNode: boolean;
+    asteroids: boolean;
+    chiron: boolean;
+  };
 }
 
-type SwissModule = typeof Swiss;
+export const ASTRONOMY_ENGINE_HOUSE_SYSTEMS = ["placidus", "whole_sign", "equal", "porphyry"] as const;
+
+/**
+ * Astronomy Engine is intentionally kept independent from Swiss Ephemeris.
+ * It provides the ten major planets and mathematical chart layers without a
+ * native asteroid catalogue, sidereal modes, or true lunar node. Rejecting
+ * unsupported requests is preferable to silently mixing engines or faking a
+ * result.
+ */
+export function assertEngineCapabilities(options: Required<CalculationOptions>, houseSystem?: string): void {
+  if (options.ephemeris !== "astronomy") return;
+  if (options.zodiac !== "tropical") throw new Error("Astronomy Engine currently supports the tropical zodiac only.");
+  if (options.nodeType !== "mean") throw new Error("Astronomy Engine currently supports the mean lunar node only.");
+  if (options.includeAsteroids) throw new Error("Astronomy Engine has no built-in asteroid catalogue; disable additional asteroids or choose Swiss Ephemeris.");
+  if (houseSystem && !ASTRONOMY_ENGINE_HOUSE_SYSTEMS.includes(houseSystem as typeof ASTRONOMY_ENGINE_HOUSE_SYSTEMS[number])) {
+    throw new Error(`Astronomy Engine supports ${ASTRONOMY_ENGINE_HOUSE_SYSTEMS.join(", ")} houses in this app.`);
+  }
+}
+
+/** Deliberately structural: Swiss Ephemeris is loaded only at runtime so the
+ * MIT Astronomy Engine build remains valid when the optional Swiss package is
+ * not installed. */
+type SwissModule = Record<string, (...args: any[]) => any>;
 let swissModule: SwissModule | null | undefined;
 let swissLoadError: string | undefined;
 
@@ -101,9 +129,9 @@ export function resolveCalculationOptions(options?: CalculationOptions): Require
 }
 
 export function toJulianDay(date: Date): number {
-  const swiss = loadSwiss();
-  if (!swiss) throw new Error(swissLoadError ?? "Swiss Ephemeris is unavailable");
-  return swiss.dateToJulianDay(date);
+  // Julian Date is a time-scale conversion, not a Swiss-only operation.
+  // Keeping it pure makes the Astronomy Engine path deployable by itself.
+  return date.getTime() / 86_400_000 + 2_440_587.5;
 }
 
 export function configureSwiss(options: Required<CalculationOptions>, lon = 0, lat = 0): void {
@@ -175,14 +203,14 @@ export function calculateSwissHouses(
   // Sidereal mode is global state in Swiss Ephemeris. Configure it immediately
   // before the house calculation so a prior request cannot affect these cusps.
   configureSwiss(options, lon, lat);
-  const result = swiss.calculateHouses(toJulianDay(date), lat, lon, system as Swiss.HouseSystem);
+  const result = swiss.calculateHouses(toJulianDay(date), lat, lon, system);
   if (options.zodiac !== "sidereal") return result;
 
   const ayanamsa = swiss.getAyanamsa(toJulianDay(date));
   const shift = (value: number) => (value - ayanamsa + 360) % 360;
   return {
     ...result,
-    cusps: result.cusps.map((value) => (value ? shift(value) : value)),
+    cusps: result.cusps.map((value: number) => (value ? shift(value) : value)),
     ascendant: shift(result.ascendant),
     mc: shift(result.mc),
     armc: shift(result.armc),
@@ -208,5 +236,8 @@ export function metadata(options?: CalculationOptions, date?: Date): EphemerisMe
     siderealMode: resolved.zodiac === "sidereal" ? resolved.siderealMode : undefined,
     precision: source === "swiss" ? "swiss" : "astronomy-engine",
     fallbackReason: source === "astronomy" && resolved.ephemeris === "swiss" ? swissFallbackReason() : undefined,
+    capabilities: source === "swiss"
+      ? { houseSystems: ["placidus", "koch", "regiomontanus", "campanus", "alcabitius", "topocentric", "porphyry", "equal", "whole_sign"], sidereal: true, trueNode: true, asteroids: true, chiron: true }
+      : { houseSystems: [...ASTRONOMY_ENGINE_HOUSE_SYSTEMS], sidereal: false, trueNode: false, asteroids: false, chiron: false },
   };
 }

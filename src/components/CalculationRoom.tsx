@@ -33,6 +33,7 @@ import RoomAiInsight from "./RoomAiInsight";
 import FloatingContactHub from "./FloatingContactHub";
 import type { AspectHit } from "@/lib/astro/aspects";
 import type { HouseSystem } from "@/lib/astro/positions";
+import type { EphemerisMetadata } from "@/lib/astro/ephemeris";
 
 export interface CalculationRoomProps {
   isOpen: boolean;
@@ -54,6 +55,7 @@ export interface CalculationRoomProps {
     aspects: AspectHit[];
     fixedStars?: Array<{ star: string; planet: string; longitude: number; orb: number }>;
     planetHouses?: Record<string, number>;
+    ephemeris?: EphemerisMetadata;
   } | null;
   interpretation: string | null;
   mapNumber?: string | null;
@@ -118,11 +120,18 @@ const BODY_META: Record<string, { n: string; g: string; c: string; kw: string }>
   SouthNode: { n: "სამხრ. კვანძი", g: "☋", c: "#d6d3d1", kw: "ნაცნობი ნიმუშები, წარსული გამოცდილება" },
   Lilith: { n: "ლილითი", g: "⚸", c: "#f0abfc", kw: "ფარული ბუნება, დაფარული ვნებები" },
   Selena: { n: "სელენა", g: "⚪", c: "#ffffff", kw: "თეთრი მთვარე, სინათლის მცველი" },
+  Ceres: { n: "ცერერა", g: "⚳", c: "#fb923c", kw: "ზრუნვა, მიღება, დანაკარგის დამუშავება" },
+  Pallas: { n: "პალასი", g: "⚴", c: "#67e8f9", kw: "სტრატეგია, ნიმუშის დანახვა" },
+  Juno: { n: "იუნონა", g: "⚵", c: "#f9a8d4", kw: "პარტნიორობა, თანასწორობა, ერთგულება" },
+  Vesta: { n: "ვესტა", g: "⚶", c: "#facc15", kw: "კონცენტრაცია, ერთგულება, პირადი სივრცე" },
+  Vertex: { n: "ვერტექსი", g: "Vx", c: "#fef3c7", kw: "მნიშვნელოვანი ურთიერთქმედებების მათემატიკური წერტილი" },
+  Fortune: { n: "ბედის წილი", g: "⊗", c: "#86efac", kw: "ტრადიციული შესაძლებლობის წერტილი" },
+  Spirit: { n: "სულის წილი", g: "⊛", c: "#c4b5fd", kw: "ტრადიციული განზრახვის წერტილი" },
   ASC: { n: "ასცენდენტი", g: "AC", c: "#ffffff", kw: "პერსონა, გარეგანი გამოხატვა" },
   MC: { n: "MC", g: "MC", c: "#ffffff", kw: "საჯარო მისია, კარიერული მიზანი" }
 };
 
-const ORDER_BODIES = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "Chiron", "NNode", "SNode", "Lilith", "ASC", "MC"];
+const ORDER_BODIES = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "Chiron", "Ceres", "Pallas", "Juno", "Vesta", "TrueNode", "SouthNode", "Lilith", "Selena", "Vertex", "Fortune", "Spirit", "ASC", "MC"];
 const MAIN10 = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"];
 const ROM = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
 
@@ -478,8 +487,9 @@ export default function CalculationRoom({
       </div>
 
       {/* ===== 2. Top Header Utility Bar ===== */}
-      <header className="cr-topbar sticky top-0 z-50 flex items-center justify-between border-b border-white/15 bg-[#050816]/85 px-4 py-2.5 backdrop-blur-2xl sm:px-6">
-        <div className="flex items-center gap-3">
+      <header className="cr-topbar sticky top-0 z-50 border-b border-white/15 bg-[#050816]/85 py-2.5 backdrop-blur-2xl">
+        <div className="mx-auto flex w-[96%] items-center justify-between lg:mx-0 lg:ml-[5%] lg:mr-[3%] lg:w-[92%]">
+        <div className="flex min-w-0 items-center gap-3">
           <button
             onClick={onClose}
             type="button"
@@ -504,12 +514,12 @@ export default function CalculationRoom({
               </span>
             )}
             <span className="rounded-md border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[10px] uppercase font-mono text-slate-300">
-              {houseSystem === "placidus" ? "Placidus" : "Whole Sign"}
+              {houseSystem === "placidus" ? "Placidus" : houseSystem === "whole_sign" ? "Whole Sign" : houseSystem}
             </span>
           </div>
         </div>
 
-        <div className="mr-36 flex items-center gap-2 sm:mr-40">
+        <div className="mr-0 flex items-center gap-2 sm:mr-[9rem]">
           {onOpenShareModal && (
             <button
               onClick={onOpenShareModal}
@@ -523,16 +533,6 @@ export default function CalculationRoom({
           )}
 
           <button
-            onClick={() => window.print()}
-            type="button"
-            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-bold text-slate-200 transition hover:bg-white/10 cursor-pointer"
-            title="ბეჭდვა / PDF"
-          >
-            <Printer className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">ბეჭდვა</span>
-          </button>
-
-          <button
             onClick={() => setIsSearchModalOpen(true)}
             type="button"
             className="hidden items-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-bold text-slate-200 transition hover:bg-white/10 cursor-pointer"
@@ -541,6 +541,7 @@ export default function CalculationRoom({
             <Search className="h-3.5 w-3.5 text-cyan-300" />
             <span className="hidden sm:inline"><kbd className="font-mono text-[10px]">Ctrl+K</kbd></span>
           </button>
+        </div>
         </div>
       </header>
 
@@ -563,7 +564,7 @@ export default function CalculationRoom({
       </nav>
 
       {/* ===== 4. Workspace Layout (Desktop Sidebar + Main Content) ===== */}
-      <div className="relative z-10 flex w-full min-h-[calc(100vh-52px)]">
+      <div className="relative z-10 mx-auto flex w-[96%] min-h-[calc(100vh-52px)] lg:mx-0 lg:ml-[5%] lg:mr-[3%] lg:w-[92%]">
         {/* Desktop Sticky Sidebar */}
         <aside className="cr-side hidden lg:flex sticky top-[52px] h-[calc(100vh-52px)] w-[276px] shrink-0 flex-col gap-3 p-4">
           <div className="cr-glass flex h-full flex-col p-4">
@@ -743,7 +744,7 @@ export default function CalculationRoom({
 
               {/* Informational Guidance Notice */}
               <div className="rounded-2xl border-l-4 border-cyan-400 bg-cyan-950/20 p-4 text-xs text-cyan-100 shadow-lg">
-                <b>გამოთვლის მეთოდოლოგია:</b> პლანეტარული პოზიციები და სახლების კუსპიდები გამოთვლილია შვეიცარული ეფემერიდის (Swiss Ephemeris) ალგორითმით. ასტროლოგიური, ნუმეროლოგიური და ფსიქოანალიზური ინტერპრეტაციები წარმოადგენს თვითშემეცნების, შინაგანი პოტენციალისა და არქეტიპული რესურსების გაცნობიერების გზამკვლევს.
+                <b>გამოთვლის მეთოდოლოგია:</b> პლანეტარული პოზიციები და სახლების კუსპიდები გამოთვლილია {wheel?.ephemeris?.source === "astronomy" ? "Astronomy Engine-ის (MIT) დამოუკიდებელი ალგორითმით" : "Swiss Ephemeris-ის ალგორითმით"}. ასტროლოგიური, ნუმეროლოგიური და ფსიქოანალიზური ინტერპრეტაციები წარმოადგენს თვითშემეცნების, შინაგანი პოტენციალისა და არქეტიპული რესურსების გაცნობიერების გზამკვლევს.
               </div>
 
               {/* Snapshot at a Glance */}
@@ -1857,35 +1858,45 @@ export default function CalculationRoom({
       </div>
 
       {/* ===== 5. Top-right workspace controls ===== */}
-      <div className="cr-fab fixed right-3 top-3 z-[70] flex items-center gap-2 sm:right-5 sm:top-3.5">
+      <div className="cr-fab fixed right-[3vw] top-2 z-[70] flex items-center gap-1.5">
+        <button
+          onClick={() => window.print()}
+          type="button"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-[#141a3c]/90 text-white shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-indigo-600 cursor-pointer"
+          aria-label="ბეჭდვა / PDF"
+          title="ბეჭდვა / PDF"
+        >
+          <Printer className="h-3.5 w-3.5" />
+        </button>
+
         <button
           onClick={() => setIsSearchModalOpen(true)}
           type="button"
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-[#141a3c]/90 text-white shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-indigo-600 cursor-pointer"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-[#141a3c]/90 text-white shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-indigo-600 cursor-pointer"
           title="ძებნა (Ctrl+K)"
         >
-          <Search className="h-4 w-4" />
+          <Search className="h-3.5 w-3.5" />
         </button>
 
         <button
           onClick={() => setIsLightTheme(prev => !prev)}
           type="button"
-          className={`flex h-11 w-11 items-center justify-center rounded-full border border-white/20 shadow-xl backdrop-blur-xl transition hover:scale-105 cursor-pointer ${
+          className={`flex h-8 w-8 items-center justify-center rounded-full border border-white/20 shadow-xl backdrop-blur-xl transition hover:scale-105 cursor-pointer ${
             isLightTheme ? "bg-gradient-to-br from-amber-300 to-orange-500 text-slate-950" : "bg-[#141a3c]/90 text-slate-300"
           }`}
           aria-pressed={isLightTheme}
           title={isLightTheme ? "მუქ ფონზე დაბრუნება" : "ღია ფონზე გადასვლა"}
         >
-          <Snowflake className="h-4 w-4" />
+          <Snowflake className="h-3.5 w-3.5" />
         </button>
 
         <button
           onClick={onClose}
           type="button"
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-rose-500/40 bg-rose-950/80 text-rose-200 shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-rose-900 cursor-pointer"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-rose-500/40 bg-rose-950/80 text-rose-200 shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-rose-900 cursor-pointer"
           title="კაბინეტის დახურვა"
         >
-          <X className="h-4 w-4" />
+          <X className="h-3.5 w-3.5" />
         </button>
       </div>
 

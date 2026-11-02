@@ -15,13 +15,15 @@ const SIGN_COLORS = [
 const PLANET_GLYPHS: Record<string, string> = {
   Sun: "☉", Moon: "☽", Mercury: "☿", Venus: "♀", Mars: "♂", Jupiter: "♃",
   Saturn: "♄", Uranus: "♅", Neptune: "♆", Pluto: "♇", TrueNode: "☊", MeanNode: "☊", SouthNode: "☋",
-  Lilith: "⚸", Selena: "⚪", Chiron: "⚷",
+  Lilith: "⚸", Selena: "⚪", Chiron: "⚷", Ceres: "⚳", Pallas: "⚴", Juno: "⚵", Vesta: "⚶",
+  Vertex: "Vx", Fortune: "⊗", Spirit: "⊛",
 };
 
 const PLANET_COLORS: Record<string, string> = {
   Sun: "#fbbf24", Moon: "#f8fafc", Mercury: "#c084fc", Venus: "#f472b6", Mars: "#ef4444",
   Jupiter: "#60a5fa", Saturn: "#f59e0b", Uranus: "#22d3ee", Neptune: "#818cf8", Pluto: "#e879f9",
   TrueNode: "#2dd4bf", MeanNode: "#2dd4bf", SouthNode: "#14b8a6", Lilith: "#f472b6", Selena: "#e2e8f0", Chiron: "#a78bfa",
+  Ceres: "#fb923c", Pallas: "#67e8f9", Juno: "#f9a8d4", Vesta: "#facc15", Vertex: "#fef3c7", Fortune: "#86efac", Spirit: "#c4b5fd",
 };
 
 const ASPECT_COLORS: Record<string, string> = {

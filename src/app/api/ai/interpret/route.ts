@@ -21,7 +21,7 @@ const requestSchema = z.object({
   lat: z.number().finite().min(-90).max(90),
   lon: z.number().finite().min(-180).max(180),
   timezone: z.string().trim().min(1).max(64),
-  houseSystem: z.enum(["whole_sign", "equal", "porphyry", "placidus"]).default("placidus"),
+  houseSystem: z.enum(["placidus", "koch", "regiomontanus", "campanus", "alcabitius", "topocentric", "porphyry", "equal", "whole_sign"]).default("placidus"),
   question: z.string().trim().max(2_000).optional(),
 });
 

@@ -8,6 +8,7 @@ import { EMPTY_BIRTH, type BirthValue } from "@/components/BirthFields";
 import type { WheelPlanet } from "@/components/ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
 import type { HouseSystem } from "@/lib/astro/positions";
+import type { EphemerisMetadata } from "@/lib/astro/ephemeris";
 import { Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -23,6 +24,7 @@ interface CacheShape {
     aspects: AspectHit[];
     fixedStars: Array<{ star: string; planet: string; longitude: number; orb: number }>;
     planetHouses: Record<string, number>;
+    ephemeris?: EphemerisMetadata;
   } | null;
   mapNumber?: string | null;
 }

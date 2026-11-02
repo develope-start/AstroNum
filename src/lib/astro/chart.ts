@@ -1,19 +1,20 @@
 import { DateTime, IANAZone } from "luxon";
 import tzlookup from "tz-lookup";
 import {
-  computeAngles,
-  computeHouseCusps,
-  computePlanetPositions,
   computeNorthNode,
+  computePlanetPositions,
   computeSouthNode,
+  computeTraditionalLots,
   houseOfLongitude,
   HouseSystem,
   PlanetPosition,
 } from "./positions";
-import { computeAspects, AspectHit } from "./aspects";
+import { getEphemerisEngine } from "./engineAdapter";
+import { computeAspectPatterns, computeAspects, AspectHit, AspectPattern } from "./aspects";
 import { parseWideDate } from "./wideDate";
 import {
   CalculationOptions,
+  assertEngineCapabilities,
   isSwissAvailableForDate,
   metadata as ephemerisMetadata,
   EphemerisMetadata,
@@ -46,6 +47,7 @@ export interface NatalResult {
   houseSystem: HouseSystem;
   planetHouses: Record<string, number>;
   aspects: AspectHit[];
+  patterns: AspectPattern[];
   latitude: number;
   longitude: number;
   ephemeris: EphemerisMetadata;
@@ -87,12 +89,10 @@ export function birthInputToUtcDate(input: BirthInput): Date {
   return dt.toUTC().toJSDate();
 }
 
-function requireSwissOptions(date: Date, calculation?: CalculationOptions): Required<CalculationOptions> {
+function requireEngineOptions(date: Date, calculation: CalculationOptions | undefined, houseSystem: HouseSystem): Required<CalculationOptions> {
   const options = resolveCalculationOptions(calculation);
-  if (options.ephemeris !== "swiss") {
-    throw new Error("Astrological chart calculations are available only through Swiss Ephemeris.");
-  }
-  if (!isSwissAvailableForDate(date, options)) {
+  assertEngineCapabilities(options, houseSystem);
+  if (options.ephemeris === "swiss" && !isSwissAvailableForDate(date, options)) {
     throw new Error(`Swiss Ephemeris cannot calculate this date: ${swissFallbackReason() ?? "unknown reason"}`);
   }
   return options;
@@ -113,24 +113,38 @@ export function computeNatalChartAtUtc(
   calculation?: CalculationOptions,
   houseSystem: HouseSystem = "whole_sign",
 ): NatalResult {
-  const options = requireSwissOptions(utcDate, calculation);
-  const planets = computePlanetPositions(utcDate, options, longitude, latitude);
-  const northNode = computeNorthNode(utcDate, options, longitude, latitude);
+  const options = requireEngineOptions(utcDate, calculation, houseSystem);
+  const frame = getEphemerisEngine(options).calcBodies(utcDate, latitude, longitude, houseSystem);
+  const { planets, northNode, angles, houses } = frame;
   const southNode = computeSouthNode(northNode);
-  const allPoints = [...planets, northNode, southNode];
-
-  const angles = computeAngles(utcDate, longitude, latitude, options);
-  const houses = computeHouseCusps(angles, houseSystem, utcDate, longitude, latitude, options);
-  if (houseSystem === "placidus" && Math.abs((((houses.cusps[9]! - angles.mc) + 540) % 360) - 180) > 1e-7) {
+  const primaryPoints = [...planets, northNode, southNode];
+  if (options.ephemeris === "swiss" && houseSystem === "placidus" && Math.abs((((houses.cusps[9]! - angles.mc) + 540) % 360) - 180) > 1e-7) {
     throw new Error("Swiss Ephemeris Placidus MC and tenth-house cusp disagree; result was not published.");
   }
+
+  const sun = planets.find((planet) => planet.name === "Sun");
+  const moon = planets.find((planet) => planet.name === "Moon");
+  if (!sun || !moon) throw new Error("The Sun and Moon are required to calculate traditional Lots.");
+  // Houses VII–XII are above the horizon in every supported house system.
+  const isDayChart = houseOfLongitude(sun.longitude, houses.cusps) >= 7;
+  const derivedPoints = [
+    ...(angles.vertex === undefined ? [] : [{ name: "Vertex", longitude: angles.vertex, speed: 0, retrograde: false }]),
+    ...computeTraditionalLots(angles.ascendant, sun.longitude, moon.longitude, isDayChart),
+  ];
+  const allPoints = [...primaryPoints, ...derivedPoints];
 
   const planetHouses: Record<string, number> = {};
   for (const p of allPoints) {
     planetHouses[p.name] = houseOfLongitude(p.longitude, houses.cusps);
   }
 
-  const aspects = computeAspects(allPoints);
+  const aspects = computeAspects(allPoints).filter((hit) => {
+    const includesDerivedPoint = ["Vertex", "Fortune", "Spirit"].includes(hit.a) || ["Vertex", "Fortune", "Spirit"].includes(hit.b);
+    // Derived points remain fully visible in the table; their minor and wide
+    // contacts are deliberately suppressed so they do not drown out planets.
+    return !includesDerivedPoint || (hit.kind === "major" && hit.orb <= 2);
+  });
+  const patterns = computeAspectPatterns(primaryPoints, aspects);
 
   return {
     utcIso: utcDate.toISOString(),
@@ -146,6 +160,7 @@ export function computeNatalChartAtUtc(
     houseSystem,
     planetHouses,
     aspects,
+    patterns,
     latitude,
     longitude,
     ephemeris: ephemerisMetadata(options, utcDate),
@@ -162,7 +177,7 @@ export function computeTransitAspects(natal: NatalResult, transitDate: Date): {
 } {
   const calculation = natal.ephemeris;
   const options: CalculationOptions = {
-    ephemeris: "swiss",
+    ephemeris: calculation.source,
     zodiac: calculation.zodiac,
     nodeType: calculation.nodeType,
     topocentric: calculation.topocentric,

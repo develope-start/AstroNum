@@ -6,7 +6,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import CalculationRoom from "@/components/CalculationRoom";
 import type { WheelFixedStar, WheelPlanet } from "@/components/ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
-import type { HouseSystem } from "@/lib/astro/positions";
+import { HOUSE_SYSTEM_VALUES, type HouseSystem } from "@/lib/astro/positions";
 import { readApiResponse } from "@/lib/apiResponse";
 
 type ChartPayload = {
@@ -89,7 +89,7 @@ export default function SavedCalculationRoom({ endpoint, returnTo }: { endpoint:
   }, [endpoint]);
 
   const wheel = useMemo(() => wheelFromResult(payload?.result), [payload?.result]);
-  const houseSystem: HouseSystem = ["whole_sign", "equal", "porphyry", "placidus"].includes(payload?.houseSystem ?? "")
+  const houseSystem: HouseSystem = (HOUSE_SYSTEM_VALUES as readonly string[]).includes(payload?.houseSystem ?? "")
     ? payload!.houseSystem as HouseSystem
     : "placidus";
   const displayError = error ?? (payload && !wheel ? "რუკის გამოთვლილი შედეგი დაზიანებულია ან არასრულია." : null);

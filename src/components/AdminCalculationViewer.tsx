@@ -8,7 +8,7 @@ import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
 import CalculationRoom from "@/components/CalculationRoom";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
-import type { HouseSystem } from "@/lib/astro/positions";
+import { HOUSE_SYSTEM_VALUES, type HouseSystem } from "@/lib/astro/positions";
 import { useEffect } from "react";
 import { X, Calendar, Clock, MapPin } from "lucide-react";
 
@@ -100,7 +100,7 @@ export default function AdminCalculationViewer({
   }, [onClose]);
 
   if (wheel) {
-    const houseSystem: HouseSystem = ["whole_sign", "equal", "porphyry", "placidus"].includes(calculation.houseSystem)
+    const houseSystem: HouseSystem = (HOUSE_SYSTEM_VALUES as readonly string[]).includes(calculation.houseSystem)
       ? calculation.houseSystem as HouseSystem
       : "placidus";
     return (

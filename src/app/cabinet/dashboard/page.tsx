@@ -9,7 +9,7 @@ import type { WheelFixedStar, WheelPlanet } from "@/components/ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
 import ElementBalanceGuide from "@/components/ElementBalanceGuide";
 import CalculationRoom from "@/components/CalculationRoom";
-import type { HouseSystem } from "@/lib/astro/positions";
+import { HOUSE_SYSTEM_VALUES, type HouseSystem } from "@/lib/astro/positions";
 import { X, Trash2, Eye, Compass, User, Clock, Calendar, Sparkles } from "lucide-react";
 import { readApiResponse } from "@/lib/apiResponse";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
@@ -593,7 +593,7 @@ export default function DashboardPage() {
 
       {/* Selected Opened Chart View Modal / Card */}
       {selected?.result && (() => {
-        const houseSystem: HouseSystem = ["whole_sign", "equal", "porphyry", "placidus"].includes(selected.houseSystem)
+        const houseSystem: HouseSystem = (HOUSE_SYSTEM_VALUES as readonly string[]).includes(selected.houseSystem)
           ? selected.houseSystem as HouseSystem
           : "placidus";
         return (

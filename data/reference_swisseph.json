@@ -1,0 +1,49 @@
+{
+  "_note": "Reference values computed with Swiss Ephemeris 2.10.03 (sepl_18/semo_18/seas_18), geocentric apparent tropical, Placidus, mean node, mean apogee Lilith. Source: project validation fixture supplied for the 1995-06-22 Tbilisi regression.",
+  "input": {
+    "local": "1995-06-22 09:50",
+    "tz": "Asia/Tbilisi (UTC+05:00 DST)",
+    "ut": "1995-06-22T04:50:00Z",
+    "jd_ut": 2449890.701388889,
+    "lat": 41.5495,
+    "lon": 44.9987
+  },
+  "tolerance_arcmin": {
+    "planets": 1,
+    "houses_asc_mc": 1,
+    "node_lilith": 2,
+    "chiron": 10
+  },
+  "planets_ecliptic_longitude_deg": {
+    "Sun": 90.328444,
+    "Moon": 26.591298,
+    "Mercury": 70.738646,
+    "Venus": 74.031803,
+    "Mars": 163.604507,
+    "Jupiter": 247.999286,
+    "Saturn": 354.584733,
+    "Uranus": 299.60958,
+    "Neptune": 294.812446,
+    "Pluto": 238.388732,
+    "Chiron": 171.104715,
+    "NNode": 212.648474,
+    "Lilith": 78.945676,
+    "SNode": 32.648474,
+    "ASC": 131.114401,
+    "MC": 29.471839
+  },
+  "retrograde": {
+    "Sun": false,
+    "Moon": false,
+    "Mercury": false,
+    "Venus": false,
+    "Mars": false,
+    "Jupiter": true,
+    "Saturn": false,
+    "Uranus": true,
+    "Neptune": true,
+    "Pluto": true,
+    "Chiron": false
+  },
+  "placidus_cusps_deg": [131.114401, 151.895169, 177.494533, 209.471839, 246.033315, 281.14284, 311.114401, 331.895169, 357.494533, 29.471839, 66.033315, 101.14284]
+}

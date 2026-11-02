@@ -131,9 +131,12 @@ export default function SynastryCalculator() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <CalculationSettings value={calculation} onChange={setCalculation} />
+        <CalculationSettings value={calculation} onChange={(next) => {
+          setCalculation(next);
+          if (next.ephemeris === "astronomy" && !["placidus", "whole_sign", "equal", "porphyry"].includes(houseSystem)) setHouseSystem("placidus");
+        }} />
         <div className="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-center">
-          <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} />
+          <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} ephemeris={calculation.ephemeris ?? "swiss"} />
         </div>
       </div>
 

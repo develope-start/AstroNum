@@ -8,7 +8,7 @@ import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 import { requireFeatureAccess } from "@/lib/billing/access";
 
 const calculationSchema = z.object({
-  ephemeris: z.literal("swiss").default("swiss"),
+  ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
   zodiac: z.enum(["tropical", "sidereal"]).default("tropical"),
   siderealMode: z.number().int().min(0).max(255).default(1),
   nodeType: z.enum(["mean", "true"]).default("mean"),
@@ -22,7 +22,7 @@ const schema = z.object({
     place: z.string().min(1), lat: z.number(), lon: z.number(), timezone: z.string().min(1),
   }),
   targetDate: z.string().refine(isWideDate),
-  houseSystem: z.enum(["whole_sign", "equal", "porphyry", "placidus"]).default("placidus"),
+  houseSystem: z.enum(["placidus", "koch", "regiomontanus", "campanus", "alcabitius", "topocentric", "porphyry", "equal", "whole_sign"]).default("placidus"),
   calculation: calculationSchema.optional(),
 });
 

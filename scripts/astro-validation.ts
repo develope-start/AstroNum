@@ -1,5 +1,7 @@
-import { computeNatalChart, computeTransitInterval } from "../src/lib/astro/chart";
-import { computePlanetPositions } from "../src/lib/astro/positions";
+import { readFileSync } from "node:fs";
+import { computeNatalChart, computeNatalChartAtUtc, computeTransitInterval } from "../src/lib/astro/chart";
+import { computeAspectPatterns, computeAspects } from "../src/lib/astro/aspects";
+import { computePlanetPositions, HOUSE_SYSTEM_VALUES } from "../src/lib/astro/positions";
 import { buildCurrentTransitElementSnapshot, ELEMENT_PLANET_NAMES } from "../src/lib/astro/currentTransitElements";
 import { wideDateToUtcDate } from "../src/lib/astro/wideDate";
 import { calculateAngularity, calculateDeclinationContacts, calculateFixedStarContacts, calculateTraditionalDignities } from "../src/lib/astro/advanced";
@@ -34,6 +36,10 @@ const input = {
 };
 
 const swiss = computeNatalChart({ ...input, calculation: { ephemeris: "swiss" } }, "placidus");
+for (const houseSystem of HOUSE_SYSTEM_VALUES) {
+  const chart = computeNatalChart({ ...input, calculation: { ephemeris: "swiss" } }, houseSystem);
+  assert(chart.houseSystem === houseSystem && chart.houseCusps.length === 12 && chart.houseCusps.every(Number.isFinite), `${houseSystem} houses are calculated by Swiss Ephemeris`);
+}
 const elementReferencePlanets = ELEMENT_PLANET_NAMES.map((name, index) => ({
   name,
   longitude: index * 30,
@@ -82,8 +88,116 @@ assert(rustavi1995.utcOffsetMinutes === 300, "1995 Rustavi UTC offset is +05:00"
 assert(Math.abs(rustavi1995.houseCusps[9]! - 29.473202062065987) < 1e-7, "1995 Rustavi Placidus tenth-house cusp remains Aries 29°28′");
 assert(rustavi1995.planetHouses.Moon === 9, "1995 Rustavi Moon remains in the ninth Placidus house");
 assert(rustavi1995.planetHouses.MeanNode === 4 && rustavi1995.planetHouses.SouthNode === 10, "1995 Rustavi lunar nodes remain in the fourth and tenth houses");
+
+// Independent oracle supplied with the project. The same output contract is
+// tested for both adapters; Astronomy Engine intentionally returns no Chiron.
+const swissephReference = JSON.parse(readFileSync("data/reference_swisseph.json", "utf8")) as {
+  input: { lat: number; lon: number };
+  tolerance_arcmin: { planets: number; houses_asc_mc: number; node_lilith: number; chiron: number };
+  planets_ecliptic_longitude_deg: Record<string, number>;
+  retrograde: Record<string, boolean>;
+  placidus_cusps_deg: number[];
+};
+const referenceBirth = {
+  date: "1995-06-22",
+  time: "09:50",
+  timezone: "Asia/Tbilisi",
+  lat: swissephReference.input.lat,
+  lon: swissephReference.input.lon,
+};
+const referenceName = (name: string) => name === "NNode" ? "MeanNode" : name === "SNode" ? "SouthNode" : name;
+const referencePoint = (chart: ReturnType<typeof computeNatalChart>, name: string) => {
+  if (name === "ASC") return chart.ascendant;
+  if (name === "MC") return chart.mc;
+  return chart.planets.find((point) => point.name === referenceName(name))?.longitude;
+};
+for (const source of ["swiss", "astronomy"] as const) {
+  const chart = computeNatalChart({ ...referenceBirth, calculation: { ephemeris: source, zodiac: "tropical", nodeType: "mean" } }, "placidus");
+  for (const [name, expected] of Object.entries(swissephReference.planets_ecliptic_longitude_deg)) {
+    const actual = referencePoint(chart, name);
+    if (source === "astronomy" && name === "Chiron") {
+      assert(actual === undefined, "Astronomy Engine explicitly reports Chiron as unavailable");
+      continue;
+    }
+    assert(actual !== undefined, `${source} returns ${name} in the common result contract`);
+    const toleranceArcmin = name === "NNode" || name === "SNode" || name === "Lilith"
+      ? swissephReference.tolerance_arcmin.node_lilith
+      : name === "Chiron"
+        ? swissephReference.tolerance_arcmin.chiron
+        : name === "ASC" || name === "MC"
+          ? swissephReference.tolerance_arcmin.houses_asc_mc
+          : swissephReference.tolerance_arcmin.planets;
+    assert(
+      angularDifference(actual, expected) * 60 <= toleranceArcmin,
+      `${source} ${name} differs from reference by ${(angularDifference(actual, expected) * 60).toFixed(4)}′ (limit ${toleranceArcmin}′)`,
+    );
+  }
+  if (source === "swiss") {
+    for (const [name, retrograde] of Object.entries(swissephReference.retrograde)) {
+      assert(chart.planets.find((point) => point.name === name)?.retrograde === retrograde, `Swiss reference retrograde state is retained for ${name}`);
+    }
+    swissephReference.placidus_cusps_deg.forEach((expected, index) => {
+      assert(angularDifference(chart.houseCusps[index]!, expected) * 60 <= 0.001, `Swiss Placidus cusp ${index + 1} matches the reference oracle`);
+    });
+  }
+}
+
+const comparisonDates = [
+  "1969-07-20T20:17:00.000Z",
+  "1987-11-09T12:00:00.000Z",
+  "1995-06-22T04:50:00.000Z",
+  "2000-01-01T12:00:00.000Z",
+  "2025-10-14T12:00:00.000Z",
+  "2045-03-20T09:00:00.000Z",
+];
+const engineComparison = comparisonDates.map((utcIso) => {
+  const date = new Date(utcIso);
+  const swissChart = computeNatalChartAtUtc(date, swissephReference.input.lat, swissephReference.input.lon, { ephemeris: "swiss" }, "placidus");
+  const astronomyChart = computeNatalChartAtUtc(date, swissephReference.input.lat, swissephReference.input.lon, { ephemeris: "astronomy" }, "placidus");
+  const names = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"];
+  const planetDeltaArcmin = Math.max(...names.map((name) => angularDifference(
+    swissChart.planets.find((point) => point.name === name)!.longitude,
+    astronomyChart.planets.find((point) => point.name === name)!.longitude,
+  ) * 60));
+  const angleDeltaArcmin = Math.max(
+    angularDifference(swissChart.ascendant, astronomyChart.ascendant) * 60,
+    angularDifference(swissChart.mc, astronomyChart.mc) * 60,
+  );
+  const nodeDeltaArcmin = angularDifference(
+    swissChart.planets.find((point) => point.name === "MeanNode")!.longitude,
+    astronomyChart.planets.find((point) => point.name === "MeanNode")!.longitude,
+  ) * 60;
+  const lilithDeltaArcmin = angularDifference(
+    swissChart.planets.find((point) => point.name === "Lilith")!.longitude,
+    astronomyChart.planets.find((point) => point.name === "Lilith")!.longitude,
+  ) * 60;
+  assert(planetDeltaArcmin <= swissephReference.tolerance_arcmin.planets, `${utcIso}: planet comparison remains within 1′`);
+  assert(angleDeltaArcmin <= swissephReference.tolerance_arcmin.houses_asc_mc, `${utcIso}: ASC/MC comparison remains within 1′`);
+  assert(nodeDeltaArcmin <= swissephReference.tolerance_arcmin.node_lilith && lilithDeltaArcmin <= swissephReference.tolerance_arcmin.node_lilith, `${utcIso}: node/Lilith comparison remains within 2′`);
+  return {
+    utc: utcIso.slice(0, 10),
+    "max planet Δ′": Number(planetDeltaArcmin.toFixed(3)),
+    "max ASC/MC Δ′": Number(angleDeltaArcmin.toFixed(3)),
+    "node Δ′": Number(nodeDeltaArcmin.toFixed(3)),
+    "Lilith Δ′": Number(lilithDeltaArcmin.toFixed(3)),
+  };
+});
+console.table(engineComparison);
 assert(swiss.planets.some((planet) => planet.name === "MeanNode"), "Mean Node is explicitly identified");
 assert(swiss.planets.some((planet) => planet.name === "SouthNode"), "South Node is explicitly identified");
+assert(swiss.planets.some((planet) => planet.name === "Vertex"), "Swiss House calculation supplies Vertex");
+assert(swiss.planets.some((planet) => planet.name === "Fortune"), "traditional Part of Fortune is calculated");
+assert(swiss.planets.some((planet) => planet.name === "Spirit"), "traditional Part of Spirit is calculated");
+assert(swiss.patterns.every((pattern) => Number.isFinite(pattern.meanOrb)), "aspect pattern scores are finite");
+const fortune = swiss.planets.find((planet) => planet.name === "Fortune");
+const spirit = swiss.planets.find((planet) => planet.name === "Spirit");
+assert(fortune && spirit && angularDifference(fortune.longitude, (2 * swiss.ascendant - spirit.longitude + 720) % 360) < 1e-9, "traditional Lots mirror around the Ascendant");
+const grandTrinePoints = [
+  { name: "Sun", longitude: 0, speed: 0 },
+  { name: "Moon", longitude: 120, speed: 0 },
+  { name: "Jupiter", longitude: 240, speed: 0 },
+];
+assert(computeAspectPatterns(grandTrinePoints, computeAspects(grandTrinePoints)).some((pattern) => pattern.kind === "grand_trine"), "exact grand trine is identified from aspect geometry");
 const meanNode = swiss.planets.find((planet) => planet.name === "MeanNode");
 const southNode = swiss.planets.find((planet) => planet.name === "SouthNode");
 assert(meanNode && southNode && angularDifference(meanNode.longitude, southNode.longitude) === 180, "South Node is exactly opposite the selected North Node");
@@ -161,7 +275,7 @@ const astronomy = computePlanetPositions(
   new Date("2000-01-01T12:00:00.000Z"),
   { ephemeris: "astronomy" },
 );
-for (const swissPlanet of swiss.planets.filter((planet) => !["MeanNode", "SouthNode"].includes(planet.name))) {
+for (const swissPlanet of swiss.planets.filter((planet) => ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"].includes(planet.name))) {
   const astronomyPlanet = astronomy.find((planet) => planet.name === swissPlanet.name);
   assert(astronomyPlanet, `${swissPlanet.name} exists in fallback engine`);
   assert(angularDifference(swissPlanet.longitude, astronomyPlanet.longitude) < 0.5, `${swissPlanet.name} engine delta is below 0.5°`);
@@ -175,13 +289,19 @@ try {
 }
 assert(coordinateTimezoneRejected, "static or coordinate-mismatched timezones are rejected");
 
-let nonSwissRejected = false;
+const astronomyChart = computeNatalChart({ ...input, calculation: { ephemeris: "astronomy", topocentric: true, altitudeMeters: 120 } }, "placidus");
+assert(astronomyChart.ephemeris.source === "astronomy", "Astronomy Engine remains the selected engine");
+assert(astronomyChart.planets.filter((planet) => ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"].includes(planet.name)).length === 10, "Astronomy Engine provides all ten major planets");
+assert(!astronomyChart.planets.some((planet) => planet.name === "Chiron"), "Astronomy Engine does not silently borrow Chiron from Swiss Ephemeris");
+assert(astronomyChart.houseCusps.length === 12 && astronomyChart.houseCusps.every(Number.isFinite), "Astronomy Engine chart includes calculated houses");
+assert(astronomyChart.aspects.length > 0 && astronomyChart.patterns.every((pattern) => Number.isFinite(pattern.meanOrb)), "Astronomy Engine uses the full aspect and interpretation pipeline");
+let astronomyFeatureRejected = false;
 try {
-  computeNatalChart({ ...input, calculation: { ephemeris: "astronomy" } });
+  computeNatalChart({ ...input, calculation: { ephemeris: "astronomy", includeAsteroids: true } }, "placidus");
 } catch (error) {
-  nonSwissRejected = error instanceof Error && error.message.includes("Swiss Ephemeris");
+  astronomyFeatureRejected = error instanceof Error && error.message.includes("asteroid catalogue");
 }
-assert(nonSwissRejected, "natal charts never silently fall back to another ephemeris engine");
+assert(astronomyFeatureRejected, "Astronomy Engine rejects unavailable asteroid features instead of mixing engines");
 
 for (const value of ["-10000-01-01", "-5400-06-15", "10000-12-31"]) {
   const date = wideDateToUtcDate(value);

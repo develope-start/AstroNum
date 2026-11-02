@@ -5,6 +5,8 @@ import { Check, Clock, Plus, Trash2, Wand2 } from "lucide-react";
 import { eclipticToSign } from "@/lib/astro/signs";
 import type { RectificationEventType, RectificationResult } from "@/lib/astro/rectification";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
+import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
+import type { CalculationOptions } from "@/lib/astro/ephemeris";
 
 interface LifeEvent {
   id: string;
@@ -65,6 +67,7 @@ export default function RectificationCandidateCalculator() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RectificationResult | null>(null);
+  const [calculation, setCalculation] = useState<CalculationOptions>({ ...DEFAULT_UI_CALCULATION });
 
   const addEvent = () => {
     setEvents((current) => [...current, {
@@ -110,6 +113,7 @@ export default function RectificationCandidateCalculator() {
             lat: birth.lat,
             lon: birth.lon,
             timezone: birth.timezone,
+          calculation,
           },
           uncertaintyMinutes,
           events: events.map(({ type, date }) => ({ type, date })),
@@ -143,6 +147,8 @@ export default function RectificationCandidateCalculator() {
       <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
         <div className="space-y-4 lg:col-span-6">
           <BirthFields value={birth} onChange={setBirth} legend="01. სავარაუდო დაბადების მონაცემები" />
+
+          <CalculationSettings value={calculation} onChange={setCalculation} />
 
           <div className="space-y-4 rounded-2xl border border-white/10 bg-[#090d1e]/85 p-5 shadow-xl backdrop-blur-xl">
             <div className="flex items-center justify-between">

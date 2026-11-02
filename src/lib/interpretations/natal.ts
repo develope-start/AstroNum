@@ -1,9 +1,10 @@
 import { PlanetPosition } from "@/lib/astro/positions";
-import { AspectHit } from "@/lib/astro/aspects";
+import { AspectHit, AspectPattern } from "@/lib/astro/aspects";
 import { eclipticToSign, formatDegree, HOUSE_LABELS_KA, PLANET_NAMES_KA } from "@/lib/astro/signs";
 import { aspectLibraryInsight, dedupeInsights, natalLibraryInsights } from "./library";
 import type { SecondaryProgressionResult } from "@/lib/astro/progressions";
 import type { AngularityResult, DeclinationContact, DignityResult, FixedStarContact } from "@/lib/astro/advanced";
+import type { EphemerisMetadata } from "@/lib/astro/ephemeris";
 import { formatWideDateDisplay } from "@/lib/astro/wideDate";
 
 const PLANET_MEANING_KA: Record<string, string> = {
@@ -25,6 +26,13 @@ const PLANET_MEANING_KA: Record<string, string> = {
 PLANET_MEANING_KA.Chiron = "ძველ მგრძნობიარე გამოცდილებას და იმ უნარს აჩვენებს, რომლითაც ადამიანი სხვასაც ეხმარება";
 PLANET_MEANING_KA.Lilith = "დაუმუშავებელ სურვილებს, ტაბუებს, უარყოფილ ძალას და საკუთარი საზღვრების დაცვის საჭიროებას აჩვენებს";
 PLANET_MEANING_KA.Selena = "შინაგან მხარდაჭერას, კეთილგანწყობილ რესურსს და იმ ღირებულებებს აჩვენებს, რომელთა ერთგულებაც გაძლიერებთ";
+PLANET_MEANING_KA.Ceres = "ზრუნვის, მიღებისა და დაკარგვის გადამუშავების სტილს აჩვენებს";
+PLANET_MEANING_KA.Pallas = "სტრატეგიულ აზროვნებასა და ნიმუშების დანახვის უნარს აჩვენებს";
+PLANET_MEANING_KA.Juno = "თანასწორი პარტნიორობისა და ერთგულების პრინციპს აჩვენებს";
+PLANET_MEANING_KA.Vesta = "კონცენტრაციის, ერთგულებისა და პირადი სივრცის საჭიროებას აჩვენებს";
+PLANET_MEANING_KA.Vertex = "მნიშვნელოვანი შეხვედრებისა და ურთიერთქმედებების სიმბოლური კვანძია";
+PLANET_MEANING_KA.Fortune = "გარემოებებთან ნაკადში შესვლისა და პრაქტიკული შესაძლებლობის ტრადიციული წერტილია";
+PLANET_MEANING_KA.Spirit = "განზრახვის, არჩევანისა და შინაგანი მიმართულების ტრადიციული წერტილია";
 
 const SIGN_QUALITY_KA: Record<string, string> = {
   ვერძი: "პირდაპირ, სწრაფად და ინიციატივით",
@@ -41,6 +49,30 @@ const SIGN_QUALITY_KA: Record<string, string> = {
   თევზები: "ინტუიციურად, თანაგრძნობითა და ზღვრების დნობით",
 };
 
+const SIGN_CONTEXT_KA: Record<string, string> = {
+  ვერძი: "აქ ინიციატივა სწრაფი და პირდაპირია; მთავარი ამოცანაა იმპულსს მიზანმიმართული მიმართულება მისცეთ.",
+  კურო: "აქ ღირებულება იქმნება ნელა, თანმიმდევრულად და ხელშესახები შედეგით; ცვლილება დროს მოითხოვს.",
+  ტყუპები: "აქ მრავალფეროვანი ინფორმაცია და დიალოგი მოქმედების საწვავია; მნიშვნელოვანია ყურადღების შეგნებული გადანაწილება.",
+  კირჩხიბი: "აქ უსაფრთხოება, მეხსიერება და კუთვნილება არჩევანზე ძლიერ მოქმედებს; ზრუნვას საზღვარი სჭირდება.",
+  ლომი: "აქ თვითგამოხატვა, გულუხვობა და ხილვადობა ცენტრალური ხდება; საჭიროა შემოქმედებითი პასუხისმგებლობაც.",
+  ქალწული: "აქ ხარისხი დეტალის, პრაქტიკისა და გამართულობის მეშვეობით ყალიბდება; სრულყოფილებამ არ უნდა შეაფერხოს დაწყება.",
+  სასწორი: "აქ გადაწყვეტილება ურთიერთშეთანხმებითა და სამართლიანი ბალანსით მწიფდება; საკუთარი პოზიციის შენარჩუნებაც საჭიროა.",
+  მორიელი: "აქ სიღრმე, ნდობა და კონტროლის თემა ძლიერდება; ტრანსფორმაცია გულწრფელობას მოითხოვს.",
+  მშვილდოსანი: "აქ აზრი იზრდება ჰორიზონტის გაფართოებით, სწავლითა და გამოცდილებით; რწმენა ფაქტებთან უნდა შეამოწმოთ.",
+  "თხის რქა": "აქ შედეგი დისციპლინით, დროითა და პასუხისმგებლობით შენდება; ამბიცია დასვენებასაც უნდა უთმობდეს ადგილს.",
+  მერწყული: "აქ თავისუფალი აზრი, ჯგუფური ხედვა და განსხვავებული გზა აქტიურია; დისტანცია კავშირის დაკარგვაში არ უნდა გადავიდეს.",
+  თევზები: "აქ წარმოსახვა, თანაგრძნობა და შთაბეჭდილებების გამტარობა ძლიერია; მკაფიო საზღვრები ამ მგრძნობელობას იცავს.",
+};
+
+// Traditional Chaldean decans. This adds a degree-specific layer without
+// pretending that a single degree can determine a person's whole chart.
+const DECAN_RULERS: readonly (readonly string[])[] = [
+  ["Mars", "Sun", "Venus"], ["Mercury", "Moon", "Saturn"], ["Jupiter", "Mars", "Sun"],
+  ["Venus", "Mercury", "Moon"], ["Saturn", "Jupiter", "Mars"], ["Sun", "Venus", "Mercury"],
+  ["Moon", "Saturn", "Jupiter"], ["Mars", "Sun", "Venus"], ["Mercury", "Moon", "Saturn"],
+  ["Jupiter", "Mars", "Sun"], ["Venus", "Mercury", "Moon"], ["Saturn", "Jupiter", "Mars"],
+];
+
 const HOUSE_THEME_KA = [
   "საკუთარ თავსა და გარეგან იმიჯში",
   "ფინანსებსა და პირად ღირებულებებში",
@@ -56,12 +88,29 @@ const HOUSE_THEME_KA = [
   "შინაგან სამყაროსა და განმარტოებაში",
 ];
 
+const HOUSE_CONTEXT_KA = [
+  "ეს თემა პირველ შთაბეჭდილებაში, სხეულებრივ რიტმსა და თვითწარდგენაში ჩანს.",
+  "ეს თემა რესურსის მართვას, შემოსავალს, უსაფრთხოებასა და თვითღირებულებას ებმის.",
+  "ეს თემა ყოველდღიურ საუბარში, სწავლის მანერასა და ახლო გარემოში ცოცხლდება.",
+  "ეს თემა ოჯახურ საყრდენში, სახლში და პირად ისტორიაში იჩენს თავს.",
+  "ეს თემა სიამოვნებაში, სიყვარულში, თამაშსა და შემოქმედებით რისკში გამოიხატება.",
+  "ეს თემა სამუშაო რიტმს, ჯანმრთელობის ჩვევებსა და მომსახურების ხარისხს ეხება.",
+  "ეს თემა პარტნიორობას, ხელშეკრულებებსა და ღია სარკე-ურთიერთობებს ეხება.",
+  "ეს თემა ნდობას, საერთო რესურსებსა და ფსიქოლოგიურ ცვლილებას ეხება.",
+  "ეს თემა განათლებას, მსოფლმხედველობას, შორეულ გარემოსა და აზრის გაფართოებას ეხება.",
+  "ეს თემა კარიერას, პასუხისმგებლობას, ხილვადობასა და რეპუტაციას ეხება.",
+  "ეს თემა მეგობრებს, თანამოაზრეებსა და მომავალზე დაფუძნებულ გეგმებს ეხება.",
+  "ეს თემა შინაგან ცხოვრებას, დასვენებას, განმარტოებასა და ჯერ კიდევ უხილავ პროცესებს ეხება.",
+];
+
 interface PlacementInput {
   planets: PlanetPosition[];
   houseCusps: number[];
   ascendant: number;
   mc: number;
   aspects: AspectHit[];
+  patterns?: AspectPattern[];
+  ephemeris?: EphemerisMetadata;
   houseOfFn: (lon: number) => number;
   advanced?: {
     dignities: DignityResult[];
@@ -80,7 +129,16 @@ function planetLine(p: PlanetPosition, houseNum: number): string {
   // კვანძისთვის "რეტროგრადულობა" ჩვეულებრივი და მუდმივი მდგომარეობაა, ამიტომ არ აღვნიშნავთ
   const retro = p.retrograde && p.name !== "TrueNode" && p.name !== "MeanNode" ? " (რეტროგრადული — ეს თემა უფრო შინაგანად, გადამუშავებით ვლინდება)" : "";
 
-  return `**${nameKa}** ${signName}-ში (${formatDegree(degreeInSign)}), ${houseNum}-ე სახლში${retro}. თქვენი ${meaning} ვლინდება ${quality}, უპირატესად ${theme}.`;
+  const degreePhase = degreeInSign < 10
+    ? "ნიშნის საწყის ფაზაში — ინიციაციისა და პირველი რეაგირების ტონი აქ უფრო მკვეთრია"
+    : degreeInSign < 20
+      ? "ნიშნის შუა ფაზაში — ეს თვისებები პრაქტიკითა და ურთიერთქმედებით მყარდება"
+      : "ნიშნის ბოლო ფაზაში — გამოცდილების შეჯამება და შემდეგი ეტაპისთვის მომზადება აქ მნიშვნელოვანი ტონია";
+  const decanRuler = DECAN_RULERS[eclipticToSign(p.longitude).signIndex]?.[Math.min(2, Math.floor(degreeInSign / 10))];
+  const decanText = decanRuler
+    ? `ტრადიციული დეკანი: ${PLANET_NAMES_KA[decanRuler] ?? decanRuler}; ეს არის დამატებითი 10°-იანი სიმბოლური ფენა.`
+    : "";
+  return `**${nameKa}** ${signName}-ში (${formatDegree(degreeInSign)}), ${houseNum}-ე სახლში${retro}. თქვენი ${meaning} ვლინდება ${quality}, უპირატესად ${theme}. ${SIGN_CONTEXT_KA[signName] ?? ""} ${HOUSE_CONTEXT_KA[houseNum - 1] ?? ""} გრადუსის ფენა: ${degreePhase}. ${decanText}`;
 }
 
 function aspectLine(hit: AspectHit, planets?: PlanetPosition[], houseOfFn?: (lon: number) => number): string {
@@ -105,12 +163,64 @@ function aspectLine(hit: AspectHit, planets?: PlanetPosition[], houseOfFn?: (lon
   return `${a}${placement(aPoint)} — ${hit.aspectKa} — ${b}${placement(bPoint)} (ორბი ${hit.orb}°, ${strength}; ${phase}). ${tone}.`;
 }
 
-function methodNote(): string {
+const TRADITIONAL_SIGN_RULERS = ["Mars", "Venus", "Mercury", "Moon", "Sun", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Saturn", "Jupiter"] as const;
+
+function chartSynthesisLines(input: PlacementInput): string[] {
+  const ascSign = eclipticToSign(input.ascendant);
+  const rulerName = TRADITIONAL_SIGN_RULERS[ascSign.signIndex];
+  const ruler = input.planets.find((planet) => planet.name === rulerName);
+  const lines = ["## რუკის ლოგიკური ღერძები"];
+
+  if (ruler) {
+    const rulerSign = eclipticToSign(ruler.longitude);
+    const rulerHouse = input.houseOfFn(ruler.longitude);
+    lines.push(`**ასცენდენტის მმართველი — ${PLANET_NAMES_KA[ruler.name] ?? ruler.name}.** ${ascSign.signName}-ის ასცენდენტის საერთო მიმართულებას ეს პლანეტა ${rulerSign.signName}-ისა და ${rulerHouse}-ე სახლის საშუალებით აკავშირებს: პიროვნული სტილი, ამიტომ, მხოლოდ ასცენდენტით არ იკითხება — ის კონკრეტულად ამ ცხოვრებისეულ სფეროში იღებს ფორმას.`);
+  }
+
+  const coreNames = new Set(["Sun", "Moon", rulerName]);
+  const coreLinks = input.aspects
+    .filter((hit) => coreNames.has(hit.a) || coreNames.has(hit.b))
+    .sort((a, b) => a.orb - b.orb)
+    .slice(0, 4);
+  if (coreLinks.length) {
+    lines.push("**საკვანძო კავშირები.** " + coreLinks.map((hit) => {
+      const first = input.planets.find((planet) => planet.name === hit.a);
+      const second = input.planets.find((planet) => planet.name === hit.b);
+      const firstHouse = first ? input.houseOfFn(first.longitude) : null;
+      const secondHouse = second ? input.houseOfFn(second.longitude) : null;
+      return `${PLANET_NAMES_KA[hit.a] ?? hit.a} (${firstHouse ?? "—"}-ე სახლი) ${hit.aspectKa}-ით უერთდება ${PLANET_NAMES_KA[hit.b] ?? hit.b}-ს (${secondHouse ?? "—"}-ე სახლი; ორბი ${hit.orb}°)`;
+    }).join("; ") + ". ეს კავშირები აჩვენებს, რომელ სფეროებს შორის მოძრაობს რუკის მთავარი დინამიკა.");
+  }
+
+  const angular = input.advanced?.angularity
+    .filter((item) => item.angle && item.distance <= 5)
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, 3);
+  if (angular?.length) {
+    lines.push("**გამოკვეთილი პლანეტები.** " + angular.map((item) => `${PLANET_NAMES_KA[item.planet] ?? item.planet} ${ANGLE_LABELS[item.angle ?? ""] ?? item.angle}-თან ${item.distance}°-ით`).join(", ") + ". კუთხესთან სიახლოვე მათ თემებს რუკაში უფრო ხილულს ხდის.");
+  }
+
+  if (input.patterns?.length) {
+    lines.push("**ასპექტული ფიგურები.** " + input.patterns.slice(0, 5).map((pattern) => {
+      const points = pattern.points.map((point) => PLANET_NAMES_KA[point] ?? point).join(" — ");
+      const precision = pattern.kind === "stellium" ? "ერთ ნიშანში კონცენტრაცია" : `საშუალო ორბი ${pattern.meanOrb}°`;
+      return `${pattern.nameKa}: ${points} (${precision})`;
+    }).join("; ") + ". ეს არის მხოლოდ გამოთვლილი გეომეტრია და არა ფატალური წინასწარმეტყველება.");
+  }
+
+  return lines.length > 1 ? lines : [];
+}
+
+function methodNote(ephemeris?: EphemerisMetadata): string {
+  const engine = ephemeris?.source === "astronomy" ? "Astronomy Engine (MIT)" : "Swiss Ephemeris";
+  const capabilities = ephemeris?.source === "astronomy"
+    ? "ამ რუკაში გამოყენებულია Astronomy Engine-ის დამოუკიდებელი გამოთვლითი გზა: ტროპიკული ზოდიაქო, საშუალო მთვარის კვანძი და ხელმისაწვდომი სახლების სისტემები. ასტეროიდები, ქირონი, True Node და სიდერიული რეჟიმი განზრახ არ არის შერეული სხვა ძრავიდან."
+    : "ამ რუკაში გამოყენებულია Swiss Ephemeris-ის არჩეული რეჟიმი და მისი სრული შესაძლებლობები.";
   return `**ასტროლოგიური გაანგარიშების მოდული:**
 
 1. ყველა შემავალი მონაცემი (ადგილობრივი თარიღი, დრო, გეოგრაფიული კოორდინატები — გრძედი და განედი) მკაცრად უნდა გადამოწმდეს **IANA Time Zone Database**-ის მეშვეობით, რათა განისაზღვროს ზუსტი ისტორიული სარტყლოვანი კორექცია (მოქმედი ზაფხულის/ზამთრის დროის გათვალისწინებით მოცემულ წელს).
 2. აკრძალულია ადგილობრივი დროით პლანეტების პოზიციების პირდაპირი ძებნა. ადგილობრივი დრო სავალდებულოდ უნდა გარდაიქმნას უნივერსალურ დროდ (**UT / Universal Time**) და შემდგომ **Julian Date (JD)** ფორმატში.
-3. პლანეტების, სახლების (House Cusps, ASC, MC) და კვანძების გამოსათვლელად აუცილებლად გამოყენებული უნდა იქნას **Swiss Ephemeris** ალგორითმი, რომელიც უზრუნველყოფს მაღალსიზუსტიან კორექციებს ნებისმიერი ისტორიული პერიოდისთვის (ძველი წელთაღრიცხვიდან, -10000 წლიდან, მომავლის, ახალი წელთაღრიცხვის 10000 წლამდე).
+3. ამ რუკის გამოთვლითი ძრავია **${engine}**. ${capabilities}
 4. სახლების კუსპიდების გამოთვლისას (განსაკუთრებით პოსტსაბჭოთა სივრცისა და იმ ქვეყნებისთვის, სადაც საათები ხშირად იცვლებოდა) პროგრამამ ავტომატურად უნდა გამორიცხოს სტატიკური დროის სარტყლების გამოყენება და დაეყრდნოს გეოგრაფიულ კოორდინატებზე დამყარებულ α, δ და სახლების სისტემის (მაგ. Placidus / Koch) მათემატიკურ მატრიცას.
 
 ეს ტექსტი აგებულია გამოთვლილი პოზიციების, სახლებისა და ასპექტების მიხედვით. ორბი მიუთითებს ასპექტის სიზუსტეს, ხოლო applying/separating — მოძრაობის ფაზას. ინტერპრეტაცია არის სიმბოლური, შემოწმებადი წესების მიხედვით შედგენილი ანალიზი და არა გარანტირებული წინასწარმეტყველება ან სამედიცინო/ფინანსური დიაგნოზი.`;
@@ -174,6 +284,8 @@ export function generateNatalInterpretation(input: PlacementInput): string {
   parts.push("**მნიშვნელოვანი განმარტება:** სახლის კუსპიდის ნიშანი და ამ სახლში მყოფი პლანეტის/კვანძის ნიშანი სხვადასხვა რამაა. მაგალითად, მე-10 სახლის კუსპიდი შეიძლება ვერძში იწყებოდეს, ხოლო ამავე სახლში კუროში მყოფი სამხრეთ კვანძი იდგეს.");
   for (const p of planets) parts.push(planetLine(p, houseOfFn(p.longitude)));
 
+  parts.push(...chartSynthesisLines(input));
+
   for (let index = 0; index < houseCusps.length; index += 1) {
     const house = index + 1;
     const cusp = eclipticToSign(houseCusps[index]!);
@@ -198,7 +310,7 @@ export function generateNatalInterpretation(input: PlacementInput): string {
 
   // Keep the methodology as the final section so future interpretation
   // additions are always placed above it.
-  parts.push(`\n## გამოთვლისა და ინტერპრეტაციის საფუძველი\n\n${methodNote()}`);
+  parts.push(`\n## გამოთვლისა და ინტერპრეტაციის საფუძველი\n\n${methodNote(input.ephemeris)}`);
 
   return parts.join("\n\n");
 }

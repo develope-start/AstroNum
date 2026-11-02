@@ -133,7 +133,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const instant = new Date();
-    const options = { ephemeris: "swiss" as const };
+    const options = { ephemeris: "astronomy" as const };
     const planets = computePlanetPositions(instant, options, TBILISI.longitude, TBILISI.latitude)
       .filter((planet) => CLASSICAL_PLANETS.has(planet.name))
       .map((planet) => livePoint(planet.name, planet.longitude, planet.speed));
@@ -163,10 +163,10 @@ export async function GET(req: NextRequest) {
       utcTime: `${instant.toISOString().slice(11, 16)} UTC`,
       tbilisiTime: `${local.toFormat("HH:mm")} (${local.toFormat("ZZ")})`,
       date: local.toFormat("yyyy-MM-dd"),
-      ephemeris: "swiss",
+      ephemeris: "astronomy",
     }, { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30" } });
   } catch (error) {
-    console.error("Swiss live transit calculation failed:", error);
-    return NextResponse.json({ error: "Live Swiss Ephemeris calculation is temporarily unavailable." }, { status: 503, headers: { "Cache-Control": "no-store" } });
+    console.error("Astronomy Engine live transit calculation failed:", error);
+    return NextResponse.json({ error: "Live Astronomy Engine calculation is temporarily unavailable." }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
 }

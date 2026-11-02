@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { dateToJulianDay, findNextLunarEclipse, findNextSolarEclipse, julianDayToDate } from "@swisseph/node";
 import { z } from "zod";
+import * as Astronomy from "astronomy-engine";
 import { isWideDate, wideDateToUtcDate } from "@/lib/astro/wideDate";
 import { requireFeatureAccess } from "@/lib/billing/access";
 import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
@@ -11,19 +11,30 @@ const schema = z.object({
   backward: z.boolean().default(false),
 });
 
-function dateFromJulianDay(julianDay: number): string {
-  const date = julianDayToDate(julianDay);
-  return `${String(date.year).padStart(5, date.year < 0 ? "-" : "0")}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")} ${date.hour.toFixed(4)} UTC`;
+function formatUtc(date: Date): string {
+  return `${date.toISOString().replace("T", " ").replace(/\.\d{3}Z$/, " UTC")}`;
+}
+
+function offsetMinutes(date: Date, minutes: number): string | null {
+  return minutes !== 0 ? formatUtc(new Date(date.getTime() + minutes * 60_000)) : null;
+}
+
+/** Astronomy Engine has forward searches; this bounded scan finds the last event without Swiss. */
+function previousEclipse(type: "solar" | "lunar", start: Date) {
+  const minimum = new Date(start.getTime() - 400 * 86_400_000);
+  let event = type === "solar" ? Astronomy.SearchGlobalSolarEclipse(minimum) : Astronomy.SearchLunarEclipse(minimum);
+  let previous = event;
+  for (let index = 0; index < 8; index += 1) {
+    if (event.peak.date.getTime() >= start.getTime()) break;
+    previous = event;
+    event = type === "solar" ? Astronomy.NextGlobalSolarEclipse(event.peak) : Astronomy.NextLunarEclipse(event.peak);
+  }
+  return previous;
 }
 
 export async function POST(req: NextRequest) {
   const limiter = rateLimit(getRateLimitKey(req, "chart:eclipses"), 20, 5 * 60 * 1000);
-  if (!limiter.allowed) {
-    return NextResponse.json({ error: "მოთხოვნების ლიმიტი ამოიწურა. სცადეთ მოგვიანებით." }, {
-      status: 429,
-      headers: { "Retry-After": String(limiter.retryAfterSeconds) },
-    });
-  }
+  if (!limiter.allowed) return NextResponse.json({ error: "მოთხოვნების ლიმიტი ამოიწურა. სცადეთ მოგვიანებით." }, { status: 429, headers: { "Retry-After": String(limiter.retryAfterSeconds) } });
   const accessDenied = await requireFeatureAccess(req, "eclipses");
   if (accessDenied) return accessDenied;
   const parsed = schema.safeParse(await req.json().catch(() => null));
@@ -31,19 +42,22 @@ export async function POST(req: NextRequest) {
   const start = wideDateToUtcDate(parsed.data.startDate);
   if (!start) return NextResponse.json({ error: "დაწყების თარიღი ვერ გარდაიქმნა" }, { status: 400 });
   try {
-    const eclipse = parsed.data.type === "solar"
-      ? findNextSolarEclipse(dateToJulianDay(start), undefined, 0, parsed.data.backward)
-      : findNextLunarEclipse(dateToJulianDay(start), undefined, 0, parsed.data.backward);
+    if (parsed.data.type === "solar") {
+      const eclipse = (parsed.data.backward ? previousEclipse("solar", start) : Astronomy.SearchGlobalSolarEclipse(start)) as Astronomy.GlobalSolarEclipseInfo;
+      return NextResponse.json({
+        engine: "astronomy", type: "solar", maximum: formatUtc(eclipse.peak.date),
+        partialBegin: null, partialEnd: null, totalBegin: null, totalEnd: null, centralBegin: null, centralEnd: null,
+        eclipseType: eclipse.kind, obscuration: eclipse.obscuration ?? null,
+        centralLatitude: eclipse.latitude ?? null, centralLongitude: eclipse.longitude ?? null,
+      });
+    }
+    const eclipse = (parsed.data.backward ? previousEclipse("lunar", start) : Astronomy.SearchLunarEclipse(start)) as Astronomy.LunarEclipseInfo;
     return NextResponse.json({
-      type: parsed.data.type,
-      maximum: dateFromJulianDay(eclipse.maximum),
-      partialBegin: dateFromJulianDay(eclipse.partialBegin),
-      partialEnd: dateFromJulianDay(eclipse.partialEnd),
-      totalBegin: "totalBegin" in eclipse && eclipse.totalBegin ? dateFromJulianDay(eclipse.totalBegin) : null,
-      totalEnd: "totalEnd" in eclipse && eclipse.totalEnd ? dateFromJulianDay(eclipse.totalEnd) : null,
-      centralBegin: "centralBegin" in eclipse && eclipse.centralBegin ? dateFromJulianDay(eclipse.centralBegin) : null,
-      centralEnd: "centralEnd" in eclipse && eclipse.centralEnd ? dateFromJulianDay(eclipse.centralEnd) : null,
-      eclipseType: eclipse.type,
+      engine: "astronomy", type: "lunar", maximum: formatUtc(eclipse.peak.date),
+      partialBegin: offsetMinutes(eclipse.peak.date, -eclipse.sd_partial), partialEnd: offsetMinutes(eclipse.peak.date, eclipse.sd_partial),
+      totalBegin: offsetMinutes(eclipse.peak.date, -eclipse.sd_total), totalEnd: offsetMinutes(eclipse.peak.date, eclipse.sd_total),
+      centralBegin: null, centralEnd: null, eclipseType: eclipse.kind,
+      penumbralBegin: offsetMinutes(eclipse.peak.date, -eclipse.sd_penum), penumbralEnd: offsetMinutes(eclipse.peak.date, eclipse.sd_penum), obscuration: eclipse.obscuration,
     });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "დაბნელების გამოთვლა ვერ შესრულდა" }, { status: 400 });

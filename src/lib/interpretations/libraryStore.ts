@@ -53,21 +53,34 @@ function matchesTags(tags: Record<string, unknown>, context: LibraryMatchContext
   return true;
 }
 
-/** Load only external-language entries and translate them through the cache. */
+function relevanceScore(tags: Record<string, unknown>): number {
+  // A source entry with no tags is a catalogue record, not chart-specific
+  // interpretation. Specific combinations always outrank generic entries.
+  return ["planet", "sign", "house", "aspect", "a", "b", "element"]
+    .reduce((score, key) => score + (tags[key] === undefined ? 0 : 1), 0);
+}
+
+/** Load only tagged, chart-specific curated entries. Georgian source entries
+ * are already localized; foreign entries use the translation cache. */
 export async function translatedExternalLibraryEntries(context: LibraryMatchContext): Promise<string[]> {
   try {
     const rows = await prisma.interpretationLibraryEntry.findMany({
-      where: { chartType: context.chartType, active: true, language: context.includeNativeLanguage ? undefined : { not: "ka" } },
+      where: { chartType: context.chartType, active: true },
       orderBy: { entryKey: "asc" },
       take: 80,
     });
-    const result: string[] = [];
+    const matches: Array<{ sourceText: string; language: string; score: number; entryKey: string }> = [];
     for (const row of rows) {
       let tags: Record<string, unknown> = {};
       try { tags = JSON.parse(row.tagsJson) as Record<string, unknown>; } catch { /* malformed optional tags are ignored */ }
+      if (!Object.keys(tags).length) continue;
       if (!matchesTags(tags, context)) continue;
-      const translated = await localizeInterpretation(row.sourceText, row.language, "ka");
-      result.push(translated.text);
+      matches.push({ sourceText: row.sourceText, language: row.language, score: relevanceScore(tags), entryKey: row.entryKey });
+    }
+    const result: string[] = [];
+    for (const row of matches.sort((a, b) => b.score - a.score || a.entryKey.localeCompare(b.entryKey)).slice(0, 18)) {
+      if (row.language === "ka") result.push(row.sourceText);
+      else result.push((await localizeInterpretation(row.sourceText, row.language, "ka")).text);
     }
     return result;
   } catch (error) {
