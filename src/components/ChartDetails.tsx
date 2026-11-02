@@ -1,7 +1,7 @@
 "use client";
 
 import { Hand, Minus, Plus, RotateCw, Table2, X, Sparkles, ChevronDown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { eclipticToSign, formatDegree, PLANET_NAMES_KA } from "@/lib/astro/signs";
 import type { AspectHit } from "@/lib/astro/aspects";
@@ -267,10 +267,53 @@ export default function ChartDetails({
   mc: number;
 }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedAspectKey, setSelectedAspectKey] = useState<string | null>(null);
+  const [selectedDetailKey, setSelectedDetailKey] = useState<string | null>(null);
+  const planetDetailsRef = useRef<HTMLDetailsElement | null>(null);
+  const houseDetailsRef = useRef<HTMLDetailsElement | null>(null);
+  const aspectDetailsRef = useRef<HTMLDetailsElement | null>(null);
+  const detailRowRefs = useRef(new Map<string, HTMLTableRowElement>());
   const orderedAspects = sortAspectsByInfluence(aspects);
   const tightAspects = orderedAspects.slice(0, 4);
   const uniqueStars = Array.from(new Set(fixedStars.map((item) => item.star)));
   const summary = summaryParagraphs(planets, planetHouses, aspects, ascendant);
+
+  useEffect(() => {
+    const handleAspectFocus = (event: Event) => {
+      const detail = (event as CustomEvent<{ type?: string; key?: string }>).detail;
+      if (!detail?.type || !detail.key) return;
+      const houseForAngle: Record<string, string> = { ASC: "1", DSC: "7", IC: "4", MC: "10" };
+      const rowKey = detail.type === "aspect"
+        ? `aspect:${detail.key}`
+        : detail.type === "planet"
+          ? `planet:${detail.key}`
+          : detail.type === "house"
+            ? `house:${detail.key}`
+            : detail.type === "angle" && houseForAngle[detail.key]
+              ? `house:${houseForAngle[detail.key]}`
+              : null;
+      if (!rowKey) return;
+      setSelectedDetailKey(rowKey);
+      if (detail.type === "aspect") setSelectedAspectKey(detail.key);
+      setDetailsOpen(true);
+    };
+    window.addEventListener("focus-interpretation", handleAspectFocus);
+    return () => window.removeEventListener("focus-interpretation", handleAspectFocus);
+  }, []);
+
+  useEffect(() => {
+    if (!detailsOpen || !selectedDetailKey) return;
+    const accordionRef = selectedDetailKey.startsWith("aspect:")
+      ? aspectDetailsRef
+      : selectedDetailKey.startsWith("house:")
+        ? houseDetailsRef
+        : planetDetailsRef;
+    accordionRef.current?.setAttribute("open", "");
+    const frame = window.requestAnimationFrame(() => {
+      detailRowRefs.current.get(selectedDetailKey)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [detailsOpen, selectedDetailKey]);
 
   return (
     <div className="chart-details mt-4 space-y-4 text-left">
@@ -337,7 +380,7 @@ export default function ChartDetails({
 
       {detailsOpen && (
         <div id="chart-details-accordion" className="space-y-4">
-          <details className="prism-card rounded-2xl p-4 overflow-hidden" open>
+          <details ref={planetDetailsRef} className="prism-card rounded-2xl p-4 overflow-hidden" open>
             <summary className="font-bold text-white cursor-pointer flex items-center justify-between pb-2 border-b border-white/10">
               <span>პლანეტები და დამატებითი წერტილები</span>
               <ChevronDown className="h-4 w-4 text-sky-400" />
@@ -352,19 +395,29 @@ export default function ChartDetails({
                   </tr>
                 </thead>
                 <tbody>
-                  {planets.map((planet) => (
-                    <tr key={planet.name} className="border-b border-white/5 hover:bg-white/[0.03]">
+                  {planets.map((planet) => {
+                    const rowKey = `planet:${planet.name}`;
+                    return (
+                    <tr
+                      key={planet.name}
+                      ref={(node) => {
+                        if (node) detailRowRefs.current.set(rowKey, node);
+                        else detailRowRefs.current.delete(rowKey);
+                      }}
+                      className={`border-b border-white/5 hover:bg-white/[0.03] ${selectedDetailKey === rowKey ? "bg-cyan-500/10 ring-1 ring-inset ring-cyan-400/40" : ""}`}
+                    >
                       <td className="p-2.5 font-bold text-white">{rowButton(DISPLAY_NAMES[planet.name] ?? planet.name, { type: "planet", key: planet.name })}</td>
                       <td className="p-2.5 text-sky-300 font-semibold">{degreeLabel(planet.longitude)}</td>
                       <td className="p-2.5">{rowButton(`${planetHouses[planet.name] ?? "—"}`, { type: "house", key: String(planetHouses[planet.name] ?? "") })}</td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </details>
 
-          <details className="prism-card rounded-2xl p-4 overflow-hidden">
+          <details ref={houseDetailsRef} className="prism-card rounded-2xl p-4 overflow-hidden">
             <summary className="font-bold text-white cursor-pointer flex items-center justify-between pb-2 border-b border-white/10">
               <span>12 სახლის კუსპიდები</span>
               <ChevronDown className="h-4 w-4 text-purple-400" />
@@ -379,19 +432,29 @@ export default function ChartDetails({
                   </tr>
                 </thead>
                 <tbody>
-                  {houseCusps.map((cusp, index) => (
-                    <tr key={index} className="border-b border-white/5 hover:bg-white/[0.03]">
+                  {houseCusps.map((cusp, index) => {
+                    const rowKey = `house:${index + 1}`;
+                    return (
+                    <tr
+                      key={index}
+                      ref={(node) => {
+                        if (node) detailRowRefs.current.set(rowKey, node);
+                        else detailRowRefs.current.delete(rowKey);
+                      }}
+                      className={`border-b border-white/5 hover:bg-white/[0.03] ${selectedDetailKey === rowKey ? "bg-cyan-500/10 ring-1 ring-inset ring-cyan-400/40" : ""}`}
+                    >
                       <td className="p-2.5 font-bold text-white">{rowButton(`${index + 1}-ე სახლი`, { type: "house", key: String(index + 1) })}</td>
                       <td className="p-2.5 text-purple-300 font-semibold">{degreeLabel(cusp)}</td>
                       <td className="p-2.5 text-slate-300">{HOUSE_NAMES[index]}</td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </details>
 
-          <details className="prism-card rounded-2xl p-4 overflow-hidden">
+          <details ref={aspectDetailsRef} className="prism-card rounded-2xl p-4 overflow-hidden">
             <summary className="font-bold text-white cursor-pointer flex items-center justify-between pb-2 border-b border-white/10">
               <span>მაჟორული და მინორული ასპექტები ({aspects.length})</span>
               <ChevronDown className="h-4 w-4 text-pink-400" />
@@ -409,8 +472,19 @@ export default function ChartDetails({
                   </tr>
                 </thead>
                 <tbody>
-                  {orderedAspects.map((aspect, index) => (
-                    <tr key={`${aspect.a}-${aspect.b}-${aspect.aspect}-${index}`} className="border-b border-white/5 hover:bg-white/[0.03]">
+                  {orderedAspects.map((aspect, index) => {
+                    const aspectKey = `${aspect.a}|${aspect.aspect}|${aspect.b}`;
+                    return (
+                    <tr
+                      key={`${aspect.a}-${aspect.b}-${aspect.aspect}-${index}`}
+                      ref={(node) => {
+                        if (node) detailRowRefs.current.set(`aspect:${aspectKey}`, node);
+                        else detailRowRefs.current.delete(`aspect:${aspectKey}`);
+                      }}
+                      className={`border-b border-white/5 hover:bg-white/[0.03] ${
+                        selectedAspectKey === aspectKey ? "bg-cyan-500/10 ring-1 ring-inset ring-cyan-400/40" : ""
+                      }`}
+                    >
                       <td className="p-2.5 text-slate-400 tabular-nums">{index + 1}</td>
                       <td className="p-2.5 font-bold text-white">{rowButton(`${DISPLAY_NAMES[aspect.a] ?? aspect.a} ${aspect.aspectKa} ${DISPLAY_NAMES[aspect.b] ?? aspect.b}`, { type: "aspect", key: `${aspect.a}|${aspect.aspect}|${aspect.b}` })}</td>
                       <td className="p-2.5"><span className={aspect.kind === "major" ? "text-sky-300 font-bold" : "text-purple-300 font-semibold"}>{aspect.kind === "major" ? "მაჟორული" : "მინორული"}</span></td>
@@ -418,7 +492,8 @@ export default function ChartDetails({
                       <td className="p-2.5 text-slate-300">{aspect.applying ? "მოახლოებადი" : "დაშორებადი"}</td>
                       <td className="p-2.5 text-slate-300 max-w-xs">{aspectMeaning(aspect)}</td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -427,7 +502,7 @@ export default function ChartDetails({
           <CombinedChartTable planets={planets} planetHouses={planetHouses} houseCusps={houseCusps} aspects={aspects} />
 
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs leading-relaxed text-slate-300 backdrop-blur-md">
-            <strong className="text-white">MC:</strong> {degreeLabel(mc)} · მაჟორული ხაზები ბორბალზე უწყვეტია, მინორული — წყვეტილი. ჩანაწერზე დაჭერით შესაბამის ინტერპრეტაციაზე გადახვალთ.
+            <strong className="text-white">MC:</strong> {degreeLabel(mc)} · მაჟორული ხაზები ბორბალზე უწყვეტია, მინორული — წყვეტილი. ჩანაწერზე დაჭერით ამ რუკის დეტალებში გადახვალთ.
           </div>
         </div>
       )}

@@ -155,7 +155,7 @@ const ASP_MEANINGS: Record<string, string> = {
 
 const SECTIONS = [
   { id: "home", title: "მიმოხილვა", glyph: "✦" },
-  { id: "chart", title: "ნატალური რუკა", glyph: "☉" },
+  { id: "chart", title: "რუკის ანალიზი", glyph: "☉" },
   { id: "core", title: "ბირთვი · ASC · MC", glyph: "↑" },
   { id: "planets", title: "პლანეტები", glyph: "♃" },
   { id: "aspects", title: "ასპექტები", glyph: "☍" },
@@ -164,6 +164,7 @@ const SECTIONS = [
   { id: "matrix", title: "ბედის მატრიცა", glyph: "✧" },
   { id: "psych", title: "ფსიქოლოგიური პორტრეტი", glyph: "☾" },
   { id: "cycles", title: "ციკლები და ტრანზიტები", glyph: "⟳" },
+  { id: "chart-legacy", title: "ზოდიაქალური წრე და სტიქიების სინთეზი", glyph: "◉" },
   { id: "synthesis", title: "სრული ინტერპრეტაცია", glyph: "❖" }
 ];
 
@@ -258,7 +259,13 @@ export default function CalculationRoom({
       ? "ტრანზიტი"
       : "ნატალური რუკა";
   const [activeSec, setActiveSec] = useState("home");
+  const [pendingFocus, setPendingFocus] = useState<
+    | { eventName: "focus-interpretation"; detail: { type: string; key: string } }
+    | { eventName: "focus-element-interpretation"; detail: { element: string } }
+    | null
+  >(null);
   const [selectedPlanet, setSelectedPlanet] = useState<string>("Sun");
+  const [selectedHouse, setSelectedHouse] = useState<number | null>(null);
   const [auroraInt, setAuroraInt] = useState(55);
   const [isLightTheme, setIsLightTheme] = useState(false);
   const [selectedMatrixPoint, setSelectedMatrixPoint] = useState<string>("X");
@@ -267,6 +274,7 @@ export default function CalculationRoom({
   const [planetSearch, setPlanetSearch] = useState<string>("");
   const [aspectFilter, setAspectFilter] = useState<string>("all");
   const [aspectSearch, setAspectSearch] = useState<string>("");
+  const [selectedAspectKey, setSelectedAspectKey] = useState<string | null>(null);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [globalQuery, setGlobalQuery] = useState("");
   const [copiedInterp, setCopiedInterp] = useState(false);
@@ -274,6 +282,7 @@ export default function CalculationRoom({
 
   const starsCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const roomRef = useRef<HTMLDivElement | null>(null);
+  const aspectCardRefs = useRef(new Map<string, HTMLButtonElement>());
 
   const openSection = (sectionId: string) => {
     if (!SECTIONS.some((section) => section.id === sectionId)) return;
@@ -282,6 +291,18 @@ export default function CalculationRoom({
       window.history.pushState({ roomSection: sectionId }, "", `#${sectionId}`);
     }
     roomRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const openFullInterpretation = (type: string, key: string) => {
+    setPendingFocus({ eventName: "focus-interpretation", detail: { type, key } });
+    openSection("synthesis");
+  };
+
+  const selectAspectCard = (key: string) => {
+    setSelectedAspectKey(key);
+    window.requestAnimationFrame(() => {
+      aspectCardRefs.current.get(key)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
   };
 
   useEffect(() => {
@@ -293,6 +314,15 @@ export default function CalculationRoom({
     window.addEventListener("popstate", syncSectionFromHash);
     return () => window.removeEventListener("popstate", syncSectionFromHash);
   }, []);
+
+  useEffect(() => {
+    if (activeSec !== "synthesis" || !pendingFocus) return;
+    const frame = window.requestAnimationFrame(() => {
+      window.dispatchEvent(new CustomEvent(pendingFocus.eventName, { detail: pendingFocus.detail }));
+      setPendingFocus(null);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeSec, pendingFocus]);
 
   // Parse birth date numbers
   const birthDateParts = useMemo(() => {
@@ -357,6 +387,10 @@ export default function CalculationRoom({
     }
     return { elCount, modeCount, houseCount };
   }, [wheel]);
+
+  const selectedChartAspect = wheel?.aspects.find(
+    (aspect) => `${aspect.a}|${aspect.aspect}|${aspect.b}` === selectedAspectKey,
+  ) ?? null;
 
   // Helper formatting degrees
   const formatPos = (deg: number) => {
@@ -554,10 +588,10 @@ export default function CalculationRoom({
               type="button"
               onClick={() => openSection(s.id)}
               aria-pressed={activeSec === s.id}
-              className={`cr-chip shrink-0 text-xs px-3 py-1.5 ${activeSec === s.id ? "cr-on font-bold" : ""}`}
+              className={`cr-chip max-w-[14rem] shrink-0 items-start whitespace-normal text-left text-xs px-3 py-1.5 ${activeSec === s.id ? "cr-on font-bold" : ""}`}
             >
-              <span className="text-sm">{s.glyph}</span>
-              <span>{s.title}</span>
+              <span className="shrink-0 text-sm">{s.glyph}</span>
+              <span className="min-w-0 leading-5">{s.title}</span>
             </button>
           ))}
         </div>
@@ -606,7 +640,7 @@ export default function CalculationRoom({
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/[0.07] text-sm font-semibold">
                       {s.glyph}
                     </span>
-                    <span className="truncate">{s.title}</span>
+                    <span className="min-w-0 whitespace-normal break-words leading-4">{s.title}</span>
                   </button>
                 </li>
               ))}
@@ -751,44 +785,60 @@ export default function CalculationRoom({
               <div className="cr-glass p-5 sm:p-6 space-y-4">
                 <div className="text-xs font-bold uppercase tracking-wider text-cyan-300">ერთი ხედვით · ძირითადი ღერძები</div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left">
+                  <button
+                    type="button"
+                    onClick={() => openFullInterpretation("angle", "ASC")}
+                    className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left transition hover:border-cyan-400/40 hover:bg-white/[0.07]"
+                  >
                     <span className="text-[11px] text-slate-400">ასცენდენტი (ASC)</span>
                     <div className="text-sm font-bold text-white mt-1">
                       {wheel ? formatPos(wheel.ascendant).full : "—"}
                     </div>
-                  </div>
+                  </button>
 
-                  <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left">
+                  <button
+                    type="button"
+                    onClick={() => openFullInterpretation("planet", "Sun")}
+                    className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left transition hover:border-amber-400/40 hover:bg-white/[0.07]"
+                  >
                     <span className="text-[11px] text-slate-400">მზე (Sun)</span>
                     <div className="text-sm font-bold text-white mt-1">
                       {wheel?.planets.find(p => p.name === "Sun") ? formatPos(wheel.planets.find(p => p.name === "Sun")!.longitude).full : "—"}
                     </div>
-                  </div>
+                  </button>
 
-                  <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left">
+                  <button
+                    type="button"
+                    onClick={() => openFullInterpretation("planet", "Moon")}
+                    className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left transition hover:border-indigo-400/40 hover:bg-white/[0.07]"
+                  >
                     <span className="text-[11px] text-slate-400">მთვარე (Moon)</span>
                     <div className="text-sm font-bold text-white mt-1">
                       {wheel?.planets.find(p => p.name === "Moon") ? formatPos(wheel.planets.find(p => p.name === "Moon")!.longitude).full : "—"}
                     </div>
-                  </div>
+                  </button>
 
-                  <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left">
+                  <button
+                    type="button"
+                    onClick={() => openFullInterpretation("angle", "MC")}
+                    className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left transition hover:border-sky-400/40 hover:bg-white/[0.07]"
+                  >
                     <span className="text-[11px] text-slate-400">ზენიტი (MC)</span>
                     <div className="text-sm font-bold text-white mt-1">
                       {wheel ? formatPos(wheel.mc).full : "—"}
                     </div>
-                  </div>
+                  </button>
                 </div>
               </div>
             </div>
           )}
 
           {/* ================= SECTION 2: CHART (ნატალური რუკა) ================= */}
-          {activeSec === "chart" && (
+          {activeSec === "chart-legacy" && (
             <div className="space-y-6">
               <div className="cr-glass flex flex-col gap-2 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ნატალური რუკა</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ზოდიაქალური წრე</div>
                   <h2 className="mt-1 text-2xl font-extrabold text-white sm:text-3xl">ზოდიაქალური წრე და სტიქიების სინთეზი</h2>
                 </div>
                 <p className="max-w-md text-xs leading-5 text-slate-400">რუკა, დეტალური მნიშვნელობები და სტიქიების პროცენტული ბალანსი ერთ სამუშაო სივრცეში.</p>
@@ -798,8 +848,8 @@ export default function CalculationRoom({
                 <div className="grid items-start gap-6 2xl:grid-cols-[minmax(0,7fr)_minmax(28rem,5fr)]">
                   <section className="min-w-0">
                     <ChartMapSection
-                      title="ზოდიაქალური წრე v2"
-                      subtitle="რუკა და ჩამოსაშლელი დეტალური მნიშვნელობები"
+                      title="ზოდიაქალური რუკა"
+                      subtitle="დააჭირეთ ასპექტს, პლანეტას ან სახლს შესაბამის ჩანაწერზე გადასასვლელად"
                       planets={wheel.planets}
                       ascendant={wheel.ascendant}
                       mc={wheel.mc}
@@ -819,15 +869,15 @@ export default function CalculationRoom({
             </div>
           )}
 
-          {activeSec === "chart-legacy" && (
+          {activeSec === "chart" && (
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ნატალური რუკა</div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">ინტერაქტიული ზოდიაქალური ბორბალი</h2>
+                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">რუკის ანალიზი</div>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">ინტერაქტიული რუკა და მონაცემები</h2>
                 </div>
                 <div className="text-xs text-slate-400">
-                  დააჭირეთ პლანეტას ასპექტების გამოსაკვეთად და დეტალების სანახავად
+                  დააჭირეთ პლანეტას ან ასპექტს შესაბამისი სრული ჩანაწერის სანახავად
                 </div>
               </div>
 
@@ -895,8 +945,27 @@ export default function CalculationRoom({
                       const midRad = ((180 - (midDeg - asc)) * Math.PI) / 180;
                       const pq = [350 + 175 * Math.cos(midRad), 350 - 175 * Math.sin(midRad)];
 
+                      const focusHouse = () => {
+                        setSelectedHouse(i + 1);
+                        window.requestAnimationFrame(() => {
+                          document.getElementById("selected-chart-house")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                        });
+                      };
                       return (
-                        <g key={`cusp-${i}`}>
+                        <g
+                          key={`cusp-${i}`}
+                          className="chart-wheel-control"
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`${i + 1}-ე სახლი — რუკის დეტალების ნახვა`}
+                          onClick={focusHouse}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              focusHouse();
+                            }
+                          }}
+                        >
                           <line
                             x1={p0[0]}
                             y1={p0[1]}
@@ -930,22 +999,54 @@ export default function CalculationRoom({
                       const pt1 = [350 + 150 * Math.cos(r1), 350 - 150 * Math.sin(r1)];
                       const pt2 = [350 + 150 * Math.cos(r2), 350 - 150 * Math.sin(r2)];
 
-                      const isSelected = selectedPlanet && (p1.name === selectedPlanet || p2.name === selectedPlanet);
+                      const aspectKey = `${asp.a}|${asp.aspect}|${asp.b}`;
+                      const isSelected = selectedAspectKey === aspectKey
+                        || (selectedPlanet && (p1.name === selectedPlanet || p2.name === selectedPlanet));
                       const aspDef = ASPECTS_DEF[asp.aspect] || { k: "h" };
                       const col = aspDef.k === "h" ? "#34d399" : aspDef.k === "t" ? "#fb7185" : aspDef.k === "c" ? "#fbbf24" : "#c4b5fd";
 
+                      const focusAspect = () => {
+                        setSelectedAspectKey(aspectKey);
+                        window.requestAnimationFrame(() => {
+                          document.getElementById("selected-chart-aspect")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                        });
+                      };
                       return (
-                        <line
+                        <g
                           key={`aspect-${idx}`}
-                          x1={pt1[0]}
-                          y1={pt1[1]}
-                          x2={pt2[0]}
-                          y2={pt2[1]}
-                          stroke={col}
-                          strokeWidth={isSelected ? "2.2" : "1.2"}
-                          strokeOpacity={isSelected ? "0.95" : "0.35"}
-                          strokeDasharray={asp.aspect === "Quincunx" ? "4 4" : undefined}
-                        />
+                          className="chart-wheel-control"
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`${BODY_META[asp.a]?.n ?? asp.a} ${asp.aspectKa} ${BODY_META[asp.b]?.n ?? asp.b} — განმარტების ნახვა`}
+                          onClick={focusAspect}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              focusAspect();
+                            }
+                          }}
+                        >
+                          <line
+                            x1={pt1[0]}
+                            y1={pt1[1]}
+                            x2={pt2[0]}
+                            y2={pt2[1]}
+                            stroke="transparent"
+                            strokeWidth="12"
+                            pointerEvents="stroke"
+                          />
+                          <line
+                            x1={pt1[0]}
+                            y1={pt1[1]}
+                            x2={pt2[0]}
+                            y2={pt2[1]}
+                            stroke={col}
+                            strokeWidth={isSelected ? "2.2" : "1.2"}
+                            strokeOpacity={isSelected ? "0.95" : "0.35"}
+                            strokeDasharray={asp.aspect === "Quincunx" ? "4 4" : undefined}
+                            pointerEvents="none"
+                          />
+                        </g>
                       );
                     })}
 
@@ -960,8 +1061,19 @@ export default function CalculationRoom({
                       return (
                         <g
                           key={planet.name}
-                          onClick={() => setSelectedPlanet(planet.name)}
-                          className="cursor-pointer transition-transform hover:scale-110"
+                          onClick={() => {
+                            setSelectedPlanet(planet.name);
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              setSelectedPlanet(planet.name);
+                            }
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`${meta.n} — რუკის დეტალების ნახვა`}
+                          className="chart-wheel-control cursor-pointer transition-transform hover:scale-110"
                         >
                           <circle
                             cx={gp[0]}
@@ -1029,6 +1141,45 @@ export default function CalculationRoom({
                             {meta.kw}
                           </p>
 
+                          {selectedChartAspect && (
+                            <div id="selected-chart-aspect" className="rounded-xl border border-cyan-400/25 bg-cyan-500/[0.06] p-3">
+                              <div className="text-xs font-bold text-cyan-200">
+                                {BODY_META[selectedChartAspect.a]?.n ?? selectedChartAspect.a}{" "}
+                                {selectedChartAspect.aspectKa}{" "}
+                                {BODY_META[selectedChartAspect.b]?.n ?? selectedChartAspect.b}
+                              </div>
+                              <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                                {ASP_MEANINGS[selectedChartAspect.aspect] ?? "ეს ასპექტი ორ ფუნქციას ერთმანეთთან აკავშირებს."}
+                              </p>
+                              <div className="mt-1 text-[11px] text-slate-400">
+                                ორბი {selectedChartAspect.orb.toFixed(1)}° · {selectedChartAspect.applying ? "მოახლოებადი" : "დაშორებადი"}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => openFullInterpretation("aspect", `${selectedChartAspect.a}|${selectedChartAspect.aspect}|${selectedChartAspect.b}`)}
+                                className="mt-2 text-[11px] font-semibold text-cyan-300 hover:text-white"
+                              >
+                                სრული ჩანაწერი →
+                              </button>
+                            </div>
+                          )}
+
+                          {selectedHouse !== null && wheel?.houseCusps[selectedHouse - 1] !== undefined && (
+                            <div id="selected-chart-house" className="rounded-xl border border-cyan-400/25 bg-cyan-500/[0.06] p-3">
+                              <div className="text-xs font-bold text-cyan-200">{selectedHouse}-ე სახლი</div>
+                              <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                                სახლის კუსპი მდებარეობს {formatPos(wheel.houseCusps[selectedHouse - 1]).full}-ზე.
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => openFullInterpretation("house", String(selectedHouse))}
+                                className="mt-2 text-[11px] font-semibold text-cyan-300 hover:text-white"
+                              >
+                                სრული ჩანაწერი →
+                              </button>
+                            </div>
+                          )}
+
                           {/* Related Aspects Buttons */}
                           <div className="space-y-2 pt-2 border-t border-white/10">
                             <div className="text-xs font-bold text-white">ასპექტები ({relAspects.length})</div>
@@ -1041,7 +1192,12 @@ export default function CalculationRoom({
                                   return (
                                     <button
                                       key={i}
-                                      onClick={() => setSelectedPlanet(other)}
+                                      onClick={() => {
+                                        setSelectedPlanet(other);
+                                        setSelectedAspectKey(`${asp.a}|${asp.aspect}|${asp.b}`);
+                                      }}
+                                      type="button"
+                                      aria-label={`${meta.n} ${asp.aspectKa} ${otherMeta.n} — განმარტების ნახვა`}
                                       className="cr-chip text-xs py-1 px-2.5 hover:border-cyan-400"
                                     >
                                       <span>{aspDef.g}</span>
@@ -1189,6 +1345,9 @@ export default function CalculationRoom({
                   <p className="text-xs text-slate-300 leading-relaxed">
                     ასცენდენტი განსაზღვრავს პიროვნების გარეგან გამოხატვას, პირველ შთაბეჭდილებასა და სამყაროსთან კონტაქტის ფორმას. ის არის „ფასადი“ და ფილტრი, რომლითაც ადამიანი რეალობას აღიქვამს და საკუთარ თავს ავლენს.
                   </p>
+                  <button type="button" onClick={() => openFullInterpretation("angle", "ASC")} className="text-xs font-semibold text-cyan-300 hover:text-white">
+                    სრული ჩანაწერი →
+                  </button>
                 </div>
 
                 {/* Sun */}
@@ -1205,6 +1364,9 @@ export default function CalculationRoom({
                   <p className="text-xs text-slate-300 leading-relaxed">
                     მზე არის ცნობიერი ეგო, სასიცოცხლო ძალა და შინაგანი ძრავა. ის აღწერს იმას, თუ რისი მეშვეობით გრძნობს ადამიანი თავს ჭეშმარიტად ცოცხლად, თვითრეალიზებულად და მიზანდასახულად.
                   </p>
+                  <button type="button" onClick={() => openFullInterpretation("planet", "Sun")} className="text-xs font-semibold text-cyan-300 hover:text-white">
+                    სრული ჩანაწერი →
+                  </button>
                 </div>
 
                 {/* MC */}
@@ -1221,6 +1383,9 @@ export default function CalculationRoom({
                   <p className="text-xs text-slate-300 leading-relaxed">
                     MC (Medium Coeli) აღნიშნავს უმაღლეს საზოგადოებრივ წერტილს, კარიერულ მისწრაფებას, სოციალურ სტატუსსა და იმ მწვერვალს, რომლისკენაც ადამიანი ცხოვრების მანძილზე ვითარდება.
                   </p>
+                  <button type="button" onClick={() => openFullInterpretation("angle", "MC")} className="text-xs font-semibold text-cyan-300 hover:text-white">
+                    სრული ჩანაწერი →
+                  </button>
                 </div>
 
                 {/* Moon Phase Graphic & Meaning */}
@@ -1241,6 +1406,9 @@ export default function CalculationRoom({
                   <p className="text-xs text-slate-300 leading-relaxed">
                     დაბადებისას მზესა და მთვარეს შორის კუთხე იყო {moonPhaseData.elongation.toFixed(1)}°. მთვარის ეს ფაზა ასახავს ემოციურ რიტმსა და სულიერ ამოცანას — როგორ ურთიერთქმედებს ინსტინქტი ცნობიერ ნებასთან.
                   </p>
+                  <button type="button" onClick={() => openFullInterpretation("planet", "Moon")} className="text-xs font-semibold text-cyan-300 hover:text-white">
+                    მთვარის სრული ჩანაწერი →
+                  </button>
                 </div>
               </div>
             </div>
@@ -1277,7 +1445,13 @@ export default function CalculationRoom({
                     const pos = formatPos(p.longitude);
                     const h = wheel.planetHouses?.[p.name];
                     return (
-                      <div key={p.name} className="cr-glass p-5 space-y-3">
+                      <button
+                        key={p.name}
+                        type="button"
+                        onClick={() => openFullInterpretation("planet", p.name)}
+                        aria-label={`${meta.n} — სრული ინტერპრეტაციის ნახვა`}
+                        className="cr-glass w-full p-5 space-y-3 text-left transition hover:border-cyan-400/40 hover:bg-white/[0.04]"
+                      >
                         <div className="flex items-center gap-3">
                           <span
                             className="cr-glyph"
@@ -1293,7 +1467,8 @@ export default function CalculationRoom({
                           </div>
                         </div>
                         <p className="text-xs text-slate-300 leading-relaxed">{meta.kw}</p>
-                      </div>
+                        <span className="block text-[11px] font-semibold text-cyan-300">სრული ინტერპრეტაცია →</span>
+                      </button>
                     );
                   })}
               </div>
@@ -1335,12 +1510,16 @@ export default function CalculationRoom({
                             if (!hit) return <td key={b1} />;
                             const def = ASPECTS_DEF[hit.aspect] || { k: "h", g: "•" };
                             return (
-                              <td
-                                key={b1}
-                                className={`cr-a cr-${def.k}`}
-                                title={`${BODY_META[b1]?.n} ${def.n} ${BODY_META[b2]?.n} (${hit.orb.toFixed(1)}°)`}
-                              >
-                                {def.g}
+                              <td key={b1} className={`cr-a cr-${def.k}`}>
+                                <button
+                                  type="button"
+                                  className="cr-aspect-cell"
+                                  title={`${BODY_META[b1]?.n} ${def.n} ${BODY_META[b2]?.n} (${hit.orb.toFixed(1)}°)`}
+                                  aria-label={`${BODY_META[b1]?.n} ${def.n} ${BODY_META[b2]?.n} — ინტერპრეტაციის ნახვა`}
+                                  onClick={() => selectAspectCard(`${hit.a}|${hit.aspect}|${hit.b}`)}
+                                >
+                                  {def.g}
+                                </button>
                               </td>
                             );
                           })}
@@ -1365,8 +1544,22 @@ export default function CalculationRoom({
                   const m2 = BODY_META[asp.b] || { n: asp.b };
                   const def = ASPECTS_DEF[asp.aspect] || { n: asp.aspect, g: "•", k: "h" };
                   const mean = ASP_MEANINGS[asp.aspect] || "";
+                  const aspectKey = `${asp.a}|${asp.aspect}|${asp.b}`;
                   return (
-                    <div key={idx} className="cr-glass p-4 space-y-2">
+                    <button
+                      key={idx}
+                      type="button"
+                      ref={(node) => {
+                        if (node) aspectCardRefs.current.set(aspectKey, node);
+                        else aspectCardRefs.current.delete(aspectKey);
+                      }}
+                      onClick={() => setSelectedAspectKey(aspectKey)}
+                      aria-current={selectedAspectKey === aspectKey ? "true" : undefined}
+                      aria-label={`${m1.n} ${def.n} ${m2.n} — ასპექტის განმარტება`}
+                      className={`cr-glass w-full p-4 space-y-2 text-left transition hover:border-cyan-400/40 hover:bg-white/[0.04] ${
+                        selectedAspectKey === aspectKey ? "border-cyan-300/70 ring-2 ring-cyan-400/30" : ""
+                      }`}
+                    >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="text-base font-bold" style={{ color: def.k === "h" ? "#34d399" : def.k === "t" ? "#fb7185" : "#fbbf24" }}>
@@ -1378,7 +1571,10 @@ export default function CalculationRoom({
                       </div>
                       <div className="text-[11px] text-slate-400">{def.n}</div>
                       <p className="text-xs text-slate-300">{mean}</p>
-                    </div>
+                      <p className="text-[11px] text-slate-400">
+                        {asp.applying ? "მოახლოებადი ფაზა" : "დაშორებადი ფაზა"} · {asp.kind === "major" ? "მაჟორული" : "მინორული"}
+                      </p>
+                    </button>
                   );
                 })}
               </div>
@@ -1406,6 +1602,13 @@ export default function CalculationRoom({
                   <p className="text-xs text-slate-300 leading-relaxed">
                     ჩრდილოეთ კვანძი მიუთითებს იმ თვისებებსა და სფეროზე, რომელთა განვითარებაც სულის ევოლუციურ ამოცანას წარმოადგენს. ეს არის ახალი ზონა, სადაც ადამიანი იზრდება და საკუთარ პოტენციალს სრულად აფართოებს.
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => openFullInterpretation("planet", wheel?.planets.some((planet) => planet.name === "TrueNode") ? "TrueNode" : "MeanNode")}
+                    className="text-xs font-semibold text-cyan-300 hover:text-white"
+                  >
+                    სრული ჩანაწერი →
+                  </button>
                 </div>
 
                 {/* South Node */}
@@ -1420,6 +1623,9 @@ export default function CalculationRoom({
                   <p className="text-xs text-slate-300 leading-relaxed">
                     სამხრეთი კვანძი ასახავს თანდაყოლილ ნიჭსა და იმ ნაცნობ ჩვევებს, სადაც ადამიანი ხშირად კომფორტის ზონას პოულობს. მთავარი ამოცანაა ამ ბაზის გამოყენება ჩრდილოეთ კვანძისკენ წინსვლისთვის.
                   </p>
+                  <button type="button" onClick={() => openFullInterpretation("planet", "SouthNode")} className="text-xs font-semibold text-cyan-300 hover:text-white">
+                    სრული ჩანაწერი →
+                  </button>
                 </div>
 
                 {/* Lilith */}
@@ -1434,6 +1640,9 @@ export default function CalculationRoom({
                   <p className="text-xs text-slate-300 leading-relaxed">
                     ლილითი სიმბოლურად აღწერს შინაგან დამოუკიდებლობას, ფარულ სურვილებსა და იმ სფეროს, სადაც ადამიანი კომპრომისზე უარს ამბობს. მისი გაცნობიერება იძლევა უდიდეს ავთენტურ ძალას.
                   </p>
+                  <button type="button" onClick={() => openFullInterpretation("planet", "Lilith")} className="text-xs font-semibold text-cyan-300 hover:text-white">
+                    სრული ჩანაწერი →
+                  </button>
                 </div>
 
                 {/* Chiron */}
@@ -1448,6 +1657,9 @@ export default function CalculationRoom({
                   <p className="text-xs text-slate-300 leading-relaxed">
                     ქირონი სიმბოლურად მიუთითებს „დაჭრილ მკურნალზე“ — არეზე, სადაც ადამიანი განიცდის მოწყვლადობას, მაგრამ სწორედ საკუთარი გამოცდილების მეშვეობით ხდება სხვების ყველაზე ძლიერი მეგზური და დამხმარე.
                   </p>
+                  <button type="button" onClick={() => openFullInterpretation("planet", "Chiron")} className="text-xs font-semibold text-cyan-300 hover:text-white">
+                    სრული ჩანაწერი →
+                  </button>
                 </div>
               </div>
             </div>

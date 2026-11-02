@@ -220,7 +220,12 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
       if (!detail?.type || !detail.key) return;
       const key = detail.key;
       const parts = key.split("|");
-      const angleHouse: Record<string, string> = { ASC: "1 სახლი", DSC: "7 სახლი", MC: "10 სახლი", IC: "4 სახლი" };
+      const angleTerms: Record<string, string[]> = {
+        ASC: ["ასცენდენტი", "1 სახლი"],
+        DSC: ["დასავლეთი", "7 სახლი"],
+        MC: ["mc", "10 სახლი", "ზენიტი"],
+        IC: ["ic", "4 სახლი"],
+      };
       const terms = detail.type === "aspect"
         ? [
           PLANET_NAMES_KA[parts[0]!] ?? parts[0]!,
@@ -230,7 +235,7 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
         : detail.type === "house"
           ? [`${key} სახლი`]
           : detail.type === "angle"
-            ? [angleHouse[key] ?? key]
+            ? angleTerms[key] ?? [key.toLowerCase()]
           : [(PLANET_NAMES_KA[key] ?? key).toLowerCase()];
       clearFocus();
       const paragraphs = Array.from(document.querySelectorAll<HTMLElement>(".interpretation-content .interpretation-paragraph"));
@@ -239,10 +244,14 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
         ? document.querySelector<HTMLElement>("#ascendant-section > summary")
         : paragraphs.find((node) => {
           const content = (node.textContent ?? "").toLowerCase();
-          return terms.every((term) => content.includes(term));
+          return detail.type === "angle"
+            ? terms.some((term) => content.includes(term))
+            : terms.every((term) => content.includes(term));
         }) ?? accordions.find((node) => {
           const content = (node.textContent ?? "").toLowerCase();
-          return terms.every((term) => content.includes(term));
+          return detail.type === "angle"
+            ? terms.some((term) => content.includes(term))
+            : terms.every((term) => content.includes(term));
         });
       if (!target) return;
       let parentDetails = target.closest("details") as HTMLDetailsElement | null;

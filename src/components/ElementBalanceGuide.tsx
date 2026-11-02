@@ -1,4 +1,5 @@
 import { Compass, ChevronDown, BookOpen } from "lucide-react";
+import { useEffect, useRef } from "react";
 import type { WheelPlanet } from "@/components/ChartWheel";
 import ElementTemperamentDetails from "@/components/ElementTemperamentDetails";
 import ElementSynthesisTable from "@/components/ElementSynthesisTable";
@@ -23,6 +24,23 @@ function getSignName(deg: number): string {
 
 export default function ElementBalanceGuide({ planets, ascendant }: { planets: WheelPlanet[]; ascendant: number }) {
   const elements = calculateSharedElementBalance(planets);
+  const temperamentDetailsRef = useRef<HTMLDetailsElement | null>(null);
+
+  useEffect(() => {
+    const handleElementFocus = (event: Event) => {
+      const detail = (event as CustomEvent<{ element?: string }>).detail;
+      if (!detail?.element) return;
+      const target = Array.from(
+        temperamentDetailsRef.current?.querySelectorAll<HTMLElement>("[data-element-temperament]") ?? [],
+      ).find((element) => element.dataset.elementTemperament === detail.element);
+      if (!target) return;
+      temperamentDetailsRef.current?.setAttribute("open", "");
+      window.requestAnimationFrame(() => target.scrollIntoView({ behavior: "smooth", block: "center" }));
+    };
+    window.addEventListener("focus-element-interpretation", handleElementFocus);
+    return () => window.removeEventListener("focus-element-interpretation", handleElementFocus);
+  }, []);
+
   function focusElementInterpretation(element: string) {
     if (typeof window === "undefined") return;
     window.dispatchEvent(new CustomEvent("focus-element-interpretation", { detail: { element } }));
@@ -90,7 +108,7 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
       </details>
 
       {/* 2. Main Elements & Temperaments Explanation */}
-      <details className="interpretation-accordion border border-white/10 bg-white/[0.02] rounded-2xl overflow-hidden shadow-inner">
+      <details ref={temperamentDetailsRef} className="interpretation-accordion border border-white/10 bg-white/[0.02] rounded-2xl overflow-hidden">
         <summary className="interpretation-accordion-summary p-3 sm:p-4 cursor-pointer">
           <span className="interpretation-accordion-icon flex h-7 w-7 items-center justify-center rounded-xl border border-purple-400/30 bg-purple-500/15 text-purple-300">
             <BookOpen className="h-4 w-4 text-purple-300" />
@@ -102,7 +120,7 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
         </summary>
         <div className="interpretation-accordion-body p-3 sm:p-4 border-t border-white/10 space-y-4 text-left">
           {ALL_ELEMENTS.map((el) => (
-            <div key={el} className="rounded-xl border border-white/5 bg-white/[0.02] p-3 sm:p-4">
+            <div key={el} data-element-temperament={el} className="rounded-xl border border-white/5 bg-white/[0.02] p-3 sm:p-4">
               <ElementTemperamentDetails element={el} />
             </div>
           ))}
