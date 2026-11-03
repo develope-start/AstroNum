@@ -50,6 +50,12 @@
   pointer-events: none;
   background: radial-gradient(120% 90% at 50% -10%, #101a44 0%, var(--cr-bg1) 45%, var(--cr-bg0) 100%);
 }
+.cr-aurora::after {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 7, 18, var(--cr-aur-veil, 0.3));
+  content: "";
+}
 .cr-aurora .cr-blob {
   position: absolute;
   border-radius: 50%;
@@ -144,6 +150,9 @@
 }
 .cr-light .cr-aurora {
   background: radial-gradient(120% 90% at 50% -10%, #ffffff 0%, #dbeafe 48%, #e9d5ff 100%);
+}
+.cr-light .cr-aurora::after {
+  display: none;
 }
 .cr-light .cr-aurora .cr-blob,
 .cr-light .cr-aurora .cr-ribbon {

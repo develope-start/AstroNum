@@ -507,7 +507,10 @@ export default function CalculationRoom({
     <div
       ref={roomRef}
       className={`calc-room-root fixed inset-0 z-[200] overflow-y-auto overflow-x-hidden ${isLightTheme ? "cr-light" : ""}`}
-      style={{ "--cr-aur-int": auroraInt / 100 } as React.CSSProperties}
+      style={{
+        "--cr-aur-int": (auroraInt / 100) * 0.7,
+        "--cr-aur-veil": 0.14 + (auroraInt / 100) * 0.28,
+      } as React.CSSProperties}
     >
       {/* ===== 1. Aurora Dynamic Backdrop ===== */}
       <div className="cr-aurora" aria-hidden="true">
