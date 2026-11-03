@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { Clock, Calendar, Copy, Check, Sparkles, BookOpen, ChevronDown } from "lucide-react";
 import { PLANET_NAMES_KA } from "@/lib/astro/signs";
 import { ALL_ASPECTS } from "@/lib/astro/aspects";
@@ -203,7 +203,15 @@ function InterpretationSectionView({
   );
 }
 
-export default function InterpretationText({ text, viewMetadata }: { text: string; viewMetadata?: InterpretationViewMetadata }) {
+export default function InterpretationText({
+  text,
+  viewMetadata,
+  afterNavigator,
+}: {
+  text: string;
+  viewMetadata?: InterpretationViewMetadata;
+  afterNavigator?: ReactNode;
+}) {
   const [copied, setCopied] = useState(false);
   const [focusedElement, setFocusedElement] = useState<ElementId | null>(null);
   const focusedNodeRef = useRef<HTMLElement | null>(null);
@@ -453,6 +461,8 @@ export default function InterpretationText({ text, viewMetadata }: { text: strin
           </button>
         </div>
       </div>
+
+      {afterNavigator}
 
       {/* Main interpretation blocks */}
       <div className="interpretation-body space-y-4 sm:space-y-6 leading-relaxed text-slate-100 w-full max-w-full overflow-x-hidden">

@@ -393,6 +393,42 @@ export default function CalculationRoom({
     (aspect) => `${aspect.a}|${aspect.aspect}|${aspect.b}` === selectedAspectKey,
   ) ?? null;
 
+  const chartSynthesisPanel = (
+    <section className="mt-6 space-y-4" aria-labelledby="synthesis-chart-heading">
+      <div>
+        <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">დამატებითი ანალიზი</div>
+        <h3 id="synthesis-chart-heading" className="mt-1 text-xl font-extrabold text-white sm:text-2xl">
+          ზოდიაქალური რუკა და სტიქიების სინთეზი
+        </h3>
+        <p className="mt-1 text-xs leading-5 text-slate-400">
+          რუკის ვიზუალური განლაგება, პლანეტების დეტალები და სტიქიების ბალანსი.
+        </p>
+      </div>
+      {wheel ? (
+        <div className="grid items-start gap-6 2xl:grid-cols-[minmax(0,7fr)_minmax(28rem,5fr)]">
+          <section className="min-w-0">
+            <ChartMapSection
+              title="ზოდიაქალური წრე"
+              subtitle="აირჩიეთ პლანეტა, სახლი ან ასპექტი დეტალების სანახავად"
+              planets={wheel.planets}
+              ascendant={wheel.ascendant}
+              mc={wheel.mc}
+              houseCusps={wheel.houseCusps}
+              aspects={wheel.aspects ?? []}
+              fixedStars={wheel.fixedStars ?? []}
+              planetHouses={wheel.planetHouses ?? {}}
+            />
+          </section>
+          <aside className="cr-element-panel min-w-0">
+            <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />
+          </aside>
+        </div>
+      ) : (
+        <div className="cr-glass p-8 text-center text-sm text-slate-300">რუკის მონაცემები ვერ მოიძებნა.</div>
+      )}
+    </section>
+  );
+
   // Helper formatting degrees
   const formatPos = (deg: number) => {
     const norm = (deg % 360 + 360) % 360;
@@ -2017,48 +2053,19 @@ export default function CalculationRoom({
               {/* Full Interpretation Content Display */}
               <div className="cr-glass p-6 sm:p-10 space-y-6 leading-relaxed">
                 {interpretation ? (
-                  <InterpretationText text={interpretation} />
+                  <InterpretationText
+                    text={interpretation}
+                    afterNavigator={chartSynthesisPanel}
+                  />
                 ) : (
-                  <div className="text-center py-12 text-slate-400">
-                    ინტერპრეტაცია ჯერ არ დაგენერირებულა.
+                  <div className="space-y-6">
+                    <div className="text-center py-12 text-slate-400">
+                      ინტერპრეტაცია ჯერ არ დაგენერირებულა.
+                    </div>
+                    {chartSynthesisPanel}
                   </div>
                 )}
               </div>
-
-              <section className="space-y-4" aria-labelledby="synthesis-chart-heading">
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">დამატებითი ანალიზი</div>
-                  <h3 id="synthesis-chart-heading" className="mt-1 text-xl font-extrabold text-white sm:text-2xl">
-                    ზოდიაქალური რუკა და სტიქიების სინთეზი
-                  </h3>
-                  <p className="mt-1 text-xs leading-5 text-slate-400">
-                    რუკის ვიზუალური განლაგება, პლანეტების დეტალები და სტიქიების ბალანსი.
-                  </p>
-                </div>
-
-                {wheel ? (
-                  <div className="space-y-6">
-                    <section className="min-w-0">
-                      <ChartMapSection
-                        title="ზოდიაქალური წრე"
-                        subtitle="აირჩიეთ პლანეტა, სახლი ან ასპექტი დეტალების სანახავად"
-                        planets={wheel.planets}
-                        ascendant={wheel.ascendant}
-                        mc={wheel.mc}
-                        houseCusps={wheel.houseCusps}
-                        aspects={wheel.aspects ?? []}
-                        fixedStars={wheel.fixedStars ?? []}
-                        planetHouses={wheel.planetHouses ?? {}}
-                      />
-                    </section>
-                    <section className="cr-element-panel min-w-0">
-                      <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />
-                    </section>
-                  </div>
-                ) : (
-                  <div className="cr-glass p-8 text-center text-sm text-slate-300">რუკის მონაცემები ვერ მოიძებნა.</div>
-                )}
-              </section>
 
               <details className="cr-glass p-5 text-sm text-slate-300">
                 <summary className="cursor-pointer font-bold text-cyan-200">მეთოდოლოგია, წყაროები და სიზუსტე</summary>
