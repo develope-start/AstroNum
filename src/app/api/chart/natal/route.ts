@@ -156,21 +156,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ...responseBody, mapNumber, savedId: chart.id });
   }
 
-  if (!session) {
-    const sun = result.planets.find((planet) => planet.name === "Sun");
-    const moon = result.planets.find((planet) => planet.name === "Moon");
-    if (!sun || !moon) {
-      return NextResponse.json({ error: "მოკლე ნატალური მიმოხილვისთვის საჭირო მონაცემები ვერ მოიძებნა." }, { status: 500 });
-    }
-    return NextResponse.json({
-      preview: {
-        sun: eclipticToSign(sun.longitude).signName,
-        moon: eclipticToSign(moon.longitude).signName,
-        ascendant: eclipticToSign(result.ascendant).signName,
-        mc: eclipticToSign(result.mc).signName,
-      },
-    });
-  }
-
   return NextResponse.json({ ...responseBody, mapNumber: calculation?.mapNumber ?? null });
 }

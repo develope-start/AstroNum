@@ -40,6 +40,20 @@ import type { HouseSystem } from "@/lib/astro/positions";
 import type { EphemerisMetadata } from "@/lib/astro/ephemeris";
 import { saveGuestChart } from "@/lib/guestSavedCharts";
 import { loadGuestCache, saveGuestCache } from "@/lib/guestCache";
+import {
+  ATLAS_NATAL_DATA,
+  ATLAS_CORE_TEXT,
+  ATLAS_PLANET_TEXT,
+  ATLAS_POINT_TEXT,
+  ATLAS_ASP_TEXT,
+  ATLAS_ARC_TEXT,
+  ATLAS_PSY_DATA,
+  ATLAS_SYN_DATA,
+  ATLAS_NUM_MEAN,
+  ATLAS_CHAL_MEAN,
+  ATLAS_PY_MEAN,
+  ATLAS_MX_DD,
+} from "@/lib/atlasData";
 
 export interface CalculationRoomProps {
   isOpen: boolean;
@@ -291,6 +305,85 @@ export default function CalculationRoom({
   const [isChartSaved, setIsChartSaved] = useState(savedChart);
   const [saveChartMessage, setSaveChartMessage] = useState<string | null>(null);
   const [transitDate, setTransitDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [timeOffset, setTimeOffset] = useState<number>(0);
+
+  const sensEntry = useMemo(() => {
+    return ATLAS_NATAL_DATA.sens.find(s => s.m === timeOffset) || ATLAS_NATAL_DATA.sens.find(s => s.m === 0) || null;
+  }, [timeOffset]);
+
+  const dailyTransitData = useMemo(() => {
+    const tr = ATLAS_NATAL_DATA.tr;
+    if (!tr || !tr.rows || !tr.rows.length) return null;
+    const start = new Date(tr.start);
+    const curr = new Date(transitDate);
+    const diff = Math.floor((curr.getTime() - start.getTime()) / 864e5);
+    const rowIdx = Math.max(0, Math.min(tr.rows.length - 1, diff));
+    const row = tr.rows[rowIdx];
+    if (!row) return null;
+
+    const bodies = tr.bodies.map((name, i) => {
+      const lon = row[i] / 1000;
+      return { name, longitude: lon };
+    });
+
+    const natalPlanets = wheel?.planets || [];
+    const hits: Array<{
+      transitBody: string;
+      natalBody: string;
+      aspect: string;
+      aspectKa: string;
+      glyph: string;
+      orb: number;
+      kind: string;
+    }> = [];
+
+    const ASPECTS_CHECK = [
+      { name: "Conjunction", ka: "შეერთება", g: "☌", angle: 0, orb: 3.5, k: "c" },
+      { name: "Opposition", ka: "ოპოზიცია", g: "☍", angle: 180, orb: 3.5, k: "t" },
+      { name: "Trine", ka: "ტრინი", g: "△", angle: 120, orb: 3.0, k: "h" },
+      { name: "Square", ka: "კვადრატი", g: "□", angle: 90, orb: 3.0, k: "t" },
+      { name: "Sextile", ka: "სექსტილი", g: "⚹", angle: 60, orb: 2.5, k: "h" },
+    ];
+
+    bodies.forEach(tb => {
+      natalPlanets.forEach(np => {
+        let d = Math.abs(tb.longitude - np.longitude) % 360;
+        if (d > 180) d = 360 - d;
+        for (const asp of ASPECTS_CHECK) {
+          const orb = Math.abs(d - asp.angle);
+          if (orb <= asp.orb) {
+            hits.push({
+              transitBody: tb.name,
+              natalBody: np.name,
+              aspect: asp.name,
+              aspectKa: asp.ka,
+              glyph: asp.g,
+              orb,
+              kind: asp.k,
+            });
+            break;
+          }
+        }
+      });
+    });
+
+    return { rowIdx, bodies, hits };
+  }, [transitDate, wheel]);
+
+  const getAspectText = (a: string, b: string, aspType: string): string | null => {
+    const aspNorm = aspType.toLowerCase() === "conjunction" ? "conj"
+      : aspType.toLowerCase() === "sextile" ? "sext"
+      : aspType.toLowerCase() === "square" ? "sq"
+      : aspType.toLowerCase() === "trine" ? "tri"
+      : aspType.toLowerCase() === "opposition" ? "opp"
+      : aspType.toLowerCase() === "quincunx" ? "quinc"
+      : aspType.toLowerCase();
+    const k1 = `${a}|${b}|${aspNorm}`;
+    const k2 = `${b}|${a}|${aspNorm}`;
+    const k3 = `${a}|${b}|${aspType}`;
+    const k4 = `${b}|${a}|${aspType}`;
+    return ATLAS_ASP_TEXT[k1] || ATLAS_ASP_TEXT[k2] || ATLAS_ASP_TEXT[k3] || ATLAS_ASP_TEXT[k4] || null;
+  };
 
   const starsCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const roomRef = useRef<HTMLDivElement | null>(null);
@@ -489,7 +582,7 @@ export default function CalculationRoom({
         </p>
       </div>
       {wheel ? (
-        <div className="grid items-start gap-6 2xl:grid-cols-[minmax(0,7fr)_minmax(28rem,5fr)]">
+        <div className="grid grid-cols-1 items-start gap-6">
           <section className="min-w-0">
             <ChartMapSection
               title="ზოდიაქალური წრე"
@@ -1431,28 +1524,31 @@ export default function CalculationRoom({
           {activeSec === "core" && (
             <div className="space-y-6">
               <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ბირთვი</div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white">ასცენდენტი, მზე, MC და მთვარის ფაზა</h2>
+                <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ბირთვი · დაბადების ღერძი</div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white">ასცენდენტი, მზე, MC და დროითი მგრძნობელობა</h2>
               </div>
 
+              {/* 4 Core Pillars Grid */}
               <div className="grid gap-5 sm:grid-cols-2">
                 {/* Ascendant */}
                 <div className="cr-glass cr-accent p-6 space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="cr-glyph" style={{ "--gc": "#ffffffaa" } as React.CSSProperties}>AC</span>
                     <div>
-                      <h3 className="text-lg font-black text-white">ასცენდენტი</h3>
+                      <h3 className="text-lg font-black text-white">ასცენდენტი ({wheel ? formatPos(wheel.ascendant).sign.n : "—"})</h3>
                       <div className="text-xs text-cyan-300 font-semibold">
-                        {wheel ? formatPos(wheel.ascendant).full : "—"}
+                        {wheel ? formatPos(wheel.ascendant).full : "—"} · აღმოსავლეთის ჰორიზონტი
                       </div>
                     </div>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    ასცენდენტი განსაზღვრავს პიროვნების გარეგან გამოხატვას, პირველ შთაბეჭდილებასა და სამყაროსთან კონტაქტის ფორმას. ის არის „ფასადი“ და ფილტრი, რომლითაც ადამიანი რეალობას აღიქვამს და საკუთარ თავს ავლენს.
+                    {ATLAS_CORE_TEXT?.asc?.[0] || "ასცენდენტი განსაზღვრავს პიროვნების გარეგან გამოხატვას, პირველ შთაბეჭდილებასა და სამყაროსთან კონტაქტის ფორმას. ის არის ფასადი და ფილტრი, რომლითაც ადამიანი რეალობას აღიქვამს."}
                   </p>
-                  <button type="button" onClick={() => openFullInterpretation("angle", "ASC")} className="text-xs font-semibold text-cyan-300 hover:text-white">
-                    სრული ჩანაწერი →
-                  </button>
+                  {ATLAS_CORE_TEXT?.asc?.[1] && (
+                    <p className="text-xs text-slate-400 leading-relaxed border-t border-white/5 pt-2">
+                      {ATLAS_CORE_TEXT.asc[1]}
+                    </p>
+                  )}
                 </div>
 
                 {/* Sun */}
@@ -1460,18 +1556,20 @@ export default function CalculationRoom({
                   <div className="flex items-center gap-3">
                     <span className="cr-glyph" style={{ "--gc": "#fbbf24aa" } as React.CSSProperties}>☉</span>
                     <div>
-                      <h3 className="text-lg font-black text-white">მზე</h3>
+                      <h3 className="text-lg font-black text-white">მზე ({wheel?.planets.find(p => p.name === "Sun") ? formatPos(wheel.planets.find(p => p.name === "Sun")!.longitude).sign.n : "—"})</h3>
                       <div className="text-xs text-amber-300 font-semibold">
-                        {wheel?.planets.find(p => p.name === "Sun") ? formatPos(wheel.planets.find(p => p.name === "Sun")!.longitude).full : "—"}
+                        {wheel?.planets.find(p => p.name === "Sun") ? formatPos(wheel.planets.find(p => p.name === "Sun")!.longitude).full : "—"} · ცნობიერი ცენტრი
                       </div>
                     </div>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    მზე არის ცნობიერი ეგო, სასიცოცხლო ძალა და შინაგანი ძრავა. ის აღწერს იმას, თუ რისი მეშვეობით გრძნობს ადამიანი თავს ჭეშმარიტად ცოცხლად, თვითრეალიზებულად და მიზანდასახულად.
+                    {ATLAS_CORE_TEXT?.sun?.[0] || "მზე არის ცნობიერი ეგო, სასიცოცხლო ძალა და შინაგანი ძრავა. ის აღწერს იმას, თუ რისი მეშვეობით გრძნობს ადამიანი თავს ჭეშმარიტად ცოცხლად, თვითრეალიზებულად და მიზანდასახულად."}
                   </p>
-                  <button type="button" onClick={() => openFullInterpretation("planet", "Sun")} className="text-xs font-semibold text-cyan-300 hover:text-white">
-                    სრული ჩანაწერი →
-                  </button>
+                  {ATLAS_CORE_TEXT?.sun?.[1] && (
+                    <p className="text-xs text-slate-400 leading-relaxed border-t border-white/5 pt-2">
+                      {ATLAS_CORE_TEXT.sun[1]}
+                    </p>
+                  )}
                 </div>
 
                 {/* MC */}
@@ -1479,27 +1577,28 @@ export default function CalculationRoom({
                   <div className="flex items-center gap-3">
                     <span className="cr-glyph" style={{ "--gc": "#60a5faaa" } as React.CSSProperties}>MC</span>
                     <div>
-                      <h3 className="text-lg font-black text-white">ზენიტი (MC)</h3>
+                      <h3 className="text-lg font-black text-white">ზენიტი · MC ({wheel ? formatPos(wheel.mc).sign.n : "—"})</h3>
                       <div className="text-xs text-sky-300 font-semibold">
-                        {wheel ? formatPos(wheel.mc).full : "—"}
+                        {wheel ? formatPos(wheel.mc).full : "—"} · უმაღლესი მიზანი
                       </div>
                     </div>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    MC (Medium Coeli) აღნიშნავს უმაღლეს საზოგადოებრივ წერტილს, კარიერულ მისწრაფებას, სოციალურ სტატუსსა და იმ მწვერვალს, რომლისკენაც ადამიანი ცხოვრების მანძილზე ვითარდება.
+                    {ATLAS_CORE_TEXT?.mcSign?.[0] || "MC (Medium Coeli) აღნიშნავს უმაღლეს საზოგადოებრივ წერტილს, კარიერულ მისწრაფებას, სოციალურ სტატუსსა და იმ მწვერვალს, რომლისკენაც ადამიანი ცხოვრების მანძილზე ვითარდება."}
                   </p>
-                  <button type="button" onClick={() => openFullInterpretation("angle", "MC")} className="text-xs font-semibold text-cyan-300 hover:text-white">
-                    სრული ჩანაწერი →
-                  </button>
+                  {ATLAS_CORE_TEXT?.mcSign?.[1] && (
+                    <p className="text-xs text-slate-400 leading-relaxed border-t border-white/5 pt-2">
+                      {ATLAS_CORE_TEXT.mcSign[1]}
+                    </p>
+                  )}
                 </div>
 
-                {/* Moon Phase Graphic & Meaning */}
+                {/* Moon Phase & Elongation */}
                 <div className="cr-glass p-6 space-y-3">
                   <div className="flex items-center gap-4">
-                    {/* Dynamic SVG Moon */}
-                    <svg width="60" height="60" viewBox="-30 -30 60 60" className="shrink-0">
-                      <circle r="28" fill="#090d22" stroke="rgba(255,255,255,0.25)" />
-                      <circle r="27" fill="#fbbf24" fillOpacity={moonPhaseData.illumination / 100} />
+                    <svg width="60" height="60" viewBox="-30 -30 60 60" className="shrink-0 drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]">
+                      <circle r="27" fill="#090d22" stroke="rgba(255,255,255,0.25)" />
+                      <circle r="26" fill="#fbbf24" fillOpacity={moonPhaseData.illumination / 100} />
                     </svg>
                     <div>
                       <h3 className="text-lg font-black text-white">მთვარის ფაზა დაბადებისას</h3>
@@ -1509,12 +1608,104 @@ export default function CalculationRoom({
                     </div>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    დაბადებისას მზესა და მთვარეს შორის კუთხე იყო {moonPhaseData.elongation.toFixed(1)}°. მთვარის ეს ფაზა ასახავს ემოციურ რიტმსა და სულიერ ამოცანას — როგორ ურთიერთქმედებს ინსტინქტი ცნობიერ ნებასთან.
+                    დაბადებისას მზესა და მთვარეს შორის კუთხე იყო {moonPhaseData.elongation.toFixed(1)}°. {ATLAS_CORE_TEXT?.phase?.[0] || "მთვარის ეს ფაზა ასახავს ემოციურ რიტმსა და სულიერ ამოცანას — როგორ ურთიერთქმედებს ინსტინქტი ცნობიერ ნებასთან."}
                   </p>
-                  <button type="button" onClick={() => openFullInterpretation("planet", "Moon")} className="text-xs font-semibold text-cyan-300 hover:text-white">
-                    მთვარის სრული ჩანაწერი →
-                  </button>
+                  {ATLAS_CORE_TEXT?.phase?.[1] && (
+                    <p className="text-xs text-slate-400 leading-relaxed border-t border-white/5 pt-2">
+                      {ATLAS_CORE_TEXT.phase[1]}
+                    </p>
+                  )}
                 </div>
+              </div>
+
+              {/* Rulers of ASC and MC */}
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div className="cr-glass p-5 space-y-2 border-l-4 border-l-amber-400">
+                  <div className="text-xs font-bold uppercase tracking-wider text-amber-300">ასცენდენტის მმართველი</div>
+                  <h4 className="text-base font-extrabold text-white">მზე (ლომის მმართველი)</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">{ATLAS_CORE_TEXT?.ruler?.[0] || "ასცენდენტის მმართველი პლანეტის მდებარეობა მიუთითებს ცხოვრების მთავარ არენაზე, სადაც ადამიანი საკუთარ პიროვნებას ავლენს."}</p>
+                  {ATLAS_CORE_TEXT?.ruler?.[1] && (
+                    <p className="text-xs text-slate-400 leading-relaxed">{ATLAS_CORE_TEXT.ruler[1]}</p>
+                  )}
+                </div>
+
+                <div className="cr-glass p-5 space-y-2 border-l-4 border-l-sky-400">
+                  <div className="text-xs font-bold uppercase tracking-wider text-sky-300">ზენიტის (MC) მმართველი</div>
+                  <h4 className="text-base font-extrabold text-white">ვენერა (კუროს მმართველი)</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">{ATLAS_CORE_TEXT?.mcRuler?.[0] || "MC-ის მმართველი პლანეტა აჩვენებს პროფესიულ სტრატეგიას, რეპუტაციასა და სოციალური წარმატების მიღწევის გზას."}</p>
+                  {ATLAS_CORE_TEXT?.mcRuler?.[1] && (
+                    <p className="text-xs text-slate-400 leading-relaxed">{ATLAS_CORE_TEXT.mcRuler[1]}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Birth Time Sensitivity Slider (-30m to +30m Rectification Explorer) */}
+              <div className="cr-glass p-6 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wider text-cyan-300">დროითი მგრძნობელობის ანალიზი (Rectification Sensitivity)</div>
+                    <h3 className="text-lg font-extrabold text-white mt-0.5">დაბადების დროის ცვლილება: {timeOffset > 0 ? `+${timeOffset}` : timeOffset} წუთი</h3>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setTimeOffset(0)}
+                      className="cr-chip text-xs py-1 px-3"
+                    >
+                      ნორმა (0 წთ)
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-slate-400 font-mono">
+                    <span>-30 წთ</span>
+                    <span className="text-cyan-300 font-bold">{timeOffset > 0 ? `+${timeOffset}` : timeOffset} წთ</span>
+                    <span>+30 წთ</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-30"
+                    max="30"
+                    value={timeOffset}
+                    onChange={e => setTimeOffset(Number(e.target.value))}
+                    className="w-full accent-cyan-400 cursor-pointer"
+                  />
+                </div>
+
+                <p className="text-xs text-slate-300">
+                  დედამიწის ბრუნვის გამო ასცენდენტი ყოველ 4 წუთში დაახლოებით 1 გრადუსით იცვლება. ეს ინტერაქტიული მოდული გაჩვენებთ, როგორ ინაცვლებს 12 სახლის კუსპიდი დროის მცირე კორექტირებისას.
+                </p>
+
+                {sensEntry && (
+                  <div className="overflow-x-auto pt-2">
+                    <table className="w-full text-xs text-left">
+                      <thead>
+                        <tr className="border-b border-white/10 text-slate-400">
+                          <th className="py-2 px-2.5">სახლი</th>
+                          <th className="py-2 px-2.5">ნატალური კუსპიდი</th>
+                          <th className="py-2 px-2.5">გადახრილი კუსპიდი ({timeOffset > 0 ? `+${timeOffset}` : timeOffset} წთ)</th>
+                          <th className="py-2 px-2.5">დრიფტი</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {Array.from({ length: 12 }, (_, i) => {
+                          const orig = wheel ? wheel.houseCusps[i] : (sensEntry.c[i] || 0);
+                          const shifted = sensEntry.c[i] !== undefined ? sensEntry.c[i] : orig;
+                          const diff = ((shifted - orig + 540) % 360) - 180;
+                          return (
+                            <tr key={i} className="hover:bg-white/[0.04]">
+                              <td className="py-2 px-2.5 font-bold font-mono text-white">{ROM[i + 1]} სახლი</td>
+                              <td className="py-2 px-2.5 text-slate-300">{formatPos(orig).full}</td>
+                              <td className="py-2 px-2.5 font-semibold text-cyan-300">{formatPos(shifted).full}</td>
+                              <td className="py-2 px-2.5 font-mono text-slate-400">{diff >= 0 ? `+${diff.toFixed(2)}` : diff.toFixed(2)}°</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -1588,6 +1779,38 @@ export default function CalculationRoom({
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white">პლანეტარული ასპექტები და ასპექტთა ბადე</h2>
               </div>
 
+              {/* Selected Aspect Deep Inspector (if selected) */}
+              {selectedChartAspect && (
+                <div id="selected-chart-aspect" className="cr-glass cr-accent p-6 space-y-3 border-2 border-cyan-400/50 shadow-[0_0_35px_rgba(56,189,248,0.25)] animate-in fade-in">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <span className="cr-glyph" style={{ "--gc": "#38bdf8aa" } as React.CSSProperties}>
+                        {ASPECTS_DEF[selectedChartAspect.aspect]?.g || "•"}
+                      </span>
+                      <div>
+                        <div className="text-xs font-bold text-cyan-300 uppercase">არჩეული ასპექტის დეტალური ანალიზი</div>
+                        <h3 className="text-xl font-extrabold text-white">
+                          {BODY_META[selectedChartAspect.a]?.n || selectedChartAspect.a} {ASPECTS_DEF[selectedChartAspect.aspect]?.n || selectedChartAspect.aspect} {BODY_META[selectedChartAspect.b]?.n || selectedChartAspect.b}
+                        </h3>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs px-3 py-1 rounded-full bg-white/10 text-cyan-200">
+                        ორბი: {selectedChartAspect.orb.toFixed(2)}°
+                      </span>
+                      <span className="text-xs px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-semibold">
+                        {selectedChartAspect.applying ? "მოახლოებადი (Applying)" : "დაშორებადი (Separating)"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-slate-200 leading-relaxed pt-1">
+                    {getAspectText(selectedChartAspect.a, selectedChartAspect.b, selectedChartAspect.aspect) ||
+                      `${BODY_META[selectedChartAspect.a]?.n || selectedChartAspect.a} და ${BODY_META[selectedChartAspect.b]?.n || selectedChartAspect.b} იმყოფებიან ${ASPECTS_DEF[selectedChartAspect.aspect]?.n || selectedChartAspect.aspect}-ის ასპექტში. ${ASP_MEANINGS[selectedChartAspect.aspect] || ""}`}
+                  </p>
+                </div>
+              )}
+
               {/* Aspect Grid Matrix */}
               <div className="cr-glass p-6 text-center space-y-4">
                 <div className="text-xs font-bold text-white uppercase tracking-wider">ასპექტთა მატრიცა (Aspect Grid)</div>
@@ -1648,8 +1871,8 @@ export default function CalculationRoom({
                   const m1 = BODY_META[asp.a] || { n: asp.a };
                   const m2 = BODY_META[asp.b] || { n: asp.b };
                   const def = ASPECTS_DEF[asp.aspect] || { n: asp.aspect, g: "•", k: "h" };
-                  const mean = ASP_MEANINGS[asp.aspect] || "";
                   const aspectKey = `${asp.a}|${asp.aspect}|${asp.b}`;
+                  const customText = getAspectText(asp.a, asp.b, asp.aspect);
                   return (
                     <button
                       key={idx}
@@ -1674,11 +1897,14 @@ export default function CalculationRoom({
                         </div>
                         <span className="font-mono text-[11px] text-cyan-300">{asp.orb.toFixed(1)}°</span>
                       </div>
-                      <div className="text-[11px] text-slate-400">{def.n}</div>
-                      <p className="text-xs text-slate-300">{mean}</p>
-                      <p className="text-[11px] text-slate-400">
-                        {asp.applying ? "მოახლოებადი ფაზა" : "დაშორებადი ფაზა"} · {asp.kind === "major" ? "მაჟორული" : "მინორული"}
+                      <div className="text-[11px] text-slate-400 font-semibold">{def.n}</div>
+                      <p className="text-xs text-slate-300 line-clamp-3">
+                        {customText || ASP_MEANINGS[asp.aspect] || "ასპექტის ენერგეტიკული ურთიერთქმედება."}
                       </p>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-white/5">
+                        <span>{asp.applying ? "მოახლოებადი" : "დაშორებადი"}</span>
+                        <span className="text-cyan-300">დააჭირეთ სრულად სანახავად →</span>
+                      </div>
                     </button>
                   );
                 })}
@@ -1849,21 +2075,19 @@ export default function CalculationRoom({
           {/* ================= SECTION 8: MATRIX (ბედის მატრიცა) ================= */}
           {activeSec === "matrix" && (
             <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ბედის მატრიცა</div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">არქეტიპული ოქტაგრამა (Destiny Matrix)</h2>
-                </div>
+              <div>
+                <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ბედის მატრიცა · 22 არკანა</div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white">არქეტიპული ოქტაგრამა (Destiny Matrix)</h2>
               </div>
 
               <div className="rounded-2xl border border-cyan-400/20 bg-cyan-950/20 px-4 py-3 text-xs leading-5 text-cyan-100">
-                გამოთვლის კონვენცია: რიცხვები ერთიანი ციფრთა-ჯამის წესით მცირდება; „22-ის გამოკლებით“ ალტერნატიული ვარიანტი აღარ გამოიყენება. ეს სექცია სიმბოლური თვითრეფლექსიისთვისაა და არა ფაქტობრივი პროგნოზისთვის.
+                გამოთვლის კონვენცია: რიცხვები მცირდება 22-ის ჩათვლით კლასიკური არკანების წესით. თითოეული წერტილი აღწერს ადამიანის ცნობიერ, სულიერ და კარმულ ამოცანებს.
               </div>
 
               {/* Octagram SVG and Inspector Panel */}
-              <div className="grid gap-6 lg:grid-cols-12 items-center">
+              <div className="grid gap-6 lg:grid-cols-12 items-start">
                 {/* Octagram SVG Graphic */}
-                <div className="cr-glass p-6 lg:col-span-6 flex items-center justify-center">
+                <div className="cr-glass p-6 lg:col-span-6 flex flex-col items-center justify-center space-y-4">
                   <svg viewBox="0 0 460 460" className="w-full max-w-[420px] h-auto drop-shadow-[0_0_30px_rgba(167,139,250,0.3)] select-none">
                     <circle cx="230" cy="230" r="215" fill="rgba(192,132,252,0.06)" />
                     <circle cx="230" cy="230" r="170" fill="none" stroke="rgba(255,255,255,0.14)" />
@@ -1935,31 +2159,82 @@ export default function CalculationRoom({
                       );
                     })}
                   </svg>
+                  <p className="text-[11px] text-slate-400 text-center">
+                    დააჭირეთ ნებისმიერ წერტილს ოქტაგრამაზე დეტალური არკანას სანახავად
+                  </p>
                 </div>
 
                 {/* Matrix Point Details Inspector */}
                 <div className="cr-glass cr-accent p-6 lg:col-span-6 space-y-4">
                   {(() => {
                     const val = (matrix as Record<string, number>)[selectedMatrixPoint] || 1;
-                    const arc = TAROT_ARCANA[val] || ["არკანა", "სიმბოლური მნიშვნელობა"];
+                    const arc = ATLAS_ARC_TEXT[String(val)] || {
+                      n: `არკანა ${val}`,
+                      kw: "არქეტიპული ენერგია",
+                      d: "დადებითი გამოვლინება, პოტენციალი და რესურსი.",
+                      ch: "ჩრდილოვანი მხარე და გამოწვევა."
+                    };
                     return (
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         <div className="flex items-center gap-3">
                           <span className="cr-glyph" style={{ "--gc": "#fbbf24aa" } as React.CSSProperties}>
                             {val}
                           </span>
                           <div>
-                            <div className="text-xs text-cyan-300 font-bold uppercase">წერტილი {selectedMatrixPoint}</div>
-                            <h3 className="text-xl font-black text-white">{arc[0]} (არკანა {val})</h3>
+                            <div className="text-xs text-cyan-300 font-bold uppercase">
+                              წერტილი {selectedMatrixPoint} {selectedMatrixPoint === "X" ? "· სულის კომფორტის ზონა" : selectedMatrixPoint === "A" ? "· პიროვნული რესურსი (დღე)" : selectedMatrixPoint === "B" ? "· ინტუიცია და ნიჭი (თვე)" : selectedMatrixPoint === "C" ? "· მატერიალური მიზანი (წელი)" : selectedMatrixPoint === "D" ? "· კარმული ამოცანა" : ""}
+                            </div>
+                            <h3 className="text-2xl font-black text-white">{arc.n} ({val} არკანა)</h3>
                           </div>
                         </div>
-                        <p className="text-xs text-amber-300 font-semibold">{arc[1]}</p>
-                        <p className="text-xs text-slate-300 leading-relaxed">
-                          ეს ენერგია აღწერს პიროვნების შინაგან მოტივაციას, ცხოვრებისეულ გამოცდებსა და იმ არქეტიპულ ძალას, რომელსაც ადამიანი საკუთარ გამოცდილებაში ახორციელებს.
-                        </p>
+
+                        <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 p-3 text-xs font-semibold text-amber-200">
+                          საკვანძო თემები: {arc.kw}
+                        </div>
+
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-400">✦ პლუსი (დადებითი გამოვლინება)</h4>
+                          <p className="text-xs text-slate-200 leading-relaxed bg-white/[0.03] p-3 rounded-xl border border-white/10">
+                            {arc.d}
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-rose-400">✦ მინუსი / ჩრდილი (გამოწვევა)</h4>
+                          <p className="text-xs text-slate-200 leading-relaxed bg-white/[0.03] p-3 rounded-xl border border-white/10">
+                            {arc.ch}
+                          </p>
+                        </div>
                       </div>
                     );
                   })()}
+                </div>
+              </div>
+
+              {/* 3 Main Karmic Channels from ATLAS_MX_DD */}
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="cr-glass p-5 space-y-2 border-t-2 border-t-amber-400">
+                  <div className="text-xs font-bold uppercase text-amber-300">ფინანსური არხი</div>
+                  <h4 className="text-sm font-bold text-white">მატერიალური რეალიზაცია</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {ATLAS_MX_DD?.fin?.d || "ფინანსური ნაკადი აქტიურდება დამოუკიდებელი გადაწყვეტილებებით, პროფესიონალიზმითა და ექსპერტული ცოდნის გაცვლით."}
+                  </p>
+                </div>
+
+                <div className="cr-glass p-5 space-y-2 border-t-2 border-t-pink-400">
+                  <div className="text-xs font-bold uppercase text-pink-300">ურთიერთობების არხი</div>
+                  <h4 className="text-sm font-bold text-white">პარტნიორული ბალანსი</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {ATLAS_MX_DD?.rel?.d || "ჰარმონია მიიღწევა თანასწორობით, პირადი საზღვრების დაცვითა და ღია ემოციური ნდობით."}
+                  </p>
+                </div>
+
+                <div className="cr-glass p-5 space-y-2 border-t-2 border-t-violet-400">
+                  <div className="text-xs font-bold uppercase text-violet-300">კარმული კუდი</div>
+                  <h4 className="text-sm font-bold text-white">სულის მთავარი გაკვეთილი</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {ATLAS_MX_DD?.tail?.d || "გასავლელი ამოცანაა შიშებისა და ძველი მიჯაჭვულობების დაძლევა, თავისუფლებისა და სიბრძნის გამომუშავება."}
+                  </p>
                 </div>
               </div>
             </div>
@@ -1969,17 +2244,20 @@ export default function CalculationRoom({
           {activeSec === "psych" && (
             <div className="space-y-6">
               <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ფსიქოლოგია</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ფსიქოლოგია · სიღრმისეული ანალიზი</div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white">სიღრმისეული ფსიქოლოგიური პორტრეტი</h2>
               </div>
 
               {/* Sub tabs */}
               <div className="flex flex-wrap gap-2 pb-2">
                 {[
-                  { id: "triad", label: "ფროიდი (იდი / ეგო / სუპერეგო)" },
-                  { id: "defense", label: "თავდაცვის მექანიზმები" },
-                  { id: "jung", label: "იუნგის არქეტიპები" },
-                  { id: "attach", label: "მიჯაჭვულობის სტილი" },
+                  { id: "triad", label: "ფროიდის ტრიადა (იდი / ეგო / სუპერეგო)" },
+                  { id: "defenses", label: "თავდაცვის მექანიზმები" },
+                  { id: "jung", label: "იუნგის მანდალა (არქეტიპები)" },
+                  { id: "attach", label: "მიჯაჭვულობის დინამიკა" },
+                  { id: "needs", label: "მასლოუს პირამიდა" },
+                  { id: "extra", label: "კოგნიტური პროფილი & ლოკუსი" },
+                  { id: "strengths", label: "ძალები და ზრდის წერტილები" },
                 ].map(t => (
                   <button
                     key={t.id}
@@ -1993,48 +2271,65 @@ export default function CalculationRoom({
 
               {/* Sub Tab: Triad */}
               {psychTab === "triad" && (
-                <div className="grid gap-5 sm:grid-cols-3">
-                  <div className="cr-glass p-5 space-y-2">
-                    <span className="cr-tag cr-pos">იდი (ინსტინქტი)</span>
-                    <h4 className="text-sm font-bold text-white">მთვარის ენერგია</h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      ინსტინქტური მოთხოვნილებები, ემოციური უსაფრთხოების წყარო და სპონტანური რეაქციები.
-                    </p>
+                <div className="space-y-5">
+                  <div className="grid gap-5 sm:grid-cols-3">
+                    <div className="cr-glass p-5 space-y-2 border-t-2 border-t-rose-400">
+                      <div className="flex items-center justify-between">
+                        <span className="cr-tag cr-neg">იდი (ინსტინქტები)</span>
+                        <span className="font-mono text-xs font-bold text-rose-300">30%</span>
+                      </div>
+                      <h4 className="text-sm font-bold text-white">{ATLAS_PSY_DATA?.triad?.id?.t || "მთვარე ვერძში · პირველადი იმპულსი"}</h4>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        {ATLAS_PSY_DATA?.triad?.id?.d || "სპონტანური ემოციური იმპულსი, დაუყოვნებელი მოქმედების სურვილი და შინაგანი ცეცხლი."}
+                      </p>
+                    </div>
+
+                    <div className="cr-glass cr-accent p-5 space-y-2 border-t-2 border-t-cyan-400">
+                      <div className="flex items-center justify-between">
+                        <span className="cr-tag cr-new">ეგო (ცნობიერი მე)</span>
+                        <span className="font-mono text-xs font-bold text-cyan-300">45%</span>
+                      </div>
+                      <h4 className="text-sm font-bold text-white">{ATLAS_PSY_DATA?.triad?.ego?.t || "მზე კირჩხიბში · ასცენდენტი ლომში"}</h4>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        {ATLAS_PSY_DATA?.triad?.ego?.d || "რეალობის პრინციპი, ცნობიერი გადაწყვეტილებები და ბალანსი შინაგან მისწრაფებებსა და გარემოს შორის."}
+                      </p>
+                    </div>
+
+                    <div className="cr-glass p-5 space-y-2 border-t-2 border-t-amber-400">
+                      <div className="flex items-center justify-between">
+                        <span className="cr-tag cr-pos">სუპერეგო (კანონი)</span>
+                        <span className="font-mono text-xs font-bold text-amber-300">25%</span>
+                      </div>
+                      <h4 className="text-sm font-bold text-white">{ATLAS_PSY_DATA?.triad?.superego?.t || "სატურნი თევზებში · მორალური ჩარჩო"}</h4>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        {ATLAS_PSY_DATA?.triad?.superego?.d || "შინაგანი ეთიკური კოდექსი, პასუხისმგებლობა და სინდისის მოთხოვნები."}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="cr-glass cr-accent p-5 space-y-2">
-                    <span className="cr-tag cr-new">ეგო (ცნობიერი მე)</span>
-                    <h4 className="text-sm font-bold text-white">მზისა და ასცენდენტის სინთეზი</h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      ცნობიერი გადაწყვეტილებები, თვითიდენტობა და შუამავალი შინაგან სურვილებსა და რეალობას შორის.
-                    </p>
-                  </div>
-
-                  <div className="cr-glass p-5 space-y-2">
-                    <span className="cr-tag cr-neg">სუპერეგო (კანონი)</span>
-                    <h4 className="text-sm font-bold text-white">სატურნისეული სტრუქტურა</h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      შინაგანი კრიტიკოსი, პასუხისმგებლობის გრძნობა და ეთიკური ჩარჩოები.
-                    </p>
+                  <div className="cr-glass p-5 text-xs text-slate-300 leading-relaxed border-l-4 border-l-cyan-400">
+                    <strong className="text-white block mb-1">ტრიადის სინთეზი:</strong>
+                    {ATLAS_PSY_DATA?.triadSum || "იდის ცეცხლოვან იმპულსსა და სუპერეგოს მგრძნობიარე მორალს შორის ეგო ინარჩუნებს ძლიერ, ინტელექტუალურ და პრაქტიკულ წონასწორობას."}
                   </div>
                 </div>
               )}
 
-              {/* Sub Tab: Defense */}
-              {psychTab === "defense" && (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="cr-glass p-5 space-y-2">
-                    <h4 className="text-sm font-bold text-cyan-300">ინტელექტუალიზაცია</h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      ემოციური დაძაბულობისას გრძნობების ლოგიკურ ანალიზად თარგმნა თავდაცვის მიზნით.
-                    </p>
-                  </div>
-                  <div className="cr-glass p-5 space-y-2">
-                    <h4 className="text-sm font-bold text-amber-300">სუბლიმაცია</h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      ინტენსიური ენერგიის გადატანა შემოქმედებით, პროფესიულ და ხელშესახებ შრომაში.
-                    </p>
-                  </div>
+              {/* Sub Tab: Defenses */}
+              {psychTab === "defenses" && (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {(ATLAS_PSY_DATA?.defenses || []).map((def: any, idx: number) => (
+                    <div key={idx} className="cr-glass p-5 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-bold text-cyan-300">{def.n}</h4>
+                        <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-white/10 text-slate-300">{def.level}</span>
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">{def.d}</p>
+                      <div className="pt-2 border-t border-white/5 text-[11px] space-y-1">
+                        <div><strong className="text-slate-400">ტრიგერი: </strong><span className="text-slate-200">{def.trigger}</span></div>
+                        <div><strong className="text-slate-400">ფუნქცია: </strong><span className="text-emerald-300">{def.fun}</span></div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
 
@@ -2042,27 +2337,122 @@ export default function CalculationRoom({
               {psychTab === "jung" && (
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="cr-glass p-5 space-y-2">
-                    <h4 className="text-sm font-bold text-white">პერსონა (სოციალური ნიღაბი)</h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      ასცენდენტის მეშვეობით გამოხატული სოციალური როლი და გარეგანი იმიჯი.
-                    </p>
+                    <span className="cr-tag cr-new">პერსონა (სოციალური ნიღაბი)</span>
+                    <h4 className="text-sm font-bold text-white">{ATLAS_PSY_DATA?.jung?.persona?.t || "ასცენდენტი ლომში"}</h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">{ATLAS_PSY_DATA?.jung?.persona?.d || "სოციალური როლი და იმიჯი, რომლითაც ადამიანი საზოგადოებას წარუდგება."}</p>
                   </div>
                   <div className="cr-glass p-5 space-y-2">
-                    <h4 className="text-sm font-bold text-purple-300">ჩრდილი (Shadow)</h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      პლუტონისა და ლილითის არეალი — უარყოფილი ან დაფარული შინაგანი ძალები, რომელთა ინტეგრაცია უდიდეს ძალას ანიჭებს ადამიანს.
-                    </p>
+                    <span className="cr-tag cr-neg">ჩრდილი (Shadow)</span>
+                    <h4 className="text-sm font-bold text-purple-300">{ATLAS_PSY_DATA?.jung?.shadow?.t || "პლუტონი და ლილითი"}</h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">{ATLAS_PSY_DATA?.jung?.shadow?.d || "არაცნობიერი, განდევნილი იმპულსები, რომელთა გაცნობიერება უდიდეს ძალას ათავისუფლებს."}</p>
+                  </div>
+                  <div className="cr-glass p-5 space-y-2">
+                    <span className="cr-tag cr-pos">ანიმა / ანიმუსი (სულიერი ხიდი)</span>
+                    <h4 className="text-sm font-bold text-amber-300">{ATLAS_PSY_DATA?.jung?.anima?.t || "მთვარე და ვენერა"}</h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">{ATLAS_PSY_DATA?.jung?.anima?.d || "შინაგანი ქალური/მამაკაცური არქეტიპი და ემოციური ინტუიციის წყარო."}</p>
+                  </div>
+                  <div className="cr-glass cr-accent p-5 space-y-2">
+                    <span className="cr-tag cr-on">თვითობა (The Self)</span>
+                    <h4 className="text-sm font-bold text-cyan-300">{ATLAS_PSY_DATA?.jung?.self?.t || "მთლიანობის არქეტიპი"}</h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">{ATLAS_PSY_DATA?.jung?.self?.d || "ინდივიდუაციის უმაღლესი მიზანი — ყველა შინაგანი პოლარობის ჰარმონიული ინტეგრაცია."}</p>
                   </div>
                 </div>
               )}
 
               {/* Sub Tab: Attach */}
               {psychTab === "attach" && (
-                <div className="cr-glass cr-accent p-6 space-y-3">
-                  <h4 className="text-base font-bold text-white">ურთიერთობისა და მიჯაჭვულობის დინამიკა</h4>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    პარტნიორობაში იკვეთება ბალანსის ძიება დამოუკიდებლობასა და ემოციურ სიახლოვეს შორის. ჯანსაღი ურთიერთობა ეფუძნება ღია კომუნიკაციას, საჭიროებების პირდაპირ გაჟღერებას და ურთიერთპატივისცემას.
+                <div className="cr-glass cr-accent p-6 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="cr-glyph" style={{ "--gc": "#38bdf8aa" } as React.CSSProperties}>⚓︎</span>
+                    <div>
+                      <div className="text-xs font-bold text-cyan-300 uppercase">მიჯაჭვულობის დინამიკა</div>
+                      <h3 className="text-xl font-bold text-white">{ATLAS_PSY_DATA?.attach?.primary || "განრიდებით-უსაფრთხო (Dismissing-Avoidant with Secure synthesis)"}</h3>
+                    </div>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                    {ATLAS_PSY_DATA?.attach?.desc || "ურთიერთობებში იკვეთება მაღალი ავტონომიურობა და პირადი სივრცის მოთხოვნილება. პარტნიორთან სიახლოვე მიიღწევა ურთიერთპატივისცემით, საზღვრების აღიარებითა და ინტელექტუალური თანხვედრით."}
                   </p>
+                  <div className="grid gap-3 sm:grid-cols-2 pt-2">
+                    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-xs space-y-1">
+                      <strong className="text-rose-300 block">ტრიგერები ურთიერთობაში:</strong>
+                      <span className="text-slate-300">{ATLAS_PSY_DATA?.attach?.triggers || "გადამეტებული კონტროლი, ემოციური ზეწოლა და პირადი თავისუფლების შეზღუდვა."}</span>
+                    </div>
+                    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-xs space-y-1">
+                      <strong className="text-emerald-300 block">ინტეგრაციის გზა:</strong>
+                      <span className="text-slate-300">{ATLAS_PSY_DATA?.attach?.growth || "მოწყვლადობის გამოხატვა, ემოციური საჭიროებების პირდაპირი გაჟღერება და ნდობის გაფართოება."}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Sub Tab: Needs (Maslow) */}
+              {psychTab === "needs" && (
+                <div className="cr-glass p-6 space-y-3">
+                  <div className="text-xs font-bold uppercase tracking-wider text-cyan-300 mb-2">მოთხოვნილებათა იერარქია (მასლოუ)</div>
+                  <div className="space-y-2">
+                    {(ATLAS_PSY_DATA?.needs || []).map((need: any, i: number) => (
+                      <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl border border-white/5 bg-white/[0.02] gap-2">
+                        <div className="space-y-0.5">
+                          <span className="text-xs font-bold text-white">{need.lvl}. {need.n}</span>
+                          <p className="text-[11px] text-slate-400">{need.d}</p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-[10px] text-cyan-300 font-mono">{need.astro}</span>
+                          <span className="text-xs font-bold text-amber-300 font-mono">{need.score}%</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Sub Tab: Extra */}
+              {psychTab === "extra" && (
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="cr-glass p-5 space-y-2">
+                    <span className="text-xs font-bold uppercase text-cyan-300">კონტროლის ლოკუსი</span>
+                    <h4 className="text-sm font-bold text-white">{ATLAS_PSY_DATA?.extra?.locus?.t || "ინტერნალური (Internal)"}</h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">{ATLAS_PSY_DATA?.extra?.locus?.d || "ადამიანი საკუთარ ცხოვრებაზე სრულ პასუხისმგებლობას თავად იღებს და გარემოებებს არ აბრალებს."}</p>
+                  </div>
+                  <div className="cr-glass p-5 space-y-2">
+                    <span className="text-xs font-bold uppercase text-amber-300">აზროვნების სტილი</span>
+                    <h4 className="text-sm font-bold text-white">{ATLAS_PSY_DATA?.extra?.cog?.t || "სტრატეგიული და ანალიტიკური"}</h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">{ATLAS_PSY_DATA?.extra?.cog?.d || "დიდი სურათის დანახვა, ლოგიკური სტრუქტურირება და სისტემური მიდგომა."}</p>
+                  </div>
+                  <div className="cr-glass p-5 space-y-2">
+                    <span className="text-xs font-bold uppercase text-purple-300">ემოციური რეგულაცია</span>
+                    <h4 className="text-sm font-bold text-white">{ATLAS_PSY_DATA?.extra?.reg?.t || "ინტელექტუალური მოდერაცია"}</h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">{ATLAS_PSY_DATA?.extra?.reg?.d || "ემოციების რაციონალური გააზრება და კონსტრუქციულ ქმედებაში გარდაქმნა."}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Sub Tab: Strengths */}
+              {psychTab === "strengths" && (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="cr-glass p-5 space-y-3">
+                    <div className="text-xs font-bold uppercase text-emerald-400">ძირითადი ძალები (Superpowers)</div>
+                    <ul className="space-y-2 text-xs text-slate-300">
+                      {(ATLAS_PSY_DATA?.strengths || ["სტრატეგიული გამჭრიახობა", "ავტონომიურობა და შეუპოვრობა", "შემოქმედებითი ნება და ლიდერობა"]).map((s: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <span className="text-emerald-400">✓</span>
+                          <span>{s}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="cr-glass p-5 space-y-3">
+                    <div className="text-xs font-bold uppercase text-rose-400">ზრდის ზონები (Growth Edges)</div>
+                    <ul className="space-y-2 text-xs text-slate-300">
+                      {(ATLAS_PSY_DATA?.growth || ["ემოციური მოწყვლადობის დაშვება", "ზედმეტი კონტროლის შემცირება", "დასვენებისა და აღდგენის რიტმი"]).map((g: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <span className="text-rose-400">❖</span>
+                          <span>{g}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               )}
             </div>
@@ -2072,53 +2462,133 @@ export default function CalculationRoom({
           {activeSec === "cycles" && (
             <div className="space-y-6">
               <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">დრო და ციკლები</div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white">ცხოვრებისეული ციკლები და ტრანზიტები</h2>
+                <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">დრო და ციკლები · 2026–2030 ეფემერიდი</div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white">ცხოვრებისეული ციკლები და ლაივ ტრანზიტები</h2>
               </div>
 
-              {/* Major Lifetime Cycles */}
-              <div className="cr-glass p-6 space-y-4">
-                <div className="text-xs font-bold text-white uppercase tracking-wider">მთავარი ასტროლოგიური ციკლები</div>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 space-y-1.5">
-                    <div className="text-xs font-bold text-amber-300">იუპიტერის დაბრუნება (≈12 წელიწადში ერთხელ)</div>
-                    <p className="text-xs text-slate-300">ზრდის, შესაძლებლობების გაფართოებისა და ახალი ჰორიზონტების გახსნის ფანჯარა.</p>
+              {/* Live Daily Transit Engine */}
+              <div className="cr-glass cr-accent p-6 space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-white/10 pb-4">
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wider text-cyan-300">ტრანზიტების ლაივ გამომთვლელი</div>
+                    <h3 className="text-lg font-bold text-white mt-0.5">არჩეული თარიღი: {transitDate}</h3>
                   </div>
-
-                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 space-y-1.5">
-                    <div className="text-xs font-bold text-cyan-300">სატურნის დაბრუნება (≈29.5 წელი)</div>
-                    <p className="text-xs text-slate-300">მომწიფების, პასუხისმგებლობის გადაფასებისა და რეალური სტრუქტურის დამყარების ეტაპი.</p>
-                  </div>
-
-                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 space-y-1.5">
-                    <div className="text-xs font-bold text-purple-300">ურანის ოპოზიცია (≈42 წელი)</div>
-                    <p className="text-xs text-slate-300">შუა ცხოვრების განახლება, ავთენტური თავისუფლებისა და რეფორმის მოთხოვნა.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Daily Transit Explorer */}
-              <div className="cr-glass p-6 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div className="text-xs font-bold text-white uppercase tracking-wider">მიმდინარე ტრანზიტების მკვლევარი</div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const d = new Date(transitDate);
+                        d.setDate(d.getDate() - 1);
+                        setTransitDate(d.toISOString().slice(0, 10));
+                      }}
+                      className="cr-chip text-xs py-1 px-2.5"
+                    >
+                      « -1 დღე
+                    </button>
                     <input
                       type="date"
+                      min="2026-01-01"
+                      max="2030-12-31"
                       value={transitDate}
                       onChange={e => setTransitDate(e.target.value)}
-                      className="rounded-xl border border-white/15 bg-black/40 px-3 py-1.5 text-xs text-white"
+                      className="rounded-xl border border-white/20 bg-black/60 px-3 py-1 text-xs text-white outline-none focus:border-cyan-400"
                     />
                     <button
-                      onClick={() => setTransitDate(new Date().toISOString().slice(0, 10))}
-                      className="cr-chip text-xs py-1 px-3"
+                      type="button"
+                      onClick={() => {
+                        const d = new Date(transitDate);
+                        d.setDate(d.getDate() + 1);
+                        setTransitDate(d.toISOString().slice(0, 10));
+                      }}
+                      className="cr-chip text-xs py-1 px-2.5"
                     >
-                      დღეს
+                      +1 დღე »
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTransitDate("2026-06-22")}
+                      className="cr-chip cr-on text-xs py-1 px-3"
+                    >
+                      სოლარი 2026
                     </button>
                   </div>
                 </div>
-                <p className="text-xs text-slate-300">
-                  ტრანზიტები წარმოადგენს ციური სხეულების მიმდინარე მოძრაობას თქვენს ნატალურ რუკასთან მიმართებით {transitDate} თარიღისთვის.
-                </p>
+
+                {/* Active Transit Hits Banner */}
+                {dailyTransitData && dailyTransitData.hits.length > 0 ? (
+                  <div className="space-y-2">
+                    <div className="text-xs font-bold uppercase text-amber-300 flex items-center gap-2">
+                      <span>⚡︎ აქტიური ასპექტები ნატალურ რუკასთან ({dailyTransitData.hits.length})</span>
+                    </div>
+                    <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+                      {dailyTransitData.hits.map((hit, i) => (
+                        <div key={i} className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-white">
+                              {BODY_META[hit.transitBody]?.n || hit.transitBody} (Tr) {hit.glyph} {BODY_META[hit.natalBody]?.n || hit.natalBody}
+                            </span>
+                            <span className="font-mono text-[10px] text-cyan-300">{hit.orb.toFixed(2)}°</span>
+                          </div>
+                          <div className="text-[11px] text-slate-300">{hit.aspectKa}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-xs text-slate-400 py-1">ამ თარიღისთვის მჭიდრო ორბიანი ასპექტები არ დაფიქსირდა.</div>
+                )}
+
+                {/* Daily Planetary Positions Table */}
+                {dailyTransitData && (
+                  <div className="space-y-2 pt-2">
+                    <div className="text-xs font-bold text-slate-300 uppercase">პლანეტების ტრანზიტული პოზიციები ({transitDate})</div>
+                    <div className="overflow-x-auto max-h-56 overflow-y-auto pr-1">
+                      <table className="w-full text-xs text-left">
+                        <thead>
+                          <tr className="border-b border-white/10 text-slate-400">
+                            <th className="py-1.5 px-2">სხეული</th>
+                            <th className="py-1.5 px-2">ნიშანი</th>
+                            <th className="py-1.5 px-2">გრადუსი</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {dailyTransitData.bodies.map(b => {
+                            const meta = BODY_META[b.name] || { n: b.name, g: "•", c: "#fff" };
+                            const p = formatPos(b.longitude);
+                            return (
+                              <tr key={b.name} className="hover:bg-white/[0.04]">
+                                <td className="py-1.5 px-2 font-semibold text-white flex items-center gap-1.5">
+                                  <span style={{ color: meta.c }}>{meta.g}</span>
+                                  <span>{meta.n}</span>
+                                </td>
+                                <td className="py-1.5 px-2 text-slate-300">{p.sign.n}</td>
+                                <td className="py-1.5 px-2 font-mono text-cyan-300">{p.full}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Major Lifetime Cycle Milestones Timeline */}
+              <div className="cr-glass p-6 space-y-4">
+                <div className="text-xs font-bold text-white uppercase tracking-wider">ცხოვრებისეული ციკლების ქრონოლოგია</div>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {(ATLAS_NATAL_DATA?.cycles || []).slice(0, 15).map((cyc: any, i: number) => (
+                    <div key={i} className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-cyan-200">{cyc.b} · ასაკი {cyc.age.toFixed(1)} წ.</span>
+                        <span className="font-mono text-[10px] text-slate-400">{cyc.k}</span>
+                      </div>
+                      <p className="text-[11px] text-slate-300">
+                        {cyc.k.includes("ret") ? "დაბრუნების ფაზა — ახალი ეტაპის დაწყება" : cyc.k.includes("opp") ? "ოპოზიცია — შუა ციკლის კრიზისი და განახლება" : cyc.k.includes("sq") ? "კვადრატურა — შინაგანი გამოცდა და გარდატეხა" : "მნიშვნელოვანი ასტროლოგიური კონტაქტი"}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -2128,8 +2598,8 @@ export default function CalculationRoom({
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">რუკის მონაცემები და ბიბლიოთეკა</div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">სრული ინტერპრეტაცია</h2>
+                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">სინთეზი და ბიბლიოთეკა</div>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">სრული არქეტიპული სინთეზი</h2>
                 </div>
 
                 {/* Copy & Print actions */}
@@ -2149,6 +2619,37 @@ export default function CalculationRoom({
                   </button>
                 </div>
               </div>
+
+              {/* 5 Synthesis Archetype Themes Cards */}
+              <div className="space-y-4">
+                <div className="text-xs font-bold uppercase text-white tracking-wider">მთავარი სინთეზური თემები</div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {(ATLAS_SYN_DATA?.themes || []).map((th: any, idx: number) => (
+                    <div key={idx} className="cr-glass p-5 space-y-2 border-t-2 border-t-cyan-400">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-cyan-300">#{idx + 1}</span>
+                        <h4 className="text-sm font-bold text-white">{th.t}</h4>
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">{th.d}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Daily Practical Rituals & Guidance */}
+              {ATLAS_SYN_DATA?.practice && (
+                <div className="cr-glass cr-accent p-6 space-y-3">
+                  <div className="text-xs font-bold uppercase text-amber-300">პრაქტიკული რეკომენდაციები და ინტეგრაციის რიტუალები</div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {(ATLAS_SYN_DATA.practice || []).map((p: any, i: number) => (
+                      <div key={i} className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-xs space-y-1">
+                        <strong className="text-white block">{p.t}</strong>
+                        <p className="text-slate-300 leading-relaxed">{p.d}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Full Interpretation Content Display */}
               <div className="cr-interpretation-surface p-6 sm:p-10 space-y-6 leading-relaxed">

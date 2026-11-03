@@ -483,9 +483,11 @@
   padding-bottom: 18px;
 }
 
-/* The element panel lives beside the chart on wide screens.  Its own grid
-   must be sized by the panel, not by the browser viewport, so labels never
-   collapse into a vertical column on an otherwise large display. */
+/* The synthesis panel spans the chart width below the zodiac wheel. */
+.cr-element-panel {
+  width: 100%;
+  container-type: inline-size;
+}
 .cr-element-panel .element-balance-indicators-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -502,10 +504,43 @@
   font-size: clamp(0.88rem, 1vw, 1.05rem);
   line-height: 1.35;
 }
-
-@media (max-width: 1535px) {
+@container (max-width: 22rem) {
   .cr-element-panel .element-balance-indicators-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@container (min-width: 52rem) {
+  .cr-element-panel .element-balance-indicators-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@container (max-width: 36rem) {
+  .cr-element-panel .element-balance-summary {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "heading chevron"
+      "actions actions";
+    align-items: start;
+    gap: 0.6rem 0.7rem;
+  }
+  .cr-element-panel .element-balance-heading {
+    grid-area: heading;
+    width: 100%;
+    align-items: flex-start;
+  }
+  .cr-element-panel .element-balance-actions {
+    display: contents !important;
+  }
+  .cr-element-panel .element-balance-ascendant {
+    grid-area: actions;
+    justify-self: start;
+    max-width: 100%;
+    white-space: normal;
+  }
+  .cr-element-panel .element-balance-chevron {
+    grid-area: chevron;
+    margin-top: 0.25rem;
   }
 }
 

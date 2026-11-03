@@ -5,11 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import BirthFields, { BirthValue, EMPTY_BIRTH } from "./BirthFields";
 import InterpretationOverlay from "./InterpretationOverlay";
-import ChartExportButton from "./ChartExportButton";
-import ChartMapSection from "./ChartMapSection";
-import ElementBalanceGuide from "./ElementBalanceGuide";
 import CosmicShareCardModal from "./CosmicShareCardModal";
-import CalculationRoom from "./CalculationRoom";
 import type { WheelPlanet } from "./ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
@@ -227,7 +223,18 @@ export default function NatalCalculator() {
     setSaved(true);
     setSavedMessage("✓ რუკა ამ მოწყობილობაზე შეინახა!");
     setIsCurrentChartSavedLocally(true);
-    setIsRoomOpen(true);
+    saveGuestCache<CacheShape>("natal", {
+      birth: chart.birth,
+      houseSystem: (HOUSE_SYSTEM_VALUES as readonly string[]).includes(chart.houseSystem)
+        ? chart.houseSystem as HouseSystem
+        : "placidus",
+      calculation,
+      interpretation: chart.interpretation,
+      wheel: savedWheel,
+      mapNumber: null,
+      savedId: chart.id,
+    });
+    router.push("/chart/room");
   }
 
   async function calculate(save = false, openRoom = true) {
@@ -535,86 +542,25 @@ export default function NatalCalculator() {
         </section>
       )}
 
-      <div data-chart-export-root="true" className="hidden chart-builder-result space-y-4 sm:space-y-6" aria-hidden="true">
-        {wheel && (
-          <div className="flex justify-center pt-2 pb-1">
-            <button
-              type="button"
-              onClick={() => {
-                setIsRoomOpen(true);
-                try { window.history.pushState(null, "", "/chart/room"); } catch {}
-              }}
-              className="btn-shimmer flex items-center justify-center gap-2.5 rounded-full border border-cyan-400/50 bg-gradient-to-r from-emerald-500/25 via-indigo-900/60 to-cyan-500/30 px-8 py-3.5 text-xs sm:text-sm font-extrabold text-white shadow-[0_0_35px_rgba(56,189,248,0.35)] transition-all hover:scale-105 cursor-pointer"
-            >
-              <Sparkles className="h-4 w-4 text-cyan-300" />
-              <span>✦ ასტროლოგიური კაბინეტის გახსნა (სრული ეკრანი)</span>
-            </button>
+      {wheel && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-cyan-400/30 bg-gradient-to-r from-emerald-950/40 via-indigo-950/40 to-cyan-950/40 p-4 sm:p-5 backdrop-blur-xl shadow-lg">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-400/20 text-cyan-300 font-bold text-lg">✦</span>
+            <div>
+              <h4 className="text-sm sm:text-base font-bold text-white">რუკა გამოთვლილია ({birth.name || "მომხმარებელი"})</h4>
+              <p className="text-xs text-slate-300">სრული ინტერპრეტაცია, ასპექტები, ბადე, ფსიქოპორტრეტი და ტრანზიტები გახსნილია ცალკე ოთახში.</p>
+            </div>
           </div>
-        )}
-
-        {/* Chart Wheel Display */}
-        {wheel && (
-          <ChartMapSection
-            title="ზოდიაქალური წრე"
-            className="w-full"
-            ascendant={wheel.ascendant}
-            mc={wheel.mc}
-            houseCusps={wheel.houseCusps}
-            planets={wheel.planets}
-            aspects={wheel.aspects}
-            fixedStars={wheel.fixedStars}
-            planetHouses={wheel.planetHouses}
-          />
-        )}
-
-        {wheel && <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />}
-
-        {(wheel || interpretation) && (
-          <div className="flex flex-wrap items-center justify-end gap-3">
-            {interpretation && (
-              <button
-                type="button"
-                onClick={() => {
-                  setIsRoomOpen(true);
-                  try { window.history.pushState(null, "", "/chart/room"); } catch {}
-                }}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-500/10 px-5 py-2.5 text-xs font-bold text-cyan-100 transition hover:bg-cyan-500/20 cursor-pointer"
-              >
-                <Sparkles className="h-4 w-4 text-cyan-300" />
-                <span>ასტროლოგიური კაბინეტი (სრული ანალიზი) →</span>
-              </button>
-            )}
-            {wheel && (
-              <button
-                type="button"
-                onClick={() => setIsShareModalOpen(true)}
-                className="btn-shimmer flex items-center justify-center gap-2 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-indigo-900/40 to-amber-500/20 px-5 py-2.5 text-xs font-bold text-amber-200 shadow-[0_0_25px_rgba(245,158,11,0.25)] transition-all hover:border-amber-400 hover:text-white cursor-pointer"
-              >
-                <Sparkles className="h-4 w-4 text-amber-300" />
-                <span>✦ ჰოლოგრაფიული ბარათი (Story)</span>
-              </button>
-            )}
-            <ChartExportButton className="flex items-center justify-center gap-1.5 rounded-full border border-cyan-400/40 bg-gradient-to-r from-cyan-950/60 via-indigo-950/60 to-purple-950/60 px-5 py-2.5 text-xs font-bold text-cyan-200 shadow-[0_0_20px_rgba(56,189,248,0.25)] transition-all hover:bg-cyan-400 hover:text-slate-950 cursor-pointer" />
-          </div>
-        )}
-
-      </div>
-
-      <CalculationRoom
-        isOpen={isRoomOpen}
-        onClose={() => {
-          setIsRoomOpen(false);
-          try { window.history.pushState(null, "", "/"); } catch {}
-        }}
-        birth={birth}
-        wheel={wheel}
-        interpretation={interpretation}
-        mapNumber={mapNumber}
-        houseSystem={houseSystem}
-        isLoading={loading}
-        onOpenShareModal={() => setIsShareModalOpen(true)}
-        savedChart={saved || isCurrentChartSavedLocally}
-      />
+          <button
+            type="button"
+            onClick={() => router.push("/chart/room")}
+            className="btn-shimmer flex items-center justify-center gap-2 rounded-full border border-cyan-400/50 bg-gradient-to-r from-emerald-500 via-indigo-600 to-cyan-500 px-6 py-3 text-xs sm:text-sm font-extrabold text-white shadow-[0_0_25px_rgba(56,189,248,0.35)] transition-all hover:scale-105 cursor-pointer shrink-0"
+          >
+            <Sparkles className="h-4 w-4 text-cyan-200" />
+            <span>ასტროლოგიურ კაბინეტში შესვლა (სრული ეკრანი) →</span>
+          </button>
+        </div>
+      )}
 
       {/* 1.5s Hypnotic Cosmic Reveal Accelerator */}
       {isRevealing && (
