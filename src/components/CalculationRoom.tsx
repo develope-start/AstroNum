@@ -164,7 +164,8 @@ const SECTIONS = [
   { id: "matrix", title: "ბედის მატრიცა", glyph: "✧" },
   { id: "psych", title: "ფსიქოლოგიური პორტრეტი", glyph: "☾" },
   { id: "cycles", title: "ციკლები და ტრანზიტები", glyph: "⟳" },
-  { id: "synthesis", title: "სრული ინტერპრეტაცია", glyph: "❖" }
+  { id: "synthesis", title: "სრული ინტერპრეტაცია", glyph: "❖" },
+  { id: "ai-interpretation", title: "AI სრული ინტერპრეტაცია", glyph: "✧" }
 ];
 
 /* ================= Numerology & Matrix Math Helpers ================= */
@@ -2048,8 +2049,6 @@ export default function CalculationRoom({
                 </div>
               </div>
 
-              <RoomAiInsight birth={birth} houseSystem={houseSystem ?? "placidus"} />
-
               {/* Full Interpretation Content Display */}
               <div className="cr-glass p-6 sm:p-10 space-y-6 leading-relaxed">
                 {interpretation ? (
@@ -2074,6 +2073,12 @@ export default function CalculationRoom({
                   <p>ხელოვნური ინტელექტის პასუხი ღილაკზე დაჭერის შემდეგ იქმნება OpenRouter-ით, საჭიროებისას Groq-ის სათადარიგო სერვისით. ის ვერ ცვლის გამოთვლილ მონაცემებს და არ არის სამედიცინო, ფსიქოლოგიური ან ფინანსური რჩევა.</p>
                 </div>
               </details>
+            </div>
+          )}
+
+          {activeSec === "ai-interpretation" && (
+            <div className="max-w-5xl">
+              <RoomAiInsight birth={birth} houseSystem={houseSystem ?? "placidus"} />
             </div>
           )}
         </main>
