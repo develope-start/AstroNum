@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode, useEffect, useState } from "react";
-import { ArrowLeft, Loader2, Sparkles, X } from "lucide-react";
+import { ArrowLeft, Bookmark, Loader2, Sparkles, X } from "lucide-react";
 import InterpretationText from "./InterpretationText";
 
 type InterpretationOverlayProps = {
@@ -12,6 +12,10 @@ type InterpretationOverlayProps = {
   interpretation?: string | null;
   mapNumber?: string | null;
   onClose: () => void;
+  onSave?: () => void | Promise<void>;
+  isSaved?: boolean;
+  saving?: boolean;
+  saveMessage?: string | null;
   children?: ReactNode;
 };
 
@@ -28,6 +32,10 @@ export default function InterpretationOverlay({
   interpretation,
   mapNumber,
   onClose,
+  onSave,
+  isSaved = false,
+  saving = false,
+  saveMessage,
   children,
 }: InterpretationOverlayProps) {
   const [progress, setProgress] = useState(0);
@@ -124,6 +132,20 @@ export default function InterpretationOverlay({
           <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-8 sm:py-8">
             <div className="mx-auto w-full max-w-4xl">
               {mapNumber && <p className="mb-5 inline-flex rounded-full border border-violet-400/30 bg-violet-500/10 px-3 py-1 text-xs font-bold text-violet-200">რუკის ნომერი: {mapNumber}</p>}
+              {onSave && (
+                <div className="mb-5 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => void onSave()}
+                    disabled={saving || isSaved}
+                    className="inline-flex items-center gap-2 rounded-full border border-cyan-400/35 bg-cyan-500/10 px-4 py-2 text-xs font-bold text-cyan-100 transition hover:bg-cyan-500/20 disabled:cursor-default disabled:opacity-70"
+                  >
+                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bookmark className="h-4 w-4" />}
+                    {isSaved ? "შენახულია" : saving ? "ინახება…" : "რუკის შენახვა"}
+                  </button>
+                  {saveMessage && <span role="status" className="text-xs text-slate-300">{saveMessage}</span>}
+                </div>
+              )}
               {interpretation ? <InterpretationText text={interpretation} /> : children}
               <button
                 type="button"

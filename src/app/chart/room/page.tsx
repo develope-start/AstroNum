@@ -27,6 +27,7 @@ interface CacheShape {
     ephemeris?: EphemerisMetadata;
   } | null;
   mapNumber?: string | null;
+  savedId?: string | null;
 }
 
 export default function ChartRoomPage() {
@@ -79,6 +80,7 @@ export default function ChartRoomPage() {
       interpretation={cached.interpretation}
       mapNumber={cached.mapNumber}
       houseSystem={cached.houseSystem}
+      savedChart={Boolean(cached.savedId)}
     />
   );
 }

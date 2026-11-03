@@ -6,6 +6,7 @@ import InterpretationOverlay from "./InterpretationOverlay";
 import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
+import { saveGuestChart } from "@/lib/guestSavedCharts";
 import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Info, Heart } from "lucide-react";
 import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettings";
 import HouseSystemSelect from "./HouseSystemSelect";
@@ -32,8 +33,11 @@ export default function SynastryCalculator() {
   const [isInterpretationOpen, setIsInterpretationOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [savedMessage, setSavedMessage] = useState("✓ წარმატებით შენახულია კაბინეტში!");
+  const [savingFromRoom, setSavingFromRoom] = useState(false);
   const [mapNumber, setMapNumber] = useState<string | null>(null);
   const [teaserPreview, setTeaserPreview] = useState<{ nameA: string; nameB: string; planRequired?: boolean } | null>(null);
+  const [calculatedResult, setCalculatedResult] = useState<{ chartA: unknown; chartB: unknown; aspects: unknown } | null>(null);
 
   useEffect(() => {
     const cached = loadGuestCache<CacheShape>("synastry");
@@ -61,6 +65,11 @@ export default function SynastryCalculator() {
   }
 
   async function calculate(save = false) {
+    if (!save) setSaved(false);
+    if (save && me === undefined) {
+      setError("მომხმარებლის სტატუსი იტვირთება. სცადეთ ხელახლა.");
+      return;
+    }
     if (!ready(a) || !ready(b)) {
       setError("შეავსეთ ორივე ადამიანის სახელი, თარიღი, დრო და დაბადების ადგილი.");
       return;
@@ -82,13 +91,16 @@ export default function SynastryCalculator() {
       const res = await fetch("/api/chart/synastry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ personA: toPerson(a), personB: toPerson(b), calculation, houseSystem, save }),
+        body: JSON.stringify({ personA: toPerson(a), personB: toPerson(b), calculation, houseSystem, save: save && me !== null }),
       });
       const data = await readApiResponse<{
         error?: string;
         code?: string;
         interpretation?: string;
         mapNumber?: string | null;
+        chartA?: unknown;
+        chartB?: unknown;
+        aspects?: unknown;
       }>(res);
       if (res.status === 401 || data?.code === "AUTH_REQUIRED" || data?.code === "PLAN_REQUIRED") {
         setTeaserPreview({
@@ -113,6 +125,21 @@ export default function SynastryCalculator() {
       setTeaserPreview(null);
       setInterpretation(data.interpretation);
       setMapNumber(data.mapNumber ?? null);
+      setCalculatedResult({ chartA: data.chartA, chartB: data.chartB, aspects: data.aspects });
+      if (save && me === null) {
+        saveGuestChart({
+          type: "SYNASTRY",
+          label: `სინასტრია — ${a.name} & ${b.name}`,
+          birth: a,
+          secondaryBirth: b,
+          houseSystem,
+          result: { chartA: data.chartA, chartB: data.chartB, aspects: data.aspects },
+          interpretation: data.interpretation,
+        });
+        setSavedMessage("✓ სინასტრია ამ მოწყობილობაზე შეინახა!");
+      } else if (save) {
+        setSavedMessage("✓ წარმატებით შენახულია კაბინეტში!");
+      }
       if (save) setSaved(true);
       else saveGuestCache<CacheShape>("synastry", { a, b, calculation, houseSystem, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
     } catch (error) {
@@ -123,20 +150,111 @@ export default function SynastryCalculator() {
     }
   }
 
+  async function saveCurrentChart() {
+      if (saved || savingFromRoom) return;
+      if (me === undefined) {
+        setError("მომხმარებლის სტატუსი იტვირთება. სცადეთ ხელახლა.");
+        return;
+      }
+      if (!interpretation || !calculatedResult) {
+        await calculate(true);
+        return;
+      }
+      setSavingFromRoom(true);
+      setError(null);
+      if (me === null) {
+        try {
+          saveGuestChart({
+            type: "SYNASTRY",
+            label: `სინასტრია — ${a.name} & ${b.name}`,
+            birth: a,
+            secondaryBirth: b,
+            houseSystem,
+            result: calculatedResult,
+            interpretation,
+          });
+          setSavedMessage("✓ სინასტრია ამ მოწყობილობაზე შეინახა!");
+          setSaved(true);
+        } catch (saveError) {
+          setError(saveError instanceof Error ? saveError.message : "რუკის შენახვა ვერ მოხერხდა.");
+        } finally {
+          setSavingFromRoom(false);
+        }
+        return;
+      }
+      try {
+        const response = await fetch("/api/charts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "SYNASTRY",
+            mapNumber,
+            name1: a.name,
+            date1: a.date,
+            time1: a.time,
+            place1: a.place,
+            lat1: a.lat,
+            lon1: a.lon,
+            tz1: a.timezone,
+            name2: b.name,
+            date2: b.date,
+            time2: b.time,
+            place2: b.place,
+            lat2: b.lat,
+            lon2: b.lon,
+            tz2: b.timezone,
+            houseSystem,
+            result: calculatedResult,
+            interpretation,
+          }),
+        });
+        const data = await readApiResponse<{ error?: string; saved?: boolean }>(response);
+        if (!response.ok || !data.saved) throw new Error(data.error ?? "რუკის შენახვა ვერ მოხერხდა.");
+        setSavedMessage("✓ წარმატებით შენახულია კაბინეტში!");
+        setSaved(true);
+      } catch (saveError) {
+        setError(saveError instanceof Error ? saveError.message : "რუკის შენახვა ვერ მოხერხდა.");
+      } finally {
+        setSavingFromRoom(false);
+      }
+  }
+
   return (
     <div className="mx-auto w-full max-w-full space-y-4 sm:space-y-6 text-center overflow-x-hidden">
       <div className="relative z-30 grid gap-4 sm:gap-6 lg:grid-cols-2 text-center w-full">
-        <BirthFields value={a} onChange={setA} legend="01. პირველი ადამიანი" />
-        <BirthFields value={b} onChange={setB} legend="02. მეორე ადამიანი" />
+        <BirthFields
+          value={a}
+          onChange={(value) => {
+            setA(value);
+            setCalculatedResult(null);
+            setSaved(false);
+          }}
+          legend="01. პირველი ადამიანი"
+        />
+        <BirthFields
+          value={b}
+          onChange={(value) => {
+            setB(value);
+            setCalculatedResult(null);
+            setSaved(false);
+          }}
+          legend="02. მეორე ადამიანი"
+        />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <CalculationSettings value={calculation} onChange={(next) => {
           setCalculation(next);
+          setCalculatedResult(null);
+          setSaved(false);
           if (next.ephemeris === "astronomy" && !["placidus", "whole_sign", "equal", "porphyry"].includes(houseSystem)) setHouseSystem("placidus");
         }} />
         <div className="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-center">
-          <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} ephemeris={calculation.ephemeris ?? "swiss"} />
+          <HouseSystemSelect value={houseSystem} onChange={(value) => {
+            setHouseSystem(value);
+            setCalculatedResult(null);
+            setSaved(false);
+          }} ephemeris={calculation.ephemeris ?? "swiss"} />
         </div>
       </div>
 
@@ -170,16 +288,14 @@ export default function SynastryCalculator() {
             )}
           </button>
 
-          {me && (
-            <button
-              onClick={() => calculate(true)}
-              disabled={loading}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-xs sm:text-sm font-bold text-cyan-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-all hover:bg-white/[0.08] hover:border-cyan-400/40 cursor-pointer"
-            >
-              <Bookmark className="h-4 w-4 text-cyan-400" />
-              <span>შენახვა</span>
-            </button>
-          )}
+          <button
+            onClick={saveCurrentChart}
+            disabled={loading || savingFromRoom || me === undefined || saved}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-xs sm:text-sm font-bold text-cyan-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-all hover:bg-white/[0.08] hover:border-cyan-400/40 disabled:cursor-wait disabled:opacity-50 cursor-pointer"
+          >
+            <Bookmark className="h-4 w-4 text-cyan-400" />
+            <span>{saved ? "შენახულია" : "შენახვა"}</span>
+          </button>
         </div>
       </div>
 
@@ -253,7 +369,7 @@ export default function SynastryCalculator() {
       {saved && (
         <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3.5 text-xs font-semibold text-emerald-300 shadow-lg justify-center backdrop-blur-xl">
           <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-          <span>✓ წარმატებით შენახულია კაბინეტში!</span>
+          <span>{savedMessage}</span>
         </div>
       )}
 
@@ -286,6 +402,10 @@ export default function SynastryCalculator() {
         interpretation={interpretation}
         mapNumber={mapNumber}
         onClose={() => setIsInterpretationOpen(false)}
+        onSave={saveCurrentChart}
+        isSaved={saved}
+        saving={savingFromRoom || loading}
+        saveMessage={saved ? savedMessage : error}
       />
     </div>
   );

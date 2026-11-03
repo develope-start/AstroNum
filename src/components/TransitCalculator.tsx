@@ -11,6 +11,7 @@ import InterpretationOverlay from "./InterpretationOverlay";
 import { saveGuestCache, loadGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
+import { saveGuestChart } from "@/lib/guestSavedCharts";
 import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Calendar, Clock, Info } from "lucide-react";
 import { compareWideDates, isWideDate } from "@/lib/astro/wideDate";
 
@@ -52,8 +53,11 @@ export default function TransitCalculator() {
   const [isInterpretationOpen, setIsInterpretationOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [savedMessage, setSavedMessage] = useState("✓ წარმატებით შენახულია კაბინეტში!");
+  const [savingFromRoom, setSavingFromRoom] = useState(false);
   const [mapNumber, setMapNumber] = useState<string | null>(null);
   const [teaserPreview, setTeaserPreview] = useState<{ name: string; transitDate: string; planRequired?: boolean } | null>(null);
+  const [calculatedResult, setCalculatedResult] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     const cached = loadGuestCache<CacheShape>("transit");
@@ -83,6 +87,11 @@ export default function TransitCalculator() {
   }, []);
 
   async function calculate(save = false) {
+    if (!save) setSaved(false);
+    if (save && me === undefined) {
+      setError("მომხმარებლის სტატუსი იტვირთება. სცადეთ ხელახლა.");
+      return;
+    }
     if (!birth.name || !birth.date || !birth.time || birth.lat === null || birth.lon === null || birth.timezone === null) {
       setError("შეავსეთ დაბადების მონაცემები და დაადასტურეთ ადგილის მოძებნა.");
       return;
@@ -121,7 +130,7 @@ export default function TransitCalculator() {
           transitEndDate: calculationEndDate,
           calculation,
           houseSystem,
-          save,
+          save: save && me !== null,
         }),
       });
       const data = await readApiResponse<{
@@ -129,6 +138,10 @@ export default function TransitCalculator() {
         code?: string;
         interpretation?: string;
         mapNumber?: string | null;
+        natalChart?: unknown;
+        transitPlanets?: unknown;
+        aspects?: unknown;
+        interval?: unknown;
       }>(res);
       if (res.status === 401 || data?.code === "AUTH_REQUIRED" || data?.code === "PLAN_REQUIRED") {
         setTeaserPreview({
@@ -153,6 +166,37 @@ export default function TransitCalculator() {
       setTeaserPreview(null);
       setInterpretation(data.interpretation);
       setMapNumber(data.mapNumber ?? null);
+      setCalculatedResult({
+        natalChart: data.natalChart,
+        transitPlanets: data.transitPlanets,
+        aspects: data.aspects,
+        transitDate: calculationDate,
+        transitStartDate: calculationStartDate,
+        transitEndDate: calculationEndDate,
+        interval: data.interval,
+      });
+      if (save && me === null) {
+        saveGuestChart({
+          type: "TRANSIT",
+          label: `ტრანზიტი — ${birth.name} (${calculationDate})`,
+          birth,
+          transit: { date: calculationDate, startDate: calculationStartDate, endDate: calculationEndDate },
+          houseSystem,
+          result: {
+            natalChart: data.natalChart,
+            transitPlanets: data.transitPlanets,
+            aspects: data.aspects,
+            transitDate: calculationDate,
+            transitStartDate: calculationStartDate,
+            transitEndDate: calculationEndDate,
+            interval: data.interval,
+          },
+          interpretation: data.interpretation,
+        });
+        setSavedMessage("✓ ტრანზიტი ამ მოწყობილობაზე შეინახა!");
+      } else if (save) {
+        setSavedMessage("✓ წარმატებით შენახულია კაბინეტში!");
+      }
       if (save) setSaved(true);
       else saveGuestCache<CacheShape>("transit", { birth, transitDate: calculationDate, transitStartDate: calculationStartDate, transitEndDate: calculationEndDate, inputMode: selectedMode, calculation, houseSystem, interpretation: data.interpretation, mapNumber: data.mapNumber ?? null });
     } catch (error) {
@@ -163,16 +207,91 @@ export default function TransitCalculator() {
     }
   }
 
+  async function saveCurrentChart() {
+      if (saved || savingFromRoom) return;
+      if (me === undefined) {
+        setError("მომხმარებლის სტატუსი იტვირთება. სცადეთ ხელახლა.");
+        return;
+      }
+      if (!interpretation || !calculatedResult) {
+        await calculate(true);
+        return;
+      }
+      setSavingFromRoom(true);
+      setError(null);
+      if (me === null) {
+        try {
+          saveGuestChart({
+            type: "TRANSIT",
+            label: `ტრანზიტი — ${birth.name} (${transitDate})`,
+            birth,
+            transit: {
+              date: String(calculatedResult.transitDate),
+              startDate: String(calculatedResult.transitStartDate),
+              endDate: String(calculatedResult.transitEndDate),
+            },
+            houseSystem,
+            result: calculatedResult,
+            interpretation,
+          });
+          setSavedMessage("✓ ტრანზიტი ამ მოწყობილობაზე შეინახა!");
+          setSaved(true);
+        } catch (saveError) {
+          setError(saveError instanceof Error ? saveError.message : "რუკის შენახვა ვერ მოხერხდა.");
+        } finally {
+          setSavingFromRoom(false);
+        }
+        return;
+      }
+      try {
+        const response = await fetch("/api/charts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "TRANSIT",
+            mapNumber,
+            name1: birth.name,
+            date1: birth.date,
+            time1: birth.time,
+            place1: birth.place,
+            lat1: birth.lat,
+            lon1: birth.lon,
+            tz1: birth.timezone,
+            transitDate: calculatedResult.transitDate,
+            houseSystem,
+            result: calculatedResult,
+            interpretation,
+          }),
+        });
+        const data = await readApiResponse<{ error?: string; saved?: boolean }>(response);
+        if (!response.ok || !data.saved) throw new Error(data.error ?? "რუკის შენახვა ვერ მოხერხდა.");
+        setSavedMessage("✓ წარმატებით შენახულია კაბინეტში!");
+        setSaved(true);
+      } catch (saveError) {
+        setError(saveError instanceof Error ? saveError.message : "რუკის შენახვა ვერ მოხერხდა.");
+      } finally {
+        setSavingFromRoom(false);
+      }
+  }
+
   function activateMode(mode: TransitInputMode) {
     setInputMode(mode);
     setError(null);
+    if (mode !== inputMode) {
+      setCalculatedResult(null);
+      setSaved(false);
+    }
   }
 
   return (
     <div className="mx-auto w-full max-w-full space-y-4 sm:space-y-6 text-center overflow-x-hidden">
       <div className="grid w-full min-w-0 gap-4 text-center sm:gap-6 lg:grid-cols-12 lg:items-stretch">
         <div className="relative z-30 min-w-0 w-full text-center lg:col-span-7">
-          <BirthFields value={birth} onChange={setBirth} legend="01. ნატალური მონაცემები" />
+          <BirthFields value={birth} onChange={(value) => {
+            setBirth(value);
+            setCalculatedResult(null);
+            setSaved(false);
+          }} legend="01. ნატალური მონაცემები" />
         </div>
 
         <div className="glass-panel relative z-10 flex min-w-0 w-full flex-col justify-center space-y-5 overflow-hidden rounded-2xl border-white/10 bg-[#090d1e]/85 p-4 text-center shadow-[0_20px_50px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-2xl sm:rounded-[28px] sm:p-7 lg:col-span-5 lg:h-full">
@@ -222,11 +341,19 @@ export default function TransitCalculator() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="grid gap-1">
                   <span className="text-[0.68rem] font-bold text-slate-300">დაწყება</span>
-                  <SharedWideDateInput label="დაწყების თარიღი" value={transitStartDate} onChange={setTransitStartDate} onActivate={() => activateMode("interval")} />
+                  <SharedWideDateInput label="დაწყების თარიღი" value={transitStartDate} onChange={(value) => {
+                    setTransitStartDate(value);
+                    setCalculatedResult(null);
+                    setSaved(false);
+                  }} onActivate={() => activateMode("interval")} />
                 </div>
                 <div className="grid gap-1">
                   <span className="text-[0.68rem] font-bold text-slate-300">დასასრული</span>
-                  <SharedWideDateInput label="დასასრულის თარიღი" value={transitEndDate} onChange={setTransitEndDate} onActivate={() => activateMode("interval")} />
+                  <SharedWideDateInput label="დასასრულის თარიღი" value={transitEndDate} onChange={(value) => {
+                    setTransitEndDate(value);
+                    setCalculatedResult(null);
+                    setSaved(false);
+                  }} onActivate={() => activateMode("interval")} />
                 </div>
               </div>
             </div>
@@ -243,12 +370,16 @@ export default function TransitCalculator() {
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-200">ტრანზიტის თარიღი</label>
               </div>
 
-              <SharedWideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={setTransitDate} onActivate={() => activateMode("date")} />
+              <SharedWideDateInput label="გამოთვლის თარიღი" value={transitDate} onChange={(value) => {
+                setTransitDate(value);
+                setCalculatedResult(null);
+                setSaved(false);
+              }} onActivate={() => activateMode("date")} />
 
               <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold w-full pt-1">
                 <button
                   type="button"
-                  onClick={() => { activateMode("date"); setTransitDate(today()); }}
+                  onClick={() => { activateMode("date"); setTransitDate(today()); setCalculatedResult(null); setSaved(false); }}
                   className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
                     transitDate === today()
                       ? "bg-cyan-500/30 text-cyan-200 border border-cyan-400/50 font-bold shadow-[0_0_12px_rgba(56,189,248,0.3)]"
@@ -259,7 +390,7 @@ export default function TransitCalculator() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { activateMode("date"); setTransitDate(offsetDays(1)); }}
+                  onClick={() => { activateMode("date"); setTransitDate(offsetDays(1)); setCalculatedResult(null); setSaved(false); }}
                   className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
                     transitDate === offsetDays(1)
                       ? "bg-cyan-500/30 text-cyan-200 border border-cyan-400/50 font-bold shadow-[0_0_12px_rgba(56,189,248,0.3)]"
@@ -270,7 +401,7 @@ export default function TransitCalculator() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { activateMode("date"); setTransitDate(offsetDays(7)); }}
+                  onClick={() => { activateMode("date"); setTransitDate(offsetDays(7)); setCalculatedResult(null); setSaved(false); }}
                   className={`rounded-full px-3 py-1 text-xs transition-all cursor-pointer ${
                     transitDate === offsetDays(7)
                       ? "bg-cyan-500/30 text-cyan-200 border border-cyan-400/50 font-bold shadow-[0_0_12px_rgba(56,189,248,0.3)]"
@@ -285,9 +416,15 @@ export default function TransitCalculator() {
 
           <CalculationSettings value={calculation} onChange={(next) => {
             setCalculation(next);
+            setCalculatedResult(null);
+            setSaved(false);
             if (next.ephemeris === "astronomy" && !["placidus", "whole_sign", "equal", "porphyry"].includes(houseSystem)) setHouseSystem("placidus");
           }} />
-          <HouseSystemSelect value={houseSystem} onChange={setHouseSystem} ephemeris={calculation.ephemeris ?? "swiss"} />
+          <HouseSystemSelect value={houseSystem} onChange={(value) => {
+            setHouseSystem(value);
+            setCalculatedResult(null);
+            setSaved(false);
+          }} ephemeris={calculation.ephemeris ?? "swiss"} />
 
           <div className="flex flex-col gap-3 pt-2">
             <button
@@ -308,16 +445,14 @@ export default function TransitCalculator() {
               )}
             </button>
 
-            {me && (
-              <button
-                onClick={() => calculate(true)}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] py-3 px-6 text-xs sm:text-sm font-bold text-cyan-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-all hover:bg-white/[0.08] hover:border-cyan-400/40 cursor-pointer"
-              >
-                <Bookmark className="h-4 w-4 text-cyan-400" />
-                <span>შენახვა</span>
-              </button>
-            )}
+            <button
+              onClick={saveCurrentChart}
+              disabled={loading || savingFromRoom || me === undefined || saved}
+              className="w-full flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] py-3 px-6 text-xs sm:text-sm font-bold text-cyan-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-all hover:bg-white/[0.08] hover:border-cyan-400/40 disabled:cursor-wait disabled:opacity-50 cursor-pointer"
+            >
+              <Bookmark className="h-4 w-4 text-cyan-400" />
+              <span>{saved ? "შენახულია" : "შენახვა"}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -392,7 +527,7 @@ export default function TransitCalculator() {
       {saved && (
         <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3.5 text-xs font-semibold text-emerald-300 shadow-lg justify-center backdrop-blur-xl">
           <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-          <span>✓ წარმატებით შენახულია კაბინეტში!</span>
+          <span>{savedMessage}</span>
         </div>
       )}
 
@@ -425,6 +560,10 @@ export default function TransitCalculator() {
         interpretation={interpretation}
         mapNumber={mapNumber}
         onClose={() => setIsInterpretationOpen(false)}
+        onSave={saveCurrentChart}
+        isSaved={saved}
+        saving={savingFromRoom || loading}
+        saveMessage={saved ? savedMessage : error}
       />
     </div>
   );

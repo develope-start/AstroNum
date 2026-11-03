@@ -16,10 +16,11 @@ import CalculationSettings, { DEFAULT_UI_CALCULATION } from "./CalculationSettin
 import HouseSystemSelect from "./HouseSystemSelect";
 import type { CalculationOptions } from "@/lib/astro/ephemeris";
 import type { EphemerisMetadata } from "@/lib/astro/ephemeris";
-import type { HouseSystem } from "@/lib/astro/positions";
+import { HOUSE_SYSTEM_VALUES, type HouseSystem } from "@/lib/astro/positions";
 import { saveGuestCache, loadGuestCache, clearGuestCache, validateGuestCache } from "@/lib/guestCache";
 import { useMe } from "@/lib/useMe";
 import { getRequestError, readApiResponse } from "@/lib/apiResponse";
+import { getGuestSavedCharts, saveGuestChart, type GuestSavedChart } from "@/lib/guestSavedCharts";
 import { Sparkles, Bookmark, Loader2, CheckCircle2, AlertCircle, Info } from "lucide-react";
 
 interface WheelData {
@@ -39,14 +40,62 @@ interface CacheShape {
   interpretation: string;
   wheel: WheelData | null;
   mapNumber?: string | null;
+  savedId?: string | null;
   calculation?: CalculationOptions;
 }
+
+interface DraftShape {
+  birth: BirthValue;
+  houseSystem: HouseSystem;
+  calculation: CalculationOptions;
+}
+
+const NATAL_DRAFT_KEY = "astro_chart_draft_natal";
 
 interface NatalPreview {
   sun: string;
   moon: string;
   ascendant: string;
   mc: string;
+}
+
+function wheelFromGuestChart(result: unknown): WheelData | null {
+  if (!result || typeof result !== "object" || Array.isArray(result)) return null;
+  const record = result as Record<string, unknown>;
+  if (
+    typeof record.ascendant !== "number"
+    || typeof record.mc !== "number"
+    || !Array.isArray(record.houseCusps)
+    || !record.houseCusps.every((cusp) => typeof cusp === "number")
+    || !Array.isArray(record.planets)
+    || !record.planets.every((planet) => !!planet && typeof planet === "object"
+      && typeof (planet as { name?: unknown }).name === "string"
+      && typeof (planet as { longitude?: unknown }).longitude === "number")
+  ) return null;
+
+  const advanced = record.advanced && typeof record.advanced === "object"
+    ? record.advanced as Record<string, unknown>
+    : null;
+  const fixedStars = Array.isArray(advanced?.fixedStarContacts)
+    ? advanced.fixedStarContacts.filter((star): star is WheelData["fixedStars"][number] => (
+      !!star && typeof star === "object"
+      && typeof (star as { star?: unknown }).star === "string"
+      && typeof (star as { planet?: unknown }).planet === "string"
+      && typeof (star as { longitude?: unknown }).longitude === "number"
+      && typeof (star as { orb?: unknown }).orb === "number"
+    ))
+    : [];
+  return {
+    ascendant: record.ascendant,
+    mc: record.mc,
+    houseCusps: record.houseCusps,
+    planets: record.planets as WheelData["planets"],
+    aspects: Array.isArray(record.aspects) ? record.aspects as AspectHit[] : [],
+    fixedStars,
+    planetHouses: record.planetHouses && typeof record.planetHouses === "object"
+      ? record.planetHouses as Record<string, number>
+      : {},
+  };
 }
 
 export default function NatalCalculator() {
@@ -60,6 +109,7 @@ export default function NatalCalculator() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [savedMessage, setSavedMessage] = useState("✓ წარმატებით შენახულია კაბინეტში!");
   const [mapNumber, setMapNumber] = useState<string | null>(null);
   const [preview, setPreview] = useState<NatalPreview | null>(null);
   // The legacy in-page result components remain mounted only for backwards
@@ -67,6 +117,46 @@ export default function NatalCalculator() {
   const [isRoomOpen, setIsRoomOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isRevealing] = useState(false);
+  const [draftReady, setDraftReady] = useState(false);
+  const [localSavedCharts, setLocalSavedCharts] = useState<GuestSavedChart[]>([]);
+  const [selectedLocalChart, setSelectedLocalChart] = useState<GuestSavedChart | null>(null);
+  const [isCurrentChartSavedLocally, setIsCurrentChartSavedLocally] = useState(false);
+
+  useEffect(() => {
+    try {
+      const rawDraft = window.sessionStorage.getItem(NATAL_DRAFT_KEY);
+      if (rawDraft) {
+        const draft = JSON.parse(rawDraft) as DraftShape;
+        if (draft.birth && draft.houseSystem && draft.calculation) {
+          setBirth(draft.birth);
+          setHouseSystem(draft.houseSystem);
+          setCalculation({ ...DEFAULT_UI_CALCULATION, ...draft.calculation });
+        }
+      }
+    } catch (draftError) {
+      console.error("Could not restore natal chart form draft", draftError);
+    } finally {
+      setDraftReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!draftReady) return;
+    try {
+      window.sessionStorage.setItem(NATAL_DRAFT_KEY, JSON.stringify({ birth, houseSystem, calculation } satisfies DraftShape));
+    } catch (draftError) {
+      console.error("Could not persist natal chart form draft", draftError);
+    }
+  }, [birth, houseSystem, calculation, draftReady]);
+
+  useEffect(() => {
+    try {
+      setLocalSavedCharts(getGuestSavedCharts());
+    } catch (savedChartsError) {
+      console.error("Could not load device-saved charts", savedChartsError);
+      setError(savedChartsError instanceof Error ? savedChartsError.message : "შენახული რუკების ჩატვირთვა ვერ მოხერხდა.");
+    }
+  }, []);
 
   useEffect(() => {
     if (me === undefined) return;
@@ -75,6 +165,7 @@ export default function NatalCalculator() {
       setInterpretation(null);
       setWheel(null);
       setMapNumber(null);
+      setSaved(false);
       return;
     }
     const cached = loadGuestCache<CacheShape>("natal");
@@ -112,16 +203,46 @@ export default function NatalCalculator() {
         planetHouses: cached.wheel.planetHouses ?? {},
       } : null);
       setMapNumber(cached.mapNumber ?? null);
+      setSaved(Boolean(cached.savedId));
     });
   }, [me]);
 
-  async function calculate(save = false) {
+  function openLocalSavedChart(chart: GuestSavedChart) {
+    if (chart.type !== "NATAL") {
+      setSelectedLocalChart(chart);
+      return;
+    }
+    const savedWheel = wheelFromGuestChart(chart.result);
+    if (!savedWheel || !chart.interpretation) {
+      setError("მოწყობილობაზე შენახული რუკის სრული მონაცემები ვერ მოიძებნა.");
+      return;
+    }
+    setBirth(chart.birth);
+    setHouseSystem((HOUSE_SYSTEM_VALUES as readonly string[]).includes(chart.houseSystem)
+      ? chart.houseSystem as HouseSystem
+      : "placidus");
+    setWheel(savedWheel);
+    setInterpretation(chart.interpretation);
+    setMapNumber(null);
+    setSaved(true);
+    setSavedMessage("✓ რუკა ამ მოწყობილობაზე შეინახა!");
+    setIsCurrentChartSavedLocally(true);
+    setIsRoomOpen(true);
+  }
+
+  async function calculate(save = false, openRoom = true) {
+    if (save && me === undefined) {
+      setError("მომხმარებლის სტატუსი იტვირთება. სცადეთ ხელახლა.");
+      return;
+    }
     if (!birth.name || !birth.date || !birth.time || birth.lat === null || birth.lon === null || birth.timezone === null) {
       setError("შეავსეთ სახელი, თარიღი, დრო და დაბადების ადგილი (დაადასტურეთ ადგილის მოძებნა).");
       return;
     }
     setLoading(true);
     setError(null);
+    setSaved(false);
+    setIsCurrentChartSavedLocally(false);
     setPreview(null);
     try {
       const res = await fetch("/api/chart/natal", {
@@ -137,7 +258,7 @@ export default function NatalCalculator() {
           timezone: birth.timezone,
           houseSystem,
           calculation,
-          save,
+          save: save && me !== null,
         }),
       });
       const data = await readApiResponse<{
@@ -155,6 +276,7 @@ export default function NatalCalculator() {
         };
         interpretation?: string;
         mapNumber?: string | null;
+        savedId?: string;
       }>(res);
       if (!res.ok) {
         setError(data.error || `სერვერის შეცდომა (${res.status})`);
@@ -187,12 +309,108 @@ export default function NatalCalculator() {
         ephemeris: data.result.ephemeris,
       };
       setWheel(w);
+      let savedId = data.savedId ?? null;
+      if (save && me === null) {
+        const localChart = saveGuestChart({
+          type: "NATAL",
+          label: `ნატალური — ${birth.name}`,
+          birth,
+          houseSystem,
+          result: { ...data.result, advanced: { fixedStarContacts: w.fixedStars } },
+          interpretation: data.interpretation,
+        });
+        savedId = localChart.id;
+        setSavedMessage("✓ რუკა ამ მოწყობილობაზე შეინახა!");
+        setLocalSavedCharts(getGuestSavedCharts());
+        setIsCurrentChartSavedLocally(true);
+      } else if (save) {
+        setSavedMessage("✓ წარმატებით შენახულია კაბინეტში!");
+      }
       if (save) setSaved(true);
       // The dedicated route reads this short-lived cache, for both guests and signed-in users.
-      saveGuestCache<CacheShape>("natal", { birth, houseSystem, calculation, interpretation: data.interpretation, wheel: w, mapNumber: data.mapNumber ?? null });
-      router.push("/chart/room");
+      saveGuestCache<CacheShape>("natal", {
+        birth,
+        houseSystem,
+        calculation,
+        interpretation: data.interpretation,
+        wheel: w,
+        mapNumber: data.mapNumber ?? null,
+        savedId,
+      });
+      if (openRoom) router.push("/chart/room");
     } catch (error) {
       setError(getRequestError(error));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function saveCurrentResult() {
+    if (saved) return;
+    if (!wheel || !interpretation) {
+      await calculate(true, false);
+      return;
+    }
+    if (me === undefined) {
+      setError("მომხმარებლის სტატუსი იტვირთება. სცადეთ ხელახლა.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    let savedId: string | null = null;
+    try {
+      const result = {
+        ascendant: wheel.ascendant,
+        mc: wheel.mc,
+        houseCusps: wheel.houseCusps,
+        planets: wheel.planets,
+        aspects: wheel.aspects,
+        planetHouses: wheel.planetHouses,
+        advanced: { fixedStarContacts: wheel.fixedStars },
+      };
+      if (me === null) {
+        const localChart = saveGuestChart({
+          type: "NATAL",
+          label: `ნატალური — ${birth.name}`,
+          birth,
+          houseSystem,
+          result,
+          interpretation,
+        });
+        savedId = localChart.id;
+        setLocalSavedCharts(getGuestSavedCharts());
+        setIsCurrentChartSavedLocally(true);
+        setSavedMessage("✓ რუკა ამ მოწყობილობაზე შეინახა!");
+      } else {
+        const response = await fetch("/api/charts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "NATAL",
+            mapNumber,
+            name1: birth.name,
+            date1: birth.date,
+            time1: birth.time,
+            place1: birth.place,
+            lat1: birth.lat,
+            lon1: birth.lon,
+            tz1: birth.timezone,
+            houseSystem,
+            result,
+            interpretation,
+          }),
+        });
+        const data = await readApiResponse<{ error?: string; saved?: boolean; savedId?: string; mapNumber?: string | null }>(response);
+        if (!response.ok || !data.saved) throw new Error(data.error ?? "რუკის შენახვა ვერ მოხერხდა.");
+        savedId = data.savedId ?? null;
+        if (data.mapNumber) setMapNumber(data.mapNumber);
+        setSavedMessage("✓ წარმატებით შენახულია კაბინეტში!");
+      }
+      const cachedChart = loadGuestCache<CacheShape>("natal");
+      if (cachedChart && savedId) saveGuestCache("natal", { ...cachedChart, savedId });
+      setSaved(true);
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "რუკის შენახვა ვერ მოხერხდა.");
     } finally {
       setLoading(false);
     }
@@ -235,16 +453,14 @@ export default function NatalCalculator() {
               )}
             </button>
 
-            {me && (
-              <button
-                onClick={() => calculate(true)}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] py-3 px-6 text-xs sm:text-sm font-bold text-cyan-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-all hover:bg-white/[0.08] hover:border-cyan-400/40 cursor-pointer"
-              >
-                <Bookmark className="h-4 w-4 text-cyan-400" />
-                <span>შენახვა</span>
-              </button>
-            )}
+            <button
+              onClick={saveCurrentResult}
+              disabled={loading || me === undefined || saved}
+              className="w-full flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] py-3 px-6 text-xs sm:text-sm font-bold text-cyan-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-all hover:bg-white/[0.08] hover:border-cyan-400/40 disabled:cursor-wait disabled:opacity-50 cursor-pointer"
+            >
+              <Bookmark className="h-4 w-4 text-cyan-400" />
+              <span>{saved ? "შენახულია" : "შენახვა"}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -259,8 +475,31 @@ export default function NatalCalculator() {
       {saved && (
         <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3.5 sm:px-5 sm:py-4 text-xs font-semibold text-emerald-300 shadow-lg backdrop-blur-xl">
           <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-          <span>✓ წარმატებით შენახულია კაბინეტში!</span>
+          <span>{savedMessage}</span>
         </div>
+      )}
+
+      {localSavedCharts.length > 0 && (
+        <section className="rounded-2xl border border-cyan-400/20 bg-[#090d1e]/85 p-4 text-left sm:p-5" aria-label="ამ მოწყობილობაზე შენახული რუკები">
+          <h3 className="text-sm font-bold text-cyan-200">ამ მოწყობილობაზე შენახული რუკები</h3>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {localSavedCharts.map((chart) => (
+              <button
+                key={chart.id}
+                type="button"
+                onClick={() => openLocalSavedChart(chart)}
+                className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-left transition hover:border-cyan-400/40 hover:bg-cyan-950/20"
+              >
+                <span className="block truncate text-xs font-bold text-white">{chart.label}</span>
+                <span className="mt-1 block text-[10px] text-slate-400">
+                  {chart.type === "NATAL" ? "ნატალური" : chart.type === "SYNASTRY" ? "სინასტრია" : chart.type === "TRANSIT" ? "ტრანზიტი" : chart.type}
+                  {" · "}
+                  {new Date(chart.savedAt).toLocaleDateString("ka-GE")}
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
       )}
 
       {preview && (
@@ -374,6 +613,7 @@ export default function NatalCalculator() {
         houseSystem={houseSystem}
         isLoading={loading}
         onOpenShareModal={() => setIsShareModalOpen(true)}
+        savedChart={saved || isCurrentChartSavedLocally}
       />
 
       {/* 1.5s Hypnotic Cosmic Reveal Accelerator */}
@@ -411,6 +651,14 @@ export default function NatalCalculator() {
         title="ნატალური რუკის გამოთვლა"
         subtitle="გამოთვლის დასრულებისთანავე გაიხსნება თქვენი პირადი ასტროლოგიური კაბინეტი."
         onClose={() => undefined}
+      />
+      <InterpretationOverlay
+        open={Boolean(selectedLocalChart)}
+        loading={false}
+        title={selectedLocalChart?.label ?? "შენახული ინტერპრეტაცია"}
+        subtitle="ეს შედეგი შენახულია ამ მოწყობილობაზე."
+        interpretation={selectedLocalChart?.interpretation}
+        onClose={() => setSelectedLocalChart(null)}
       />
     </div>
   );

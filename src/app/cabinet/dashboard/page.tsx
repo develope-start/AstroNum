@@ -613,6 +613,7 @@ export default function DashboardPage() {
             interpretation={selected.interpretation}
             mapNumber={selected.mapNumber}
             houseSystem={houseSystem}
+            savedChart
           />
         );
       })()}

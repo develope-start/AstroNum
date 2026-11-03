@@ -18,6 +18,7 @@ export default function FloatingContactHub({
   const [modalOpen, setModalOpen] = useState(false);
   const [socials, setSocials] = useState<SocialSettingsData | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const contactButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Monitor the page normally, or the full-screen calculation room when it
   // owns scrolling. This keeps the upward arrow available in every room.
@@ -45,7 +46,12 @@ export default function FloatingContactHub({
   // Close modal when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        modalRef.current
+        && !modalRef.current.contains(target)
+        && !contactButtonRef.current?.contains(target)
+      ) {
         setModalOpen(false);
       }
     };
@@ -106,6 +112,7 @@ export default function FloatingContactHub({
 
         {/* Live Operator / Contact button */}
         <button
+          ref={contactButtonRef}
           type="button"
           onClick={() => setModalOpen((prev) => !prev)}
           aria-label="ოპერატორთან დაკავშირება"

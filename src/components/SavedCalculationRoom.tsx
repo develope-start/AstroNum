@@ -112,6 +112,7 @@ export default function SavedCalculationRoom({ endpoint, returnTo }: { endpoint:
         interpretation={payload.interpretation ?? null}
         mapNumber={payload.mapNumber ?? null}
         houseSystem={houseSystem}
+        savedChart
         calculationContext={{
           type: payload.type ?? "NATAL",
           secondaryProfile: payload.name2 ? { name: payload.name2, date: payload.date2 ?? null, time: payload.time2 ?? null, place: payload.place2 ?? null } : null,

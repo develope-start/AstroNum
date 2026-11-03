@@ -94,7 +94,10 @@ export default function ElementBalanceGuide({ planets, ascendant }: { planets: W
                   aria-label={`გადადით ${bar.label} სტიქიის ინტერპრეტაციაზე`}
                 >
                   <div className="element-balance-indicator-header flex items-center justify-between gap-2 font-semibold text-[0.7rem] sm:text-xs">
-                    <span className="element-balance-indicator-name flex min-w-0 items-center gap-1.5"><Icon className={`element-balance-indicator-icon h-3 w-3 shrink-0 ${bar.iconClass}`} /> <span className="element-balance-indicator-label text-slate-200">{bar.label}</span></span>
+                    <span className="element-balance-indicator-name flex min-w-0 items-center gap-1.5">
+                      <span className="element-balance-icon"><Icon className={`element-balance-indicator-icon h-3.5 w-3.5 shrink-0 ${bar.iconClass}`} /></span>
+                      <span className="element-balance-indicator-label text-slate-200">{bar.label}</span>
+                    </span>
                     <span className="element-balance-indicator-value shrink-0 tabular-nums text-sky-300 font-bold">{bar.value}%</span>
                   </div>
                   <div className="infographic-bar-bg h-2 mt-1.5 bg-[#0e1428] rounded-full overflow-hidden">

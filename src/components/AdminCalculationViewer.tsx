@@ -14,6 +14,7 @@ import { X, Calendar, Clock, MapPin } from "lucide-react";
 
 export type CalculationViewData = {
   mapNumber?: string | null;
+  saved?: boolean;
   type: string;
   name1: string;
   name2: string | null;
@@ -120,6 +121,7 @@ export default function AdminCalculationViewer({
         interpretation={calculation.interpretation}
         mapNumber={calculation.mapNumber}
         houseSystem={houseSystem}
+        savedChart={Boolean(calculation.saved)}
       />
     );
   }

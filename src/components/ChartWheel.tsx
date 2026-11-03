@@ -162,18 +162,19 @@ export default function ChartWheel({
         </defs>
 
         {/* Ambient Outer Halo */}
-        <circle cx={cx} cy={cy} r={rOuter + size * 0.02} fill="none" stroke="#6366f1" strokeOpacity={0.15} strokeWidth={1} strokeDasharray="4 8" />
+        <circle className="chart-wheel-outer-halo" cx={cx} cy={cy} r={rOuter + size * 0.02} fill="none" stroke="#6366f1" strokeOpacity={0.15} strokeWidth={1} strokeDasharray="4 8" />
 
         {/* Wheel Body */}
-        <circle cx={cx} cy={cy} r={rOuter} fill="url(#wheel-center-glow)" />
-        <circle cx={cx} cy={cy} r={rOuter} fill="none" stroke="#f59e0b" strokeOpacity={0.6} strokeWidth={2.2} filter="url(#gold-glow)" />
-        <circle cx={cx} cy={cy} r={rZodiacIn} fill="none" stroke="#f59e0b" strokeOpacity={0.4} strokeWidth={1.2} />
-        <circle cx={cx} cy={cy} r={rInner} fill="none" stroke="#818cf8" strokeOpacity={0.45} strokeWidth={1.4} strokeDasharray="3 3" />
+        <circle className="chart-wheel-face" cx={cx} cy={cy} r={rOuter} fill="url(#wheel-center-glow)" />
+        <circle className="chart-wheel-rim" cx={cx} cy={cy} r={rOuter} fill="none" stroke="#f59e0b" strokeOpacity={0.6} strokeWidth={2.2} filter="url(#gold-glow)" />
+        <circle className="chart-wheel-zodiac-ring" cx={cx} cy={cy} r={rZodiacIn} fill="none" stroke="#f59e0b" strokeOpacity={0.4} strokeWidth={1.2} />
+        <circle className="chart-wheel-inner-ring" cx={cx} cy={cy} r={rInner} fill="none" stroke="#818cf8" strokeOpacity={0.45} strokeWidth={1.4} strokeDasharray="3 3" />
 
         {/* Swiss Ephemeris Degree Ticks */}
         {degreeTicks.map(({ deg, isMajor, isMid, pStart, pEnd }) => (
           <line
             key={`tick-${deg}`}
+            className="chart-wheel-degree-tick"
             x1={pStart.x}
             y1={pStart.y}
             x2={pEnd.x}
@@ -187,7 +188,7 @@ export default function ChartWheel({
         {/* Zodiac 12 Signs */}
         {zodiacSegments.map(({ i, p1, p2, labelPos }) => (
           <g key={`zodiac-${i}`}>
-            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#f59e0b" strokeOpacity={0.4} strokeWidth={1.2} />
+            <line className="chart-wheel-zodiac-divider" x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#f59e0b" strokeOpacity={0.4} strokeWidth={1.2} />
             <text
               x={labelPos.x}
               y={labelPos.y}
@@ -195,7 +196,7 @@ export default function ChartWheel({
               fontSize={size * 0.046}
               textAnchor="middle"
               dominantBaseline="central"
-              className="chart-wheel-zodiac-label select-none font-extrabold"
+              className="chart-wheel-zodiac-label chart-wheel-control select-none font-extrabold"
               style={{ textShadow: `0 0 14px ${SIGN_COLORS[i]}` }}
             >
               {SIGN_SYMBOLS[i]}
@@ -211,15 +212,16 @@ export default function ChartWheel({
           return (
             <g
               key={`cusp-${i}`}
-              className="chart-focus-source chart-wheel-control"
+              className={`chart-focus-source chart-wheel-control chart-wheel-cusp ${isAngle ? "chart-wheel-cusp-major" : ""}`}
               role="button"
               tabIndex={0}
               aria-label={`სახლი ${i + 1} — დეტალების ნახვა`}
               onClick={() => emitFocus({ type: "house", key: String(i + 1) })}
               onKeyDown={(event) => activateOnKeyboard(event, () => emitFocus({ type: "house", key: String(i + 1) }))}
             >
-              <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={isAngle ? (i === 0 || i === 6 ? "#f59e0b" : "#38bdf8") : "#64748b"} strokeWidth={isAngle ? 2.8 : 1} strokeDasharray={isAngle ? undefined : "3 3"} />
-              <text x={labelPos.x} y={labelPos.y} fill={isAngle ? "#fde68a" : "#cbd5e1"} className="select-none font-bold" fontSize={size * 0.027} textAnchor="middle" dominantBaseline="central">{i + 1}</text>
+              <line className="chart-wheel-house-divider" x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={isAngle ? (i === 0 || i === 6 ? "#f59e0b" : "#38bdf8") : "#64748b"} strokeWidth={isAngle ? 2.8 : 1} strokeDasharray={isAngle ? undefined : "3 3"} />
+              <circle className="chart-wheel-house-label-bg" cx={labelPos.x} cy={labelPos.y} r={size * 0.019} />
+              <text className="chart-wheel-house-label select-none font-bold" x={labelPos.x} y={labelPos.y} fill={isAngle ? "#fde68a" : "#cbd5e1"} fontSize={size * 0.034} textAnchor="middle" dominantBaseline="central">{i + 1}</text>
               <title>{`სახლი ${i + 1} — დეტალების ნახვა`}</title>
             </g>
           );
@@ -233,7 +235,7 @@ export default function ChartWheel({
           return (
             <g
               key={label}
-              className="chart-focus-source chart-wheel-interactive chart-wheel-control"
+              className={`chart-focus-source chart-wheel-interactive chart-wheel-control chart-wheel-angle chart-wheel-angle-${label.toLowerCase()}`}
               onMouseEnter={() => setActiveTooltip({
                 x: pBadge.x,
                 y: pBadge.y,
@@ -268,7 +270,7 @@ export default function ChartWheel({
           return (
             <g
               key={`aspect-${aspect.a}-${aspect.b}-${aspect.aspect}-${index}`}
-              className="chart-focus-source chart-wheel-control"
+              className={`chart-focus-source chart-wheel-control chart-wheel-aspect chart-wheel-aspect-${aspect.aspect.toLowerCase()}`}
               role="button"
               tabIndex={0}
               aria-label={`${PLANET_NAMES_KA[aspect.a] ?? aspect.a} ${aspect.aspectKa} ${PLANET_NAMES_KA[aspect.b] ?? aspect.b} — დეტალების ნახვა`}
@@ -317,7 +319,7 @@ export default function ChartWheel({
           return (
             <g
               key={`star-${star.star}-${index}`}
-              className="chart-focus-source chart-wheel-control"
+              className="chart-focus-source chart-wheel-control chart-wheel-fixed-star"
               role="button"
               tabIndex={0}
               aria-label={`${star.star} — დეტალების ნახვა`}
@@ -340,7 +342,7 @@ export default function ChartWheel({
           return (
             <g
               key={planet.name}
-              className="chart-focus-source chart-wheel-control select-none"
+              className="chart-focus-source chart-wheel-control chart-wheel-planet select-none"
               role="button"
               tabIndex={0}
               aria-label={`${PLANET_NAMES_KA[planet.name] ?? planet.name} — დეტალების ნახვა`}
@@ -406,8 +408,8 @@ export default function ChartWheel({
 
         {/* Center Astrolabe Core */}
         <g className="chart-wheel-hub pointer-events-none select-none">
-          <circle cx={cx} cy={cy} r={rInner * 0.45} fill="url(#hub-core-gradient)" stroke="#f59e0b" strokeOpacity={0.5} strokeWidth={1.5} filter="url(#gold-glow)" />
-          <circle cx={cx} cy={cy} r={rInner * 0.3} fill="#060312" stroke="#818cf8" strokeOpacity={0.6} strokeWidth={1} />
+          <circle className="chart-wheel-hub-outer" cx={cx} cy={cy} r={rInner * 0.45} fill="url(#hub-core-gradient)" stroke="#f59e0b" strokeOpacity={0.5} strokeWidth={1.5} filter="url(#gold-glow)" />
+          <circle className="chart-wheel-hub-inner" cx={cx} cy={cy} r={rInner * 0.3} fill="#060312" stroke="#818cf8" strokeOpacity={0.6} strokeWidth={1} />
           {/* Compass 8-point celestial star */}
           <polygon
             points={`${cx},${cy - 12} ${cx + 3},${cy - 3} ${cx + 12},${cy} ${cx + 3},${cy + 3} ${cx},${cy + 12} ${cx - 3},${cy + 3} ${cx - 12},${cy} ${cx - 3},${cy - 3}`}

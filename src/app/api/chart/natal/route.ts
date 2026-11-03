@@ -17,8 +17,6 @@ import { calculateAngularity, calculateDeclinationContacts, calculateFixedStarCo
 import { appendElementBalanceInterpretation, ensureInterpretationFoundationLast } from "@/lib/interpretations/elementBalance";
 import { isValidPersonInput } from "@/lib/astro/inputSchemas";
 import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
-import { getCurrentEntitlement } from "@/lib/billing/access";
-import { PLAN_RANK } from "@/lib/billing/plans";
 
 const calculationSchema = z.object({
   ephemeris: z.enum(["swiss", "astronomy"]).default("swiss"),
@@ -60,17 +58,6 @@ export async function POST(req: NextRequest) {
   if (data.save) {
     if (!session) {
       return NextResponse.json({ error: "რუკის შესანახად საჭიროა ანგარიშში შესვლა." }, { status: 401 });
-    }
-    if (session.role !== "ADMIN") {
-      const entitlement = await getCurrentEntitlement(session.userId);
-      if (PLAN_RANK[entitlement.plan] < PLAN_RANK.pro) {
-        return NextResponse.json({
-          error: "რუკის შენახვა ხელმისაწვდომია Pro ან Enterprise პაკეტით.",
-          code: "PLAN_REQUIRED",
-          requiredPlan: "pro",
-          currentPlan: entitlement.plan,
-        }, { status: 403 });
-      }
     }
   }
 

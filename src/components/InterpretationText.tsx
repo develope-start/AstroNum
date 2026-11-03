@@ -396,7 +396,7 @@ export default function InterpretationText({
       </div>
 
       {/* Key Takeaways / Executive Summary Navigator */}
-      <div className="rounded-2xl border border-indigo-400/25 bg-gradient-to-r from-indigo-950/40 via-[#0a0f24]/60 to-purple-950/40 p-4 sm:p-5 backdrop-blur-xl shadow-xl">
+      <div className="interpretation-navigator rounded-2xl border border-indigo-400/25 bg-gradient-to-r from-indigo-950/40 via-[#0a0f24]/60 to-purple-950/40 p-4 sm:p-5 backdrop-blur-xl shadow-xl">
         <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3 mb-3.5">
           <div className="flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-300 text-xs">✦</span>

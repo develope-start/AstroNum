@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   Sparkles,
   ArrowLeft,
   Search,
   Printer,
-  Snowflake,
+  Sun,
+  Moon,
   X,
   Share2,
   Copy,
@@ -23,7 +25,9 @@ import {
   Layers,
   Activity,
   Sliders,
-  Maximize2
+  Maximize2,
+  Bookmark,
+  Loader2,
 } from "lucide-react";
 import type { WheelPlanet } from "./ChartWheel";
 import ChartMapSection from "./ChartMapSection";
@@ -34,6 +38,8 @@ import FloatingContactHub from "./FloatingContactHub";
 import type { AspectHit } from "@/lib/astro/aspects";
 import type { HouseSystem } from "@/lib/astro/positions";
 import type { EphemerisMetadata } from "@/lib/astro/ephemeris";
+import { saveGuestChart } from "@/lib/guestSavedCharts";
+import { loadGuestCache, saveGuestCache } from "@/lib/guestCache";
 
 export interface CalculationRoomProps {
   isOpen: boolean;
@@ -68,6 +74,7 @@ export interface CalculationRoomProps {
   };
   isLoading?: boolean;
   onOpenShareModal?: () => void;
+  savedChart?: boolean;
 }
 
 /* ================= Astrological & Symbology Constants ================= */
@@ -252,7 +259,9 @@ export default function CalculationRoom({
   calculationContext,
   isLoading = false,
   onOpenShareModal,
+  savedChart = false,
 }: CalculationRoomProps) {
+  const router = useRouter();
   const chartTypeLabel = calculationContext?.type === "SYNASTRY"
     ? "სინასტრია"
     : calculationContext?.type === "TRANSIT"
@@ -278,11 +287,85 @@ export default function CalculationRoom({
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [globalQuery, setGlobalQuery] = useState("");
   const [copiedInterp, setCopiedInterp] = useState(false);
+  const [isSavingChart, setIsSavingChart] = useState(false);
+  const [isChartSaved, setIsChartSaved] = useState(savedChart);
+  const [saveChartMessage, setSaveChartMessage] = useState<string | null>(null);
   const [transitDate, setTransitDate] = useState(() => new Date().toISOString().slice(0, 10));
 
   const starsCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const roomRef = useRef<HTMLDivElement | null>(null);
   const aspectCardRefs = useRef(new Map<string, HTMLButtonElement>());
+
+  const saveCurrentChart = async () => {
+    if (isSavingChart || isChartSaved) return;
+    if (!wheel || !interpretation || birth.lat === null || birth.lon === null || !birth.timezone) {
+      setSaveChartMessage("რუკის შესანახად საჭიროა სრული გამოთვლილი შედეგი და დაბადების მონაცემები.");
+      return;
+    }
+
+    setIsSavingChart(true);
+    setSaveChartMessage(null);
+    const result = {
+      ascendant: wheel.ascendant,
+      mc: wheel.mc,
+      houseCusps: wheel.houseCusps,
+      planets: wheel.planets,
+      aspects: wheel.aspects,
+      planetHouses: wheel.planetHouses ?? {},
+      advanced: { fixedStarContacts: wheel.fixedStars ?? [] },
+    };
+    const chartType = calculationContext?.type === "SYNASTRY" || calculationContext?.type === "TRANSIT"
+      ? calculationContext.type
+      : "NATAL";
+
+    let savedId: string | null = null;
+    try {
+      const response = await fetch("/api/charts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: chartType,
+          mapNumber,
+          name1: birth.name,
+          date1: birth.date,
+          time1: birth.time,
+          place1: birth.place,
+          lat1: birth.lat,
+          lon1: birth.lon,
+          tz1: birth.timezone,
+          houseSystem,
+          result,
+          interpretation,
+        }),
+      });
+
+      if (response.status === 401) {
+        const localChart = saveGuestChart({
+          type: chartType,
+          label: `${chartTypeLabel} — ${birth.name}`,
+          birth,
+          houseSystem,
+          result,
+          interpretation,
+        });
+        savedId = localChart.id;
+        setSaveChartMessage("რუკა ამ მოწყობილობაზე შეინახა.");
+      } else {
+        const data = await response.json() as { error?: string; saved?: boolean; savedId?: string };
+        if (!response.ok || !data.saved) throw new Error(data.error ?? "რუკის შენახვა ვერ მოხერხდა.");
+        savedId = data.savedId ?? null;
+        setSaveChartMessage("რუკა თქვენს ანგარიშში შეინახა.");
+      }
+
+      const cachedChart = loadGuestCache<Record<string, unknown>>("natal");
+      if (cachedChart && savedId) saveGuestCache("natal", { ...cachedChart, savedId });
+      setIsChartSaved(true);
+    } catch (error) {
+      setSaveChartMessage(error instanceof Error ? error.message : "რუკის შენახვა ვერ მოხერხდა.");
+    } finally {
+      setIsSavingChart(false);
+    }
+  };
 
   const openSection = (sectionId: string) => {
     const targetSection = sectionId === "chart-legacy" ? "synthesis" : sectionId;
@@ -566,10 +649,10 @@ export default function CalculationRoom({
         <div className="mx-auto flex w-[96%] items-center justify-between lg:mx-0 lg:ml-[5%] lg:mr-[3%] lg:w-[92%]">
         <div className="flex min-w-0 items-center gap-3">
           <button
-            onClick={onClose}
+            onClick={() => router.push("/")}
             type="button"
             className="flex items-center gap-2 rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-3.5 py-1.5 text-xs font-bold text-cyan-200 transition-all hover:bg-cyan-500/20 hover:text-white cursor-pointer"
-            title="კალკულატორში დაბრუნება"
+            title="ახალი რუკის შესადგენად კალკულატორზე გადასვლა"
           >
             <ArrowLeft className="h-4 w-4" />
             <span className="cr-back-label">← ახალი გამოთვლა</span>
@@ -594,7 +677,12 @@ export default function CalculationRoom({
           </div>
         </div>
 
-        <div className="mr-0 flex items-center gap-2 sm:mr-[9rem]">
+        <div className="mr-0 flex items-center gap-2 sm:mr-[13rem]">
+          {saveChartMessage && (
+            <span role="status" className="hidden max-w-48 text-[10px] leading-4 text-slate-300 lg:inline">
+              {saveChartMessage}
+            </span>
+          )}
           {onOpenShareModal && (
             <button
               onClick={onOpenShareModal}
@@ -892,7 +980,7 @@ export default function CalculationRoom({
                 <div className="cr-glass p-4 sm:p-6 lg:col-span-7 flex flex-col items-center justify-center">
                   <svg
                     viewBox="0 0 700 700"
-                    className="w-full max-w-[620px] h-auto drop-shadow-[0_0_35px_rgba(99,102,241,0.25)] select-none"
+                    className="cr-natal-wheel w-full max-w-[620px] h-auto drop-shadow-[0_0_35px_rgba(99,102,241,0.25)] select-none"
                   >
                     <defs>
                       <radialGradient id="cr-wg" cx="50%" cy="50%" r="50%">
@@ -902,8 +990,8 @@ export default function CalculationRoom({
                     </defs>
 
                     {/* Outer Rings */}
-                    <circle cx="350" cy="350" r="324" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-                    <circle cx="350" cy="350" r="150" fill="url(#cr-wg)" stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
+                    <circle className="cr-wheel-outer-ring" cx="350" cy="350" r="324" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+                    <circle className="cr-wheel-inner-ring" cx="350" cy="350" r="150" fill="url(#cr-wg)" stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
 
                     {/* 12 Zodiac Sign Sectors */}
                     {SIGNS.map((sign, i) => {
@@ -917,6 +1005,7 @@ export default function CalculationRoom({
                       return (
                         <g key={sign.n}>
                           <path
+                            className="cr-wheel-zodiac-sector"
                             d={`M ${A0[0]} ${A0[1]} L ${A1[0]} ${A1[1]} A 318 318 0 0 1 ${B0[0]} ${B0[1]} L ${B1[0]} ${B1[1]} A 272 272 0 0 0 ${A0[0]} ${A0[1]} Z`}
                             fill={ELEM[sign.e].c}
                             fillOpacity={0.12 + (i % 2) * 0.05}
@@ -929,7 +1018,7 @@ export default function CalculationRoom({
                             textAnchor="middle"
                             fontSize="20"
                             fill={ELEM[sign.e].c}
-                            className="font-bold select-none"
+                            className="cr-wheel-zodiac-glyph font-bold select-none"
                           >
                             {sign.g}
                           </text>
@@ -959,10 +1048,11 @@ export default function CalculationRoom({
                       return (
                         <g
                           key={`cusp-${i}`}
-                          className="chart-wheel-control"
+                          className={`chart-wheel-control cr-chart-house ${isMain ? "cr-chart-house-major" : ""} ${selectedHouse === i + 1 ? "cr-chart-house-selected" : ""}`}
                           role="button"
                           tabIndex={0}
                           aria-label={`${i + 1}-ე სახლი — რუკის დეტალების ნახვა`}
+                          aria-pressed={selectedHouse === i + 1}
                           onClick={focusHouse}
                           onKeyDown={(event) => {
                             if (event.key === "Enter" || event.key === " ") {
@@ -972,6 +1062,7 @@ export default function CalculationRoom({
                           }}
                         >
                           <line
+                            className="cr-chart-house-divider"
                             x1={p0[0]}
                             y1={p0[1]}
                             x2={p1[0]}
@@ -979,13 +1070,22 @@ export default function CalculationRoom({
                             stroke={isMain ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.22)"}
                             strokeWidth={isMain ? "1.6" : "0.8"}
                           />
+                          <circle
+                            className="cr-chart-house-label-bg"
+                            cx={pq[0]}
+                            cy={pq[1]}
+                            r="13"
+                            fill="#0b1220"
+                            stroke="#64748b"
+                            strokeWidth="1.5"
+                          />
                           <text
+                            className="cr-chart-house-label font-mono font-bold select-none"
                             x={pq[0]}
                             y={pq[1] + 4}
                             textAnchor="middle"
-                            fontSize="10"
+                            fontSize="14"
                             fill="rgba(200,210,255,0.75)"
-                            className="font-mono font-bold select-none"
                           >
                             {ROM[i + 1]}
                           </text>
@@ -1078,7 +1178,7 @@ export default function CalculationRoom({
                           role="button"
                           tabIndex={0}
                           aria-label={`${meta.n} — რუკის დეტალების ნახვა`}
-                          className="chart-wheel-control cursor-pointer"
+                          className="chart-wheel-control cr-chart-planet cursor-pointer"
                         >
                           <circle
                             cx={gp[0]}
@@ -1087,16 +1187,16 @@ export default function CalculationRoom({
                             fill="#080c22"
                             stroke={meta.c}
                             strokeWidth={isSelected ? "2.8" : "1.6"}
-                            className="transition-all"
+                            className="cr-chart-planet-node transition-all"
                             style={{ filter: isSelected ? `drop-shadow(0 0 10px ${meta.c})` : undefined }}
                           />
                           <text
+                            className="cr-chart-planet-glyph font-bold select-none"
                             x={gp[0]}
                             y={gp[1] + 5}
                             textAnchor="middle"
                             fontSize={meta.g.length > 1 ? "11" : "16"}
                             fill={meta.c}
-                            className="font-bold select-none"
                           >
                             {meta.g}
                           </text>
@@ -1800,9 +1900,10 @@ export default function CalculationRoom({
                         <g
                           key={pt.k}
                           onClick={() => setSelectedMatrixPoint(pt.k)}
-                          className="cursor-pointer transition-transform hover:scale-110"
+                          className="cr-matrix-point cursor-pointer"
                         >
                           <circle
+                            className="cr-matrix-point-circle"
                             cx={pt.x}
                             cy={pt.y}
                             r={pt.k === "X" ? "34" : "28"}
@@ -2050,7 +2151,7 @@ export default function CalculationRoom({
               </div>
 
               {/* Full Interpretation Content Display */}
-              <div className="cr-glass p-6 sm:p-10 space-y-6 leading-relaxed">
+              <div className="cr-interpretation-surface p-6 sm:p-10 space-y-6 leading-relaxed">
                 {interpretation ? (
                   <InterpretationText
                     text={interpretation}
@@ -2085,21 +2186,37 @@ export default function CalculationRoom({
       </div>
 
       {/* ===== 5. Top-right workspace controls ===== */}
-      <div className="cr-fab fixed right-[3vw] top-2 z-[70] flex items-center gap-1.5">
+      <div className="cr-fab fixed right-[3vw] top-2 z-[70] flex items-center gap-2.5">
         <button
           onClick={() => window.print()}
           type="button"
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-[#141a3c]/90 text-white shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-indigo-600 cursor-pointer"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 bg-[#141a3c]/90 text-white shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-indigo-600 cursor-pointer"
           aria-label="ბეჭდვა / PDF"
           title="ბეჭდვა / PDF"
         >
           <Printer className="h-3.5 w-3.5" />
         </button>
 
+        {wheel && interpretation && (
+          <>
+            <span aria-hidden="true" className="mx-0.5 h-5 w-px shrink-0 bg-white/25" />
+            <button
+              onClick={saveCurrentChart}
+              type="button"
+              disabled={isSavingChart || isChartSaved}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-cyan-400/40 bg-cyan-500/15 text-cyan-100 shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-cyan-500/25 disabled:cursor-default disabled:opacity-80"
+              aria-label={isChartSaved ? "რუკა შენახულია" : isSavingChart ? "რუკა ინახება" : "რუკის შენახვა"}
+              title={saveChartMessage ?? (isChartSaved ? "რუკა შენახულია" : isSavingChart ? "რუკა ინახება…" : "რუკის შენახვა")}
+            >
+              {isSavingChart ? <Loader2 className="h-4 w-4 animate-spin" /> : isChartSaved ? <Check className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+            </button>
+          </>
+        )}
+
         <button
           onClick={() => setIsSearchModalOpen(true)}
           type="button"
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-[#141a3c]/90 text-white shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-indigo-600 cursor-pointer"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 bg-[#141a3c]/90 text-white shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-indigo-600 cursor-pointer"
           title="ძებნა (Ctrl+K)"
         >
           <Search className="h-3.5 w-3.5" />
@@ -2108,19 +2225,19 @@ export default function CalculationRoom({
         <button
           onClick={() => setIsLightTheme(prev => !prev)}
           type="button"
-          className={`flex h-8 w-8 items-center justify-center rounded-full border border-white/20 shadow-xl backdrop-blur-xl transition hover:scale-105 cursor-pointer ${
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 shadow-xl backdrop-blur-xl transition hover:scale-105 cursor-pointer ${
             isLightTheme ? "bg-gradient-to-br from-amber-300 to-orange-500 text-slate-950" : "bg-[#141a3c]/90 text-slate-300"
           }`}
           aria-pressed={isLightTheme}
           title={isLightTheme ? "მუქ ფონზე დაბრუნება" : "ღია ფონზე გადასვლა"}
         >
-          <Snowflake className="h-3.5 w-3.5" />
+          {isLightTheme ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
         </button>
 
         <button
           onClick={onClose}
           type="button"
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-rose-500/40 bg-rose-950/80 text-rose-200 shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-rose-900 cursor-pointer"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-rose-500/40 bg-rose-950/80 text-rose-200 shadow-xl backdrop-blur-xl transition hover:scale-105 hover:bg-rose-900 cursor-pointer"
           title="კაბინეტის დახურვა"
         >
           <X className="h-3.5 w-3.5" />
