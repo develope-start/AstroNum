@@ -164,7 +164,6 @@ const SECTIONS = [
   { id: "matrix", title: "ბედის მატრიცა", glyph: "✧" },
   { id: "psych", title: "ფსიქოლოგიური პორტრეტი", glyph: "☾" },
   { id: "cycles", title: "ციკლები და ტრანზიტები", glyph: "⟳" },
-  { id: "chart-legacy", title: "ზოდიაქალური წრე და სტიქიების სინთეზი", glyph: "◉" },
   { id: "synthesis", title: "სრული ინტერპრეტაცია", glyph: "❖" }
 ];
 
@@ -285,10 +284,11 @@ export default function CalculationRoom({
   const aspectCardRefs = useRef(new Map<string, HTMLButtonElement>());
 
   const openSection = (sectionId: string) => {
-    if (!SECTIONS.some((section) => section.id === sectionId)) return;
-    setActiveSec(sectionId);
-    if (window.location.hash !== `#${sectionId}`) {
-      window.history.pushState({ roomSection: sectionId }, "", `#${sectionId}`);
+    const targetSection = sectionId === "chart-legacy" ? "synthesis" : sectionId;
+    if (!SECTIONS.some((section) => section.id === targetSection)) return;
+    setActiveSec(targetSection);
+    if (window.location.hash !== `#${targetSection}`) {
+      window.history.pushState({ roomSection: targetSection }, "", `#${targetSection}`);
     }
     roomRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -308,7 +308,8 @@ export default function CalculationRoom({
   useEffect(() => {
     const syncSectionFromHash = () => {
       const sectionId = window.location.hash.slice(1);
-      setActiveSec(SECTIONS.some((section) => section.id === sectionId) ? sectionId : "home");
+      const targetSection = sectionId === "chart-legacy" ? "synthesis" : sectionId;
+      setActiveSec(SECTIONS.some((section) => section.id === targetSection) ? targetSection : "home");
     };
     syncSectionFromHash();
     window.addEventListener("popstate", syncSectionFromHash);
@@ -836,42 +837,6 @@ export default function CalculationRoom({
             </div>
           )}
 
-          {/* ================= SECTION 2: CHART (ნატალური რუკა) ================= */}
-          {activeSec === "chart-legacy" && (
-            <div className="space-y-6">
-              <div className="cr-glass flex flex-col gap-2 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ზოდიაქალური წრე</div>
-                  <h2 className="mt-1 text-2xl font-extrabold text-white sm:text-3xl">ზოდიაქალური წრე და სტიქიების სინთეზი</h2>
-                </div>
-                <p className="max-w-md text-xs leading-5 text-slate-400">რუკა, დეტალური მნიშვნელობები და სტიქიების პროცენტული ბალანსი ერთ სამუშაო სივრცეში.</p>
-              </div>
-
-              {wheel ? (
-                <div className="grid items-start gap-6 2xl:grid-cols-[minmax(0,7fr)_minmax(28rem,5fr)]">
-                  <section className="min-w-0">
-                    <ChartMapSection
-                      title="ზოდიაქალური რუკა"
-                      subtitle="დააჭირეთ ასპექტს, პლანეტას ან სახლს შესაბამის ჩანაწერზე გადასასვლელად"
-                      planets={wheel.planets}
-                      ascendant={wheel.ascendant}
-                      mc={wheel.mc}
-                      houseCusps={wheel.houseCusps}
-                      aspects={wheel.aspects ?? []}
-                      fixedStars={wheel.fixedStars ?? []}
-                      planetHouses={wheel.planetHouses ?? {}}
-                    />
-                  </section>
-                  <aside className="cr-element-panel min-w-0">
-                    <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />
-                  </aside>
-                </div>
-              ) : (
-                <div className="cr-glass p-8 text-center text-sm text-slate-300">რუკის მონაცემები ვერ მოიძებნა.</div>
-              )}
-            </div>
-          )}
-
           {activeSec === "chart" && (
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -1076,7 +1041,7 @@ export default function CalculationRoom({
                           role="button"
                           tabIndex={0}
                           aria-label={`${meta.n} — რუკის დეტალების ნახვა`}
-                          className="chart-wheel-control cursor-pointer transition-transform hover:scale-110"
+                          className="chart-wheel-control cursor-pointer"
                         >
                           <circle
                             cx={gp[0]}
@@ -2026,7 +1991,7 @@ export default function CalculationRoom({
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                   <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">რუკის მონაცემები და ბიბლიოთეკა</div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">საბაზისო ინტერპრეტაცია</h2>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">სრული ინტერპრეტაცია</h2>
                 </div>
 
                 {/* Copy & Print actions */}
@@ -2059,6 +2024,41 @@ export default function CalculationRoom({
                   </div>
                 )}
               </div>
+
+              <section className="space-y-4" aria-labelledby="synthesis-chart-heading">
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">დამატებითი ანალიზი</div>
+                  <h3 id="synthesis-chart-heading" className="mt-1 text-xl font-extrabold text-white sm:text-2xl">
+                    ზოდიაქალური რუკა და სტიქიების სინთეზი
+                  </h3>
+                  <p className="mt-1 text-xs leading-5 text-slate-400">
+                    რუკის ვიზუალური განლაგება, პლანეტების დეტალები და სტიქიების ბალანსი.
+                  </p>
+                </div>
+
+                {wheel ? (
+                  <div className="space-y-6">
+                    <section className="min-w-0">
+                      <ChartMapSection
+                        title="ზოდიაქალური წრე"
+                        subtitle="აირჩიეთ პლანეტა, სახლი ან ასპექტი დეტალების სანახავად"
+                        planets={wheel.planets}
+                        ascendant={wheel.ascendant}
+                        mc={wheel.mc}
+                        houseCusps={wheel.houseCusps}
+                        aspects={wheel.aspects ?? []}
+                        fixedStars={wheel.fixedStars ?? []}
+                        planetHouses={wheel.planetHouses ?? {}}
+                      />
+                    </section>
+                    <section className="cr-element-panel min-w-0">
+                      <ElementBalanceGuide planets={wheel.planets} ascendant={wheel.ascendant} />
+                    </section>
+                  </div>
+                ) : (
+                  <div className="cr-glass p-8 text-center text-sm text-slate-300">რუკის მონაცემები ვერ მოიძებნა.</div>
+                )}
+              </section>
 
               <details className="cr-glass p-5 text-sm text-slate-300">
                 <summary className="cursor-pointer font-bold text-cyan-200">მეთოდოლოგია, წყაროები და სიზუსტე</summary>

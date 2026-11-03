@@ -138,7 +138,7 @@ export default function ChartWheel({
 
   return (
     <div className="chart-wheel-wrap relative mx-auto w-full overflow-visible px-0.5 py-2 sm:px-2 sm:py-3">
-      <svg viewBox={`0 0 ${size} ${size}`} className="mx-auto block h-auto w-full max-w-[42rem] overflow-visible drop-shadow-[0_16px_55px_rgba(0,0,0,0.92)] transition-transform duration-700 hover:scale-[1.01]" role="group" aria-label="ნატალური რუკის ბორბალი">
+      <svg viewBox={`0 0 ${size} ${size}`} className="mx-auto block h-auto w-full max-w-[42rem] overflow-visible drop-shadow-[0_16px_55px_rgba(0,0,0,0.92)]" role="group" aria-label="ნატალური რუკის ბორბალი">
         <defs>
           <radialGradient id="wheel-center-glow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#818cf8" stopOpacity="0.28" />
@@ -195,7 +195,7 @@ export default function ChartWheel({
               fontSize={size * 0.046}
               textAnchor="middle"
               dominantBaseline="central"
-              className="select-none font-extrabold transition-all duration-300 hover:scale-125"
+              className="chart-wheel-zodiac-label select-none font-extrabold"
               style={{ textShadow: `0 0 14px ${SIGN_COLORS[i]}` }}
             >
               {SIGN_SYMBOLS[i]}
@@ -340,7 +340,7 @@ export default function ChartWheel({
           return (
             <g
               key={planet.name}
-              className="chart-focus-source chart-wheel-control select-none transition-transform duration-200"
+              className="chart-focus-source chart-wheel-control select-none"
               role="button"
               tabIndex={0}
               aria-label={`${PLANET_NAMES_KA[planet.name] ?? planet.name} — დეტალების ნახვა`}

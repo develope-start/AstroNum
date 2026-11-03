@@ -17,6 +17,14 @@
   outline: none;
 }
 
+.chart-wheel-zodiac-label {
+  transition: filter 160ms ease;
+}
+
+.chart-wheel-zodiac-label:hover {
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
 @layer base {
   :root {
     --bg-main: #0a091e;
