@@ -263,6 +263,27 @@ const TAROT_ARCANA: Record<number, [string, string]> = {
   22: ["სულელი", "თავისუფლება, ახალი გზა, რისკი, ნდობა სამყაროს მიმართ"]
 };
 
+const BIG_FIVE_ITEMS = [
+  { id: "extraversion", label: "ხშირად ვიწყებ საუბარს და თავს კომფორტულად ვგრძნობ ადამიანების გარემოცვაში.", reverse: false },
+  { id: "extraversion", label: "ჩვეულებრივ, საუბრისას ჩუმად ვრჩები.", reverse: true },
+  { id: "agreeableness", label: "სხვისი განცდები და საჭიროებები ჩემთვის მნიშვნელოვანია.", reverse: false },
+  { id: "agreeableness", label: "სხვისი პრობლემები იშვიათად მანაღვლებს.", reverse: true },
+  { id: "conscientiousness", label: "საქმეს დროულად ვასრულებ და დეტალებს ვამოწმებ.", reverse: false },
+  { id: "conscientiousness", label: "ხშირად მიჭირს წესრიგისა და გეგმის დაცვა.", reverse: true },
+  { id: "emotionalStability", label: "სტრესულ სიტუაციებში ადვილად ვიძაბები.", reverse: true },
+  { id: "emotionalStability", label: "უმეტესად მშვიდად ვრჩები, როცა რამე მოულოდნელად იცვლება.", reverse: false },
+  { id: "openness", label: "მიზიდავს ახალი იდეები, გამოცდილება და წარმოსახვითი ამოცანები.", reverse: false },
+  { id: "openness", label: "აბსტრაქტული იდეების გაგება ხშირად მიჭირს.", reverse: true },
+] as const;
+
+const BIG_FIVE_META: Record<(typeof BIG_FIVE_ITEMS)[number]["id"], { label: string; detail: string }> = {
+  extraversion: { label: "ექსტრავერსია", detail: "სოციალური აქტიურობისა და გარეგანი სტიმულისკენ მიდრეკილება" },
+  agreeableness: { label: "კეთილგანწყობა", detail: "თანაგრძნობისა და თანამშრომლობისკენ მიდრეკილება" },
+  conscientiousness: { label: "კეთილსინდისიერება", detail: "ორგანიზებისა და მიზანმიმართული მოქმედების ტენდენცია" },
+  emotionalStability: { label: "ემოციური სტაბილურობა", detail: "სტრესისას სიმშვიდის შენარჩუნების ტენდენცია" },
+  openness: { label: "გახსნილობა გამოცდილებისადმი", detail: "ინტერესისა და ახალი იდეებისადმი მიმღებლობის ტენდენცია" },
+};
+
 /* ================= Calculation Room Main Component ================= */
 export default function CalculationRoom({
   isOpen,
@@ -295,6 +316,7 @@ export default function CalculationRoom({
   const [isLightTheme, setIsLightTheme] = useState(false);
   const [selectedMatrixPoint, setSelectedMatrixPoint] = useState<string>("X");
   const [psychTab, setPsychTab] = useState<string>("triad");
+  const [bigFiveAnswers, setBigFiveAnswers] = useState<Record<number, number>>({});
   const [foundationEntries, setFoundationEntries] = useState<string[]>([]);
   const [planetFilter, setPlanetFilter] = useState<string>("all");
   const [planetSearch, setPlanetSearch] = useState<string>("");
@@ -567,6 +589,23 @@ export default function CalculationRoom({
       digit === 0 ? 0 : [...digits].filter((value) => Number(value) === digit).length,
     );
   }, [birthDateParts]);
+
+  const bigFiveScores = useMemo(() => {
+    const grouped = new Map<keyof typeof BIG_FIVE_META, number[]>();
+    BIG_FIVE_ITEMS.forEach((item, index) => {
+      const answer = bigFiveAnswers[index];
+      if (!answer) return;
+      const score = item.reverse ? 6 - answer : answer;
+      const values = grouped.get(item.id) ?? [];
+      values.push(score);
+      grouped.set(item.id, values);
+    });
+    return Object.entries(BIG_FIVE_META).map(([id, meta]) => {
+      const values = grouped.get(id as keyof typeof BIG_FIVE_META) ?? [];
+      const average = values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+      return { id, ...meta, average };
+    });
+  }, [bigFiveAnswers]);
 
   // Age calculation
   const currentAge = useMemo(() => {
@@ -2490,7 +2529,7 @@ export default function CalculationRoom({
                 <div className="text-xs font-bold uppercase tracking-widest text-cyan-300">ბედის მატრიცა · 22 არკანა</div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white">არქეტიპული ოქტაგრამა (Destiny Matrix)</h2>
                 <p className="text-xs text-slate-400 mt-1">
-                  22 უმაღლესი არკანის სისტემა: სულის კომფორტის ზონა, კარმული კუდი (18-9-9), ფინანსური ნაკადი და პარტნიორობის ხაზი.
+                  22-არკანიანი სიმბოლური სისტემა: თარიღიდან დინამიკურად გამოთვლილი კვანძები, მათი მნიშვნელობები და თვითრეფლექსიის კითხვები.
                 </p>
                 <p className="mt-3 rounded-xl border border-violet-400/20 bg-violet-950/20 p-3 text-xs leading-relaxed text-violet-100">
                   „ბედის მატრიცას“ ერთიანი, აკადემიურად დამოწმებული ფორმულა არ აქვს. აქ გამოყენებულია ერთი გამჭვირვალე 22-არკანიანი კონვენცია; შედეგი არის სიმბოლური ანალიზი და არა ფაქტი ბედზე, ჯანმრთელობაზე ან ფინანსურ მომავალზე.
@@ -2630,36 +2669,36 @@ export default function CalculationRoom({
                 </div>
               </div>
 
-              {/* Karmic Tail 18-9-9 Deep Card */}
+              {/* Dynamic three-point reflection theme */}
               <div className="cr-glass p-6 space-y-3 rounded-2xl border-2 border-purple-500/30 shadow-xl">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2 text-purple-300 font-bold text-sm uppercase tracking-wider">
-                    <span>☸ კარმული კუდი: 18 - 9 - 9 (ჯადოქარი / განდეგილი / მთვარე)</span>
+                    <span>☸ სამწერტილიანი თვითრეფლექსიის თემა: {matrix.D} - {matrix.X} - {matrix.A}</span>
                   </div>
                   <span className="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold">
-                    სულის მთავარი ვალი
+                    სიმბოლური ფოკუსი
                   </span>
                 </div>
                 <p className="text-xs text-slate-200 leading-relaxed">
-                  წარსულ ინკარნაციაში ადამიანს ჰქონდა წვდომა უდიდეს ეზოთერიკულ და მისტიკურ ცოდნაზე, მაგრამ ეს ცოდნა დამალა ან მარტოობაში ჩაიკეტა სხვების შიშით. ამ ინკარნაციაში მთავარი გაკვეთილია: გათავისუფლება ილუზიებისა და ფარული შიშებისგან (18), შინაგანი სიბრძნისა და გამოცდილების სხვებისთვის გაზიარება (9) და საკუთარი გზის სრული მიმღებლობა.
+                  ეს სამი კვანძი მიიღება თქვენს მიერ შეყვანილი დაბადების თარიღიდან. გამოიყენეთ ისინი როგორც სამი შეკითხვა: რა რესურსს ვეყრდნობი, სად მჭირდება მეტი შეგნება და რომელ მცირე არჩევანს ვცდი შემდეგ? ეს არ აღწერს „წარსულ ცხოვრებას“, ვალს ან გარდაუვალ სცენარს.
                 </p>
               </div>
 
               {/* Financial and Relationship Channels */}
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="cr-glass p-6 space-y-3 rounded-2xl border-t-2 border-t-amber-400">
-                  <div className="text-xs font-bold uppercase text-amber-300">ფინანსური ნაკადის ხაზი (9 - 15 - 6)</div>
-                  <h4 className="text-base font-bold text-white">მატერიალური სიუხვისა და კარიერის გასაღები</h4>
+                  <div className="text-xs font-bold uppercase text-amber-300">რესურსისა და საქმის სიმბოლური ხაზი ({matrix.AB} - {matrix.X} - {matrix.CD})</div>
+                  <h4 className="text-base font-bold text-white">კონკრეტული მოქმედების ფოკუსი</h4>
                   <p className="text-xs text-slate-200 leading-relaxed">
-                    ფული შემოდის ექსპერტული, სიღრმისეული ცოდნისა და ანალიტიკის მეშვეობით (9). მთავარი ფინანსური ბლოკია: ცდუნებები, მანიპულაციები ან მატერიალური მიჯაჭვულობის შიში (15). წარმატება მოდის მაშინ, როცა ადამიანი აკეთებს იმას, რაც მთელი გულით უყვარს (6).
+                    სამი რიცხვი მიუთითებს მხოლოდ ანალიზის თემებზე: რა შემიძლია რეალურად გავაკეთო, რა რესურსი მჭირდება და როგორ შევამოწმო შედეგი. ფინანსური გადაწყვეტილება დაეყრდნოს შემოსავალს, ხარჯს, რისკს და საჭიროებისას პროფესიონალურ რჩევას — არა ამ სიმბოლურ ხაზს.
                   </p>
                 </div>
 
                 <div className="cr-glass p-6 space-y-3 rounded-2xl border-t-2 border-t-pink-400">
-                  <div className="text-xs font-bold uppercase text-pink-300">ურთიერთობებისა და სიყვარულის ხაზი (6 - 12 - 18)</div>
-                  <h4 className="text-base font-bold text-white">ჰარმონიული პარტნიორობის ფორმულა</h4>
+                  <div className="text-xs font-bold uppercase text-pink-300">ურთიერთობის თვითრეფლექსიის ხაზი ({matrix.DA} - {matrix.X} - {matrix.BC})</div>
+                  <h4 className="text-base font-bold text-white">კომუნიკაციისა და საზღვრების ფოკუსი</h4>
                   <p className="text-xs text-slate-200 leading-relaxed">
-                    იდეალური პარტნიორი უნდა იყოს ესთეტიური, თბილი და ემოციურად გახსნილი (6). მთავარი საფრთხეა: ურთიერთობაში მსხვერპლის როლის მორგება ან ზედმეტი თავგანწირვა (12). კავშირის ხანგრძლივობის საფუძველია სრული გულწრფელობა და შიშებისგან გათავისუფლება (18).
+                    აქ არ არის „იდეალური პარტნიორის“ ფორმულა და არც გარანტია ურთიერთობის შედეგზე. გამოიყენეთ ეს ბლოკი დიალოგისთვის: რა მჭირდება უსაფრთხოებისთვის, როგორ ვამბობ ჩემს საზღვარს და რას ვუსმენ მეორე ადამიანის საჭიროებებიდან?
                   </p>
                 </div>
               </div>
@@ -2699,6 +2738,7 @@ export default function CalculationRoom({
               {/* Sub tabs */}
               <div className="flex flex-wrap gap-2 pb-2">
                 {[
+                  { id: "big5", label: "Big Five · თვითშეფასება" },
                   { id: "triad", label: "ფროიდის ტრიადა (იდი / ეგო / სუპერეგო)" },
                   { id: "defenses", label: "თავდაცვის მექანიზმები" },
                   { id: "jung", label: "იუნგის მანდალა (არქეტიპები)" },
@@ -2716,6 +2756,58 @@ export default function CalculationRoom({
                   </button>
                 ))}
               </div>
+
+              {psychTab === "big5" && (
+                <div className="space-y-5">
+                  <div className="cr-glass cr-accent p-5 space-y-2">
+                    <h3 className="text-lg font-bold text-white">Big Five — მოკლე თვითშეფასება</h3>
+                    <p className="text-xs leading-relaxed text-slate-300">
+                      მონიშნეთ, რამდენად შეესაბამება თითოეული წინადადება თქვენს ჩვეულებრივ ქცევას: 1 — სრულიად არ შეესაბამება; 5 — სრულად შეესაბამება. ეს არის IPIP-ის ღია ლიცენზიის პუნქტებზე დაფუძნებული, ქართულად ადაპტირებული მოკლე სკრინერი; იგი არ იძლევა კლინიკურ დიაგნოზს, ნორმას ან პროცენტილს.
+                    </p>
+                  </div>
+                  <div className="space-y-3">
+                    {BIG_FIVE_ITEMS.map((item, index) => (
+                      <div key={item.id + "-" + index} className="cr-glass p-4 sm:flex sm:items-center sm:justify-between gap-4">
+                        <p className="text-sm leading-relaxed text-slate-100">{index + 1}. {item.label}</p>
+                        <div className="flex shrink-0 items-center gap-1" role="group" aria-label={"კითხვა " + (index + 1)}>
+                          {[1, 2, 3, 4, 5].map((value) => (
+                            <button
+                              key={value}
+                              type="button"
+                              onClick={() => setBigFiveAnswers((current) => ({ ...current, [index]: value }))}
+                              className={"h-9 w-9 rounded-lg border text-xs font-bold transition " + (
+                                bigFiveAnswers[index] === value
+                                  ? "border-cyan-300 bg-cyan-400/25 text-white"
+                                  : "border-white/10 bg-white/[0.03] text-slate-300 hover:border-cyan-300/50"
+                              )}
+                              aria-pressed={bigFiveAnswers[index] === value}
+                            >
+                              {value}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                    {bigFiveScores.map((score) => {
+                      const label = score.average === null
+                        ? "შეავსეთ 2 პუნქტი"
+                        : score.average < 2.5 ? "შედარებით დაბალი"
+                          : score.average > 3.5 ? "შედარებით მაღალი"
+                            : "შუალედური";
+                      return (
+                        <div key={score.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                          <div className="text-xs font-bold text-cyan-200">{score.label}</div>
+                          <div className="mt-2 font-mono text-2xl font-black text-white">{score.average?.toFixed(1) ?? "—"}</div>
+                          <div className="mt-1 text-[11px] text-slate-400">{label}</div>
+                          <p className="mt-2 text-[11px] leading-relaxed text-slate-300">{score.detail}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Sub Tab: Triad */}
               {psychTab === "triad" && (
