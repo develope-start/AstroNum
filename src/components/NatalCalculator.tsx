@@ -234,7 +234,7 @@ export default function NatalCalculator() {
       mapNumber: null,
       savedId: chart.id,
     });
-    router.push("/chart/room");
+    router.push("/chart/guest");
   }
 
   async function calculate(save = false, openRoom = true) {
@@ -344,7 +344,9 @@ export default function NatalCalculator() {
         mapNumber: data.mapNumber ?? null,
         savedId,
       });
-      if (openRoom) router.push("/chart/room");
+      if (openRoom) {
+        router.push("/chart/guest");
+      }
     } catch (error) {
       setError(getRequestError(error));
     } finally {
@@ -553,7 +555,7 @@ export default function NatalCalculator() {
           </div>
           <button
             type="button"
-            onClick={() => router.push("/chart/room")}
+            onClick={() => router.push("/chart/guest")}
             className="btn-shimmer flex items-center justify-center gap-2 rounded-full border border-cyan-400/50 bg-gradient-to-r from-emerald-500 via-indigo-600 to-cyan-500 px-6 py-3 text-xs sm:text-sm font-extrabold text-white shadow-[0_0_25px_rgba(56,189,248,0.35)] transition-all hover:scale-105 cursor-pointer shrink-0"
           >
             <Sparkles className="h-4 w-4 text-cyan-200" />

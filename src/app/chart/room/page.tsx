@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CalculationRoom from "@/components/CalculationRoom";
 import { loadGuestCache } from "@/lib/guestCache";
+import { useMe } from "@/lib/useMe";
 import { EMPTY_BIRTH, type BirthValue } from "@/components/BirthFields";
 import type { WheelPlanet } from "@/components/ChartWheel";
 import type { AspectHit } from "@/lib/astro/aspects";
@@ -32,8 +33,16 @@ interface CacheShape {
 
 export default function ChartRoomPage() {
   const router = useRouter();
+  const me = useMe();
   const [cached, setCached] = useState<CacheShape | null>(null);
   const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (me === null) {
+      router.replace("/chart/guest");
+      return;
+    }
+  }, [me, router]);
 
   useEffect(() => {
     const data = loadGuestCache<CacheShape>("natal");
