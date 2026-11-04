@@ -295,6 +295,7 @@ export default function CalculationRoom({
   const [isLightTheme, setIsLightTheme] = useState(false);
   const [selectedMatrixPoint, setSelectedMatrixPoint] = useState<string>("X");
   const [psychTab, setPsychTab] = useState<string>("triad");
+  const [foundationEntries, setFoundationEntries] = useState<string[]>([]);
   const [planetFilter, setPlanetFilter] = useState<string>("all");
   const [planetSearch, setPlanetSearch] = useState<string>("");
   const [aspectFilter, setAspectFilter] = useState<string>("all");
@@ -504,6 +505,33 @@ export default function CalculationRoom({
     return () => window.cancelAnimationFrame(frame);
   }, [activeSec, pendingFocus]);
 
+  useEffect(() => {
+    const typeBySection: Partial<Record<string, "NUMEROLOGY" | "MATRIX_DESTINY" | "PSYCHOLOGICAL_PROFILE">> = {
+      numerology: "NUMEROLOGY",
+      matrix: "MATRIX_DESTINY",
+      psych: "PSYCHOLOGICAL_PROFILE",
+    };
+    const type = typeBySection[activeSec];
+    if (!type) {
+      setFoundationEntries([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    void fetch("/api/interpretations/foundations?type=" + type, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("library response failed");
+        const payload = await response.json() as { entries?: unknown };
+        setFoundationEntries(Array.isArray(payload.entries)
+          ? payload.entries.filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0)
+          : []);
+      })
+      .catch((error: unknown) => {
+        if (!(error instanceof DOMException && error.name === "AbortError")) setFoundationEntries([]);
+      });
+    return () => controller.abort();
+  }, [activeSec]);
+
   // Parse birth date numbers
   const birthDateParts = useMemo(() => {
     if (!birth.date) return { y: 1995, m: 6, d: 22 };
@@ -520,6 +548,24 @@ export default function CalculationRoom({
   // "subtract 22" variant is intentionally not offered as a second result.
   const matrix = useMemo(() => {
     return mxCalc(birthDateParts.y, birthDateParts.m, birthDateParts.d);
+  }, [birthDateParts]);
+
+  // Unlike the former demo text, every number shown below is derived from the
+  // date currently open in this room. The calculation stays intentionally
+  // transparent: users can see the date and the resulting reduced number.
+  const personalYears = useMemo(() => {
+    const firstYear = new Date().getFullYear();
+    return Array.from({ length: 4 }, (_, index) => {
+      const year = firstYear + index;
+      return { year, value: numCalc(birthDateParts.y, birthDateParts.m, birthDateParts.d, year).py };
+    });
+  }, [birthDateParts]);
+
+  const pythagoreanDigitCounts = useMemo(() => {
+    const digits = `${birthDateParts.y}${String(birthDateParts.m).padStart(2, "0")}${String(birthDateParts.d).padStart(2, "0")}`;
+    return Array.from({ length: 10 }, (_, digit) =>
+      digit === 0 ? 0 : [...digits].filter((value) => Number(value) === digit).length,
+    );
   }, [birthDateParts]);
 
   // Age calculation
@@ -2237,7 +2283,19 @@ export default function CalculationRoom({
                 <p className="text-xs text-slate-400 mt-1">
                   დაბადების თარიღის ვიბრაციული კოდი: ცხოვრების გზა, მასტერ-რიცხვი, 4 მწვერვალი, გამოწვევები და პითაგორას ფსიქომატრიცა.
                 </p>
+                <p className="mt-3 rounded-xl border border-cyan-400/20 bg-cyan-950/20 p-3 text-xs leading-relaxed text-cyan-100">
+                  მეთოდი ეფუძნება ნუმეროლოგიურ ტრადიციას და გამოიყენება თვითრეფლექსიისთვის; ის არ არის მეცნიერებით ვალიდირებული პიროვნების ტესტი, სამედიცინო შეფასება ან წინასწარმეტყველება.
+                </p>
               </div>
+
+              {foundationEntries.length > 0 && (
+                <div className="cr-glass p-5 space-y-2 border-l-4 border-l-cyan-400">
+                  <h3 className="text-sm font-bold text-white">კურირებული ბიბლიოთეკის კონტექსტი</h3>
+                  {foundationEntries.map((entry, index) => (
+                    <p key={index} className="text-xs leading-relaxed text-slate-300">{entry}</p>
+                  ))}
+                </div>
+              )}
 
               {/* 2 Main Cards: Life Path and Birthday Number */}
               <div className="grid gap-6 sm:grid-cols-2">
@@ -2247,20 +2305,20 @@ export default function CalculationRoom({
                       {numerology.lp}
                     </span>
                     <div>
-                      <h3 className="text-lg font-black text-white">ცხოვრების გზის რიცხვი — 7</h3>
+                      <h3 className="text-lg font-black text-white">ცხოვრების გზის რიცხვი — {numerology.lp}</h3>
                       <div className="text-xs text-cyan-300 font-semibold">
-                        {birthDateParts.d} + {birthDateParts.m} + {birthDateParts.y} → 7
+                        {birthDateParts.d} + {birthDateParts.m} + {birthDateParts.y} → {numerology.lp}
                       </div>
                     </div>
                   </div>
                   <div className="text-xs font-bold text-cyan-200/90 italic bg-cyan-950/30 px-3 py-1.5 rounded-lg border border-cyan-500/20">
-                    ✦ {ATLAS_NUM_MEAN[7]?.k || "მისტიკოსი, მკვლევარი და მოაზროვნე"}
+                    ✦ {ATLAS_NUM_MEAN[String(numerology.lp) as keyof typeof ATLAS_NUM_MEAN]?.k || "ინდივიდუალური განვითარების თემა"}
                   </div>
                   <p className="text-xs text-slate-200 leading-relaxed">
-                    {ATLAS_DD_NUM.lp}
+                    {ATLAS_NUM_MEAN[String(numerology.lp) as keyof typeof ATLAS_NUM_MEAN]?.t || "ამ რიცხვის მნიშვნელობა ბიბლიოთეკაში ეტაპობრივად ივსება."}
                   </p>
                   <p className="text-[11px] text-slate-400 pt-1 border-t border-white/5">
-                    {ATLAS_DD_NUM.lpNote}
+                    ეს სიმბოლური აღწერაა და არა პიროვნების დიაგნოზი ან მომავლის გარანტია.
                   </p>
                 </div>
 
@@ -2270,20 +2328,20 @@ export default function CalculationRoom({
                       {numerology.bd}
                     </span>
                     <div>
-                      <h3 className="text-lg font-black text-white">დაბადების დღის რიცხვი — 22/4</h3>
+                      <h3 className="text-lg font-black text-white">დაბადების დღის რიცხვი — {numerology.bd}</h3>
                       <div className="text-xs text-amber-300 font-semibold">
-                        დაბადების დღე 22 · მასტერ რიცხვი
+                        დაბადების დღე {birthDateParts.d}{[11, 22, 33].includes(numerology.bd) ? " · მასტერ რიცხვი" : ""}
                       </div>
                     </div>
                   </div>
                   <div className="text-xs font-bold text-amber-200/90 italic bg-amber-950/30 px-3 py-1.5 rounded-lg border border-amber-500/20">
-                    ✦ {ATLAS_NUM_MEAN[22]?.k || "ოსტატი-მშენებელი (Master Builder)"}
+                    ✦ {ATLAS_NUM_MEAN[String(numerology.bd) as keyof typeof ATLAS_NUM_MEAN]?.k || ATLAS_NUM_MEAN[String(red1(numerology.bd)) as keyof typeof ATLAS_NUM_MEAN]?.k || "დაბადების დღის ინდივიდუალური თემა"}
                   </div>
                   <p className="text-xs text-slate-200 leading-relaxed">
-                    {ATLAS_DD_NUM.bd}
+                    {ATLAS_NUM_MEAN[String(numerology.bd) as keyof typeof ATLAS_NUM_MEAN]?.t || ATLAS_NUM_MEAN[String(red1(numerology.bd)) as keyof typeof ATLAS_NUM_MEAN]?.t || "დაბადების დღის რიცხვი აღწერს სიმბოლურ თემას და არ ადგენს ხასიათს."}
                   </p>
                   <p className="text-[11px] text-slate-400 pt-1 border-t border-white/5">
-                    {ATLAS_DD_NUM.bdNote}
+                    დღის რიცხვი სრულ ინტერპრეტაციაში ყოველთვის იკითხება ცხოვრების გზის, ასაკის და რუკის სხვა მონაცემებთან ერთად.
                   </p>
                 </div>
               </div>
@@ -2294,24 +2352,24 @@ export default function CalculationRoom({
                   <div>
                     <div className="text-xs font-bold uppercase tracking-wider text-cyan-300">პერსონალური წელი</div>
                     <div className="text-lg font-extrabold text-white mt-0.5">
-                      2026 წელი — პერსონალური ვიბრაცია 11/2
+                      {personalYears[0]?.year} წელი — პერსონალური ვიბრაცია {personalYears[0]?.value}
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    {[2026, 2027, 2028, 2029].map(y => (
+                    {personalYears.map(({ year, value }, index) => (
                       <span
-                        key={y}
+                        key={year}
                         className={`text-xs px-2.5 py-1 rounded-lg font-mono font-bold ${
-                          y === 2026 ? "bg-cyan-500/30 text-cyan-200 border border-cyan-400/40" : "bg-white/5 text-slate-400"
+                          index === 0 ? "bg-cyan-500/30 text-cyan-200 border border-cyan-400/40" : "bg-white/5 text-slate-400"
                         }`}
                       >
-                        {y}: {y === 2026 ? "11/2" : y === 2027 ? "3" : y === 2028 ? "4" : "5"}
+                        {year}: {value}
                       </span>
                     ))}
                   </div>
                 </div>
                 <p className="text-xs text-slate-200 leading-relaxed">
-                  {ATLAS_DD_NUM.py2026}
+                  {ATLAS_NUM_MEAN[String(personalYears[0]?.value) as keyof typeof ATLAS_NUM_MEAN]?.t || "პერსონალური წელი ითვლება დაბადების თვის, დღის და მიმდინარე წლის შეკრებით."}
                 </p>
               </div>
 
@@ -2332,7 +2390,7 @@ export default function CalculationRoom({
                         ასაკი: {i === 0 ? `0 – ${numerology.ages[0]} წ.` : i === 1 ? `${numerology.ages[0]} – ${numerology.ages[1]} წ.` : i === 2 ? `${numerology.ages[1]} – ${numerology.ages[2]} წ.` : `${numerology.ages[2]}+ წ.`}
                       </div>
                       <p className="text-xs text-slate-300 leading-relaxed pt-1">
-                        {ATLAS_DD_NUM.pin[i] || "ცხოვრებისეული შესაძლებლობების ეტაპი."}
+                        {ATLAS_NUM_MEAN[String(pin) as keyof typeof ATLAS_NUM_MEAN]?.t || "ცხოვრებისეული შესაძლებლობების სიმბოლური ეტაპი."}
                       </p>
                     </div>
                   ))}
@@ -2344,7 +2402,7 @@ export default function CalculationRoom({
                 <div className="text-xs font-bold uppercase tracking-wider text-rose-300">ცხოვრების 4 გამოწვევა (კარმული გაკვეთილები)</div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {[0, 1, 2, 3].map(i => {
-                    const chalNum = [2, 0, 2, 0][i];
+                    const chalNum = numerology.c[i];
                     return (
                       <div
                         key={i}
@@ -2358,7 +2416,7 @@ export default function CalculationRoom({
                           {i === 0 ? "ადრეული ასაკი" : i === 1 ? "შუა პერიოდი" : i === 2 ? "მთავარი გამოწვევა" : "მთელი ცხოვრება"}
                         </div>
                         <p className="text-xs text-slate-300 leading-relaxed pt-1">
-                          {ATLAS_DD_NUM.ch[i]}
+                          {ATLAS_CHAL_MEAN[String(chalNum) as keyof typeof ATLAS_CHAL_MEAN] || "ეს რიცხვი ყურადღებას ამახვილებს განმეორებად სასწავლო თემაზე."}
                         </p>
                       </div>
                     );
@@ -2378,21 +2436,21 @@ export default function CalculationRoom({
                   <div className="lg:col-span-5 bg-black/40 p-4 rounded-2xl border border-white/10">
                     <div className="grid grid-cols-3 gap-2.5 text-center">
                       {[
-                        { num: "11", label: "ხასიათი, ნება" },
-                        { num: "4", label: "ჯანმრთელობა" },
-                        { num: "7", label: "ტალანტი, იღბალი" },
-                        { num: "22", label: "ენერგია" },
-                        { num: "5", label: "ლოგიკა, ინტუიცია" },
-                        { num: "8", label: "მოვალეობა" },
-                        { num: "3", label: "ინტერესები" },
-                        { num: "6", label: "შრომისმოყვარეობა" },
-                        { num: "999", label: "მეხსიერება, ინტელექტი" },
+                        { digit: 1, label: "ხასიათი, ნება" },
+                        { digit: 4, label: "ჯანმრთელობა" },
+                        { digit: 7, label: "ტალანტი, იღბალი" },
+                        { digit: 2, label: "ენერგია" },
+                        { digit: 5, label: "ლოგიკა, ინტუიცია" },
+                        { digit: 8, label: "მოვალეობა" },
+                        { digit: 3, label: "ინტერესები" },
+                        { digit: 6, label: "შრომისმოყვარეობა" },
+                        { digit: 9, label: "მეხსიერება, ინტელექტი" },
                       ].map((cell, idx) => (
                         <div
                           key={idx}
                           className="bg-white/[0.04] p-3 rounded-xl border border-white/10 hover:border-cyan-400/40 transition"
                         >
-                          <div className="font-mono text-2xl font-black text-cyan-300">{cell.num}</div>
+                          <div className="font-mono text-2xl font-black text-cyan-300">{String(cell.digit).repeat(pythagoreanDigitCounts[cell.digit]) || "—"}</div>
                           <div className="text-[10px] text-slate-300 font-semibold mt-1">{cell.label}</div>
                         </div>
                       ))}
@@ -2434,7 +2492,19 @@ export default function CalculationRoom({
                 <p className="text-xs text-slate-400 mt-1">
                   22 უმაღლესი არკანის სისტემა: სულის კომფორტის ზონა, კარმული კუდი (18-9-9), ფინანსური ნაკადი და პარტნიორობის ხაზი.
                 </p>
+                <p className="mt-3 rounded-xl border border-violet-400/20 bg-violet-950/20 p-3 text-xs leading-relaxed text-violet-100">
+                  „ბედის მატრიცას“ ერთიანი, აკადემიურად დამოწმებული ფორმულა არ აქვს. აქ გამოყენებულია ერთი გამჭვირვალე 22-არკანიანი კონვენცია; შედეგი არის სიმბოლური ანალიზი და არა ფაქტი ბედზე, ჯანმრთელობაზე ან ფინანსურ მომავალზე.
+                </p>
               </div>
+
+              {foundationEntries.length > 0 && (
+                <div className="cr-glass p-5 space-y-2 border-l-4 border-l-violet-400">
+                  <h3 className="text-sm font-bold text-white">კურირებული ბიბლიოთეკის კონტექსტი</h3>
+                  {foundationEntries.map((entry, index) => (
+                    <p key={index} className="text-xs leading-relaxed text-slate-300">{entry}</p>
+                  ))}
+                </div>
+              )}
 
               {/* Octagram SVG and Inspector Panel */}
               <div className="grid gap-6 lg:grid-cols-12 items-start">
@@ -2604,6 +2674,28 @@ export default function CalculationRoom({
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white">სიღრმისეული ფსიქოლოგიური პორტრეტი</h2>
               </div>
 
+              <div className="cr-glass cr-accent p-5 space-y-3 border-l-4 border-l-cyan-400">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-base font-bold text-white">ამ რუკის თვითრეფლექსიის ფოკუსი</h3>
+                  <span className="text-xs font-mono text-cyan-200">ცხოვრების გზა {numerology.lp} · წელი {personalYears[0]?.value}</span>
+                </div>
+                <p className="text-sm leading-relaxed text-slate-200">
+                  {ATLAS_NUM_MEAN[String(numerology.lp) as keyof typeof ATLAS_NUM_MEAN]?.t || "დაკვირვების ფოკუსი ყალიბდება დაბადების თარიღის რიცხვითი მოდელით."}
+                </p>
+                <p className="text-xs leading-relaxed text-cyan-100">
+                  ეს სექცია არ ადგენს პიროვნების ტიპს დაბადების თარიღით და არ არის ფსიქოლოგიური დიაგნოზი. მეცნიერებაზე დაფუძნებული პიროვნული შეფასებისთვის საჭიროა თვითშეფასების კითხვარი; ქვემოთ მოცემული ჩარჩოები გამოიყენეთ როგორც შეკითხვები თვითდაკვირვებისთვის, არა როგორც იარლიყები.
+                </p>
+              </div>
+
+              {foundationEntries.length > 0 && (
+                <div className="cr-glass p-5 space-y-2 border-l-4 border-l-emerald-400">
+                  <h3 className="text-sm font-bold text-white">კურირებული ბიბლიოთეკის კონტექსტი</h3>
+                  {foundationEntries.map((entry, index) => (
+                    <p key={index} className="text-xs leading-relaxed text-slate-300">{entry}</p>
+                  ))}
+                </div>
+              )}
+
               {/* Sub tabs */}
               <div className="flex flex-wrap gap-2 pb-2">
                 {[
@@ -2640,9 +2732,7 @@ export default function CalculationRoom({
                           <span className={`cr-tag ${trItem.k === "id" ? "cr-neg" : trItem.k === "ego" ? "cr-new" : "cr-pos"}`}>
                             {trItem.t}
                           </span>
-                          <span className="font-mono text-xs font-bold text-cyan-300">
-                            {trItem.k === "id" ? "30%" : trItem.k === "ego" ? "45%" : "25%"}
-                          </span>
+                          <span className="font-mono text-xs font-bold text-cyan-300">თეორიული ჩარჩო</span>
                         </div>
                         <h4 className="text-sm font-bold text-white">{trItem.s}</h4>
                         <p className="text-xs text-slate-300 leading-relaxed">{trItem.x}</p>

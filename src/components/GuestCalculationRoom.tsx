@@ -273,9 +273,12 @@ export default function GuestCalculationRoom({
           </div>
 
           {/* Header Quick Stats & Controls */}
-          <div className="flex items-center space-x-3 text-xs sm:text-sm">
+          <div className="flex flex-wrap items-center gap-2.5 text-xs sm:text-sm">
             <span className="px-3 py-1.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-xs text-emerald-400" /> ZET9 / SwissEph 99.98% სიზუსტე
+              <CheckCircle2 className="h-3.5 w-3.5" /> ZET9 / SwissEph 99.98% სიზუსტე
+            </span>
+            <span className="px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold text-[11px] uppercase tracking-wide">
+              სტუმრის რეჟიმი
             </span>
             <button
               type="button"
@@ -284,6 +287,12 @@ export default function GuestCalculationRoom({
             >
               <Printer className="h-4 w-4" /> დაბეჭდვა / PDF
             </button>
+            <Link
+              href="/cabinet"
+              className="no-print px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold flex items-center gap-1.5 transition"
+            >
+              <Lock className="h-3.5 w-3.5" /> PRO კაბინეტი
+            </Link>
             <button
               type="button"
               onClick={() => (onClose ? onClose() : router.push("/"))}
@@ -1034,6 +1043,36 @@ export default function GuestCalculationRoom({
               </div>
             </div>
           )}
+        </section>
+
+        {/* PRO Upgrade Banner */}
+        <section className="bg-gradient-to-r from-amber-950/40 via-purple-950/40 to-indigo-950/40 border border-amber-500/30 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl">
+          <div className="space-y-2 text-center sm:text-left">
+            <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-wider">
+              <Sparkles className="h-4 w-4 text-amber-400" />
+              <span>გახსენით სრული PRO ექსპერტული კაბინეტი</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black text-white">
+              ბედის მატრიცა · ლაივ ტრანზიტები · პითაგორას ფსიქომატრიცა · AI ანალიტიკა
+            </h3>
+            <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+              დარეგისტრირებულ მომხმარებლებსა და პაკეტის მფლობელებს ეხსნებათ სრული 22-არკანიანი ოქტაგრამა, კარმული კუდი (18-9-9), 30 ცხოვრებისეული ციკლის ქრონოლოგია, ლაივ ტრანზიტები და AI სიღრმისეული ანალიტიკა.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
+            <Link
+              href="/cabinet"
+              className="w-full sm:w-auto text-center px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/30 hover:scale-105 transition flex items-center justify-center gap-2"
+            >
+              <Lock className="h-4 w-4" /> რეგისტრაცია / პაკეტები
+            </Link>
+            <Link
+              href="/cabinet"
+              className="w-full sm:w-auto text-center px-5 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm border border-white/15 transition"
+            >
+              შესვლა
+            </Link>
+          </div>
         </section>
       </main>
 

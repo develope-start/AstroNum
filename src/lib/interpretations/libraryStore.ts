@@ -3,7 +3,7 @@ import type { LibraryInsight } from "./library";
 import { localizeInterpretation } from "./translation";
 
 export interface LibraryMatchContext {
-  chartType: "NATAL" | "SYNASTRY" | "TRANSIT" | "ELEMENT_TEMPERAMENT";
+  chartType: "NATAL" | "SYNASTRY" | "TRANSIT" | "ELEMENT_TEMPERAMENT" | "NUMEROLOGY" | "MATRIX_DESTINY" | "PSYCHOLOGICAL_PROFILE";
   planets?: Array<{ name: string; sign?: string; house?: number }>;
   aspects?: Array<{ a: string; b: string; aspect: string }>;
   elements?: Record<string, number>;

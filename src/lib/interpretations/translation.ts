@@ -1,8 +1,6 @@
-import { createHash } from "node:crypto";
-import { prisma } from "@/lib/db";
+import { translateToProfessionalGeorgian } from "@/lib/documents/translate";
 import { normalizeGeorgianAstrologyTerms } from "@/lib/astrologyGeorgian";
 
-const DEFAULT_PROVIDER_VERSION = "libretranslate-v1";
 const CHUNK_LIMIT = 3_500;
 
 export interface TranslationResult {
@@ -15,18 +13,6 @@ export interface TranslationResult {
 
 function normalize(value: string): string {
   return value.replace(/\r\n/g, "\n").replace(/[ \t]+/g, " ").trim();
-}
-
-function fingerprint(sourceText: string, sourceLanguage: string, targetLanguage: string, providerVersion: string): string {
-  return createHash("sha256")
-    .update(`${providerVersion}\0${sourceLanguage}\0${targetLanguage}\0${normalize(sourceText)}`)
-    .digest("hex");
-}
-
-function providerUrl(): string | null {
-  const configured = process.env.LIBRETRANSLATE_URL?.trim();
-  if (!configured) return null;
-  return configured.endsWith("/translate") ? configured : `${configured.replace(/\/$/, "")}/translate`;
 }
 
 function splitText(text: string): string[] {
@@ -55,53 +41,14 @@ async function translateChunk(sourceText: string, sourceLanguage: string, target
   if (sourceLanguage === targetLanguage || !normalize(sourceText)) {
     return { text: sourceText, cached: true, provider: "identity" };
   }
-
-  const url = providerUrl();
-  const providerVersion = process.env.LIBRETRANSLATE_VERSION?.trim() || DEFAULT_PROVIDER_VERSION;
-  const provider = url ? "libretranslate" : "unconfigured";
-  const hash = fingerprint(sourceText, sourceLanguage, targetLanguage, providerVersion);
-
   try {
-    const cached = await prisma.translationCache.findUnique({ where: { fingerprint: hash }, select: { translatedText: true, provider: true } });
-    if (cached) return { text: cached.translatedText, cached: true, provider: cached.provider };
+    const result = await translateToProfessionalGeorgian(sourceText, sourceLanguage, "interpretation-library");
+    return result;
   } catch (error) {
-    console.error("Translation cache lookup failed", error instanceof Error ? error.message : error);
-  }
-
-  if (!url) return { text: sourceText, cached: false, provider };
-
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8_000);
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        q: sourceText,
-        source: sourceLanguage,
-        target: targetLanguage,
-        format: "text",
-        ...(process.env.LIBRETRANSLATE_API_KEY ? { api_key: process.env.LIBRETRANSLATE_API_KEY } : {}),
-      }),
-      signal: controller.signal,
-    }).finally(() => clearTimeout(timeout));
-    if (!response.ok) throw new Error(`LibreTranslate returned ${response.status}`);
-    const payload = await response.json() as { translatedText?: unknown };
-    if (typeof payload.translatedText !== "string" || !payload.translatedText.trim()) throw new Error("LibreTranslate returned no translated text");
-
-    try {
-      await prisma.translationCache.upsert({
-        where: { fingerprint: hash },
-        create: { fingerprint: hash, sourceLanguage, targetLanguage, sourceText, translatedText: payload.translatedText, provider, providerVersion },
-        update: { translatedText: payload.translatedText, provider, providerVersion },
-      });
-    } catch (error) {
-      console.error("Translation cache write failed", error instanceof Error ? error.message : error);
-    }
-    return { text: payload.translatedText, cached: false, provider };
-  } catch (error) {
-    console.error("LibreTranslate request failed", error instanceof Error ? error.message : error);
-    return { text: sourceText, cached: false, provider };
+    // A dubious translation is worse than an intelligible original. The UI can
+    // label this as a source-language excerpt instead of presenting it as ka.
+    console.error("Interpretation editorial translation failed", error instanceof Error ? error.message : error);
+    return { text: sourceText, cached: false, provider: "source-preserved" };
   }
 }
 

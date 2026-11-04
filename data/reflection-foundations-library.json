@@ -1,0 +1,92 @@
+[
+  {
+    "entryKey": "numerology.method.reduction.v1",
+    "chartType": "NUMEROLOGY",
+    "language": "ka",
+    "sourceText": "ნუმეროლოგიურ ტრადიციებში ერთი და იგივე რიცხვის მისაღებად რამდენიმე შემცირების წესი გვხვდება. ამ ბიბლიოთეკაში ყველა შედეგი იკითხება მხოლოდ იმ ფორმულის გვერდით, რომლითაც დაითვალა: ასე მომხმარებელს შეუძლია გაარჩიოს გამოთვლა ინტერპრეტაციისგან და არ მიიღოს სიმბოლური აღწერა როგორც დადასტურებული ფაქტი.",
+    "sourceUrl": "https://numerologywiki.ru/en/sources",
+    "license": "Bibliographic source list; original Georgian synthesis for AstroNum.",
+    "tags": { "topic": "method", "model": "numerology" }
+  },
+  {
+    "entryKey": "numerology.life-path.context.v1",
+    "chartType": "NUMEROLOGY",
+    "language": "ka",
+    "sourceText": "ცხოვრების გზის რიცხვი დაბადების თარიღის რედუქციის შედეგია. იგი სასარგებლოა როგორც თვითრეფლექსიის თემა — მაგალითად, სად გსურთ მეტი სტრუქტურა, ურთიერთთანამშრომლობა ან თავისუფლება — მაგრამ ვერ აღწერს ადამიანის უნარებს, ფსიქიკურ მდგომარეობას ან მომავალს დამოუკიდებლად.",
+    "sourceUrl": "https://numerologywiki.ru/en/sources",
+    "license": "Bibliographic source list; original Georgian synthesis for AstroNum.",
+    "tags": { "topic": "life-path", "model": "numerology" }
+  },
+  {
+    "entryKey": "numerology.personal-year.context.v1",
+    "chartType": "NUMEROLOGY",
+    "language": "ka",
+    "sourceText": "პერსონალური წლის რიცხვი იცვლება კალენდარული წლის მიხედვით. ის არ პროგნოზირებს მოვლენას; უფრო სჯობს გამოიყენოთ როგორც წლიური შეკითხვა: რომელ მიმართულებას, ურთიერთობას ან ჩვევას ვუთმობ ახლა შეგნებულ ყურადღებას? გადაწყვეტილებები უნდა დაეყრდნოს რეალურ გარემოებებს, მიზნებსა და ხელმისაწვდომ რესურსებს.",
+    "sourceUrl": "https://numerologywiki.ru/en/sources",
+    "license": "Bibliographic source list; original Georgian synthesis for AstroNum.",
+    "tags": { "topic": "personal-year", "model": "numerology" }
+  },
+  {
+    "entryKey": "matrix.method.transparency.v1",
+    "chartType": "MATRIX_DESTINY",
+    "language": "ka",
+    "sourceText": "„ბედის მატრიცის“ სახელით გავრცელებულ სისტემებს ერთიანი, აკადემიურად დამოწმებული ფორმულა არ აქვთ. AstroNum იყენებს ერთ განსაზღვრულ 22-რიცხვიან რედუქციას: ყოველი კვანძი მიიღება ნაჩვენები რიცხვების შეკრებითა და 1–22 დიაპაზონში დაყვანით. ინტერპრეტაცია სიმბოლურია და არ წარმოადგენს ფაქტობრივ დასკვნას ბედზე ან „კარმულ ვალზე“.",
+    "sourceUrl": "https://en.wikisource.org/wiki/Christian_Astrology",
+    "license": "Public-domain historical reference; original Georgian methodology note for AstroNum.",
+    "tags": { "topic": "method", "model": "matrix-22" }
+  },
+  {
+    "entryKey": "matrix.archetype.use.v1",
+    "chartType": "MATRIX_DESTINY",
+    "language": "ka",
+    "sourceText": "22-რიცხვიანი არქეტიპი აქ არის ენა არჩევანზე, რესურსსა და ყურადღების მიმართულებაზე სასაუბროდ. მისი „რესურსული“ და „ჩრდილოვანი“ მხარეები არ არის კარგი/ცუდი შეფასება: ისინი ერთი თემის ორი შესაძლო გამოვლინებაა, რომელთა მართვაც შესაძლებელია ქცევით, გარემოთი და მხარდაჭერით.",
+    "sourceUrl": "https://en.wikisource.org/wiki/Christian_Astrology",
+    "license": "Public-domain historical reference; original Georgian synthesis for AstroNum.",
+    "tags": { "topic": "archetype", "model": "matrix-22" }
+  },
+  {
+    "entryKey": "matrix.decision.boundary.v1",
+    "chartType": "MATRIX_DESTINY",
+    "language": "ka",
+    "sourceText": "არქეტიპული სისტემა არ უნდა გამოიყენოთ სამედიცინო, იურიდიული, ფინანსური ან ურთიერთობის შესახებ მაღალი რისკის გადაწყვეტილების ერთადერთ საფუძვლად. ასეთ გადაწყვეტილებაში საჭიროა კონკრეტული მონაცემი, საკუთარი შეფასება და საჭიროებისას კვალიფიციური სპეციალისტის რჩევა.",
+    "sourceUrl": "https://openstax.org/books/psychology/pages/1-3-contemporary-psychology",
+    "license": "CC BY 4.0 reference; original Georgian safety guidance for AstroNum.",
+    "tags": { "topic": "safety", "model": "matrix-22" }
+  },
+  {
+    "entryKey": "psychology.big-five.context.v1",
+    "chartType": "PSYCHOLOGICAL_PROFILE",
+    "language": "ka",
+    "sourceText": "თანამედროვე პიროვნების ფსიქოლოგიაში ფართოდ გამოიყენება ხუთფაქტორიანი მოდელი (Big Five): გახსნილობა გამოცდილებისადმი, კეთილგანწყობა, კეთილსინდისიერება, ექსტრავერსია და ნეგატიური ემოციურობისადმი მიდრეკილება. ეს განზომილებები თვითშეფასების კითხვარით იზომება; დაბადების თარიღი მათ ვერ განსაზღვრავს.",
+    "sourceUrl": "https://openstax.org/books/psychology/pages/1-3-contemporary-psychology",
+    "license": "CC BY 4.0 reference; original Georgian synthesis for AstroNum.",
+    "tags": { "topic": "big-five", "model": "evidence-based" }
+  },
+  {
+    "entryKey": "psychology.reflection.boundary.v1",
+    "chartType": "PSYCHOLOGICAL_PROFILE",
+    "language": "ka",
+    "sourceText": "ასტროლოგიური და ნუმეროლოგიური პორტრეტები შეიძლება იყოს თვითდაკვირვების საწყისი წერტილი, მაგრამ არა ფსიქოლოგიური დიაგნოზი. სასარგებლო პრაქტიკაა კონკრეტული მაგალითის ჩაწერა: რა სიტუაციაში ვრეაგირებ ასე, რა მჭირდება და რა მცირე ქმედებას შევცვლი შემდეგ ჯერზე?",
+    "sourceUrl": "https://openstax.org/books/psychology/pages/11-7-trait-theorists",
+    "license": "CC BY 4.0 reference; original Georgian reflection prompt for AstroNum.",
+    "tags": { "topic": "self-reflection", "model": "evidence-boundary" }
+  },
+  {
+    "entryKey": "psychology.defenses.context.v1",
+    "chartType": "PSYCHOLOGICAL_PROFILE",
+    "language": "ka",
+    "sourceText": "თავდაცვითი მექანიზმები ფსიქოდინამიკურ თეორიაში აღწერილია როგორც შფოთვის შემამცირებელი, ხშირად არაცნობიერი პროცესები. მათი სახელის მიწებება კონკრეტულ ადამიანს არასაკმარისი მონაცემით არასწორია; უფრო ზუსტი კითხვაა: რას ვიცავ ამ რეაქციით და რა სხვა, უსაფრთხო პასუხი შემიძლია ვცადო?",
+    "sourceUrl": "https://openstax.org/books/psychology-2e/pages/11-2-freud-and-the-psychodynamic-perspective",
+    "license": "CC BY 4.0 reference; original Georgian synthesis for AstroNum.",
+    "tags": { "topic": "defense-mechanisms", "model": "psychodynamic" }
+  },
+  {
+    "entryKey": "psychology.attachment.context.v1",
+    "chartType": "PSYCHOLOGICAL_PROFILE",
+    "language": "ka",
+    "sourceText": "მიჯაჭვულობის თეორია ურთიერთობებში უსაფრთხოების, სიახლოვისა და მხარდაჭერის გამოცდილებას იკვლევს. ის არ შეიძლება გამოითვალოს რუკიდან ან დაბადების თარიღიდან. ურთიერთობის განმეორებადი სირთულე, შფოთვა ან ტრავმის ნიშნები ყველაზე სწორად განიხილება კვალიფიციურ ფსიქოლოგთან.",
+    "sourceUrl": "https://openstax.org/books/psychology-2e/pages/9-3-stages-of-development",
+    "license": "CC BY 4.0 reference; original Georgian synthesis for AstroNum.",
+    "tags": { "topic": "attachment", "model": "evidence-boundary" }
+  }
+]
